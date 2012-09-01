@@ -8,22 +8,24 @@
 
     <div class="group-top">
 
-        <span class="group-title">
-            <div class="inline-div inline_hide">
-                {{ group.title }}
-            </div>
+        <span class="group-title inline_editable" data-model="Content" data-id="{{ group.id }}">
+            <a href="{{ group.get_url }}" class="not_editing_display">
+                <div class="inline-div being_edited">
+                    {{ group.title }}
+                </div>
+            </a>
             {% if info.is_user_admin %}
-                <div class="edit-link edit_button"></div>
-                <div class="inline-edit-input inline_edit" data-model="Content" data-id="{{ group.id }}">
+                <div class="edit-link edit_button not_editing_display"></div>
+                <div class="inline-edit-input doing_editing_display">
                     <input type="text" maxlength="200" value="{{ group.title }}" class="edit_input" name="title"/>
-                    <a href="" class="edit-link submit_inline_edit">submit</a>
-                    <a href="" class="edit-link cancel_inline_edit">cancel</a>
+                    <a href="" class="edit-link cancel_inline_edit dummy_link">cancel</a>
+                    <a href="" class="edit-link submit_inline_edit dummy_link">save</a>
                 </div>
             {% endif %}
         </span>
 
 
-        <span class="group-scale"> {{ group.getScaleVerbose }} </span>
+        <span class="group-scale"> {{ group.getLocationVerbose }} </span>
         <span class="group-num-members"> {{ group.num_members }} member{{ group.num_members|pluralize }} </span>
 
     </div>
@@ -41,6 +43,24 @@
             <div class="group-actions group_actions">
 
                 {% if info.is_user_admin %}
+                    <div class="group-action group-admin group_unadmin hover_text" data-g_id="{{ group.id }}"
+                         data-hover_text="step down" data-original_text="you're a moderator"> you're a moderator </div>
+                {% endif %}
+
+                {% include 'site/pages/group/group_join_button.html' %}
+
+                {% include 'site/pages/group/group_follow_button.html' with is_user_following=info.is_user_following %}
+
+                {% if group.scorecard %}
+                    <a href="{{ group.scorecard.get_url }}" class="group-action"> view scorecard </a>
+                {% endif %}
+
+                {% if info.is_user_admin %}
+                    {% if group.scorecard %}
+                        <a class="group-action group_edit_scorecard" href="{{ group.scorecard.getEditURL }}">edit scorecard</a>
+                    {% else %}
+                        <div class="group-action create_scorecard" data-g_id="{{ group.id }}"> create scorecard </div>
+                    {% endif %}
                     <div class="group-action group_invite_members" data-g_id="{{ group.id }}"> invite/add members </div>
                     <a href="edit/" class="group-action"> edit group settings </a>
                     {% if num_group_requests > 0 %}
@@ -48,14 +68,10 @@
                     {% endif %}
                 {% endif %}
 
-                {% include 'site/pages/group/group_join_button.html' %}
-
-                {% include 'site/pages/group/group_follow_button.html' with is_user_following=info.is_user_following %}
-
             </div>
 
             <!-- float left -->
-            <div class="group-column">
+            <div class="group-column group-left-column">
 
                 <div class="group-image">
                     {% thumbnail group.getImageURL "140x100" crop="center" as im %}
@@ -65,7 +81,7 @@
 
                 <div class="group-match">
 
-                    <div class="match-number">
+                    <div class="match-number has_hover_comparison" data-href="{{ group.get_url }}" data-display_name="{{ group.get_name }}">
                         {{ info.group_comparison.result }}
                     </div>
 
@@ -73,8 +89,15 @@
 
                 </div>
 
-                <div class="group-histogram">
-                    {% include 'site/pages/histogram/histogram_mini.html' with histogram_metadata=info.histogram_metadata buckets=info.buckets %}
+                {% comment %}
+                    <div class="group-histogram">
+                        {% include 'site/pages/histogram/histogram_mini.html' with histogram_metadata=info.histogram_metadata buckets=info.buckets %}
+                    </div>
+                {% endcomment %}
+
+                <div class="group-topic-comparison">
+                    <div class="hundred"> 100% </div>
+                    {% include 'site/pieces/match_breakdown/match_breakdown.html' with match_display="group_header_match" comparison=info.comparison_breakdown %}
                 </div>
 
                 <a href="{{ group.getHistogramURL }}" class="see-more">
@@ -84,24 +107,28 @@
             </div>
 
 
-            <div class="group-column group-text">
-
-                <div class="group-info-title">Description</div>
-                <div class="group-full-text">
-                    <div class="inline-div inline_hide">
+            <div class="group-column group-text inline_editable">
+                <div class="group-info-title-wrapper">
+                    <div class="group-info-title">Description</div>
+                    {% if info.is_user_admin %}
+                        <div class="edit-link pencil-button edit_button not_editing_display"></div>
+                    {% endif %}
+                    <div style="clear:both;"></div>
+                </div>
+                <div class="group-full-text inline_editable" data-model="Content" data-id="{{ group.id }}">
+                    <div class="inline-div being_edited not_editing_display">
                         {{ group.full_text|linebreaksbr }}
                     </div>
                     {% if info.is_user_admin %}
-                        <div class="edit-link edit_button"></div>
-                        <div class="inline-edit-input inline_edit" data-model="Content" data-id="{{ group.id }}">
+                        <div class="inline-edit-input inline_edit doing_editing_display">
                             <textarea type="text" maxlength="1000" class="edit_input group-description-edit" name="full_text">{{ group.full_text }}</textarea>
-                            <a href="" class="edit-link submit_inline_edit">submit</a>
-                            <a href="" class="edit-link cancel_inline_edit">cancel</a>
+                            <a href="" class="edit-link cancel_inline_edit dummy_link">cancel</a>
+                            <a href="" class="edit-link submit_inline_edit dummy_link">save</a>
                         </div>
                     {% endif %}
                 </div>
 
-                <a href="/profile/" class="see-more">
+                <a class="see-more group_description_modal dummy_link" data-g_id="{{ group.id }}">
                     see full description
                 </a>
             </div>
@@ -109,16 +136,18 @@
 
             <div class="group-column group-people">
 
-                <div class="group-moderators">
+                {% if info.group_admins %}
+                    <div class="group-moderators">
 
-                    <div class="group-info-title">Moderators</div>
-                    {% for admin in info.group_admins %}
-                        <a href="{{ admin.get_url }}">{% include 'site/pieces/avatar-with-name.html' with user=admin height="30" width="30" %}</a>
-                    {% endfor %}
+                        <div class="group-info-title">Moderators</div>
+                        {% for admin in info.group_admins %}
+                            <a href="{{ admin.get_url }}">{% include 'site/pieces/avatar-with-name.html' with user=admin height="30" width="30" %}</a>
+                        {% endfor %}
 
-                </div>
+                    </div>
+                {% endif %}
 
-                <div class="group-members">
+                <div class="group-members {% if not info.group_admins %} no-admins {% endif %}">
                     <div class="group-info-title">Members</div>
                     {% for member in info.group_members %}
                         <div class="group-member-avatar">
@@ -136,10 +165,20 @@
 
         </div>
 
-        <div class="group-pinned-content">
-            {% include 'site/pages/feed/base-item-thin.html' with item=info.item1 %}
-            {% include 'site/pages/feed/base-item-thin.html' with item=info.item2%}
-        </div>
+        {% with pinned=info.pinned %}
+            {% if pinned %}
+                <div class="group-pinned-content">
+                    {% for item in pinned %}
+                        <div class="pinned-wrapper pinned_wrapper">
+                            {% if info.is_user_admin %}
+                                <a class="unpin-content unpin_content" data-c_id="{{ item.id }}" data-g_id="{{ group.id }}"> unpin </a>
+                            {% endif %}
+                            {% include 'site/pages/feed/base-item-thin.html' with item=item.downcast %}
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
 
     </div>
 

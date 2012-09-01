@@ -14,6 +14,7 @@ div.create-modal {
         padding: 15px;
         height: 95px;
         width: 95px;
+        @include border-radius(50px);
       }
       span.label {
         display: block;
@@ -60,7 +61,13 @@ div.create-modal {
           width: 20%;
           text-align: right;
           margin-right: 25px;
+          &.padded {
+            margin: 10px;
+          }
         }
+      }
+      div.poll-form {
+        display: none;
       }
     }
     div.avatar-box {
@@ -97,6 +104,12 @@ div.create-modal {
         background-color: $orange;
       }
     }
+    div.error_msg {
+      color: $red;
+      float: right;
+      margin: 20px;
+      padding: 8px;
+    }
   }
   span.post-as {
     vertical-align: middle;
@@ -120,13 +133,14 @@ div.create-modal {
   div.questions {
     padding: 20px;
     background-color: $white-gray;
+    margin-bottom: 20px;
     div.question {
       margin-bottom: 15px;
       &.model {
         display: none;
         @include transition(0.2s);
       }
-      border: 1px solid $deep-gray;
+      border: 2px solid $deep-gray;
       input {
         margin: 10px;
         font-size: 14px;
@@ -142,24 +156,33 @@ div.create-modal {
       div.question-title {
         padding: 5px;
         background-color: $orange-light;
-        div.label {
-          margin: 10px;
-        }
       }
       div.question-answers {
         padding: 5px;
         background-color: white;
 
       }
-      span.remove {
-        color: $orange;
+      div.question-source {
+        padding: 5px;
+        background-color: $green-light;
+        color: $dark-green;
+        display: none;
+      }
+      span.controls {
         float: right;
-        margin: 10px;
+        margin: 5px 10px;
         font-size: 14px;
         cursor: pointer;
-        &:hover {
-          color: $red;
+        span.remove {
+          display: block;
+          color: $orange;
+          &:hover { color: $red; }
         }
+        span.add-source {
+          display: block;
+          color: $yellow-highlight;
+          &:hover { color: white; }
+       }
       }
     }
     div.add-question {
@@ -178,15 +201,38 @@ div.create-modal {
       }
     }
   }
-  textarea, input, select {
+  textarea, input:not([type=radio]), select {
     width: 550px;
     font-size: 16px;
     padding: 5px;
   }
+  input[type=radio] {
+    margin: 5px;
+  }
+  input.date_autofill {
+    width: 225px;
+    margin-right: 5px;
+  }
+  span.date_autofill_label {
+    margin-left: 5px;
+    color: $pink;
+    &.goodinput {
+      color: $green;
+    }
+  }
   textarea {
-    height: 80px;
-    &:focus {
-      height: 120px;
+    height: 100px;
+  }
+  span.topic_button {
+    cursor: pointer;
+    padding: 5px;
+    margin: 0 10px;
+    &:hover {
+      background-color: $yellow-highlight;
+    }
+    &.selected {
+      border: 1px solid $gray;
+      margin: 0 9px;
     }
   }
 }

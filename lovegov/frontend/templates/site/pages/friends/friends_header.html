@@ -6,7 +6,9 @@
 
 {% block header_top %}
 
-    <div class="home-section-title"> People & Friends </div>
+    <div class="home-section-title friends-title"> People & Friends </div>
+    <span class="num-people"> {{ i_follow.num_members }} people </span>
+    <a class="view-all-friends" href="{{ i_follow.getHistogramURL }}"> view all </a>
 
 {% endblock %}
 
@@ -14,11 +16,30 @@
 {% block header_info %}
 
     <div class="friends-header">
-        {% for friend in facebook_friends %}
 
-            {% include 'site/pages/friends/facebook_friend_card.html' with friend=friend %}
+        <div class="friends-explanation">
+            These are your best matches with people you follow on LoveGov.
+        </div>
 
-        {% endfor %}
+        <div class="friends-wrapper">
+            {% for user in friends %}
+                <div class="friend-wrapper">
+                    {% include 'site/pages/friends/match_card.html' %}
+                </div>
+            {% empty %}
+                <div class="no-friends">
+                    <div class="no-friends-message">
+                        You're not following anyone on lovegov :(
+                    </div>
+                    <div class="import-friends">
+                        {% if viewer.facebook_id %}
+                            import friends from facebook?
+                        {% endif %}
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+
     </div>
 
 {% endblock %}

@@ -62,18 +62,24 @@ urlpatterns += patterns('',
     (r'^continue/$', views.continueAtOwnRisk),
     (r'^try/$', viewWrapper(views.tryLoveGov)),
     (r'^try/(\S+)/$', viewWrapper(views.tryLoveGov)),
+    (r'^unsubscribe/$', views.unsubscribe),
 
     # home pages
     (r'^home/$', viewWrapper(views.home, requires_login=True)),
-    (r'^groups/$', viewWrapper(views.groups, requires_login=True)),
-    (r'^elections/$', viewWrapper(views.elections, requires_login=True)),
-    (r'^politicians/$', viewWrapper(views.politicians, requires_login=True)),
+    (r'^groups/$', viewWrapper(views.browseGroups, requires_login=True)),
+    (r'^elections/$', viewWrapper(views.browseElections, requires_login=True)),
+    (r'^politicians/$', viewWrapper(views.browseElections, requires_login=True)),
     (r'^representatives/$', viewWrapper(views.representatives, requires_login=True)),
     (r'^friends/$', viewWrapper(views.friends, requires_login=True)),
+    (r'^like_minded/$', viewWrapper(views.likeMinded, requires_login=True)),
     (r'^questions/$', viewWrapper(views.questions, requires_login=True)),
+    (r'^discover/$', viewWrapper(views.discover, requires_login=True)),
+
+    (r'^my_groups/$', viewWrapper(views.myGroups, requires_login=True)),
+    (r'^my_elections/$', viewWrapper(views.myElections, requires_login=True)),
 
     # browse-all
-    (r'^browse_groups/$', viewWrapper(views.browseGroups, requires_login=True)),
+    #(r'^browse_groups/$', viewWrapper(views.browseGroups, requires_login=True)),
     #(r'^browse_people/$', viewWrapper(views.browsePeople, requires_login=True)),
     #(r'^browse_friends/$', viewWrapper(views.browseFriends, requires_login=True)),
     #(r'^browse_politicians/$', viewWrapper(views.browsePoliticians, requires_login=True)),
@@ -99,6 +105,12 @@ urlpatterns += patterns('',
     (r'^group/(\d+)/$', viewWrapper(views.groupPage, requires_login=True)),
     (r'^thread/(\d+)/$', viewWrapper(views.thread, requires_login=True)),
 
+    # scorecards
+    (r'^scorecard/(\d+)/$', viewWrapper(views.scorecardDetail, requires_login=True)),
+    (r'^scorecard/(\d+)/edit/$', viewWrapper(views.scorecardEdit, requires_login=True)),
+    (r'^scorecard/(\d+)/me/$', viewWrapper(views.scorecardMe, requires_login=True)),
+    (r'^scorecard/(\d+)/(\S+)/$', viewWrapper(views.scorecardCompare, requires_login=True)),
+
     # special pages
     (r'^profile/web/(\S+)/$', viewWrapper(views.compareWeb, requires_login=True)),              # profile/comparison
     (r'^group/(\d+)/edit/$', viewWrapper(views.groupEdit, requires_login=True)),
@@ -106,9 +118,7 @@ urlpatterns += patterns('',
 
     # legislation
     (r'^legislation/$', viewWrapper(views.legislation, requires_login=True)),
-    (r'^legislation/(?P<session>\d+)/$', viewWrapper(views.legislation, requires_login=True)),
-    (r'^legislation/(?P<session>\d+)/(?P<type>\w+)/$', viewWrapper(views.legislation, requires_login=True)),
-    (r'^legislation/(?P<session>\d+)/(?P<type>\w+)/(?P<number>\d+)/$', viewWrapper(views.legislation, requires_login=True)),
+    (r'^legislation/(\d+)/$', viewWrapper(views.legislationDetail, requires_login=True)),
 
     # ajax pages
     (r'^action/$', viewWrapper(posts.actionPOST, requires_login=True)),
@@ -123,6 +133,7 @@ urlpatterns += patterns('',
     (r'^test/$', viewWrapper(tests.test, requires_login=True)),                                 # test page, for whatever you want!
     (r'^test2/$', viewWrapper(tests.test2, requires_login=True)),                               # for testing logging
     (r'^test3/$', viewWrapper(tests.test3, requires_login=True)),
+    (r'^test4/$', viewWrapper(tests.test4, requires_login=True)),
     (r'^css/$', viewWrapper(tests.css, requires_login=True)),
 
     #admin

@@ -1,7 +1,7 @@
 {% extends 'site/frame/frame.html' %}
 
 {% block content %}
-
+<div style="margin-left: 200px;">
 <div id="content-leg-div">
 
 {% if error %}
@@ -18,14 +18,14 @@ Session: {{session}}
 
 <p><h2>Bill Information</h2>
 
-{% for title in leg_titles %}
-<p><h3>Bill title</h3>
-<ul>
-	<li>Title: {{title.title}}</li>
-	<li>Type: {{title.title_type}}</li>
-	<li>As: {{title.title_as}}</li>
-</ul>
-{% endfor %}
+    {% for title in leg_titles %}
+        <p><h3>Bill title</h3>
+        <ul>
+            <li>Title: {{title.title}}</li>
+            <li>Type: {{title.title_type}}</li>
+            <li>As: {{title.title_as}}</li>
+        </ul>
+    {% endfor %}
 
 <p><h3>Description</h3></p>
 
@@ -109,5 +109,5 @@ Session: {{session}}
 {% endif %}
 
 </div>
-
+</div>
 {% endblock %}

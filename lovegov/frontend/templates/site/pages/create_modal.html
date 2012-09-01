@@ -3,101 +3,190 @@
 
 <div class="create-modal">
     <div class="type-select">
-        <div class="selection" data-selection="petition">
-            <img src="{{ STATIC_URL }}/images/create/petition_plus.png">
-            <span class="label">Petition</span>
-        </div>
         <div class="selection" data-selection="news">
             <img src="{{ STATIC_URL }}/images/create/news_plus.png">
             <span class="label">News</span>
         </div>
-        <br>
         <div class="selection" data-selection="poll">
             <img src="{{ STATIC_URL }}/images/create/poll_plus.png">
-            <span class="label">Poll</span>
+            <span class="label">Questions</span>
         </div>
+        <br>
         <div class="selection" data-selection="discussion">
             <img src="{{ STATIC_URL }}/images/create/discussion_plus.png">
             <span class="label">Discussion</span>
         </div>
+        <div class="selection" data-selection="petition">
+            <img src="{{ STATIC_URL }}/images/create/petition_plus.png">
+            <span class="label">Petition</span>
+        </div>
+        </br>
     </div>
 
     <div class="create-section discussion">
-        <header><img src="{{ STATIC_URL }}/images/create/discussion_blue.png"> Create a Discussion</header>
-        <span class="back">< back</span>
-        <div class="form">
-            {% usemacro textbox "Title:" "title" %}
-            {% usemacro textarea "Full text:" "description" %}
-            {% usemacro post-to viewer.getRealGroups %}
-            {% usemacro post-as %}
-            <div class="optional">
-                {% usemacro optional-label %}
-                {% usemacro image %}
-                {% usemacro topic %}
+        <form method="post" action="/action/" enctype="multipart/form-data">
+            {% csrf_token %}
+            <input type="hidden" name="sectionType" value="discussion">
+            <header><img src="{{ STATIC_URL }}/images/create/discussion_blue.png"> Create a Discussion</header>
+            <span class="back">< back</span>
+            <div class="form">
+                {% usemacro textbox "Title:" "title" "title" "" %}
+                {% usemacro textarea "Full text:" "description" "full_text" %}
+                {% usemacro post-to viewer.getGroupSubscriptions %}
+                {% usemacro post-as %}
+                <div class="optional">
+                    {% usemacro optional-label %}
+                    {% usemacro image %}
+                    {% usemacro topic main_topics %}
+                </div>
             </div>
-        </div>
-        {% usemacro save %}
+            {% usemacro save %}
+        </form>
     </div>
     <div class="create-section petition">
-        <header><img src="{{ STATIC_URL }}/images/create/petition_blue.png"> Create a Petition</header>
-        <span class="back">< back</span>
-        <div class="form">
-            {% usemacro textbox "Title:" "title" %}
-            {% usemacro textarea "Full text:" "description" %}
-            {% usemacro post-to viewer.getRealGroups %}
-            {% usemacro post-as %}
-            <div class="optional">
-                {% usemacro optional-label %}
-                {% usemacro image %}
-                {% usemacro topic %}
+        <form method="post" action="/action/" enctype="multipart/form-data">
+            {% csrf_token %}
+            <input type="hidden" name="sectionType" value="petition">
+            <header><img src="{{ STATIC_URL }}/images/create/petition_blue.png"> Create a Petition</header>
+            <span class="back">< back</span>
+            <div class="form">
+                {% usemacro textbox "Title:" "title" "title" "" %}
+                {% usemacro textarea "Full text:" "description" "full_text" %}
+                {% usemacro post-to viewer.getGroupSubscriptions %}
+                {% usemacro post-as %}
+                <div class="optional">
+                    {% usemacro optional-label %}
+                    {% usemacro image %}
+                    {% usemacro topic main_topics %}
+                </div>
             </div>
-        </div>
-        {% usemacro save %}
+            {% usemacro save %}
+        </form>
     </div>
     <div class="create-section news">
-        <header><img src="{{ STATIC_URL }}/images/create/news_blue.png"> Submit News</header>
-        <span class="back">< back</span>
-        <div class="form">
-            {% usemacro textbox "Link:" "link" %}
-            {% usemacro link-image %}
-            {% usemacro post-to viewer.getRealGroups %}
-            {% usemacro post-as %}
-            <div class="optional">
-                {% usemacro optional-label %}
-                {% usemacro textarea "Your opinion:" "description" %}
-                {% usemacro topic %}
+        <form method="post" action="/action/" enctype="multipart/form-data">
+            {% csrf_token %}
+            <input type="hidden" name="sectionType" value="news">
+            <header><img src="{{ STATIC_URL }}/images/create/news_blue.png"> Submit News</header>
+            <span class="back">< back</span>
+            <div class="form">
+                {% usemacro textbox "Link:" "link" "link" "" %}
+                {% usemacro link-image %}
+                {% usemacro post-to viewer.getRealGroups %}
+                {% usemacro post-as %}
+                <div class="optional">
+                    {% usemacro optional-label %}
+                    {% usemacro textarea "Your opinion:" "description" "full_text" %}
+                    {% usemacro topic main_topics %}
+                </div>
             </div>
-        </div>
-        {% usemacro save %}
+            {% usemacro save %}
+        </form>
     </div>
     <div class="create-section poll">
-        {{ MAIN_TOPICS_IMG }}
-        <header><img src="{{ STATIC_URL }}/images/create/poll_blue.png"> Create a Poll</header>
-        <span class="back">< back</span>
-        <div class="form">
-            {% usemacro textbox "Title:" "title" %}
-            {% usemacro textarea "Poll description:" "description" %}
-            {% usemacro post-to viewer.getRealGroups %}
-            {% usemacro post-as %}
-            <div class="questions">
-                <div class="question model">
-                    <div class="question-title form-row">
-                        <span class="remove">remove</span>
-                        <div class="label">Question:</div>
-                        <div class="field"><input type="text" placeholder="Enter a question"></div>
-                    </div>
-                    <div class="question-answers form-row">
-                        <div class="label">Answer:</div>
-                        <div class="field"><textarea placeholder="Enter the first answer"></textarea></div>
-                    </div>
-                    <div class="question-answers form-row">
-                        <div class="label">Answer:</div>
-                        <div class="field"><textarea type="input" placeholder="Enter the second answer"></textarea></div>
+        <form method="post" action="/action/" enctype="multipart/form-data">
+            {% csrf_token %}
+            <input type="hidden" name="sectionType" value="poll">
+            <header><img src="{{ STATIC_URL }}/images/create/poll_blue.png"> Create a Question</header>
+            <span class="back">< back</span>
+            <div class="form">
+                <div class="form-row polltype">
+                    <div class="label">Create as a poll?<br> </br></div>
+                    <div class="field">
+                        <input type="radio" name="polltype" value="p">Yes, I want to create a <strong>themed collection</strong> of questions.<br>
+                        <input type="radio" name="polltype" value="q" checked>No, I want to create a <strong>single</strong> or <strong>random assortment</strong> of questions.
                     </div>
                 </div>
-                <div class="add-question">+ add a question</div>
+                <div class="poll-form">
+                    {% usemacro textbox "Title:" "title" "title" "" %}
+                    {% usemacro textarea "Poll description:" "description" "full_text" %}
+                </div>
+                {% usemacro post-to viewer.getGroupSubscriptions %}
+                {% usemacro post-as %}
+                <div class="questions">
+                    <div class="question model">
+                        <div class="question-title form-row">
+                            <span class="controls">
+                                <span class="remove">remove</span>
+                                <span class="add-source">add source</span>
+                            </span>
+                            <div class="label padded">Question:</div>
+                            <div class="field"><input type="text" placeholder="Enter a question"></div>
+                        </div>
+                        <div class="question-answers form-row">
+                            <div class="label">Answer:</div>
+                            <div class="field"><textarea placeholder="Enter the first answer"></textarea></div>
+                        </div>
+                        <div class="question-answers form-row">
+                            <div class="label">Answer:</div>
+                            <div class="field"><textarea type="input" placeholder="Enter the second answer"></textarea></div>
+                        </div>
+                        <div class="question-source form-row">
+                            <div class="label padded">Source:</div>
+                            <div class="field"><input type="text" placeholder="Enter a reference URL for this question, e.g. to a piece of legislation"></div>
+                        </div>
+                    </div>
+                    <div class="add-question" data-num-questions="0">+ add a question</div>
+                </div>
+
+                <div class="optional">
+                    {% usemacro optional-label %}
+                    {% usemacro image %}
+                </div>
+                {% usemacro save %}
             </div>
-        </div>
-        {% usemacro save %}
+        </form>
     </div>
+    <div class="create-section group">
+        <form method="post" action="/action/" enctype="multipart/form-data">
+            {% csrf_token %}
+            <input type="hidden" name="sectionType" value="group">
+            <header><img src="{{ STATIC_URL }}/images/create/group_blue.png"> Create a Group</header>
+            <div class="form">
+                {% usemacro textbox "Group name:" "title" "title" "" %}
+                {% usemacro textarea "Description:" "description" "full_text" %}
+                <div class="optional">
+                    {% usemacro optional-label %}
+                    {% usemacro select_states "State:" "state" states %}
+                    {% usemacro textbox "City:" "city" "city" "Enter a city corresponding to the selected state." %}
+                    {% usemacro image %}
+                </div>
+                {% usemacro save %}
+            </div>
+        </form>
+    </div>
+    <div class="create-section scorecard">
+        <form method="post" action="/action/" enctype="multipart/form-data">
+            {% csrf_token %}
+            <input type="hidden" name="sectionType" value="scorecard">
+            <header><img src="{{ STATIC_URL }}/images/create/scorecard_blue.png"> Create a Scorecard</header>
+            <div class="form">
+                {% usemacro textbox "Title:" "title" "title" "" %}
+                {% usemacro textarea "Description:" "description" "full_text" %}
+                {% usemacro modgroup "Group:" "post_to" group %}
+                {% usemacro polls "Polls:" "poll" all_polls %}
+            </div>
+            {% usemacro save %}
+        </form>
+    </div>
+    <div class="create-section election">
+        <form method="post" action="/action/" enctype="multipart/form-data">
+            {% csrf_token %}
+            <input type="hidden" name="sectionType" value="election">
+            <header><img src="{{ STATIC_URL }}/images/create/election_blue.png"> Create an Election</header>
+            <div class="form">
+                {% usemacro textbox "Title:" "title" "title" "" %}
+                {% usemacro textarea "Description:" "description" "full_text" %}
+                {% usemacro date "Election date:" "date_autofill" "election_start" "Enter a date in any format" %}
+                <div class="optional">
+                    {% usemacro optional-label %}
+                    {% usemacro select_states "State:" "state" states %}
+                    {% usemacro textbox "City:" "city" "city" "Enter a city corresponding to the selected state." %}
+                    {% usemacro image %}
+                </div>
+            </div>
+            {% usemacro save %}
+        </form>
+    </div>
+
 </div>

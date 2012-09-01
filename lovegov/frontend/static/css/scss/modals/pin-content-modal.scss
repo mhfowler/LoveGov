@@ -4,3 +4,56 @@
 @import 'compass';
 
 
+
+div.pin-content-modal {
+
+  padding:0 20px 20px 20px;
+  width:400px;
+  height:200px;
+
+  div.pin-title {
+    @include fontSize(24px);
+  }
+
+  div.pin-explanation {
+    margin-top: 10px;
+    color:$gray;
+  }
+
+  div.pin-to-header {
+    margin-top:15px;
+    span.pin-what {
+      color:$text-blue;
+    }
+  }
+
+  div.pin-select-wrapper {
+    margin-top:10px;
+    select.pin-to {
+      width:300px;
+    }
+  }
+
+  div.was-pinned {
+    margin-top: 24px;
+    width: 240px;
+    float: left;
+    display:none;
+  }
+
+  a.pin-it {
+    margin-top:20px;
+    float:right;
+    background-color:$dark-gray;
+    padding:6px;
+    color:white;
+    &:hover {
+      background-color:$gray;
+    }
+  }
+
+  div.no-groups {
+    margin-top:10px;
+  }
+
+}

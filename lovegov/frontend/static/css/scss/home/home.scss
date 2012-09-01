@@ -4,6 +4,18 @@
 
 @import "compass";
 
+/* page reloading */
+div.home-reloading {
+  @include staticImage("/images/gifs/ajax-loader.gif");
+  width: 15px;
+  height: 15px;
+  background-size: 15px 13px;
+  background-repeat: no-repeat;
+  position:absolute;
+  left: 126px;
+  display:none;
+}
+
 /* stuff for section headers */
 div.home-header-top {
   @include clearfix;
@@ -47,12 +59,24 @@ table.home
 
   td.home-main
   {
-    padding-left:30px;
+    //padding-left:30px;
+    //padding-top: 6px;
+    //float: left;
+    margin-left: 30px;
+    //padding: 6px;
+    //padding-left: 25px;
+    //border-left: 1px solid $light-gray;
+    position: relative;
+    top: 10px;
+
+    padding-left: 20px;
+    margin-left: 19px;
+    //border-left: 1px solid $light-gray;
 
     div.home-header
     {
       width:100%;
-      margin-top:13px;
+      margin-top:8px;
 
       div.minimize-button
       {
@@ -89,11 +113,16 @@ div.expand-info
     cursor:pointer;
     background-color:$gray;
   }
+  p.expand-text {
+    line-height: 10px;
+  }
 }
 
 div.left-navbar {
-
-  margin-top:2px;
+  position:relative;
+  top:5px;
+  //padding-left:5px;
+  margin-top:5px;
   @include titleFont();
   width:150px;
   overflow:hidden;
@@ -102,7 +131,7 @@ div.left-navbar {
     color:$black;
     position:absolute;
     @include titleFont();
-    @include fontSize(22px);
+    @include fontSize(14px);
     display:none;
   }
 
@@ -110,38 +139,156 @@ div.left-navbar {
     margin-bottom:10px;
     width:200px;
 
+  /* old way of navbar link
+  a.navbar-link {
+    padding:5px 0 5px 5px;
+    display:block;
+    margin: 0px 0 0 10px;
+    color:$black;
+    width:139px;
+    @extend .gray-hover;
+  }
+  */
     a.navbar-link {
       padding:5px 0 5px 5px;
       display:block;
-      margin: 0px 0 0 10px;
+      margin: 0px 0 0 8px;
       color:$black;
-      width:139px;
-      @extend .gray-hover;
+      width: 142px;
+      @include border-radius(6px);
+      &:hover {
+        //font-style:italic;
+        background-color:$light-gray;
+      }
+      &.clicked {
+        background-color:$light-gray;
+        //font-style:italic;
+      }
+      span.item-title {
+        float:left;
+        width:115px;
+      }
+      span.item-new {
+        float:right;
+        margin-right:10px;
+        color:$red;
+      }
     }
   }
 
+  div.navbar-divider-line {
+    width:65%;
+    border-bottom:1px solid $gray;
+    margin: 3px 0px 5px 0px;
+  }
+
+  div.navbar-permalink {
+    margin-bottom:2px;
+  }
+
+/* navbar - simple */
+  div.navbar-divider {
+    width:85%;
+    border-bottom:1px solid $gray;
+    margin: 8px 0px 5px 0px;
+    div.divider-title {
+      margin-left: 3px;
+      @include fontSize(10px);
+    }
+  }
+  div.simple_navsection {
+    div.navbar-divider {
+      a.navbar-link {
+        &.clicked {
+        }
+        &:hover {
+        }
+      }
+    }
+  }
+  a.navbar-link {
+    padding:5px 0 5px 0px;
+    display:block;
+    margin: 0px 0 0 0px;
+    color:$black;
+    width:139px;
+    text-transform:lowercase;
+    &:hover {
+      background-color:$light-gray;
+      //font-style:italic;
+    }
+    &.clicked {
+      background-color:$light-gray;
+      //font-style:italic;
+    }
+  }
+
+/* old way  of doing navbars
+div.navbar-title {
+  @extend .gray-hover;
+  @include inline-block;
+  @include grayText();
+  @include fontSize(24px);
+  padding: 5px;
+}
+a.section_title.clicked {
   div.navbar-title {
-    @extend .gray-hover;
+    background-color:$light-gray;
+    color:white;
+  }
+}
+*/
+  span.lil-goob {
+    margin-top: 0px;
+    height: 31px;
+    width: 6px;
+    float: left;
+    background-color: $light-gray;
+    display:none;
+  }
+  span.lil-goob.clicked {
+    background-color:$red;
+  }
+  div.navbar-title {
     @include inline-block;
-    @include grayText();
-    @include fontSize(24px);
+    @include fontSize(15px);
     padding: 5px;
+    //width:150px;
+    color:$black;
+    //font-weight:bold;
+    &:hover {
+      //background-color:$light-gray;
+      color:$red;
+      //font-style:italic;
+    }
   }
   a.section_title.clicked {
     div.navbar-title {
-      background-color:$light-gray;
-      color:white;
+      //font-style:italic;
+      //background-color:$light-gray;
+      color:$red;
+    }
+    span.lil-goob {
+        //background-color:$black;
+      background-color:$red;
     }
   }
 
   span.red-triangle {
     @include inline-block;
-    width:9px;
-    height:18px;
+    //display:none;
+  /*
+  width:9px;
+  height:18px;
+  */
     @include staticImage('/images/icons/arrow_right_red.png');
     @include transition(.25s);
-    margin-left:15px;
-    margin-bottom:3px;
+    margin-left: 6px;
+    margin-bottom: 2px;
+    background-repeat: no-repeat;
+    background-size: 5px 10px;
+    width: 5px;
+    height: 10px;
     //display:none;
   }
   span.red-triangle-down {
@@ -162,6 +309,35 @@ div.left-navbar {
       margin-right:50px;
       padding-right:5px;
     }
+
+    div.create-wrapper {
+      background-color:blue;
+      a.create-link {
+        float:right;
+      }
+    }
+  }
+
+  div.invite-friends-sidebar {
+    margin-top:20px;
+    margin-bottom:25px;
+  }
+
+  div.left-toggles {
+    float:left;
+    margin-top:5px;
+    a.left-toggle {
+      width:100%;
+      display:block;
+      margin-top:10px;
+      color:$red;
+      &:hover {
+        color:$gray;
+      }
+    }
+    a.sidebar-feedback {
+      color:$red;
+    }
   }
 
 }
@@ -170,14 +346,15 @@ div.left-navbar {
 /* dismissible header */
 div.dismissible-header {
   width:100%;
-  padding:10px;
-  @include clearfix;
-  background-color:$blue-light;
+
   div.the-content {
+    width:100%;
     float:left;
   }
   div.x-out {
-    float:right;
+    position: absolute;
+    left: 96%;
+    top:0px;
     @include fontSize(32px);
     padding:5px;
     &:hover {
@@ -187,6 +364,47 @@ div.dismissible-header {
     }
   }
 }
+
+
+
+/* new footer */
+div.new-footer {
+  border-top:1px solid $gray;
+  margin-top:30px;
+  padding-top:20px;
+  padding-bottom:20px;
+
+  a.facebook-link-button {
+    float:left;
+    margin-left:5px;
+    @include staticImage('/images/icons/social_media/facebook.png');
+    width:30px;
+    height:30px;
+    background-size:30px;
+  }
+  a.twitter-link-button {
+    float:left;
+    margin-left:15px;
+    @include staticImage('/images/icons/social_media/twitter.png');
+    width:30px;
+    height:30px;
+    background-size:30px;
+  }
+  a.footer-link {
+    float:left;
+    margin-left:40px;
+    color:$dark-gray;
+    &:hover {
+      color:$light-gray;
+    }
+  }
+  div.mission-sentence {
+    width:400px;
+    float:right;
+    color:$gray;
+  }
+}
+
 
 
 

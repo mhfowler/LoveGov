@@ -1,30 +1,14 @@
 {% extends 'site/pages/content_detail/content_detail.html' %}
 
-{% block content_description %}
-    <div class="content-info-header">
-        Description
-    </div>
-
-    <div class="description">
-        {{ content.summary}}
-    </div>
-
-{% endblock %}
-
 
 {% block content_body %}
 
-
     {% if discussion.user_post %}
-        <div class="user-post-wrapper">
-            <div class="content-info-header">
-                Discussion Subject
-            </div>
-            <div class="text-wrapper">
-                {{ discussion.user_post }}
-            </div>
+        <div class="content-detail-description">
+            {{ discussion.user_post }}
         </div>
     {% endif %}
+
     <script> rebind="discussion_detail"; </script>
 
 {% endblock %}

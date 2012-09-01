@@ -9,6 +9,11 @@ div.dismissible-header {
 
 div.find-your-reps {
 
+  width:100%;
+  background-color:$blue-light;
+  padding:10px;
+  @include clearfix;
+
   div.error-message {
     margin-left: 130px;
     display:none;
@@ -68,10 +73,16 @@ div.reps-top {
     @include fontSize(16px);
     margin-top: 4px;
   }
+  span.not-your-district {
+    margin-top: 4px;
+    margin-left: 33px;
+    float:left;
+    color:$black;
+  }
   a.enter-new-address {
     float:left;
     margin-top: 4px;
-    margin-left: 240px;
+    margin-left: 4px;
   }
 }
 

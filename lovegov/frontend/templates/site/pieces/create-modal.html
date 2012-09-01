@@ -1,20 +1,20 @@
 {% load macros %}
 
 
-{% macro textbox label class %}
+{% macro textbox label class name placeholder %}
 
     <div class="form-row">
         <div class="label">{{ label }}</div>
-        <div class="field"><input type="text" class="{{ class }}"></div>
+        <div class="field"><input type="text" class="{{ class }}" name="{{ name }}" placeholder="{{ placeholder }}"></div>
     </div>
 
 {% endmacro %}
 
-{% macro textarea label class %}
+{% macro textarea label class name %}
 
     <div class="form-row">
         <div class="label">{{ label }}</div>
-        <div class="field"><textarea class="{{ class }}"></textarea></div>
+        <div class="field"><textarea class="{{ class }}" name="{{ name }}"></textarea></div>
     </div>
 
 {% endmacro %}
@@ -24,7 +24,7 @@
     <div class="form-row">
         <div class="label">Post to:</div>
         <div class="field">
-            <select class="post-to">
+            <select class="post-to" name="post_to">
             {% for group in groups %}
                 <option value="{{ group.id }}">{{ group.title }}</option>
             {% endfor %}
@@ -63,18 +63,24 @@
     <div class="form-row">
         <div class="label">Add image:</div>
         <div class="field">
-            <input type="file" value="choose file">
+            <input type="file" value="Choose a file" class="content-image" name="content-image">
         </div>
     </div>
 
 {% endmacro %}
 
-{% macro topic %}
+{% macro topic main_topics %}
 
     <div class="form-row">
         <div class="label">Topic:</div>
         <div class="field">
-            energy, america, poopstains, terrorism, education
+            {% for t in main_topics %}
+
+                <span class="topic_button tooltip-top" data-t_alias="{{ t.alias }}" title="{{ t.topic_text }}">
+                    {% include 'site/pieces/topic_icon.html' with topic=t width="30" height="30" %}
+                </span>
+
+            {% endfor %}
         </div>
     </div>
 
@@ -82,7 +88,7 @@
 
 {% macro save %}
 
-    <div class="save">Save</div>
+    <div class="save">Save</div><div class="error_msg"></div>
 
 {% endmacro %}
 
@@ -92,6 +98,75 @@
         <div class="label">Link image: </div>
         <div class="field">
             link image appears here
+        </div>
+    </div>
+
+{% endmacro %}
+
+{% macro modgroup label name group %}
+
+    <div class="form-row">
+        <div class="label">{{ label }}</div>
+        <div class="field">
+            <input type="hidden" name="{{ name }}" value="{{ group.id }}">
+          {{ group.title }}
+        </div>
+    </div>
+
+{% endmacro %}
+
+{% macro polls label name all_polls %}
+
+    <div class="form-row">
+        <div class="label">{{ label }}</div>
+        <div class="field">
+            {% if all_polls|length > 0 %}
+                <select class="poll-select" name="poll">
+                    <optgroup label="Polls">
+                        <option></option>
+                        {% for poll in all_polls %}
+                            <option value='{{ poll.id }}'>{{ poll.title }}</option>
+                        {% endfor %}
+                    </optgroup>
+                </select>
+            {% else %}
+                There are no polls to select.
+            {% endif %}
+        </div>
+    </div>
+
+{% endmacro %}
+
+{% macro select_states label name states %}
+
+    <div class="form-row">
+        <div class="label">{{ label }}</div>
+        <div class="field">
+            {% if states|length > 0 %}
+                <select class="state-select" name="{{ name }}">
+                    <optgroup label="States">
+                        <option></option>
+                        {% for state in states %}
+                            <option value='{{ state.0 }}'>{{ state.1 }}</option>
+                        {% endfor %}
+                    </optgroup>
+                </select>
+            {% else %}
+                There are no states to select.
+            {% endif %}
+        </div>
+    </div>
+
+{% endmacro %}
+
+{% macro date label class name placeholder  %}
+
+    <div class="form-row">
+        <div class="label">{{ label }}</div>
+        <div class="field">
+            <input type="text" class="{{ class }}" name="{{ name }}" placeholder="{{ placeholder }}" value="11/6/2012">
+            <span class="date_autofill_label"></span>
+            <input type="hidden" name="gendate" value="">
         </div>
     </div>
 

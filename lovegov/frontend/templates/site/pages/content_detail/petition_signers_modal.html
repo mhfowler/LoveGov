@@ -1,0 +1,15 @@
+<div class="petition-signers-modal-wrapper">
+
+
+    <div class="modal-header"> People who have signed <a href="{{ petition.get_url }}"> {{ petition.title }} </a> </div>
+
+
+    <div class="signers-wrapper">
+        {% for x in petition.signers.all %}
+
+            {% include 'site/pieces/avatar_href.html' with user=x width="50" height="50" %}
+
+        {% endfor %}
+    </div>
+
+</div>

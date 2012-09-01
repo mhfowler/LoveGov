@@ -1,6 +1,47 @@
 // Create button click
 bind('td.create-button', 'click', function(e) {
-    getModal('create_modal');
+    getModal('create_modal', {}, function() {
+        $('div.create-modal > div').hide();
+        $('div.create-modal div.type-select').show();
+    });
+});
+
+// Create group link click
+bind('.create_group_link', 'click', function(e) {
+   getModal('create_modal', {}, function() {
+       $('div.create-modal > div').hide();
+       $('div.create-modal div.create-section.group').show();
+       $('div.create-modal div.create-section.group select.state-select').select2({
+           placeholder: 'Select a state to associate with this group.'
+       });
+   });
+});
+
+// Create scorecard link click
+bind('div.group-action.create_scorecard', 'click', function(e) {
+   var gid = $(this).data('g_id');
+   getModal('create_modal', {'gid': gid}, function() {
+        $('div.create-modal > div').hide();
+        $('div.create-modal div.create-section.scorecard').show();
+        $('div.create-modal div.create-section.scorecard select.group-select').select2({
+          "placeholder": "Select a group you moderate to post this scorecard to."
+        });
+        $('div.create-modal div.create-section.scorecard select.poll-select').select2({
+           "placeholder": "Select a poll for this scorecard."
+        });
+   });
+});
+
+// Create election link click
+bind('.create_election_link', 'click', function(e) {
+    getModal('create_modal', {}, function() {
+        $('div.create-modal > div').hide();
+        $('div.create-modal div.create-section.election').show();
+        evalDate.call($('div.create-modal input.date_autofill'));
+        $('div.create-modal div.create-section.election select.state-select').select2({
+            placeholder: 'Select a state to associate with this election.'
+        })
+    });
 });
 
 // Selection of type of content to create
@@ -25,23 +66,26 @@ bind("div.create-modal span.post-as", "click", function(e) {
 
 // Add questions to create poll
 bind("div.create-modal div.add-question", "click", function(e) {
+    var num_questions = getNumQuestions();
+    if(num_questions==1) {
+        // Adding another question - now it's a poll!
+        $('div.create-modal div.create-section.poll div.poll-form').fadeIn(500);
+    }
+    $(this).data('num-questions', num_questions+1);
    var newQuestion = $('div.create-modal div.question.model').clone();
     $('div.add-question').before(newQuestion);
     newQuestion.removeClass("model");
 });
 
+function getNumQuestions() {
+    return $(this).data('num-questions');
+}
+
 // Delete questions
 bind("div.create-modal div.questions span.remove", "click", function(e) {
     var hasContent = false;
     var question = $(this).closest("div.question");
-    question.find("input,textarea").each(function(i,e) {
-        if($(this).val()!='') {
-            hasContent = true;
-            // break loop
-            return false;
-        }
-    });
-    if (hasContent) {
+    if (isEmptyQuestion(question)) {
         if(confirm("Remove this question?")) {
             question.remove();
        }
@@ -50,31 +94,236 @@ bind("div.create-modal div.questions span.remove", "click", function(e) {
     }
 });
 
+function isEmptyQuestion(question) {
+    question.find("input,textarea").each(function(i,e) {
+        if($(this).val()!='') {
+            // break loop
+            return false;
+        }
+    });
+    return true;
+}
+
+// Show add source
+bind("div.create-modal div.questions span.add-source", "click", function(e) {
+   $(this).closest("div.question").children("div.question-source").toggle();
+});
+
+// "Save" button clicked
 bind("div.create-modal div.save", "click", function(e) {
     var section = $(this).closest('div.create-section');
-    var sectionType;
-    var types = ['discussion', 'poll', 'news', 'petition'];
-    for(var i=0; i<types.length; i++) {
-        if(section.hasClass(types[i])) {
-            sectionType = types[i];
-        }
-    }
-    var title = section.find("input.title").val();
-    var full_text = section.find("textarea.description").val();
-    var post_to = section.find("select.post-to").val();
-    var post_as = section.find("span.post-as.selected").data("poster");
-    var image =
-    action({
-       'data': {'action': 'createContent',
-                'sectionType': sectionType,
-                'title': title,
-                'full_text': full_text,
-                'post_to': post_to,
-                'post_as': post_as},
-       'success': function(data) {
-           var obj = eval('(' + data + ')');
-           window.location = obj.redirect;
-       }
+    var form = section.children("form");
 
-   })
+    var invalid = false;
+    var questions;
+
+    if(section.hasClass('discussion') ||
+        section.hasClass('petition') ||
+        section.hasClass('election') ||
+        section.hasClass('group') ||
+        section.hasClass('scorecard')) {
+            invalid = invalid || !validField('input.title', 'title', form);
+            invalid = invalid || !validField('textarea.description', 'description', form);
+    }
+
+    if(section.hasClass('news') ||
+        section.hasClass('discussion') ||
+        section.hasClass('petition') ||
+        section.hasClass('election') ||
+        section.hasClass('scorecard')) {
+            invalid = invalid || !validField('select.post_to', 'destination group', form);
+    }
+
+    if(section.hasClass('news')) {
+        invalid = invalid || !validField('input.link', 'link', form);
+    }
+
+    if(section.hasClass('election')) {
+        invalid = invalid || !validField('input.date_autofill', 'date', form);
+    }
+
+    if(section.hasClass('scorecard')) {
+        invalid = invalid || !validField('select.poll-select', 'poll', form);
+    }
+
+    if(section.hasClass('poll')) {
+        if(getPolltype()=='p') {
+            invalid = invalid || !validField('input.title', 'title', form);
+            invalid = invalid || !validField('textarea.description', 'description', form);
+        }
+        questions = extractQuestions();
+        invalid = invalid || questions.length < 1;
+    }
+
+    if(invalid) {
+        section.find('div.error_msg').hide().text("Some required fields were not filled in. Please fill them in.").fadeIn(500);
+        return false;
+    }
+
+
+
+    var post_as = section.find("span.post-as.selected").data("poster");
+    form.append('<input type="hidden" name="post_as" value="'+post_as+'">');
+
+    var topic = section.find("span.topic_button.selected").data("t_alias");
+    form.append('<input type="hidden" name="topic" value="'+topic+'">');
+
+    if(section.hasClass('news')) {
+        var screenshot = $('.news_link_selected').attr("src");
+        form.append('<input type="hidden" name="screenshot" value="'+screenshot+'">');
+    }
+
+    if(section.hasClass("poll")) {
+        var questions = extractQuestions();
+        questions = JSON.stringify(questions);
+        $('<input type="hidden" name="questions">').attr('value', questions).appendTo(form);
+
+
+    }
+
+    form.append('<input type="hidden" name="action" value="createContent">');
+    form.submit();
 });
+
+function validField(field, name, form) {
+    var fieldToFind = form.find(field);
+
+    if(fieldToFind.length > 0 && fieldToFind.val()=='') {
+        return false;
+    }
+    return true;
+}
+
+
+
+// extract questions and answers from the DOM
+function extractQuestions() {
+    var questionsList = [];
+    var questionsDiv = $('div.create-modal div.create-section.poll div.questions');""
+    questionsDiv.children("div.question:not(.model)").each(function() {
+       var q = {};
+       q['question'] = $(this).find('div.question-title input').val();
+       q['answers'] = [];
+       $(this).find('div.question-answers textarea').each(function() {
+          q['answers'].push($(this).val());
+       });
+       q['source'] = $(this).find('div.question-source input').val();
+        questionsList.push(q);
+    });
+    return questionsList;
+}
+
+
+function getLinkInfo(link, input) {
+    if(link=='') return;
+    // check cache
+    if(input.data('last-link')==link) return;
+    // cache link to prevent double get
+    input.data('last-link', link);
+    input.parent().append('<img src="http://local.lovegov.com:8000/static/images/ajax-spinner.gif" class="loading-gif">')
+
+    action({
+        data: {'action':'getLinkInfo','remote_url':link},
+        success: function(data)
+        {
+            var obj = eval('(' + data + ')');
+            $("div.create-modal div.create-section.news div.link-image div.field").html(obj.html);
+            image_count = $('.news_link_image_container').children().length;
+        },
+        complete: function() {
+            // remove loading spinner
+            input.parent().children('img.loading-gif').remove();
+        }
+    });
+}
+
+bind("div.create-modal div.create-section.news input.link", "blur", function(e) {
+    var text = $(this).val();
+    getLinkInfo(text, $(this));
+});
+
+bind("div.create-modal div.create-section.news input.link", "keypress", function(e) {
+    var text = $(this).val();
+    if(e.keyCode==13) {
+        e.preventDefault();
+        getLinkInfo(text, $(this));
+    }
+});
+
+bind("div.create-modal span.topic_button", "click", function(e) {
+    if($(this).hasClass('selected')) {
+        $(this).removeClass('selected');
+    } else {
+        $(this).siblings("span.topic_button").removeClass("selected");
+        $(this).addClass("selected");
+    }
+})
+
+function selectImageToggle() {
+    $('#cycle-img-span').text(currentLink + " / " + image_count);
+    $('.news_link_image').removeClass("news_link_selected").hide();
+    $('.news_link_image').eq(currentLink-1).addClass("news_link_selected").show();
+}
+
+var currentLink = 1;
+var image_count;
+bind('#cycle-img-left','click',function(e) {
+    e.preventDefault();
+    if (currentLink-1 < 1) { currentLink = image_count; }
+    else { currentLink--; }
+    selectImageToggle();
+});
+
+bind('#cycle-img-right','click',function(e) {
+    e.preventDefault();
+    if (currentLink+1 > image_count) { currentLink = 1; }
+    else { currentLink++; }
+    selectImageToggle();
+});
+
+bind("div.create-modal input.date_autofill", "keyup", evalDate);
+
+// click switch to Poll question type
+bind('div.create-modal div.create-section.poll input:radio[value="p"]', "click", switchToPoll);
+
+bind('div.create-modal div.create-section.poll input:radio[value="q"]', "click", switchToQuestion);
+
+function switchToPoll() {
+    $('div.create-modal div.create-section.poll div.poll-form').fadeIn(200);
+}
+
+function switchToQuestion() {
+    $('div.create-modal div.create-section.poll div.poll-form').fadeOut(200);
+}
+
+function getPolltype() {
+    return $('div.create-modal div.create-section.poll input:radio[name="polltype"]:checked').val();
+}
+
+function evalDate() {
+    var
+        messages = ["Nope", "Keep trying", "Nada", "Sorry", "Bummer", "Whoops",
+        "Snafu", "Blunder", "Almost there", "Invalid date", "Whoopsie daisy", "Try again",
+        "I don't understand", "No comprendo", "That doesn't work", "Your input is bad and you should feel bad"];
+    var val = $(this).val();
+    var datelabel = $(this).siblings("span.date_autofill_label");
+    var gendate = $(this).siblings('input[name="gendate"]');
+    if(val=='') {
+        datelabel.text('');
+        return;
+    }
+    var dobj = Date.parse(val);
+    if(dobj==null) {
+        var randMsg = messages[Math.round(messages.length * Math.random())] + "...";
+        datelabel.text(randMsg);
+        datelabel.removeClass("goodinput");
+        gendate.val('');
+    } else {
+        var dt = dobj.toString('dddd, MMMM d, yyyy');
+        datelabel.text('✓ '+dt);
+        datelabel.addClass("goodinput");
+        var dategenval = dobj.toString('yyyy-MM-dd')
+        gendate.val(dategenval);
+
+    }
+}

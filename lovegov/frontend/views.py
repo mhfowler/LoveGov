@@ -11,6 +11,8 @@ from lovegov.frontend.views_helpers import *
 
 from pprint import pprint
 
+from datetime import datetime, timedelta
+
 #-----------------------------------------------------------------------------------------------------------------------
 # Convenience method which returns a simple nice looking message in a frame
 #-----------------------------------------------------------------------------------------------------------------------
@@ -40,6 +42,7 @@ def framedResponse(request, html, url, vals={}, rebind="home"):
         return renderToResponseCSRF(template='site/frame/frame.html', vals=vals, request=request)
 
 def homeResponse(request, focus_html, url, vals):
+    vals['home_link'] = True
     if request.is_ajax() and request.method == 'POST':
             to_return = {'focus_html':focus_html, 'url':url, 'title':vals['page_title']}
             return HttpResponse(json.dumps(to_return))
@@ -82,6 +85,9 @@ def viewWrapper(view, requires_login=False):
             # page info
             vals['to_page'] = request.path.replace('/login', '')
             vals['page_title'] = "LoveGov: Beta"
+
+            # privacy
+            vals['anonymous_mode'] = getPrivacy(request) == "PRI"
 
             # helper for key stroke sequences
             vals['sequence'] = [0]
@@ -166,6 +172,9 @@ def tryLoveGov(request, to_page="home/", vals={}):
     response = shortcuts.redirect("/" + to_page)
     response.set_cookie('lovegov_try', 1)
     return response
+
+def unsubscribe(request, vals={}):
+    return HttpResponse("You have unsubscribed from LoveGov emails.")
 
 #-----------------------------------------------------------------------------------------------------------------------
 # da blog
@@ -434,22 +443,25 @@ def compareWeb(request,alias=None,vals={}):
 
 
 #-----------------------------------------------------------------------------------------------------------------------
-# MAIN HOME PAGES
+# MAIN PAGES
 #-----------------------------------------------------------------------------------------------------------------------
 def home(request, vals):
+    valsDismissibleHeader(request, vals)
     focus_html =  ajaxRender('site/pages/home/home.html', vals, request)
     url = request.path
     return homeResponse(request, focus_html, url, vals)
 
-def groups(request, vals):
+def myGroups(request, vals):
     viewer = vals['viewer']
     vals['group_subscriptions'] = viewer.getGroupSubscriptions()
-    focus_html =  ajaxRender('site/pages/groups/groups.html', vals, request)
+    focus_html =  ajaxRender('site/pages/groups/my_groups.html', vals, request)
     url = request.path
     return homeResponse(request, focus_html, url, vals)
 
-def elections(request, vals):
-    focus_html =  ajaxRender('site/pages/browse/browse_elections.html', vals, request)
+def myElections(request, vals):
+    viewer = vals['viewer']
+    vals['group_subscriptions'] = viewer.getGroupSubscriptions()
+    focus_html =  ajaxRender('site/pages/elections/my_elections.html', vals, request)
     url = request.path
     return homeResponse(request, focus_html, url, vals)
 
@@ -458,46 +470,18 @@ def politicians(request, vals):
     url = request.path
     return homeResponse(request, focus_html, url, vals)
 
-def presidential(request, vals):
-    focus_html =  ajaxRender('site/pages/politicians/presidential.html', vals, request)
-    url = request.path
-    return homeResponse(request, focus_html, url, vals)
-
 def representatives(request, vals):
-
-    viewer = vals['viewer']
-    location = viewer.temp_location or viewer.location
-    vals['location'] = location
-
-    congressmen = []
-    if location:
-        vals['state'] = location.state
-        vals['district'] = location.district
-        vals['latitude'] = location.latitude
-        vals['longitude'] = location.longitude
-        if location.state:
-            senators = getSensFromState(location.state)
-            for s in senators:
-                congressmen.append(s)
-            if location.district:
-                reps = getRepsFromLocation(location.state, location.district)
-                for r in reps:
-                    congressmen.append(r)
-    if LOCAL and location:
-        congressmen = [getUser("Randy Johnson"), getUser("Katy Perry"), getUser("Joseph Stalin")]
-    vals['congressmen'] = congressmen
-    for x in congressmen:
-        x.comparison = x.getComparison(viewer)
-    congressmen.sort(key=lambda x:x.comparison.result,reverse=True)
-    if len(congressmen) < 3:
-        vals['few_congressmen'] = True
-
+    valsRepsHeader(vals)
     focus_html =  ajaxRender('site/pages/politicians/representatives.html', vals, request)
     url = request.path
     return homeResponse(request, focus_html, url, vals)
 
-def congress(request, vals):
-    focus_html =  ajaxRender('site/pages/politicians/congress.html', vals, request)
+def discover(request, vals):
+    u_ids = UserProfile.objects.all().values_list("id", flat=True)
+    u_id = random.choice(u_ids)
+    u = UserProfile.objects.get(id=u_id)
+    vals['rando'] = u
+    focus_html =  ajaxRender('site/pages/discover/discover.html', vals, request)
     url = request.path
     return homeResponse(request, focus_html, url, vals)
 
@@ -506,46 +490,62 @@ def congress(request, vals):
 # friends focus (home page)
 #-----------------------------------------------------------------------------------------------------------------------
 def friends(request, vals):
-    class FBFriend:
-        pass
-
     viewer = vals['viewer']
-
-    if viewer.facebook_id:
-        friends_list = fbGet(request,'me/friends/')['data']
-        vals['facebook_authorized'] = False
-        if friends_list:
-            vals['facebook_authorized'] = True
-            fb_friends = []
-            for friend in friends_list[:4]:
-                fb_friend = FBFriend()
-                fb_friend.name = friend['name']
-                fb_friend.id = friend['id']
-                fb_friend.picture_url = "https://graph.facebook.com/" + str(fb_friend.id) + "/picture?type=large"
-                fb_friends.append(fb_friend)
-
-                vals['facebook_friends'] = fb_friends
+    friends = list(viewer.getIFollow())
+    vals['i_follow'] = viewer.i_follow
+    friends = random.sample(friends, min(9, len(friends)))
+    vals['friends'] = friends
+    for f in friends:
+        f.comparison = f.getComparison(viewer)
+    friends.sort(key=lambda x:x.comparison.result,reverse=True)
     focus_html =  ajaxRender('site/pages/friends/friends.html', vals, request)
     url = request.path
     return homeResponse(request, focus_html, url, vals)
 
+#-----------------------------------------------------------------------------------------------------------------------
+# question answering center
+#-----------------------------------------------------------------------------------------------------------------------
 def questions(request, vals={}):
 
     getMainTopics(vals)
-    getQuestionStats(vals)
 
-    html =  ajaxRender('site/pages/qa/questions.html', vals, request)
+    lgpoll = getLoveGovPoll()
+    vals['lgpoll'] = lgpoll
+    getQuestionStats(vals, lgpoll)
+
+    html =  ajaxRender('site/pages/qa/qa.html', vals, request)
     url = request.path
-    return framedResponse(request, html, url, vals, rebind="questions")
+    return homeResponse(request, html, url, vals)
 
 #-----------------------------------------------------------------------------------------------------------------------
 # browse all
 #-----------------------------------------------------------------------------------------------------------------------
 def browseGroups(request, vals={}):
 
-    html =  ajaxRender('site/pages/browse/browse_groups.html', vals, request)
+    # Render and return HTML
+    getStateTuples(vals)
+    focus_html =  ajaxRender('site/pages/groups/all_groups.html', vals, request)
     url = request.path
-    return framedResponse(request, html, url, vals, rebind="browse")
+    return homeResponse(request, focus_html, url, vals)
+
+
+def browseElections(request, vals):
+    # Render and return HTML
+    getStateTuples(vals)
+    focus_html =  ajaxRender('site/pages/browse/browse_elections.html', vals, request)
+    url = request.path
+    return homeResponse(request, focus_html, url, vals)
+
+
+def politicians(request, vals):
+    viewer = vals['viewer']
+    getStateTuples(vals)
+    valsRepsHeader(vals)
+    valsGroup(viewer, getCongressGroup(), vals)
+    focus_html =  ajaxRender('site/pages/politicians/politicians.html', vals, request)
+    url = request.path
+    return homeResponse(request, focus_html, url, vals)
+
 
 #-----------------------------------------------------------------------------------------------------------------------
 # group detail
@@ -554,6 +554,7 @@ def groupPage(request, g_alias, vals={}):
     # Get the group and current viewer
     viewer = vals['viewer']
     group = Group.objects.get(alias=g_alias)
+    group.setNewContentSeen(viewer)
     vals['group'] = group
     if group.group_type=="E":
         return electionPage(request, group.downcast(), vals)
@@ -566,9 +567,7 @@ def groupPage(request, g_alias, vals={}):
     url = group.get_url()
     return homeResponse(request, focus_html, url, vals)
 
-#-----------------------------------------------------------------------------------------------------------------------
-# election detail
-#-----------------------------------------------------------------------------------------------------------------------
+
 def electionPage(request, election, vals={}):
 
     viewer = vals['viewer']
@@ -576,6 +575,27 @@ def electionPage(request, election, vals={}):
 
     # render and return html
     focus_html =  ajaxRender('site/pages/elections/election_focus.html', vals, request)
+    url = request.path
+    return homeResponse(request, focus_html, url, vals)
+
+#-----------------------------------------------------------------------------------------------------------------------
+# like-minded group page
+#-----------------------------------------------------------------------------------------------------------------------
+def likeMinded(request, vals={}):
+
+    viewer = vals['viewer']
+    like_minded = viewer.getLikeMindedGroup()
+    if not like_minded:
+        getMainTopics(vals)     # for question answering
+    else:
+        members = like_minded.members.all()
+        vals['num_members'] = len(members)
+        vals['members'] = members
+        vals['num_processed'] = like_minded.processed.count()
+    vals['like_minded'] = like_minded
+
+    # render and return html
+    focus_html =  ajaxRender('site/pages/groups/like_minded.html', vals, request)
     url = request.path
     return homeResponse(request, focus_html, url, vals)
 
@@ -604,13 +624,19 @@ def profile(request, alias=None, vals={}):
             vals['is_user_confirmed'] = True
         if user_follow.rejected:
             vals['is_user_rejected'] = True
-    
+
     vals['profile_groups'] = user_profile.getRealGroups()[:4]
     vals['profile_politicians'] = user_profile.getPoliticians()
 
     comparison, web_json = user_profile.getComparisonJSON(viewer)
     vals['web_comparison'] = comparison
     vals['web_json'] = web_json
+
+    # check if user is my rep
+    if user_profile.politician:
+        reps = viewer.getRepresentatives(viewer.location)
+        if reps:
+            vals['my_rep'] = user_profile in reps
 
     # Num Follow requests and group invites
     if viewer.id == user_profile.id:
@@ -647,7 +673,6 @@ def thread(request, c_id, vals={}):
     if not content:
         return HttpResponse("The indicated content item does not exist.")
     vals['content'] = content
-    vals['thread_html'], vals['num_rendered'] = makeThread(request, content, vals['viewer'], vals=vals, limit=0)
     html = ajaxRender('site/pieces/thread.html', vals, request)
     url = request.path
     return framedResponse(request, html, url, vals)
@@ -723,6 +748,7 @@ def questionDetail(request, q_id=None, vals={}):
             friends_answered.append(f)
     vals['friends_answered'] = friends_answered
 
+    contentDetail(request, question, vals)
     html = ajaxRender('site/pages/content_detail/question_detail.html', vals, request)
     url = vals['question'].get_url()
     return framedResponse(request, html, url, vals)
@@ -737,11 +763,9 @@ def pollDetail(request, p_id=-1, vals={}):
     vals['poll'] = poll
     contentDetail(request, poll, vals)
 
-    q_items = getQuestionItems(viewer, 'B', p_id=poll.id, num=None)
-    vals['q_items'] = q_items
-
-    poll_progress = getPollProgress(viewer, poll)
+    poll_progress = poll.getPollProgress(viewer)
     vals['poll_progress'] = poll_progress
+    getMainTopics(vals)
 
     html = ajaxRender('site/pages/content_detail/poll_detail.html', vals, request)
     url = poll.get_url()
@@ -908,27 +932,46 @@ def groupEdit(request, g_alias=None, section="", vals={}):
 #-----------------------------------------------------------------------------------------------------------------------
 # Legislation-related pages
 #-----------------------------------------------------------------------------------------------------------------------
-def legislation(request, session=None, type=None, number=None, vals={}):
-    vals['session'], vals['type'], vals['number'] = session, type, number
-    if session==None:
-        vals['sessions'] = [x['congress_session'] for x in Legislation.objects.values('congress_session').distinct()]
-        return renderToResponseCSRF(template='site/pages/legislation/legislation.html', vals=vals, request=request)
-    legs = Legislation.objects.filter(congress_session=session)
-    if type==None:
-        type_list = [x['bill_type'] for x in Legislation.objects.filter(congress_session=session).values('bill_type').distinct()]
-        vals['types'] = [(x, BILL_TYPES[x]) for x in type_list]
-        return renderToResponseCSRF(template='site/pages/legislation/legislation-session.html', vals=vals, request=request)
-    if number==None:
-        vals['numbers'] = [x['bill_number'] for x in Legislation.objects.filter(congress_session=session, bill_type=type).values('bill_number').distinct()]
-        return renderToResponseCSRF(template='site/pages/legislation/legislation-type.html', vals=vals, request=request)
-    legs = Legislation.objects.filter(congress_session=session, bill_type=type, bill_number=number)
-    if len(legs)==0:
-        vals['error'] = "No legislation found with the given parameters."
-    else:
-        leg = legs[0]
-        vals['leg_titles'] = leg.legislationtitle_set.all()
-        vals['leg'] = leg
-    return renderToResponseCSRF(template='site/pages/legislation/legislation-view.html', vals=vals, request=request)
+def legislation (request, vals={}):
+
+    vals['legislation_items'] = Legislation.objects.all()
+    vals['sessions'] = CongressSession.objects.all().order_by("-session")
+    type_list = [x['bill_type'] for x in Legislation.objects.values('bill_type').distinct()]
+    vals['types'] = [{'abbreviation': x, 'verbose': BILL_TYPES[x]} for x in type_list]
+    vals['subjects'] = LegislationSubject.objects.all()
+    vals['committees'] = Committee.objects.distinct().filter(legislation_committees__isnull=False)
+    vals['bill_numbers'] = [x['bill_number'] for x in Legislation.objects.values('bill_number').distinct()]
+
+    now = datetime.now()
+    time_range = [183,366,732,1464]
+    introduced_dates = []
+    for x in time_range:
+        date = now - timedelta(days=x)
+        json_date = json.dumps({'year':date.year, 'month':date.month, 'day':date.day})
+        date_tuple = {'json':json_date, 'date':date}
+        introduced_dates.append(date_tuple)
+    vals['introduced_dates'] = introduced_dates
+
+    vals['sponsors'] = UserProfile.objects.distinct().filter(sponsored_legislation__isnull=False)
+    vals['sponsor_parties'] = Party.objects.filter(parties__sponsored_legislation__isnull=False).distinct()
+
+    return renderToResponseCSRF(template='site/pages/legislation/legislation.html', request=request, vals=vals)
+
+
+#-----------------------------------------------------------------------------------------------------------------------
+# legislation detail
+#-----------------------------------------------------------------------------------------------------------------------
+def legislationDetail(request, l_id, vals={}):
+    legislation = Legislation.objects.get(id=l_id)
+    vals['l'] = legislation
+    vals['actions'] = legislation.legislation_actions.all().order_by("-datetime")
+    vals['related'] = legislation.bill_relation.all()
+    # vals['second_body'] = legislation.filter(state_text__icontains='PASSED', bill_relation_state_text_isnull=False)
+    # vals['first_body'] =
+    contentDetail(request, legislation, vals)
+    html = ajaxRender('site/pages/content_detail/legislation_detail.html', vals, request)
+    url = legislation.get_url
+    return framedResponse(request, html, url, vals)
 
 #-----------------------------------------------------------------------------------------------------------------------
 # facebook accept
@@ -1050,3 +1093,68 @@ def search(request, term='', vals={}):
     html = ajaxRender('site/pages/search/search.html', vals, request)
     url = '/search/' + term
     return framedResponse(request, html, url, vals)
+
+#-----------------------------------------------------------------------------------------------------------------------
+# Scorecards
+#-----------------------------------------------------------------------------------------------------------------------
+def scorecardDetail(request, s_id, vals={}):
+
+    viewer = vals['viewer']
+    scorecard = Scorecard.objects.get(id=s_id)
+    vals['scorecard'] = scorecard
+
+    reps = viewer.getRepresentatives()
+    politicians = scorecard.politicians.all().order_by("-num_supporters")
+    for r in reps:
+        r.comparison = scorecard.getComparison(r)
+        r.scorecard_comparison_url = scorecard.getScorecardComparisonURL(r)
+    for p in politicians:
+        p.comparison = scorecard.getComparison(p)
+        p.scorecard_comparison_url = scorecard.getScorecardComparisonURL(p)
+
+    vals['representatives'] = reps
+    vals['politicians'] = politicians
+
+    vals['i_can_edit'] = scorecard.getPermissionToEdit(viewer)
+
+    contentDetail(request=request, content=scorecard, vals=vals)
+    html = ajaxRender('site/pages/content_detail/scorecards/scorecard_detail.html', vals, request)
+    url = scorecard.get_url()
+    return framedResponse(request, html, url, vals)
+
+def scorecardEdit(request, s_id, vals={}):
+
+    viewer = vals['viewer']
+    scorecard = Scorecard.objects.get(id=s_id)
+    vals['scorecard'] = scorecard
+    permission = scorecard.getPermissionToEdit(viewer)
+    if permission:
+        getMainTopics(vals)
+        vals['editing_scorecard'] = True
+        vals['i_can_edit'] = permission
+        contentDetail(request=request, content=scorecard, vals=vals)
+        html = ajaxRender('site/pages/content_detail/scorecards/scorecard_edit.html', vals, request)
+        url = scorecard.get_url()
+        return framedResponse(request, html, url, vals)
+    else:
+        LGException(str(viewer.id) + " is trying to edit scorecard without permission." + str(scorecard.id))
+        return HttpResponse("you dont have permissinon to edit this scorecard")
+
+
+def scorecardCompare(request, s_id, p_alias, vals={}):
+    viewer = vals['viewer']
+    scorecard = Scorecard.objects.get(id=s_id)
+    vals['scorecard'] = scorecard
+
+    to_compare = UserProfile.objects.get(alias=p_alias)
+    vals['to_compare'] = to_compare
+    to_compare.comparison = scorecard.getComparison(to_compare)
+    getMainTopics(vals)
+
+    html = ajaxRender('site/pages/content_detail/scorecards/scorecard_compare.html', vals, request)
+    url = scorecard.get_url()
+    return framedResponse(request, html, url, vals)
+
+def scorecardMe(request, s_id, vals={}):
+    viewer = vals['viewer']
+    return scorecardCompare(request, s_id, viewer.alias, vals)

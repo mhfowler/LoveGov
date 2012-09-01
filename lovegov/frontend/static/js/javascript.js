@@ -5,114 +5,106 @@
  ***********************************************************************************************************************/
 var rebind;
 function bindOnReload() {
+
+    // things that get bound on items loaded by feeds and such (everything)
     bindOnNewElements();
+
+    // ajax get fb friends for sidebar after page load
+    getFBInviteFriends();
+
+    // any feeds on the page, go get themselves
+    refreshFeeds();
+
+    // for all home pages
+    navSectionOpenAll();
+    initHomePage();
+
+    // for reps page
+    loadGoogleMap();
+
+    // misc
+    bindNotificationsDropdownClickOutside();
+
     switch (rebind) {
+
+        case "home": initHomePage(); break;
+        case "profile": initFeed(); break;
+        case "legislation":
+            shortenLongText();
+            showLegSelectors();
+            showSelectors();
+            loadBillSelect2();
+            break;
+        case "legislation-view":
+            shortenLongText(); break;
+        case "legislation_detail":
+            shortenLongText(); break;
         case "home":
-            initFeed();
             break;
         case "profile":
-            initFeed();
             break;
         case "groupedit":
             loadGroupEdit();
             break;
         case 'questions':
-            initFeed();
             break;
         case 'question_detail':
-            bindImportanceSliders();
+            updateQuestionStubsDisplay();
             break;
         case 'poll_detail':
-            bindImportanceSliders();
+            updateQuestionStubsDisplay();
             break;
         case 'browse':
-            initFeed();
-            break;
-        case 'representatives':
-            loadGoogleMap();
             break;
     }
-
 }
 
-function undelegated() {
-    var undelegated = $('.dummy_link');
-    undelegated.bindOnce('click.undelegate', function(event) {
-        event.preventDefault();
-    });
-}
-
+/* gets called on all new elements appended to dom */
 function bindOnNewElements() {
+
+    // dummy_links are prevent defaulted
     undelegated();
+
+    // hover comparison popup
     loadHoverComparison();
-    initHomePage();
+
+    // all histogram go get themselves  (because there is a feed of groups, this must be here)
     loadHistograms();
+
+    // all expandable headers set themselves to correct starting height
     $.each($(".expandable_wrapper"), function(i,e) {
         setInfoHeight($(this));
     });
-    bindNotificationsDropdownClickOutside();
+
+    // poll feed items autoswitch
     pollAutoSwitch();
+
+    // comparison webs initialize
     comparisonWebs();
-    updateQuestionStubsDisplay();
+
+    // bind select2s
+    bindSelect2s();
+
+    // question stubs
+    bindImportanceSliders();
+
+    // tool tips
+    bindTooltips();
 }
 
-var poll_autoswitch;
-function pollAutoSwitch() {
-    clearInterval(poll_autoswitch);
-    /*
-     poll_autoswitch= setInterval(function()
-     {
-     cyclePollQuestions();
-     }, 5000); */
-}
-
-function comparisonWebs() {
-    $.each($(".web_comparison"), function(i,e) {
-        $(this).visualComparison();
-    });
-}
 
 /***********************************************************************************************************************
  *
- *     ~Delegated binding function, similar to jquery's deprecated ".live()"
+ *     ~document.ready() of initial page load
  *
  ***********************************************************************************************************************/
-function bind(selector, events, data, handler) {
-    $(document).on(events, selector, data, handler);
-}
 
-function action(dict) {
-    var data = dict['data'];
-    var success_fun = function(data) {
-        var super_success = dict['success'];
-        if (super_success) {
-            super_success(data);
-        }
-        undelegated();
-    };
-    var error_fun = function(jqXHR, textStatus, errorThrown) {
-        if(jqXHR.status==403) {
-            //launch403Modal(jqXHR.responseText);
-            return;
-        }
-        var super_error = dict['error'];
-        if (super_error) {
-            super_error();
-        } else {
-            $("body").html(jqXHR.responseText);
-        }
-    };
-    data['url'] = window.location.href;
-    $.ajax({
-        url: '/action/',
-        type: 'POST',
-        data: data,
-        success: success_fun,
-        error: error_fun
-    });
-}
+
+
 
 var auto_update_page;
+
+
 $(document).ready(function()
 {
     // csrf protect
@@ -124,8 +116,7 @@ $(document).ready(function()
     // Prepare
     var History = window.History; // Note: We are using a capital H instead of a lower h
     if ( !History.enabled )
-    {
-        // History.js is disabled for this browser.
+    {        // History.js is disabled for this browser.
         // This is because we can optionally choose to support HTML4 browsers or not.
         return false;
     }
@@ -145,16 +136,83 @@ $(document).ready(function()
 
     // init page with js
     bindOnReload();
-    bindTooltips();
 
-    // check for notifications on schedule
+    // auto page update every minute (check for notifications)
     clearInterval(auto_update_page);
     auto_update_page= setInterval(function()
     {
         updatePage();
     }, 60000);
-
 });
+
+var auto_update_page;
+
+
+/***********************************************************************************************************************
+ *
+ *     ~Delegated binding function, similar to jquery's deprecated ".live()"
+ *
+ ***********************************************************************************************************************/
+function bind(selector, events, data, handler) {
+    $(document).on(events, selector, data, handler);
+}
+
+function getValueFromKey(element, key) {
+    var value = element.data(key);
+    if (typeof(value) == 'undefined') {
+        value = "";
+    }
+    return value;
+}
+
+var current_page_nonce=0;
+function action(dict) {
+    var data = dict['data'];
+    var pre_page_nonce = current_page_nonce;
+    var success_fun = function(data) {
+        if (pre_page_nonce == current_page_nonce) {
+            var super_success = dict['success'];
+            if (super_success) {
+                super_success(data);
+            }
+            undelegated();
+        }
+    };
+    var error_fun = function(jqXHR, textStatus, errorThrown) {
+        if (pre_page_nonce == current_page_nonce) {
+            if(jqXHR.status==403) {
+                //launch403Modal(jqXHR.responseText);
+                return;
+            }
+            var super_error = dict['error'];
+            if (super_error) {
+                super_error();
+            } else {
+                $("body").html(jqXHR.responseText);
+            }
+        }
+    };
+    var complete_fun = dict['complete'];
+    data['url'] = window.location.href;
+    $.ajax({
+        url: '/action/',
+        type: 'POST',
+        data: data,
+        success: success_fun,
+        error: error_fun,
+        complete: complete_fun
+    });
+}
+
+function smoothTransition(element, fun, time) {
+    var old_height = element.height();
+    fun();
+    var new_height = element.height();
+    element.css("height", old_height);
+    element.css('height', old_height);
+    element.animate({"height":new_height}, {"duration":time, "complete":function(){element.css("height", "auto");}});
+}
+
 
 function updatePage() {
     action({
@@ -165,11 +223,88 @@ function updatePage() {
 
             // update notifications num
             $(".notifications_dropdown_button").text(obj.notifications_num);
-        },
-        error: function(jqXHR, textStatus, errorThrown)
-        {
-            $('body').html(jqXHR.responseText);
         }
+    });
+}
+
+/***********************************************************************************************************************
+ *
+ *      ~Ajax links
+ *
+ ***********************************************************************************************************************/
+bind(".header_link", 'click', null, function(event) {
+        $(".header_link").removeClass("clicked");
+        $(this).addClass("clicked");
+});
+
+bind(".do_ajax_link", 'click', null, function(event) {
+    ajaxReload($(this).attr("href"), true);
+});
+
+function ajaxReload(theurl, loadimg)
+{
+    current_page_nonce += 1;
+    var pre_page_nonce = current_page_nonce;
+    $('#search-dropdown').hide();
+    $('.main_content').hide();
+    if (theurl == "/about/") { var timeout = setTimeout(function(){$(".page_loading").show();},0); }
+    $.ajax
+        ({
+            url:theurl,
+            type: 'GET',
+            data: {'url':window.location.href},
+            success: function(data)
+            {
+                if (pre_page_nonce == current_page_nonce) {
+                    var returned = eval('(' + data + ')');
+                    History.pushState( {k:1}, "LoveGov: Beta", returned.url);
+                    if (theurl=="/about/") {
+                        clearTimeout(timeout);
+                        setTimeout(function() {$(".page_loading").fadeOut();}, 600);
+                    }
+                    $('body').css("overflow","scroll");
+                    $('.main_content').css("top","0px");
+                    $(".main_content").html(returned.html);
+                    $('.main_content').show();
+                    rebind = returned.rebind;
+                    path = returned.url;
+                    bindOnReload();
+                }
+            },
+            error: function(jqXHR, textStatus, errorThrown)
+            {
+                if (pre_page_nonce == current_page_nonce) {
+                    $('body').html(jqXHR.responseText);
+                }
+            }
+        });
+}
+
+/***********************************************************************************************************************
+ *
+ *     ~random helpers/bindings
+ *
+ ***********************************************************************************************************************/
+function undelegated() {
+    var undelegated = $('.dummy_link');
+    undelegated.bindOnce('click.undelegate', function(event) {
+        event.preventDefault();
+    });
+}
+
+var poll_autoswitch;
+function pollAutoSwitch() {
+    clearInterval(poll_autoswitch);
+    /*
+     poll_autoswitch= setInterval(function()
+     {
+     cyclePollQuestions();
+     }, 5000); */
+}
+
+function comparisonWebs() {
+    $.each($(".web_comparison"), function(i,e) {
+        $(this).visualComparison();
     });
 }
 
@@ -177,26 +312,26 @@ function updatePage() {
 function initHomePage() {
     var navlink = getNavLink(path);
     selectNavLink(navlink);
+    initFeedParameters();
 }
 
-/* does a get request for all feeds on page */
-function initFeed() {
+/* sets feed parameters pased on js variables */
+function initFeedParameters() {
     selectRank(feed_rank);
     selectQuestionRank(question_rank);
     $.each(feed_types, function(i, e) {
         selectType(e);
     });
+}
+
+/* does a get request for all feeds on page */
+function refreshFeeds() {
     $.each($(".feed_main"), function(i,e) {
         refreshFeed($(this));
     });
 }
 
-/***********************************************************************************************************************
- *
- *      ~Check browser compatibility using Modernizr
- *
- ***********************************************************************************************************************/
-
+/* check browser compatability using modernizer */
 function checkCompatability() {
     var compatability_cookie =  $.cookie('compatability');
     if (compatability_cookie == null) {
@@ -216,6 +351,20 @@ function checkCompatability() {
     }
 }
 
+/* binds all select 2s */
+function bindSelect2s() {
+    $('select.select_2').each(function(i,e) {
+        var placeholder = $(this).data("placeholder");
+        if (typeof(placeholder)!='undefined') {
+            $(this).select2({
+                placeholder: placeholder
+            });
+        } else {
+            $(this).select2();
+        }
+    });
+}
+
 /***********************************************************************************************************************
  *
  *      ~Bind popovers
@@ -223,23 +372,98 @@ function checkCompatability() {
  ***********************************************************************************************************************/
 
 function bindTooltips() {
-    $('body').tooltip({'selector': '.tooltip-top', 'placement': 'top'});
-    $("body").tooltip({'selector': '.tooltip-right', 'placement': 'right'});
-    $("body").tooltip({'selector': '.tooltip-left', 'placement': 'left'});
-    $("body").tooltip({'selector': '.tooltip-bottom', 'placement': 'bottom'});
+    /*
+     $('body').tooltip({'selector': '.tooltip-top', 'placement': 'top'});
+     $("body").tooltip({'selector': '.tooltip-right', 'placement': 'right'});
+     $("body").tooltip({'selector': '.tooltip-left', 'placement': 'left'});
+     $("body").tooltip({'selector': '.tooltip-bottom', 'placement': 'bottom'});
+     */
+
+    $(".tooltip-top").tooltip({'placement': 'top', 'animation': 'true'});
+    $(".tooltip-bottom").tooltip({'placement': 'bottom', 'animation': 'true'});
+    $(".tooltip-right").tooltip({'placement': 'right', 'animation': 'true'});
+    $(".tooltip-left").tooltip({'placement': 'left', 'animation': 'true'});
 }
 
 bind(".bind_link", "click", null, function(event) {
-    event.preventDefault();
     var url = $(this).data('url');
     window.location.href = url;
+    event.stopPropagation();
 });
+
 
 /***********************************************************************************************************************
  *
  *      ~Home
  *
  ***********************************************************************************************************************/
+/* ajax load home sections */
+function homeReload(theurl) {
+    current_page_nonce += 1;
+    var pre_page_nonce = current_page_nonce;
+    $('#search-dropdown').hide();
+    $(".home_reloading").show();
+
+    // if coming from a home page
+    if ($(".home_sidebar").length!=0) {
+        $.ajax
+            ({
+                url:theurl,
+                type: 'POST',
+                data: {'url':window.location.href},
+                success: function(data)
+                {
+                    if (pre_page_nonce == current_page_nonce) {
+                        $(".home_reloading").hide();
+                        var returned = eval('(' + data + ')');
+                        History.pushState( {k:1}, "LoveGov: Beta", returned.url);
+                        path = returned.url;
+                        $(".home_focus").html(returned.focus_html);
+                        bindOnReload();
+                    }
+                },
+                error: function(jqXHR, textStatus, errorThrown)
+                {
+                    if (pre_page_nonce == current_page_nonce) {
+                        $('body').html(jqXHR.responseText);
+                    }
+                }
+            });
+    }
+    else {
+        ajaxReload(theurl, "crazy");
+    }
+}
+
+/* move asterisk, when section is selected */
+function moveAsterisk(to_where) {
+    if (to_where.length!=0) {
+        if (to_where.hasClass("navbar_link")) {
+            var offset = -4;
+        } else {
+            offset = to_where.height()/2;
+        }
+        var position = to_where.offset();
+        var top = position.top - offset;
+        var left = position.left - 40;
+        $(".asterisk_pointer").animate({'top':top, 'left':left}, 100);
+    }
+}
+
+/* fill fb invite sidebar after page load */
+function getFBInviteFriends() {
+    var invite_wrapper = $(".fb_friends_wrapper");
+    if (invite_wrapper.length!=0) {
+        action({
+            data: {'action':'getFBInviteFriends' },
+            success: function(data)
+            {
+                var returned = eval('(' + data + ')');
+                invite_wrapper.html(returned.html)
+            }
+        });
+    }
+}
 
 /* red triangle toggles navsection options */
 bind(".red_triangle", 'click', null, function(event) {
@@ -254,19 +478,28 @@ bind(".red_triangle", 'click', null, function(event) {
 
 /* reload home page, by just replacing focus */
 bind(".home_link", 'click', null, function(event) {
-    var navbar_section = $(this).parents(".navbar_section");
-    event.preventDefault();
+    $(".left_link").removeClass("clicked");
+    homeReload($(this).attr("href"));
+
+    /*
+     //var navbar_section = $(this).parents(".navbar_section");
+     if (!$(this).hasClass("clicked")) {
+     //selectNavLink($(this));
+     //closeAllNavBarSections();
+     homeReload($(this).attr("href"));
+     } else {
+     /*
+     if (navbar_section.hasClass("section_shown")) {
+     navSectionToggle(navbar_section, false, true);
+     } else {
+     navSectionToggle(navbar_section, true, true);
+     } */
+    //}
+});
+
+bind(".left_link", 'click', null, function(event) {
     if (!$(this).hasClass("clicked")) {
         selectNavLink($(this));
-        //closeAllNavBarSections();
-        navSectionToggle(navbar_section, true, true);
-        homeReload($(this).attr("href"));
-    } else {
-        if (navbar_section.hasClass("section_shown")) {
-            navSectionToggle(navbar_section, false, true);
-        } else {
-            navSectionToggle(navbar_section, true, true);
-        }
     }
 });
 
@@ -280,9 +513,12 @@ function closeAllNavBarSections() {
 /* reload home page, by just replacing focus */
 bind(null, 'keydown', null, function(event) {
     var change = 0;
-    switch (event.which) {
-        case 38: change=-1; break;
-        case 40: change=1; break;
+    var active = $(document.activeElement);
+    if (!active.is("textarea")) {
+        switch (event.which) {
+            case 38: change=-1; break;
+            case 40: change=1; break;
+        }
     }
     if (change) {
         event.preventDefault();
@@ -299,6 +535,15 @@ bind(null, 'keydown', null, function(event) {
     }
 });
 
+
+// opens all navbar sections
+function navSectionOpenAll() {
+    $.each($(".navbar_section"), function(i,e) {
+        navSectionToggle($(this), true, true);
+    });
+}
+
+
 function navSectionToggle(navbar_section, show, animate) {
     if (animate) {
         var animation_time = 100;
@@ -312,21 +557,29 @@ function navSectionToggle(navbar_section, show, animate) {
     }
 }
 
+
 function selectNavLink(navlink) {
     if (navlink.length!=0) {
         $(".home_link").removeClass("clicked");
         navlink.addClass("clicked");
+        // add/remove header link stuff
+        $(".header_link").removeClass("clicked");
+        $(".home_header_link").addClass("clicked");
+        // toggle section and remove new items num
         if (navlink.hasClass("navbar_link")) {
+            var num_new_content = navlink.parents(".home_link_wrapper").find(".num_new_content");
+            num_new_content.empty();
             var navbar_section = navlink.parents(".navbar_section");
             navSectionToggle(navbar_section, true, false);
         }
-        moveAsterisk(navlink);
+
+        //moveAsterisk(navlink);
     }
 }
 
 /* helper to get navlink element from url */
 function getNavLink(url) {
-    return $('.home_link[href="' + url + '"]');
+    return $('.left_link[href="' + url + '"]');
 }
 
 function navSectionHide(navbar_section, animation_time) {
@@ -362,7 +615,7 @@ function navSectionShow(navbar_section, animation_time) {
         navbarlinks.css('height', 'auto');
         var autoHeight = navbarlinks.height();
         navbarlinks.css('height', '0px');
-        navbarlinks.animate({"height":autoHeight}, animation_time);
+        navbarlinks.animate({"height":autoHeight}, {"duration":animation_time, "complete":function(){navbarlinks.css("height", "auto");}});
         redtriangle.addClass("clicked");
         // check if currently selected link is in section being hidden
         var current_link = getNavLink(path);
@@ -404,17 +657,17 @@ function expandInfoToggle(wrapper, animate)
     if( info_hidden )
     {   // Set info hidden to false
         wrapper.data('info_hidden', false);
-        wrapper.find(".hide_info").text('- minimize info');
+        wrapper.find(".hide_info").html('&#8211 minimize info');
         // If the info was un-expanded, show it at un-expanded form
         if( !info_expanded )
         {
             info_div.animate({"height":reduced_height}, animation_time);
-            wrapper.find(".expand_info").text('+ expand info');
+            wrapper.find(".expand_info").html('+ expand info');
         } // If the info was expanded, show the full expanded form
         else
         {
             expandAnimation(info_div,animation_time);
-            wrapper.find(".expand_info").text('- reduce info');
+            wrapper.find(".expand_info").html('&#8211 reduce info');
         }
     }
     // Otherwise, toggle the info expanded property
@@ -422,13 +675,13 @@ function expandInfoToggle(wrapper, animate)
     {   // Set expanded to false and un-expand the info
         wrapper.data('info_expanded', false);
         info_div.animate({"height":reduced_height}, animation_time);
-        wrapper.find(".expand_info").text('+ expand info');
+        wrapper.find(".expand_info").html('+ expand info');
     }
     else
     {   // Otherwise set expanded to true and expand the info
         wrapper.data('info_expanded', true);
         expandAnimation(info_div,animation_time);
-        wrapper.find(".expand_info").text('- reduce info');
+        wrapper.find(".expand_info").html('&#8211 reduce info');
     }
 }
 
@@ -453,8 +706,8 @@ function hideInfoToggle(wrapper, animate)
     {
         wrapper.data('info_hidden', true);
         info_div.animate({"height":'0px'}, animation_time);
-        wrapper.find(".expand_info").text('+ show info');
-        wrapper.find(".hide_info").text('+ show info');
+        wrapper.find(".expand_info").html('+ show info');
+        wrapper.find(".hide_info").html('+ show info');
     }
 
 }
@@ -484,7 +737,6 @@ function setInfoHeight(wrapper)
     }
 }
 
-
 /* expands a div from it's current height to the "auto" height */
 function expandAnimation( div , animation_time)
 {
@@ -493,83 +745,6 @@ function expandAnimation( div , animation_time)
     var autoHeight = div.height();
     div.css('height', beforeHeight + 'px');
     div.animate( { "height" : autoHeight } , animation_time);
-}
-
-function homeReload(theurl) {
-    $('#search-dropdown').hide();
-    $.ajax
-        ({
-            url:theurl,
-            type: 'POST',
-            data: {'url':window.location.href},
-            success: function(data)
-            {
-                var returned = eval('(' + data + ')');
-                History.pushState( {k:1}, "LoveGov: Beta", returned.url);
-                path = returned.url;
-                $(".home_focus").html(returned.focus_html);
-                bindOnNewElements();
-                initFeed();
-            },
-            error: function(jqXHR, textStatus, errorThrown)
-            {
-                $('body').html(jqXHR.responseText);
-            }
-        });
-}
-
-/* move asterisk, when section is selected */
-function moveAsterisk(to_where) {
-    if (to_where.length!=0) {
-        if (to_where.hasClass("navbar_link")) {
-            var offset = -4;
-        } else {
-            offset = to_where.height()/2;
-        }
-        var position = to_where.offset();
-        var top = position.top - offset;
-        var left = position.left - 40;
-        $(".asterisk_pointer").animate({'top':top, 'left':left}, 100);
-    }
-}
-
-/***********************************************************************************************************************
- *
- *      ~Ajax links
- *
- ***********************************************************************************************************************/
-bind(".do_ajax_link", 'click', null, function(event) {
-    ajaxReload($(this).attr("href"), true);
-});
-
-function ajaxReload(theurl, loadimg)
-{
-    $('#search-dropdown').hide();
-    $('.main_content').hide();
-    if (loadimg) { var timeout = setTimeout(function(){$("#loading").show();},0); }
-    $.ajax
-        ({
-            url:theurl,
-            type: 'GET',
-            data: {'url':window.location.href},
-            success: function(data)
-            {
-                var returned = eval('(' + data + ')');
-                History.pushState( {k:1}, "LoveGov: Beta", returned.url);
-                if (loadimg) { clearTimeout(timeout); $("#loading").hide(); }
-                $('body').css("overflow","scroll");
-                $('.main_content').css("top","0px");
-                $(".main_content").html(returned.html);
-                $('.main_content').show();
-                rebind = returned.rebind;
-                path = returned.url;
-                bindOnReload();
-            },
-            error: function(jqXHR, textStatus, errorThrown)
-            {
-                $('body').html(jqXHR.responseText);
-            }
-        });
 }
 
 /***********************************************************************************************************************
@@ -604,6 +779,7 @@ bind(".sign_in_dialogue", 'click', null, function(event) {
     event.stopPropagation();
 });
 
+
 /***********************************************************************************************************************
  *
  *      ~Feed
@@ -615,14 +791,38 @@ bind( "div.heart_plus" , "click" , null , function(event)
 {
     var wrapper = $(this).parent();
     var c_id = wrapper.data('c_id');
-    vote( wrapper , c_id , 1 );
+    if ($(this).hasClass("clicked")) {
+        $(this).removeClass("clicked");
+        vote(wrapper, c_id, 0);
+    }
+    else {
+        wrapper.find(".heart_button").removeClass("clicked");
+        $(this).addClass("clicked");
+        var heart_number = wrapper.find(".heart_number");
+        var status = parseInt(heart_number.text());
+        status += 1
+        heart_number.text(status);
+        vote( wrapper , c_id , 1 );
+    }
 });
 
 bind( "div.heart_minus" , "click" , null , function(event)
 {
     var wrapper = $(this).parent();
     var c_id = wrapper.data('c_id');
-    vote( wrapper , c_id , -1 );
+    if ($(this).hasClass("clicked")) {
+        $(this).removeClass("clicked");
+        vote(wrapper, c_id, 0);
+    }
+    else {
+        wrapper.find(".heart_button").removeClass("clicked");
+        $(this).addClass("clicked");
+        var heart_number = wrapper.find(".heart_number");
+        var status = parseInt(heart_number.text());
+        status -= 1
+        heart_number.text(status);
+        vote( wrapper , c_id , -1 );
+    }
 });
 
 // Vote for the feed AJAX request
@@ -727,12 +927,18 @@ function selectQuestionRank(rank) {
 
 bind(".type_button" , "click" , null , function(event) {
     if (!$(this).hasClass("clicked")) {
+        clearTypes();
         selectType($(this).data('type'));
     }
     else {
         removeType($(this).data('type'));
     }
 });
+
+function clearTypes() {
+    $(".type_button").removeClass("clicked");
+    feed_types = [];
+}
 
 function selectType(type) {
     var which = $('.type_button[data-type="' + type + '"]');
@@ -769,14 +975,15 @@ var feed_types = [];
 var feed_rank = 'H';
 var feed_topic = null;
 var question_rank = "R";
-var to_compare_id=null;
 function getFeed(container) {
     var feed_start = container.data('feed_start');
     var replace = (feed_start==0);
     if (replace) {
         var old_height = $("body").height();
-        $("body").css('min-height', old_height);
+        //container.css('min-height', old_height);
         container.find(".feed_content").empty();
+        container.find(".load_more").show();
+        container.find(".everything_loaded_wrapper").hide();
     }
     var feed_types_json = JSON.stringify(feed_types);
     var feed = container.data('feed');
@@ -791,14 +998,30 @@ function getFeed(container) {
     }
     else if (feed == 'getQuestions')
     {
-        var only_unanswered = container.data('only_unanswered');
         var default_display = container.data("default_display");
+        data = {'action': 'getQuestions', 'feed_rank':feed_rank, 'question_rank':question_rank,
+            'feed_start':feed_start, 'feed_topic':feed_topic, 'default_display':default_display};
+        // if feed is comparing responses with other user
+        var to_compare_id = container.data("to_compare_id");
+        if (typeof(to_compare_id) != 'undefined') {
+            data['to_compare_id'] = to_compare_id;
+        }
+        // only unanswered
+        var only_unanswered = container.data('only_unanswered');
         if (typeof(only_unanswered) == 'undefined') {
             only_unanswered = false;
         }
-        data = {'action': 'getQuestions', 'feed_rank':feed_rank, 'question_rank':question_rank,
-            'feed_start':feed_start, 'feed_topic':feed_topic, 'to_compare_id':to_compare_id,
-            'only_unanswered':only_unanswered , 'default_display':default_display};
+        data['only_unanswered'] = only_unanswered;
+        // if this feed appears on a poll
+        var p_id = container.data('p_id');
+        if (typeof(p_id) != 'undefined') {
+            data['p_id'] = p_id;
+        }
+        // if this feed appears on a scorecard
+        var scorecard_id = container.data("scorecard_id");
+        if (typeof(scorecard_id) != 'undefined') {
+            data['scorecard_id'] = scorecard_id;
+        }
     }
     else if (feed == 'getUserActivity')
     {
@@ -808,9 +1031,43 @@ function getFeed(container) {
     else if (feed == 'getElections')
     {
         data = {'action': 'getElections','feed_rank':feed_rank, 'feed_start':feed_start};
+        var state = getValueFromKey(container, 'state');
+        var city = getValueFromKey(container, 'city');
+        data['state'] = state;
+        data['city'] = city;
     }
     else if (feed == 'getGroups') {
         data = {'action': 'getGroups','feed_rank':feed_rank, 'feed_start':feed_start};
+        var state = getValueFromKey(container, 'state');
+        var city = getValueFromKey(container, 'city');
+        data['state'] = state;
+        data['city'] = city;
+    }
+    else if (feed == 'getLegislation') {
+        var session = $('select.session_select').val();
+        var session_json = JSON.stringify(session);
+        var type = $('select.type_select').val();
+        var type_json = JSON.stringify(type);
+        var subject = $('select.subject_select').val();
+        var subject_json = JSON.stringify(subject);
+        var committee = $('select.committee_select').val();
+        var committee_json = JSON.stringify(committee);
+        var introduced = $('select.introduced_select').val();
+        var introduced_json = JSON.stringify(introduced);
+        var sponsor_body = $('select.sponsor_select_body').val();
+        var sponsor_body_json = JSON.stringify(sponsor_body);
+        var sponsor_name = $('select.sponsor_select_name').val();
+        var sponsor_name_json = JSON.stringify(sponsor_name);
+        var sponsor_party = $('select.sponsor_select_party').val();
+        var sponsor_party_json = JSON.stringify(sponsor_party);
+        var sponsor_district = $('select.sponsor_select_district').val();
+        var sponsor_district_json = JSON.stringify(sponsor_district);
+
+        data = {'action': 'getLegislation', 'feed_start':feed_start, 'session_set':session_json,
+            'type_set':type_json, 'subject_set':subject_json, 'committee_set':committee_json,
+            'introduced_set':introduced_json, 'sponsor_body_set':sponsor_body_json,
+            'sponsor_name_set':sponsor_name_json, 'sponsor_party_set':sponsor_party_json,
+            'sponsor_district_set':sponsor_district_json};
     }
     action({
             data: data,
@@ -826,10 +1083,21 @@ function getFeed(container) {
                 clearTimeout(feed_timeout);
                 container.find(".feed_fetching").hide();
                 if (returned.num_items == 0) {
-                    container.find(".load_more").text('you loaded all that there is to load')
+                    container.find(".load_more").hide();
+                    var everything_loaded = container.find(".everything_loaded_wrapper");
+                    everything_loaded.find(".everything_loaded_image_wrapper").html(returned.everything_loaded);
+                    everything_loaded.show();
+                    everything_loaded.find(".everything_loaded_header").hide();
+                    if (feed_start==0) {
+                        everything_loaded.find(".nothing_there").show();
+                    }
+                    else {
+                        everything_loaded.find(".reached_the_end").show();
+                    }
                 }
-                bindImportanceSliders();
+                updateQuestionStubsDisplay();
                 bindOnNewElements();
+                //container.css("min-height", container.height());
             }}
     );
 }
@@ -846,7 +1114,6 @@ bind(".load_more" , "click" , null , function(event) {
  *      ~About page
  *
  **********************************************************************************************************************/
-
 bind("div.about-div-button", "click",
     function(e) {
         $('div.about-div-button').removeClass("active");
@@ -901,12 +1168,18 @@ function teamSection()
  *      ~Left sidebar
  *
  **********************************************************************************************************************/
-
-
-bind('.left-side-img', 'click', function()
+bind('.feedback_toggle', 'click', function()
 {
-    var parent = $(this).parent();
-    leftSideToggle(parent);
+    leftSideToggle($(".feedback_wrapper"));
+});
+
+bind('.invite_toggle', 'click', function()
+{
+    var wrapper = $(".invite_tab_wrapper");
+    if (!wrapper.hasClass("open")) {
+        $("#email-input").focus();
+    }
+    leftSideToggle(wrapper);
 });
 
 bind('#feedback-submit', 'click', function(event)
@@ -973,7 +1246,7 @@ function closeLeftSideWrapper(wrapper)
 {
 
     if (wrapper.hasClass('create-wrapper-large')) { wrapper.animate({left:'-603px'},500); }
-    else { wrapper.animate({left:'-493px'},500); }
+    else { wrapper.animate({left:'-528px'},500); }
     setTimeout(function()
     {
         wrapper.css({'z-index':'100'});
@@ -981,30 +1254,29 @@ function closeLeftSideWrapper(wrapper)
             'e-img').css({'z-index':'101'});
     },500);
 
-    wrapper.removeClass('clicked');
+    wrapper.removeClass('open');
 }
 
 function leftSideToggle(wrapper)
 {
-    if (wrapper.hasClass('clicked'))
+    if (wrapper.hasClass('open'))
     {
         closeLeftSideWrapper(wrapper);
     }
     else
     {
-        wrapper.addClass('clicked');
+        wrapper.addClass('open');
         wrapper.css({'z-index':'101'});
         wrapper.children('.create-img').css({'z-index':'102'});
         wrapper.animate({left:'-1px'},500);
 
         wrapper.bindOnce('clickoutside',function(event)
         {
-            if (event.target.className != "footer_button") {
+            if (event.target.className.indexOf("leftside_tab_toggle") == -1) {
                 closeLeftSideWrapper(wrapper);
             }
         });
     }
-
 }
 
 
@@ -1013,7 +1285,6 @@ function leftSideToggle(wrapper)
  *      ~User menu
  *
  ***********************************************************************************************************************/
-
 bind(".user_menu_toggle", "click", function(event) {
     $('div.user-menu').fadeToggle(50);
     event.stopPropagation();
@@ -1048,204 +1319,10 @@ $('#user-menu-dropdown').bind("clickoutside",function(event)
 
 /***********************************************************************************************************************
  *
- *      ~Comment threads
- *
- ***********************************************************************************************************************/
-
-    // Cancel button click
-bind("div.reply .tab-button.cancel", "click", function(event) {
-
-    $(this).parent("div.reply").hide();
-});
-
-
-bind("div.reply .tab-button.save", "click", function(event) {
-    var reply = $(this).parent("div.reply");
-    var textarea = $(this).siblings("textarea.comment-textarea");
-    var text = textarea.val();
-    var content_id = reply.data("reply-to");
-    var depth = reply.data("depth") + 1;
-    if(goodLength(text)) {
-        if(reply.hasClass("reply-reply") || reply.hasClass("reply-new")) {
-            action({
-                'data': {'action':'comment', 'c_id': content_id, 'comment':text, 'depth': depth},
-                'success': function(data) {
-                    if(depth > 0) {
-                        reply.hide();
-                        $(data).hide().appendTo(reply.closest('div.threaddiv')).fadeIn(500);
-                    } else {
-                        textarea.val('');
-                        $(data).hide().prependTo('div.thread').fadeIn(500);
-                    }
-                }
-            });
-        } else if(reply.hasClass("reply-append")) {
-            action({
-                'data': {'action':'appendComment', 'c_id': content_id, 'comment':text, 'depth': depth},
-                'success': function(data) {
-                    reply.closest('div.comment').find('div.comment-text').html(data);
-                    reply.hide();
-                }
-            });
-        }
-    }
-
-});
-
-// Returns true if text length is short enough
-// Otherwise alerts warning and returns false
-function goodLength(text) {
-    var len = text.length;
-    if (len < 10000) {
-        return true;
-    } else {
-        alert("Please limit your response to 10,000 characters.  You have currently typed " + len + " characters.");
-        return false;
-    }
-}
-
-
-function incNumComments() {
-    var ncspan = $('span.num_comments');
-    var num_comments = parseInt(ncspan.text());
-    ncspan.text(num_comments + 1);
-}
-
-// bind("#commentform","submit",function(event)
-//      {
-//          event.preventDefault();
-//          var comment_text = $(this).children(".comment-textarea").val();
-//          var comment_text_length = comment_text.length;
-//          if (comment_text_length <= 10000)
-//          {
-//              $(this).children(".comment-textarea").val("");
-//              var content_id = $("#content_id").val();
-//              action({
-//                  'data': {'action':'comment','c_id': content_id,'comment':comment_text},
-//                  'success': function(data) {
-//                      ajaxThread();
-//                      incNumComments();
-//                  },
-//                  'error': null
-//              });
-//          }
-//          else
-//          {
-//              alert("Please limit your response to 10,000 characters.  You have currently typed " + comment_text_length + " characters.");
-//          }
-//      });
-
-bind("div.comment-actions div.reply-action", "click",function()
-{
-    $(this).parent().siblings('div.reply.reply-reply').toggle();
-});
-
-bind("div.comment-actions div.delete-action", "click",function()
-{
-    var comment = $(this).closest("div.comment");
-    var content_id = $(this).data('cid');
-    action({
-        'data': {'action':'delete','c_id':content_id},
-        'success': function(data) {
-            comment.html("Comment deleted.");
-        }
-    });
-});
-
-bind("div.comment-actions div.append-action", "click",function()
-{
-    $(this).parent().siblings('div.reply.reply-append').toggle();
-});
-
-
-// bind("input.tab-button.alt","click",function()
-//      {
-//          $(this).parent().hide();
-//      });
-
-
-// bind(".commentlike","click",function(event)
-//      {
-//          event.preventDefault();
-//          var content_id = $(this).parent().parent().next().children(".hidden_id").val();
-//          $.post('/action/', {'action':'vote','c_id':content_id,'vote':'L'},
-//              function(data)
-//              {
-//                  ajaxThread();
-//              });
-//      });
-
-// bind('commentdislike', 'click', function(event)
-//      {
-//          event.preventDefault();
-//          var content_id = $(this).parent().parent().next().children(".hidden_id").val();
-//          $.post('/action/', {'action':'vote','c_id':content_id,'vote':'D'},
-//              function(data)
-//              {
-//                  ajaxThread();
-//              });
-//      });
-
-
-
-// // Collapse a thread (a comment and all its children)
-// bind('span.collapse','click',function(e) {
-//          var close = '[-]';
-//          var open = '[+]';
-//          if($(this).text()==close) {
-//              $(this).text(open);
-//              $(this).next('div.threaddiv').children().hide();
-//          } else if($(this).text()==open) {
-//              $(this).text(close);
-//              $(this).next('div.threaddiv').children().show();
-//          }
-//      });
-
-// Flag a comment
-// bind('span.flag',"click", function(e) {
-//          var commentid = $(this).data('commentid');
-//          var comment = $(this).parent().children('div.comment-text').text();
-//          var conf = confirm("Are you sure you want to flag this comment?\n\n"+comment);
-//          if(conf) {
-//              action({
-//                  data: {'action': 'flag', 'c_id': commentid},
-//                  success: function(data) {
-//                      alert(data);
-//                      $(this).css("color", "red");
-//                  },
-//                  error: function(data) {
-//                      alert("Flagging comment failed.");
-//                  }
-//              });
-//          }
-//      });
-
-bind('div.load-more-comments', 'click', function(e) {
-    var num_to_load = 1;
-    var thread = $(this).siblings('div.thread');
-    if(thread.length) {
-        var cid = thread.data('cid');
-        var next_start = thread.data('num-showing');
-        action({
-            data: {'action': 'ajaxThread', 'c_id': cid, 'limit': num_to_load, 'start': next_start},
-            success: function(data)
-            {
-                var returned = eval('(' + data + ')');
-                $(returned.html).hide().appendTo('div.thread').fadeIn(500);
-                $('div.thread').data('num-showing', next_start + returned.top_count);
-            }
-        });
-    }
-});
-
-
-
-/***********************************************************************************************************************
- *
  *      ~InlineEdits
  *
  ***********************************************************************************************************************/
-function editUserProfile(info,edit_div)
+function editUserProfile(info,being_edited, not_editing_display)
 {
     var prof_data = info;
     prof_data.action = 'editProfile';
@@ -1255,14 +1332,14 @@ function editUserProfile(info,edit_div)
         success: function(data)
         {
             var obj = eval('(' + data + ')');
-            edit_div.text(obj.value);
-            edit_div.show();
+            being_edited.text(obj.value);
+            not_editing_display.show();
         }
     });
 }
 
 
-function editContent( c_id , info , edit_div )
+function editContent( c_id , info , being_edited, not_editing_display )
 {
     var content_data = info;
     content_data.action = 'editContent';
@@ -1274,28 +1351,68 @@ function editContent( c_id , info , edit_div )
         success: function(data)
         {
             var obj = eval('(' + data + ')');
-            edit_div.html(obj.value);
-            edit_div.show();
+            being_edited.html(obj.value);
+            not_editing_display.show();
+        }
+    });
+}
+
+function editExplanation(r_id, q_id, explanation, being_edited, not_editing_display) {
+    if (explanation == 'I think..') {
+        explanation = "";
+    }
+    action({
+        'data': {'action':'editExplanation', 'q_id':q_id, 'r_id':r_id, 'explanation':explanation},
+        success: function(data)
+        {
+            var obj = eval('(' + data + ')');
+            being_edited.html('"' + obj.explanation + '"');
+            not_editing_display.show();
         }
     });
 }
 
 
+function editPetitionFullText(p_id, full_text, being_edited, not_editing_display )
+{
+    action({
+        'data': {'action':'editPetitionFullText', 'p_id':p_id, 'full_text':full_text},
+
+        success: function(data)
+        {
+            var obj = eval('(' + data + ')');
+            being_edited.html(obj.value);
+            not_editing_display.show();
+        }
+    });
+}
 
 bind( ".edit_button" , 'click', null , function(event)
 {
-    event.preventDefault();
-    $(this).siblings('.inline_hide').hide();
-    $(this).hide();
+    var wrapper = $(this).parents(".inline_editable");
+    var not_editing_display = wrapper.find(".not_editing_display");
+    var doing_editing_display = wrapper.find(".doing_editing_display");
+    not_editing_display.hide();
+    doing_editing_display.show();
+    doing_editing_display.find(".edit_links").show();
+});
 
-    $(this).siblings('.inline_edit').show();
+bind( ".cancel_inline_edit" , 'click' , null , function(event)
+{
+    var wrapper = $(this).parents(".inline_editable");
+    var not_editing_display = wrapper.find(".not_editing_display");
+    var doing_editing_display = wrapper.find(".doing_editing_display");
+    doing_editing_display.hide();
+    not_editing_display.show();
 });
 
 bind( ".submit_inline_edit" , 'click' , null , function(event)
 {
-    event.preventDefault();
-    var input = $(this).siblings('.edit_input');
-    var wrapper = $(this).parent();
+    /* fucking wrapper */
+    var wrapper = $(this).parents(".inline_editable");
+
+    /* values of what is being edited */
+    var input = wrapper.find('.edit_input');
     var name = input.attr('name');
     var value = input.val();
     var model = wrapper.data('model');
@@ -1303,16 +1420,35 @@ bind( ".submit_inline_edit" , 'click' , null , function(event)
         'key':name,
         'val':value
     };
-    var edit_div = $(this).parent().siblings('.inline_hide');
 
+    /* what visually should be shown while editing or not editing */
+    var being_edited = wrapper.find('.being_edited');
+    var not_editing_display = wrapper.find(".not_editing_display");
+    var doing_editing_display = wrapper.find(".doing_editing_display");
+    doing_editing_display.hide();
+
+    /* which edit are we calling */
     if( model == "Content" )
     {
         var c_id = wrapper.data('id');
-        editContent(c_id,info,edit_div);
+        editContent(c_id,info,being_edited, not_editing_display);
     }
     else if( model == "UserProfile")
     {
-        editUserProfile(info,edit_div);
+        editUserProfile(info,being_edited, not_editing_display);
+    }
+    else if( model == "Explanation")
+    {
+        var r_id = wrapper.data("r_id");
+        var q_id = wrapper.data('q_id');
+        var explanation = value;
+        editExplanation(r_id, q_id, explanation, being_edited, not_editing_display);
+    }
+    else if (model == "Petition")
+    {
+        var p_id = wrapper.data("p_id");
+        var full_text = value;
+        editPetitionFullText(p_id, full_text, being_edited, not_editing_display);
     }
 
     $(this).parent().siblings('.edit_button').show();
@@ -1321,7 +1457,7 @@ bind( ".submit_inline_edit" , 'click' , null , function(event)
 
 /***********************************************************************************************************************
  *
- *      ~loagin
+ *      ~login
  *
  **********************************************************************************************************************/
 var login_state;
@@ -1460,23 +1596,32 @@ bind(".send_message", 'click', null, function(event) {
     var wrapper = $(this).parents(".message_politician_wrapper");
     var p_id = wrapper.data("p_id");
     var message = wrapper.find(".message_textarea").val();
-    action({
-            data: {
-                'action': 'messagePolitician',
-                'p_id': p_id,
-                'message': message
-            },
-            success: function(data)
-            {
-                var old_height = wrapper.height();
-                var old_width = wrapper.width();
-                wrapper.css({"height":old_height,"width":old_width});
-                wrapper.find(".send_a_message").hide();
-                wrapper.find(".message_success").fadeIn(100);
-                //setTimeout(hideModal(null),1000);
+    var phone_number = wrapper.find(".phonenumber_input").val();
+    if (phone_number = "") {
+        alert("You need to enter your phone number to send a politician a message. " +
+            "Currently the only way to reach a politician by email is via a webform which " +
+            "requires a phonenumber. The current system sucks, LoveGov will replace it soon.")
+    }
+    else {
+        action({
+                data: {
+                    'action': 'messagePolitician',
+                    'p_id': p_id,
+                    'phone_number':phone_number,
+                    'message': message
+                },
+                success: function(data)
+                {
+                    var old_height = wrapper.height();
+                    var old_width = wrapper.width();
+                    wrapper.css({"height":old_height,"width":old_width});
+                    wrapper.find(".send_a_message").hide();
+                    wrapper.find(".message_success").fadeIn(100);
+                    //setTimeout(hideModal(null),1000);
+                }
             }
-        }
-    );
+        );
+    }
 });
 
 /* mouse over text change for some buttons */
@@ -1525,7 +1670,7 @@ bind(".group_invited_modal" , 'click' , null , function(event)
 
 /***********************************************************************************************************************
  *
- *      ~Following
+ *      ~Following, Supporting and other Actions
  *
  ***********************************************************************************************************************/
 bind('div.user_follow' , 'click' , null , function(event)
@@ -1815,9 +1960,18 @@ function followGroup(div,follow,g_id)
                     div.replaceWith(returned.html);
                 }
                 if (!follow) {
-                    var nav_link = getNavLink(returned.href);
-                    if (nav_link) {
-                        nav_link.remove();
+                    var navlink = getNavLink(returned.href);
+                    if (navlink) {
+                        navlink.remove();
+                    }
+                }
+                else {
+                    var navlink_html = returned.navlink_html;
+                    if (returned.group_type != "E") {
+                        $(".groups_wrapper").prepend(navlink_html);
+                    }
+                    else {
+                        $(".elections_wrapper").prepend(navlink_html);
                     }
                 }
             }
@@ -1885,15 +2039,19 @@ function groupInviteResponse(event,response,div)
  *     ~Modal General
  *
  **********************************************************************************************************************/
-
-
 function hideModal(event) {
+    $("div.modal-wrapper").hide();
     $('div.modal-general').hide();
     $('div.modal_overdiv').hide();
 }
 
 function showModal() {
-    $('div.modal_general').fadeIn(500).css('display', 'inline-block');
+    $("div.modal-wrapper").show();
+    var modal_general = $('div.modal_general');
+    var height = modal_general.height();
+    var yoffset = window.pageYOffset;
+    modal_general.css("top", yoffset-100);
+    modal_general.fadeIn(100).css('display', 'inline-block');
     $('div.modal_overdiv').fadeIn(500);
 }
 
@@ -1904,32 +2062,57 @@ bind( '.modal_close', 'click', hideModal);
 // Don't propogate modal clicks to modal-wrapper (which would close modal)
 bind( 'div.modal-general', 'click', function(e) {e.stopPropagation();});
 
-function getModal(modal_name,data)
+function getModal(modal_name,data,callback)
 {
     if( typeof(data)=='undefined'){ data = { 'modal_name':modal_name }; }
     else{ data['modal_name'] = modal_name; }
+
     data['action'] = 'getModal';
     var modal_general = $('div.modal_general');
+    var modal_content = $('div.modal_content');
 
     // If create modal has recently been opened, use version in memory to avoid data loss
-    if(modal_name=="create_modal" && modal_name==modal_general.data('last-loaded')) {
-        showModal();
-        return;
+    if(modal_name==modal_general.data('last-loaded')) {
+        if(modal_name=="create_modal" ) {
+            // Don't cache different groups
+            if(!data.hasOwnProperty('gid') || modal_general.data('last-group')==data['gid']) {
+                showModal();
+                if(callback) callback();
+                return;
+            }
+        }
     }
+
+    showModal();
+    modal_content.html('<img src="/static/images/icons/ajax-loader.gif" style="margin: 50px;">');
 
     action({
         data: data,
         success: function(response_data)
         {
             var returned = eval('(' + response_data + ')');
-            $('div.modal_content').html( returned.modal_html );
+            modal_content.html( returned.modal_html );
             modal_general.data('last-loaded',modal_name);
+            modal_general.data('last-group',data['gid']);
+
 
             showModal();
-
+            bindOnNewElements();
+            if(callback) callback();
         }
     });
 }
+
+/***********************************************************************************************************************
+ *
+ *      ~Random modals that get things you need
+ *
+ ***********************************************************************************************************************/
+bind('.group_description_modal' , 'click' , null , function(event)
+{
+    var g_id = $(this).data('g_id');
+    getModal('group_description' , { 'g_id': g_id });
+});
 
 
 /***********************************************************************************************************************
@@ -1937,7 +2120,6 @@ function getModal(modal_name,data)
  *     ~Group Header
  *
  **********************************************************************************************************************/
-
 bind( 'div.group_invite_members' , 'click' , null , function(event)
 {
     var g_id = $(this).data('g_id');
@@ -2027,6 +2209,141 @@ bind( ".notification_user_follow" , 'click' , null , function(event)
 
 /***********************************************************************************************************************
  *
+ *      ~Legislation
+ *
+ **********************************************************************************************************************/
+
+bind( '.filter_box' , 'click' , null , function(event) {
+    event.preventDefault();
+    if ($(this).hasClass('clicked')) {
+        $(this).removeClass('clicked');
+    }
+    else {
+        $(this).addClass('clicked');
+    }
+});
+
+bind( '.expand_link' , 'click' , null , function(event) {
+    event.preventDefault();
+    if ($(this).hasClass('clicked')) {
+        $(this).removeClass('clicked');
+        $('.level2-recent-actions-div').setStyle({
+            overflow: hidden
+        });
+    }
+    else {
+        $(this).addClass('clicked');
+        $('.level2-recent-actions-div').setStyle({
+            overflow: auto
+        });
+    }
+});
+
+function billPassageOrder() {
+
+}
+
+function loadBillSelect2() {
+    $('.session_select').select2({
+        placeholder: "search for bill sessions"
+    });
+    $('.type_select').select2({
+        placeholder: "search for bill types"
+    });
+    $('.subject_select').select2({
+        placeholder: "search for bill subjects"
+    });
+    $('.committee_select').select2({
+        placeholder: "search for bill committees"
+    });
+    $('.introduced_select').select2({
+        placeholder: "search by date period"
+    });
+    $('.sponsor_select_body').select2({
+        placeholder: "search for bill sponsor body"
+    });
+    $('.sponsor_select_name').select2({
+        placeholder: "search for bill sponsor name"
+    });
+    $('.sponsor_select_party').select2({
+        placeholder: "search for bill sponsor party"
+    });
+    $('.sponsor_select_district').select2({
+        placeholder: "search for bill sponsor district"
+    });
+}
+
+function showSelectors() {
+    $('.legislation_selector').children().hide();
+}
+
+function showLegSelectors() {
+    $('.filter_box').click(function(event) {
+        event.preventDefault();
+        if ($(this).hasClass('unchecked')) {
+            $(this).removeClass('unchecked');
+            $(this).addClass('checked');
+            var selector = $("." + $(this).data('selector'));
+            selector.siblings().hide('fast');
+            selector.show('fast');
+        }
+        else {
+            $(this).removeClass('checked');
+            $(this).addClass('unchecked');
+            var selector = $("." + $(this).data('selector'));
+            selector.siblings().hide('fast');
+            selector.show('fast');
+        }
+    });
+}
+
+function shortenLongText() {
+    var ellipsestext = "...";
+    var moretext = "read more";
+    var lesstext = "less";
+    if ($('.long_text').hasClass("bill_detail")) {
+        var showChar = 300;
+    }
+    else {
+        var showChar = 150;
+    }
+    $('.long_text').each(function() {
+
+        var content = $(this).html();
+
+        if(content.length > showChar) {
+
+            var c = content.substr(0, showChar);
+            var h = content.substr(showChar, content.length - showChar);
+
+            if($(this).hasClass("bill_detail")) {
+                var html = c + '<span class="moreellipses">' + ellipsestext + '&nbsp;</span><span class="morecontent"><span class="morecontent_span" style="display: none;">' + h + '</span>&nbsp;&nbsp;<a href="" class="morelink">' + moretext + '</a></span>';
+            }
+            else {
+                var html = c + '<span class="moreellipses">' + ellipsestext + '&nbsp;</span>';
+            }
+            $(this).html(html);
+        }
+    });
+
+    if($('.long_text').hasClass("bill_detail")) {
+        $('.morelink').click(function(){
+            if($(this).hasClass("less")) {
+                $(this).removeClass("less");
+                $(this).html(moretext);
+            } else {
+                $(this).addClass("less");
+                $(this).html(lesstext);
+            }
+            $('.morecontent_span').toggle();
+            $('.moreellipses').toggle();
+            return false;
+        });
+    }
+}
+
+/***********************************************************************************************************************
+ *
  *      ~GroupEdit
  *
  **********************************************************************************************************************/
@@ -2069,6 +2386,7 @@ bind( "div.group_privacy_radio" , 'click' , null , function(event)
 
     $(this).children("input:radio[name=group_privacy]").attr('checked',true);
     $(this).addClass("create-radio-selected");
+
 });
 
 // Group Scale Radio
@@ -2200,95 +2518,6 @@ function removeAdmin(admin_id,g_id,success)
  *     ~Hover Comparison
  *
  **********************************************************************************************************************/
-function loadHoverBreakdown()
-{
-
-    var hoverTimer;
-    var hoverClearOK = true;
-
-    function clearHover()
-    {
-        if( hoverClearOK )
-        {
-            $('#comparison-hover-div p').empty();
-            $('#comparison-hover').empty();
-            $('#comparison-hover-div').fadeOut(300);
-        }
-    }
-
-    $('#comparison-hover-div').hover
-        (
-            function() { hoverClearOK = false; },
-            function()
-            {
-                hoverClearOK = true;
-                hoverTimer = setTimeout
-                    (
-                        function() { clearHover(); },
-                        300
-                    );
-            }
-        );
-
-    function findHoverPosition(selector)
-    {
-        var top = selector.offset().top - $('#comparison-hover-div').height() - 30;
-        if (top <= $(document).scrollTop())
-        {
-            // show below
-            top = selector.offset().top + selector.height() + 30;
-            $('#comparison-hover-pointer-up').show(); $('#comparison-hover-pointer-down').hide();
-        }
-        else
-        {
-            // show above
-            $('#comparison-hover-pointer-up').hide(); $('#comparison-hover-pointer-down').show();
-        }
-        var left = selector.offset().left - ($('#comparison-hover-div').width()/2) + (selector.width()/2);
-        return {top:top,left:left};
-    }
-
-    var to_hover = $('.has_hover_comparison').not('.already_hover');
-    to_hover.addClass('already_hover');
-    to_hover.hoverIntent
-        (
-            function(event)
-            {
-                var self = $(this);
-                var href = $(this).data('href');
-                var displayName = $(this).data("display_name");
-                if (href != "")
-                {
-                    clearTimeout(hoverTimer);
-                    $('#comparison-hover').empty();
-                    $('#comparison-hover-div p').text('You & ' + displayName);
-                    var offset = findHoverPosition(self);
-                    $('#comparison-hover-loading-img').show();
-                    $('#comparison-hover-div').fadeIn(100);
-                    $('#comparison-hover-div').offset(offset);
-                    action({
-                        'data': {'action':'hoverComparison','href':href},
-                        'success': function(data)
-                        {
-                            var obj = eval('(' + data + ')');
-                            $('#comparison-hover-loading-img').hide();
-                            $('#comparison-hover').html(obj.html);
-                        },
-                        'error': null
-                    });
-                }
-            },
-            function(event)
-            {
-                hoverTimer = setTimeout
-                    (
-                        function(){ clearHover(); },
-                        1000
-                    );
-            }
-        );
-}
-
 function loadHoverComparison()
 {
 
@@ -2379,19 +2608,103 @@ function loadHoverComparison()
         );
 }
 
+/* deprecated
+ function loadHoverBreakdown()
+ {
+
+ var hoverTimer;
+ var hoverClearOK = true;
+
+ function clearHover()
+ {
+ if( hoverClearOK )
+ {
+ $('#comparison-hover-div p').empty();
+ $('#comparison-hover').empty();
+ $('#comparison-hover-div').fadeOut(300);
+ }
+ }
+
+ $('#comparison-hover-div').hover
+ (
+ function() { hoverClearOK = false; },
+ function()
+ {
+ hoverClearOK = true;
+ hoverTimer = setTimeout
+ (
+ function() { clearHover(); },
+ 300
+ );
+ }
+ );
+
+ function findHoverPosition(selector)
+ {
+ var top = selector.offset().top - $('#comparison-hover-div').height() - 30;
+ if (top <= $(document).scrollTop())
+ {
+ // show below
+ top = selector.offset().top + selector.height() + 30;
+ $('#comparison-hover-pointer-up').show(); $('#comparison-hover-pointer-down').hide();
+ }
+ else
+ {
+ // show above
+ $('#comparison-hover-pointer-up').hide(); $('#comparison-hover-pointer-down').show();
+ }
+ var left = selector.offset().left - ($('#comparison-hover-div').width()/2) + (selector.width()/2);
+ return {top:top,left:left};
+ }
+
+ var to_hover = $('.has_hover_comparison').not('.already_hover');
+ to_hover.addClass('already_hover');
+ to_hover.hoverIntent
+ (
+ function(event)
+ {
+ var self = $(this);
+ var href = $(this).data('href');
+ var displayName = $(this).data("display_name");
+ if (href != "")
+ {
+ clearTimeout(hoverTimer);
+ $('#comparison-hover').empty();
+ $('#comparison-hover-div p').text('You & ' + displayName);
+ var offset = findHoverPosition(self);
+ $('#comparison-hover-loading-img').show();
+ $('#comparison-hover-div').fadeIn(100);
+ $('#comparison-hover-div').offset(offset);
+ action({
+ 'data': {'action':'hoverComparison','href':href},
+ 'success': function(data)
+ {
+ var obj = eval('(' + data + ')');
+ $('#comparison-hover-loading-img').hide();
+ $('#comparison-hover').html(obj.html);
+ },
+ 'error': null
+ });
+ }
+ },
+ function(event)
+ {
+ hoverTimer = setTimeout
+ (
+ function(){ clearHover(); },
+ 1000
+ );
+ }
+ );
+ }
+ */
+
 /***********************************************************************************************************************
  *
- *     ~QA
+ *     ~ q&a interface
  *
  **********************************************************************************************************************/
-
 bind('.answer_button' , 'click' , null , function(event)
-{
-    var stub = $(this).parents(".question_stub");
-    expandChooseInterface(stub);
-});
-
-bind('.goback_button' , 'click' , null , function(event)
 {
     var stub = $(this).parents(".question_stub");
     expandChooseInterface(stub);
@@ -2401,13 +2714,6 @@ bind('.hide_button' , 'click' , null , function(event)
 {
     var stub = $(this).parents(".question_stub");
     hideStub(stub);
-});
-
-bind('.change_explanation' , 'click' , null , function(event)
-{
-    var stub = $(this).parents(".question_stub");
-    stub.find(".question_expanded").hide();
-    stub.find(".question_expanded_explain").show();
 });
 
 function hideStub(stub) {
@@ -2423,63 +2729,79 @@ function expandChooseInterface(stub) {
     stub.find(".hide_button").show();
 }
 
-function expandExplainInterface(stub) {
-    stub.find(".question_expanded").hide();
-    stub.find(".question_expanded_explain").show();
-    stub.find(".answer_button").hide();
-    stub.find(".hide_button").show();
-}
-
-function expandResponses(stub) {
+function expandResponses(stub, animate) {
+    var old_height = stub.height();
     stub.find(".question_expanded").hide();
     stub.find(".question_expanded_responses").show();
+    var new_height = stub.height();
+    if (animate) {
+        stub.css('height', old_height);
+        stub.animate({"height":new_height}, {"duration":500, "complete":function(){stub.css("height", "auto");}});
+    }
 }
 
 /* sets question stubs to display appropriately */
 function updateQuestionStubsDisplay() {
     $.each($(".question_stub"), function(i,e) {
-        updateQuestionStubDisplay($(this));
+        updateQuestionStubDisplay($(this), false);
     });
 }
 
-function updateQuestionStubDisplay(stub) {
-    var default_display = stub.data("default_display");
-    if (default_display == 'none') {
+/* set initial display for all stubs */
+function updateQuestionStubDisplay(stub, animate, display) {
+    if (typeof(display) == 'undefined') {
+        display = stub.data("default_display");
+    }
+    if (display == 'none') {
         hideStub(stub);
     }
-    if (default_display == 'choose') {
+    if (display == 'choose') {
         expandChooseInterface(stub);
     }
-    if (default_display == 'explain') {
-        expandExplainInterface(stub);
-    }
-    if (default_display == 'responses') {
-        expandResponses(stub);
+    if (display == 'responses') {
+        var your_response = stub.data("your_response");
+        if (your_response == 1) {
+            expandResponses(stub, animate);
+        }
+        else {
+            hideStub(stub);
+        }
     }
 }
 
-bind('.answer_checkbox' , 'click' , null , function(event)
+bind('.answer_choice' , 'click' , null , function(event)
 {
+    var stub = $(this).parents(".question_stub");
     if ($(this).hasClass("clicked")) {
         $(this).removeClass("clicked");
     }
     else {
-        var stub = $(this).parents(".question_stub");
-        stub.find(".answer_checkbox").removeClass("clicked");
+        stub.find(".answer_choice").removeClass("clicked");
         $(this).addClass("clicked");
     }
     saveAnswer(stub);
 });
 
-bind('.save_button' , 'click' , null , function(event)
+
+bind('.change_answer_privacy' , 'click' , null , function(event)
 {
+    var wrapper = $(this).parents(".answer_privacy_wrapper");
     var stub = $(this).parents(".question_stub");
-    saveQuestion(stub);
+    var r_id = $(this).data("r_id");
+    var q_id = $(this).data("q_id");
+    action({
+        data: {'action':'changeAnswerPrivacy', 'r_id':r_id, 'q_id':q_id},
+        success: function(data) {
+            var returned = eval('(' + data + ')');
+            wrapper.replaceWith(returned.html);
+            stub.data("privacy", returned.privacy);
+        }
+    });
 });
 
 // stage 1, save answer
 function saveAnswer(stub) {
-    var box = stub.find(".answer_checkbox.clicked");
+    var box = stub.find(".answer_choice.clicked");
     var a_id;
     if (box.length!=0) {
         a_id = box.data('a_id');
@@ -2488,82 +2810,106 @@ function saveAnswer(stub) {
         a_id = -1;
     }
     var q_id = stub.data('q_id');
+    var default_display = stub.data("default_display");
+    var your_response = stub.data("your_response");
+    var privacy = stub.data("privacy");
+    var importance = stub.find('.importance_bar').data('weight');
+
+    var data = {'action':'saveAnswer', 'q_id':q_id,
+        'a_id':a_id, 'default_display':default_display,
+        'weight':importance, 'privacy':privacy};
+
+    var container = stub.parents(".feed_main");
+    if (container.length!=0) {
+        var to_compare_id = container.data("to_compare_id");
+        if (typeof(to_compare_id) != 'undefined') {
+            data['to_compare_id'] = to_compare_id;
+        }
+        var scorecard_id = container.data("scorecard_id");
+        if (scorecard_id) {
+            data['scorecard_id'] = scorecard_id;
+        }
+        // check if should be scorecard edit answer
+        var save_scorecard_answer = container.data("save_scorecard_answer");
+        if (save_scorecard_answer == 1) {
+            data['action'] = 'saveScorecardAnswer'
+        }
+        // if only unanswered animate hide question
+        var only_unanswered = container.data('only_unanswered');
+        if (only_unanswered && a_id!=-1) {
+            stub.animate({"height":"0px"}, {"duration": 300, "complete":function(){stub.hide()}});
+            expandChooseInterface(stub.next('.question_stub'));
+        }
+    }
     action({
-        data: {'action':'saveAnswer', 'q_id':q_id, 'a_id':a_id, 'default_display':'explain'},
+        data: data,
         success: function(data) {
             var returned = eval('(' + data + ')');
-            var new_element = $(returned.html);
-            stub.replaceWith(new_element);
-            var saved_message = new_element.find(".saved_message");
+            if (default_display=='responses') {
+                var new_element = $(returned.html);
+                var old_height = stub.height();
+                stub.replaceWith(new_element);
+                stub = new_element;
+                new_element.find(".question_expanded_responses").show();
+                var new_height = new_element.height();
+                new_element.css('height', old_height);
+                new_element.animate({"height":new_height}, {"duration":200, "complete":function(){new_element.css("height", "auto");}});
+                bindOnNewElements();
+            }
+            var saved_message = stub.find(".saved_message");
             saved_message.show();
             saved_message.fadeOut(5000);
-            updateQuestionStubDisplay(new_element);
-            bindImportanceSlider(new_element.find(".importance_bar"));
             updateMatches();
             updateStats();
         }
     });
 }
 
-// old way, answer and explanation (stage 2)
-function saveQuestion(stub) {
-    var box = stub.find(".answer_checkbox.clicked");
+// answer in feed
+bind('.poll_answer' , 'click' , null , function(event)
+{
+    var item = $(this).parents(".sample_question");
+    if ($(this).hasClass("clicked")) {
+        $(this).removeClass("clicked");
+    }
+    else {
+        item.find(".poll_answer").removeClass("clicked");
+        $(this).addClass("clicked");
+    }
+    saveAnswerInFeed(item);
+});
+
+
+function saveAnswerInFeed(item) {
+    var choice = item.find(".poll_answer.clicked");
     var a_id;
-    if (box.length!=0) {
-        a_id = box.data('a_id');
+    if (choice.length!=0) {
+        a_id = choice.data('a_id');
     }
     else {
         a_id = -1;
     }
-    var explanation = stub.find('.explanation').val();
-    var privacy_bool = stub.find(".privacy_checkbox").hasClass("clicked");
-    var privacy;
-    if (privacy_bool) {
-        privacy = 'PRI';
-    } else {
-        privacy = 'PUB';
-    }
-    var q_id = stub.data('q_id');
-    var weight = stub.find(".importance_bar").slider("value");
-    var container = stub.parents(".feed_main");
-    var default_display = "choose";
-    if (container.length!=0) {
-        default_display = container.data("default_display");
-    }
+    var q_id = item.data('q_id');
+    var data = {'action':'saveAnswerInFeed', 'q_id':q_id,
+        'a_id':a_id};
     action({
-        data: {'action':'stubAnswer', 'q_id':q_id, 'privacy':privacy,
-            'explanation':explanation,'a_id':a_id, 'weight':weight,
-            'to_compare_id':to_compare_id, 'default_display':default_display},
+        data: data,
         success: function(data) {
-            var returned = eval('(' + data + ')');
-            var only_unanswered = false;
-            if (container.length!=0) {
-                only_unanswered = container.data('only_unanswered');
-            }
-            if (only_unanswered) {
-                stub.hide();
-                expandChooseInterface(stub.next('.question_stub'));
-            }
-            else {
-                var new_element = $(returned.html);
-                stub.replaceWith(new_element);
-                var saved_message = new_element.find(".saved_message");
-                saved_message.show();
-                saved_message.fadeOut(5000);
-                bindImportanceSlider(new_element.find(".importance_bar"));
-                updateQuestionStubDisplay(new_element);
-            }
-            updateMatches();
-            updateStats();
+            var saved_message = item.find(".saved_message");
+            saved_message.show();
+            saved_message.fadeOut(2000);
         }
     });
 }
 
-bind('.privacy_checkbox' , 'click' , null , function(event)
+
+bind('.see_their_response' , 'click' , null , function(event)
 {
-    $(this).toggleClass("clicked");
+    expandResponses($(this).parents(".question_stub"));
 });
 
+
+/* importance sliders */
 function bindImportanceSliders() {
     var importance_bars = $(".importance_bar");
     $.each(importance_bars, function(i, e) {
@@ -2572,18 +2918,44 @@ function bindImportanceSliders() {
 }
 
 function bindImportanceSlider(div) {
+    var stub = div.parents(".question_stub");
     var weight = div.data('weight');
     div.slider({'min':0,
         'max':100,
         'step':1,
         'value':weight,
         slide: function(event, ui) {
+            div.data('weight', ui.value);
             var text = ui.value + "%";
             $(this).parents(".importance_wrapper").find(".importance_percent").text(text);
+        },
+        stop: function(event, ui) {
+            saveAnswer(stub);
         }
     });
 }
 
+
+
+
+/***********************************************************************************************************************
+ *
+ *     ~ q&a feed
+ *
+ **********************************************************************************************************************/
+bind('.only_unanswered' , 'click' , null , function(event)
+{
+    $(this).toggleClass("clicked");
+    var container = $(this).parents(".feed_main");
+    container.data("only_unanswered", $(this).hasClass("clicked"));
+    refreshFeed(container);
+});
+
+/***********************************************************************************************************************
+ *
+ *     ~ homemade backbone.... dom elements which update themselves
+ *
+ **********************************************************************************************************************/
 function updateMatches() {
     $.each($(".match_object"), function(i, e) {
         updateMatch($(this));
@@ -2630,6 +3002,9 @@ function updateStatsObject(stats) {
     if (object == 'election_leaderboard') {
         data['e_id'] = stats.data('e_id');
     }
+    if (object == 'poll_stats') {
+        data['p_id'] = stats.data('p_id');
+    }
     action({
         data: data,
         success: function(data) {
@@ -2639,14 +3014,6 @@ function updateStatsObject(stats) {
         }
     });
 }
-
-bind('.only_unanswered' , 'click' , null , function(event)
-{
-    $(this).toggleClass("clicked");
-    var container = $(this).parents(".feed_main");
-    container.data("only_unanswered", $(this).hasClass("clicked"));
-    refreshFeed(container);
-});
 
 /***********************************************************************************************************************
  *
@@ -2907,9 +3274,11 @@ function updateHistogram(histogram_wrapper, recursive) {
                 renderHistogram(histogram_wrapper);
                 getHistogramMembers(histogram_wrapper);
                 getIdenticalMembers(histogram_wrapper);
-
                 if (returned.total != 0 && recursive) {
-                    updateHistogram(histogram_wrapper, true);
+                    var histogram_metadata = loadHistogramMetadata(histogram_wrapper);
+                    if (histogram_metadata.maximum == -1 || histogram_metadata.total < histogram_metadata.maximum) {
+                        updateHistogram(histogram_wrapper, true);
+                    }
                 }
             }
         }
@@ -3093,7 +3462,6 @@ function getHistogramGroupMembers(histogram_wrapper) {
     });
 }
 
-
 /***********************************************************************************************************************
  *
  *     ~Topics
@@ -3164,7 +3532,7 @@ function showTopicIcon(wrapper) {
 
 /***********************************************************************************************************************
  *
- *      ~Friends
+ *      ~Friends and facebook share
  *
  ***********************************************************************************************************************/
 
@@ -3178,13 +3546,6 @@ bind( '.facebook_share_button' , 'click' , null , function(e)
     getModal('facebook_share_modal' , data);
 });
 
-
-
-/***********************************************************************************************************************
- *
- *      ~Facebook Share Modal
- *
- ***********************************************************************************************************************/
 
 bind( '.facebook_share_submit' , 'click' , null , function(e)
 {
@@ -3233,21 +3594,65 @@ bind( '.pin_to_group' , 'click' , null , function(e)
         success: function(data)
         {
             var returned =  eval('(' + data + ')');
-
         }
     });
 });
 
+bind('.pin_it' , 'click' , null , function(e)
+{
+    var c_id = $(this).data("c_id");
+    var g_id = $(".pin_to_select").val();
+    action({
+        data: {
+            'action':'pinContent',
+            'g_id': g_id,
+            'c_id': c_id,
+            'pin':1
+        },
+        success: function(data)
+        {
+            var returned =  eval('(' + data + ')');
+            $(".was_pinned").html(returned.html);
+            $(".was_pinned").fadeIn(500);
+        }
+    });
+});
 
+bind('.unpin_content' , 'click' , null , function(e)
+{
+    var c_id = $(this).data("c_id");
+    var g_id = $(this).data("g_id");
+    var to_remove = $(this).parents(".pinned_wrapper");
+    action({
+        data: {
+            'action':'pinContent',
+            'g_id': g_id,
+            'c_id': c_id,
+            'pin':-1
+        },
+        success: function(data)
+        {
+            to_remove.remove();
+        }
+    });
+});
+
+/***********************************************************************************************************************
+ *
+ *      ~Petition sign
+ *
+ ***********************************************************************************************************************/
 bind('.sign_button' , 'click' , null , function(e)
 {
     var p_id = $(this).data('p_id');
     var signers_sidebar = $(this).parents(".signers_sidebar");
+    var sign_areas = $(".sign_area");
     action({
             data: {'action': 'signPetition', 'p_id':p_id},
             success: function(data) {
                 var returned = eval('(' + data + ')');
-                signers_sidebar.replaceWith(returned.html);
+                sign_areas.replaceWith(returned.sign_area);
+                signers_sidebar.replaceWith(returned.signers_sidebar);
                 updateStats();
             }}
     );
@@ -3257,15 +3662,23 @@ bind('.finalize_button' , 'click' , null , function(e)
 {
     var p_id = $(this).data('p_id');
     var signers_sidebar = $(this).parents(".signers_sidebar");
+    var sign_areas = $(".sign_area");
     action({
             data: {'action': 'finalizePetition', 'p_id':p_id},
             success: function(data) {
                 var returned = eval('(' + data + ')');
-                signers_sidebar.replaceWith(returned.html);
+                sign_areas.replaceWith(returned.sign_area);
+                signers_sidebar.replaceWith(returned.signers_sidebar);
             }}
     );
 });
 
+
+bind('.see_all_signers' , 'click' , null , function(e)
+{
+    var data = { 'p_id' : $(this).data("p_id") };
+    getModal('see_all_signers_modal',data);
+});
 
 /***********************************************************************************************************************
  *
@@ -3330,7 +3743,7 @@ function loadGoogleMap()
         map.overlayMapTypes.insertAt(0, overlayWMS);
     }
 
-    if (reps_latitude && reps_longitude && reps_state && reps_district) {
+    if (rebind=="representatives" && reps_latitude && reps_longitude && reps_state && reps_district) {
         initialize();
     }
 }
@@ -3365,6 +3778,7 @@ bind('.enter_new_address' , 'click' , null , function(e) {
     $(".dismissible_header").show();
 });
 
+
 /***********************************************************************************************************************
  *
  *      ~claim your profile
@@ -3392,4 +3806,294 @@ bind('.ask_to_join' , 'click' , null , function(e)
                 $(".asked_message").fadeIn();
             }}
     );
+});
+
+
+/***********************************************************************************************************************
+ *
+ *      ~like minded group
+ *
+ ***********************************************************************************************************************/
+bind('.find_like_minded' , 'click' , null , function(e)
+{
+    $(".button_result").hide();
+    findNewLikeMinded();
+});
+
+// recursive ajax function for finding new like minded members
+function findNewLikeMinded() {
+    $(".find_loading").show();
+    action({
+            data: {'action': 'findLikeMinded'},
+            success: function(data) {
+                var returned = eval('(' + data + ')');
+                $(".find_loading").hide();
+                var num_new = returned.num_new_members;
+                // display num new members
+                $('.num_new_found').html(num_new);
+                $('.num_processed').html(returned.num_processed);
+                $('.find_result').toggleClass("toggle");
+                $(".find_result").show();
+                // change total members number
+                var total_num = $(".total_members").data('num');
+                total_num += num_new;
+                $(".total_members").html(total_num);
+                $(".total_members").data('num', total_num);
+                // change members/display section
+                $(".total_found").html(total_num);
+                var total_processed = parseInt($(".total_processed").text());
+                $(".total_processed").html(total_processed + returned.num_processed);
+                // if there were members adjust shit appropriately
+                if (num_new != 0) {
+                    $(".no_members").hide();
+                    $(".some_members").show();
+                    $(".like_minded_members").prepend(returned.html);
+                    bindOnNewElements();
+                }
+                if (returned.num_processed != 0) {
+                    findNewLikeMinded();
+                }
+                else {
+                    var message = String(total_num) + " like-minded people were found on LoveGov";
+                    $(".find_result").html(message);
+                }
+            }}
+    );
+}
+
+bind('.clear_like_minded' , 'click' , null , function(e)
+{
+    $(".button_result").hide();
+    if (confirm("are you sure you want to do this? After clearing you will have to recalculate the members of your like-minded group.")) {
+        action({
+                data: {'action': 'clearLikeMinded'},
+                success: function(data) {
+                    $(".like_minded_members").empty();
+                    $(".clear_result").show();
+                    $(".total_members").html(0);
+                    $(".total_members").data('num',0);
+                    $(".total_found").html(0);
+                    $(".total_processed").html(0);
+                }}
+        );
+    }
+});
+
+bind('.like_minded_explanation' , 'click' , null , function(e)
+{
+    $(".button_explanations").show();
+    $(".home_header_info").css("overflow", "visible");
+});
+
+bind('.like_minded_close' , 'click' , null , function(e)
+{
+    $(".home_header_info").css("overflow", "hidden");
+    $(".button_explanations").hide();
+});
+
+
+/***********************************************************************************************************************
+ *
+ *      ~log news link clicks
+ *
+ ***********************************************************************************************************************/
+bind('.news_link' , 'click' , null , function(e)
+{
+    var n_id = $(this).data('n_id');
+    action({
+            data: {'action': 'logLinkClick', 'n_id':n_id},
+            success: function(data) {
+            }
+        });
+    var url = $(this).attr('href');
+    window.open(url);
+});
+
+
+/***********************************************************************************************************************
+ *
+ *      ~running for elections
+ *
+ ***********************************************************************************************************************/
+bind('.run_for' , 'click' , null , function(e)
+{
+    var button = $(this);
+    var e_id = $(this).data('e_id');
+    action({
+        data: {'action': 'runForElection', 'e_id':e_id, 'run':1},
+        success: function(data) {
+            var returned = eval('(' + data + ')');
+            button.replaceWith(returned.html);
+        }
+    });
+});
+
+bind('.stop_running_for' , 'click' , null , function(e)
+{
+    var button = $(this);
+    var e_id = $(this).data('e_id');
+    action({
+        data: {'action': 'runForElection', 'e_id':e_id, 'run':0},
+        success: function(data) {
+            var returned = eval('(' + data + ')');
+            button.replaceWith(returned.html);
+        }
+    });
+});
+
+bind('.invite_to_run_for' , 'click' , null , function(e)
+{
+    var e_id = $(this).data('e_id');
+    getModal('invite_to_run_for_modal' , { 'e_id': e_id });
+});
+
+
+bind('.invite_to_run_for_button' , 'click' , null , function(e)
+{
+    $(".success_message").hide();
+    var e_id = $(this).data('e_id');
+    var invite_email = $(".invite_to_election_email").val();
+    action({
+        data: {'action': 'inviteToRunForElection', 'e_id':e_id, 'invite_email':invite_email},
+        success: function(data) {
+            $(".success_message").show();
+        }
+    });
+});
+
+
+/***********************************************************************************************************************
+ *
+ *      ~filter feed by location
+ *
+ ***********************************************************************************************************************/
+bind('.filter_by_state_select', 'change', null, function(e) {
+        var value = $(this).val();
+        if (value != "") {
+            $(".filter_by_city").show();
+            $("#filter_by_city").focus();
+        }
+        else {
+            $(".filter_by_city").hide();
+        }
+        var feed = $(this).parents(".feed_main");
+        feed.data('state', value);
+        refreshFeed(feed);
+});
+
+bind(".filter_by_city_input", "keypress", function(e) {
+    if(e.keyCode==13) {
+        e.preventDefault();
+        var value = $(this).val();
+        var feed = $(this).parents(".feed_main");
+        feed.data('city', value);
+        refreshFeed(feed);
+    }
+});
+
+
+/***********************************************************************************************************************
+ *
+ *      ~ add to / invite to scorecard
+ *
+ ***********************************************************************************************************************/
+bind(".add_to_scorecard", "click", function(e) {
+    var s_id = $(this).data('s_id');
+    getModal('add_to_scorecard_modal' , { 's_id': s_id }, function() {
+        $(".add_to_select").select2({
+            placeholder: 'Find politicians on LoveGov to add to your scorecard.'
+        });
+    });
+});
+
+
+bind(".add_to_button", "click", function(e) {
+    $(".success_message").hide();
+    var s_id = $(this).data('s_id');
+    var add_ids = $(".add_to_select").val();
+    action({
+        'data': {'action':'addToScorecard', 's_id':s_id, 'add_ids':JSON.stringify(add_ids)},
+        success: function(data)
+        {
+            $(".add_success_message").show();
+        }
+    });
+});
+
+bind(".remove_from_scorecard", "click", function(e) {
+    var s_id = $(this).data('s_id');
+    var p_id = $(this).data('p_id');
+    var wrapper = $(this).parents(".scorecard_avatar_strip_wrapper");
+    action({
+        'data': {'action':'removeFromScorecard', 's_id':s_id, 'p_id':p_id},
+        success: function(data)
+        {
+            wrapper.remove();
+        }
+    });
+});
+
+bind(".invite_to_scorecard_button", "click", function(e) {
+    $(".success_message").hide();
+    var s_id = $(this).data('s_id');
+    var invite_email = $(".invite_to_email").val();
+    action({
+        'data': {'action':'inviteToScorecard', 's_id':s_id, 'invite_email':invite_email},
+        success: function(data)
+        {
+            $(".add_success_message").show();
+            alert(data);
+        }
+    });
+});
+
+/***********************************************************************************************************************
+ *
+ *      ~ Dismissible header stuff
+ *
+ ***********************************************************************************************************************/
+bind(".congress_header_link", "click", function(e) {
+    var url = $(this).data('url');
+    var warning = $(this).data('warning');
+    if (warning == 1) {
+        getModal("answer_questions_warning_modal", {"which":"congress_header"});
+    }
+    else {
+        window.location.href = url;
+    }
+});
+
+
+bind(".find_reps_header_button", "click", function(e) {
+    var zip = $(".reps_zip_input").val();
+    action({
+            data: {'action': 'submitTempAddress', 'address': "", 'city':"", 'state':"",
+                'zip':zip},
+            success: function(data) {
+                window.location.href = "/representatives/";
+            }}
+    );
+});
+
+/***********************************************************************************************************************
+ *
+ *      ~ change privacy mode
+ *
+ ***********************************************************************************************************************/
+bind(".change_privacy_mode", "click", function(e) {
+    var mode = $(this).data('mode');
+    action({
+        'data': {'action':'changePrivacyMode', 'mode':mode},
+        success: function(data)
+        {
+            if (mode=="PRI") {
+                $(".private_mode_button").hide();
+                $(".public_mode_button").show();
+            }
+            else {
+                $(".public_mode_button").hide();
+                $(".private_mode_button").show();
+            }
+        }
+    });
 });

@@ -24,6 +24,7 @@ import json
 import time
 from datetime import timedelta
 from datetime import datetime
+import re
 
 # lovegov
 from lovegov.modernpolitics import custom_fields
@@ -66,7 +67,7 @@ class LGModel(models.Model):
 #=======================================================================================================================
 class Privacy(LGModel):
     privacy = models.CharField(max_length=3, choices=PRIVACY_CHOICES, default='PUB')
-    creator = models.ForeignKey("UserProfile", default=1)             # 154 is lovegov user
+    creator = models.ForeignKey("UserProfile", null=True)             # 154 is lovegov user
     class Meta:
         abstract = True
     #-------------------------------------------------------------------------------------------------------------------
@@ -113,6 +114,14 @@ class Privacy(LGModel):
 
     def getPublic(self):
         return self.privacy == 'PUB'
+
+    def setPublic(self):
+        self.privacy = 'PUB'
+        self.save()
+
+    def setPrivate(self):
+        self.privacy = 'PRI'
+        self.save()
 
 #=======================================================================================================================
 # physical address
@@ -264,9 +273,11 @@ class Content(Privacy, LocationLevel):
     main_image = models.ForeignKey("UserImage", null=True, blank=True)
     active = models.BooleanField(default=True)
     calculated_view = models.ForeignKey("WorldView", null=True, blank=True)     # foreign key to worldview
+    last_answered = models.DateTimeField(auto_now_add=True, null=True)          # last time answer question, or have answers calculated
     # RANK, VOTES
     status = models.IntegerField(default=STATUS_CREATION)
     rank = models.DecimalField(default="0.0", max_digits=4, decimal_places=2)
+    hot_score = models.IntegerField(default=0)                                  # for hot feed
     upvotes = models.IntegerField(default=0)
     downvotes = models.IntegerField(default=0)
     num_comments = models.IntegerField(default=0)
@@ -299,12 +310,14 @@ class Content(Privacy, LocationLevel):
             return '/news/' + str(self.id) + '/'
         elif self.type=='O':
             return '/poll/' + str(self.id) + '/'
+        elif self.type =='S':
+            return '/scorecard/' + str(self.id) + '/'
         elif self.type=='Q':
             return '/question/' + str(self.id) + '/'
         elif self.type=='D':
             return '/discussion/' + str(self.id) + '/'
-        elif self.type=='E':
-            return '/event/' + str(self.id) + '/'
+        elif self.type=='L':
+            return '/legislation/' + str(self.id) + '/'
         elif self.type=='G':
             return self.getAliasURL() or '/group/' + str(self.id) + '/'
         else:
@@ -317,7 +330,7 @@ class Content(Privacy, LocationLevel):
         return self.get_url() + 'breakdown/'
 
     def getCommentsURL(self):
-        return self.get_url() + "#comments-wrapper"
+        return self.get_url() + "#comments"
 
     #-------------------------------------------------------------------------------------------------------------------
     # Gets name of content for display.
@@ -330,6 +343,31 @@ class Content(Privacy, LocationLevel):
         return self.title
     def getTitleDisplay(self):
         return self.downcast().getTitleDisplay()
+    def getFeedTitle(self):
+        return self.downcast().getFeedTitle()
+
+    #-------------------------------------------------------------------------------------------------------------------
+    # gets location string, if content has location
+    #-------------------------------------------------------------------------------------------------------------------
+    def getLocationVerbose(self):
+        to_return = ''
+        if self.location:
+            if self.location.state:
+                to_return = self.location.state
+                if self.location.city:
+                    to_return += ', ' + self.location.city
+        return to_return
+
+    #-------------------------------------------------------------------------------------------------------------------
+    # calculates contents hot_score and saves it
+    #-------------------------------------------------------------------------------------------------------------------
+    def recalculateHotScore(self):
+        votes = Voted.objects.filter(content=self, value=1)
+        score = 0
+        for v in votes:
+            score += v.getHotValue()
+        self.hot_score = score
+        self.save()
 
     #-------------------------------------------------------------------------------------------------------------------
     # returns group that this content was orginally posted to
@@ -461,7 +499,6 @@ class Content(Privacy, LocationLevel):
         else:
             return None
 
-
     #-------------------------------------------------------------------------------------------------------------------
     # Saves a creation relationship for this content, with inputted creator and privacy.
     #-------------------------------------------------------------------------------------------------------------------
@@ -471,8 +508,7 @@ class Content(Privacy, LocationLevel):
         self.save()
         action = CreatedAction(user=creator,content=self,privacy=privacy)
         action.autoSave()
-        self.like(user=creator, privacy=privacy)
-
+        self.like(user=creator, privacy="PRI")
         logger.debug("created " + self.title)
 
     #-------------------------------------------------------------------------------------------------------------------
@@ -522,7 +558,6 @@ class Content(Privacy, LocationLevel):
         self.num_comments += 1
         if commenter and (not commenter in self.commenters.all()):
             self.commenters.add(commenter)
-            self.status += STATUS_COMMENT
         self.save()
 
     #-------------------------------------------------------------------------------------------------------------------
@@ -546,6 +581,8 @@ class Content(Privacy, LocationLevel):
             object = self.userimage
         elif type == 'O':
             object = self.poll
+        elif type == 'S':
+            object = self.scorecard
         elif type == 'G':
             object = self.group
         elif type == 'Z':
@@ -615,21 +652,6 @@ class Content(Privacy, LocationLevel):
             return None
 
     #-------------------------------------------------------------------------------------------------------------------
-    # Returns true if the inputted user should be able to see this content, false otherwise.
-    #-------------------------------------------------------------------------------------------------------------------
-    def GetPrivilege(self, user):
-        if self.privacy == 'PUB':
-            return True
-        elif self.privacy == 'PRI':
-            return False    # or we could check if creator
-        else:
-            privilege = user.privileges.filter(content=self)
-            if privilege:
-                return True
-            else:
-                return False
-
-    #-------------------------------------------------------------------------------------------------------------------
     # Gets a comparison, between inputted user and this content.
     #-------------------------------------------------------------------------------------------------------------------
     def getComparison(self, viewer):
@@ -646,7 +668,7 @@ class Content(Privacy, LocationLevel):
         self.result = comparison.result
 
     #-------------------------------------------------------------------------------------------------------------------
-    # Add like vote to content from inputted user (or adjust his vote appropriately)
+    # voting like/dislike
     #-------------------------------------------------------------------------------------------------------------------
     def like(self, user, privacy):
         my_vote = Voted.lg.get_or_none(user=user, content=self)
@@ -654,81 +676,94 @@ class Content(Privacy, LocationLevel):
         if my_vote:
             # if already liked, do nothing
             if my_vote.value == 1:
-                pass
-
-            # if disliked or neutral, increase vote by 1
+                return my_vote.value
+            # if disliked before, one less downvote
             else:
-                my_vote.value += 1
-
-                # adjust content values about status and vote
-                if my_vote.value == 1:
-                    self.upvotes += 1
-                else:
+                if my_vote.value == -1:
                     self.downvotes -= 1
-
-                self.status += STATUS_VOTE
-                self.save()
-                my_vote.save()
-
-        else:
-            # create new vote
+                    self.status += STATUS_VOTE
+        else:  # create new vote
             my_vote = Voted(value=1, content=self, user=user, privacy=privacy)
             my_vote.autoSave()
-            # adjust content values about status and vote
-            self.upvotes += 1
-            self.status += STATUS_VOTE
-            self.save()
-            creator = self.getCreator()
-            creator.upvotes += 1
-            creator.save()
+
+        my_vote.value = 1
+        my_vote.privacy = privacy
+        my_vote.save()
+        self.upvotes += 1
+        self.status += STATUS_VOTE
+        self.save()
+        creator = self.getCreator()
+        creator.upvotes += 1
+        creator.save()
+
+        # make the action and notify
+        action = VotedAction(user=user,content=self,value=my_vote.value, privacy=privacy)
+        action.autoSave()
+        creator.notify(action)
+
+        return my_vote.value
+
+    def dislike(self, user, privacy):
+        my_vote = Voted.lg.get_or_none(user=user, content=self)
+
+        if my_vote:
+            # if already disliked, do nothing
+            if my_vote.value == -1:
+                return my_vote.value
+            # if liked before, one less upvote
+            else:
+                if my_vote.value == 1:
+                    self.upvotes -= 1
+                    self.status -= STATUS_VOTE
+                    self.creator.upvotes -= 1
+                    self.creator.save()
+        else:  # create new vote
+            my_vote = Voted(value=-1, content=self, user=user, privacy=privacy)
+            my_vote.autoSave()
+
+        my_vote.value = -1
+        my_vote.privacy = privacy
+        my_vote.save()
+        self.downvotes += 1
+        self.status -= STATUS_VOTE
+        self.save()
+
+        # make the action and notify
+        action = VotedAction(user=user,content=self,value=my_vote.value, privacy=privacy)
+        action.autoSave()
+        self.getCreator().notify(action)
+
+        return my_vote.value
+
+    def unvote(self, user, privacy):
+        my_vote = Voted.lg.get_or_none(user=user, content=self)
+
+        if my_vote:
+            # if already disliked, one less downvote
+            if my_vote.value == -1:
+                self.downvotes -= 1
+                self.status += STATUS_VOTE
+                self.save()
+            # if already liked, one less upvote
+            elif my_vote.value == 1:
+                self.upvotes -= 1
+                self.status -= STATUS_VOTE
+                self.save()
+                self.creator.upvotes -= 1
+                self.creator.save()
+        else:  # create new vote
+            my_vote = Voted(value=0, content=self, user=user, privacy=privacy)
+            my_vote.autoSave()
+
+        my_vote.value = 0
+        my_vote.privacy = privacy
+        my_vote.save()
 
         # make the action and notify
         action = VotedAction(user=user,content=self,value=my_vote.value)
         action.autoSave()
-        self.creator.notify(action)
+        self.getCreator().notify(action)
 
-        if self.type == 'M':
-            self.downcast().motionVote(my_vote)
-
-        return my_vote.value
-
-    #-------------------------------------------------------------------------------------------------------------------
-    # Add dislike vote to content from inputted user (or adjust his vote appropriately)
-    #-------------------------------------------------------------------------------------------------------------------
-    def dislike(self, user, privacy):
-        my_vote = Voted.lg.get_or_none(user=user, content=self)
-        if my_vote:
-            # if already disliked, do nothing
-            if my_vote.value == -1:
-                pass
-            else:
-                my_vote.value -= 1
-                # adjust content values about status and vote
-                if my_vote.value == -1:
-                    self.downvotes += 1
-                else:
-                    self.upvotes -= 1
-                self.status -= STATUS_VOTE
-                self.save()
-                my_vote.save()
-        else:
-            # create new vote
-            my_vote = Voted(value=-1, content=self, user=user, privacy=privacy)
-            my_vote.autoSave()
-            # adjust content values about status and vote
-            self.downvotes += 1
-            self.status -= STATUS_VOTE
-            self.save()
-            creator = self.getCreator()
-            creator.downvotes += 1
-            creator.save()
-
-        action = VotedAction(user=user,content=self,value=my_vote.value)
-        action.autoSave()
-        self.creator.notify(action)
-
-        if self.type == 'M':
-            self.downcast().motionVote(my_vote)
         return my_vote.value
 
     #-------------------------------------------------------------------------------------------------------------------
@@ -772,6 +807,10 @@ class Content(Privacy, LocationLevel):
     #-------------------------------------------------------------------------------------------------------------------
     def autoSave(self, creator=None, privacy='PUB'):
         from lovegov.modernpolitics.initialize import getGeneralTopic
+        if self.posted_to:
+            group = self.posted_to
+            group.num_group_content += 1
+            group.save()
         if not self.main_topic:
             self.main_topic = getGeneralTopic()
             self.save()
@@ -884,12 +923,6 @@ class FeedItem(LGModel):
     content = models.ForeignKey(Content)
     rank = models.IntegerField()
 
-class Feed(LGModel):
-    alias = models.CharField(max_length=30)
-    items = models.ManyToManyField(FeedItem)
-    def smartClear(self):
-        self.items.all().delete()
-
 #=======================================================================================================================
 # For storing a user's settings for sending them email alerts about notifications for particular user or content..
 # user_id and content... but only use one field
@@ -906,80 +939,6 @@ class CustomNotificationSetting(LGModel):
             return True
         else:
             return False
-
-#=======================================================================================================================
-# Topic weight, indicates how much to weigh a particular topic.
-#=======================================================================================================================
-class TopicWeight(LGModel):
-    topic = models.ForeignKey(Topic)
-    weight = models.IntegerField(default=100)       # percentage to weight topic
-
-#=======================================================================================================================
-# Type weight, indicates how much to weigh a particular type
-#=======================================================================================================================
-class TypeWeight(LGModel):
-    type = models.CharField(max_length=1, choices=TYPE_CHOICES)
-    weight = models.IntegerField(default=100)       # percentage to weight type
-
-#=======================================================================================================================
-# For storing a ranking system's settings.
-# default =-1 --> no filter
-#=======================================================================================================================
-class FilterSetting(LGModel):
-    alias = models.CharField(max_length=30, default="default")  # unique identifier
-    similarity = models.IntegerField(default=-1)    # filter by similarity percent users are to you
-    days = models.IntegerField(default=-1)          # filter by how many days old max
-    by_topic = models.BooleanField(default=False)   # boolean whether to use topic weights or not
-    by_type = models.BooleanField(default=False)    # boolean whether to use type weights
-    topic_weights = models.ManyToManyField(TopicWeight) # sum of all topic weights should be 100!
-    type_weights = models.ManyToManyField(TypeWeight)   # sum of all type weights should be 100!
-    algo = models.CharField(max_length=1, default='D', choices=ALGO_CHOICES)
-    hot_window = models.IntegerField(default=HOT_WINDOW)
-    def getTopicWeight(self, topic):
-        to_return = self.topic_weights.filter(topic=topic)
-        if to_return:
-            return to_return[0].weight
-        else:
-            return 0
-    def getTypeWeight(self, type):
-        to_return = self.type_weights.filter(type=type)
-        if to_return:
-            return to_return[0].weight
-        else:
-            return 0
-
-class SimpleFilter(LGModel):
-    name = models.CharField(max_length=200, default="default")
-    created_when = models.DateTimeField(auto_now_add=True, null=True)
-    creator = models.ForeignKey("UserProfile", null=True)
-    ranking = models.CharField(max_length=1, choices=RANKING_CHOICES, default="H")
-    topics = models.ManyToManyField(Topic)
-    types = custom_fields.ListField()                  # list of char of included types
-    levels = custom_fields.ListField(default=[])                 # list of char of included levels
-    groups = models.ManyToManyField("Group")
-    submissions_only = models.BooleanField(default=True) # switch between just created (True) and everything they upvoted (False)
-    display = models.CharField(max_length=1, default="P")
-    # which location
-    location = models.ForeignKey("PhysicalAddress", null=True)
-
-    def getDict(self):
-        if self.submissions_only:
-            submissions_only = 1
-        else:
-            submissions_only = 0
-        topics = list(self.topics.all().values_list("id", flat=True))
-        groups = list(self.groups.all().values_list("id", flat=True))
-        to_return = {
-            'name': self.name,
-            'ranking': self.ranking,
-            'types': json.dumps(self.types),
-            'levels': json.dumps(self.levels),
-            'topics': json.dumps(topics),
-            'groups': json.dumps(groups),
-            'submissions_only': submissions_only,
-            'display': self.display
-        }
-        return to_return
 
 #=======================================================================================================================
 # To track promotional codes we advertise to users.
@@ -1043,7 +1002,7 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
     # twitter integration
     twitter_user_id = models.IntegerField(null=True)
     twitter_screen_name = models.CharField(max_length=200, null=True)
-    # info
+    # basic info
     alias = models.CharField(max_length=200, blank=True)
     username = models.CharField(max_length=500, null=True)      # for display, not for login!
     first_name = models.CharField(max_length=200)
@@ -1057,8 +1016,10 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
     developer = models.BooleanField(default=False)  # for developmentWrapper
     user_title = models.CharField(max_length=200,null=True)
     # INFO
+    political_statement = models.TextField(null=True)
     view = models.ForeignKey("WorldView", default=initView)
     networks = models.ManyToManyField("Network", related_name='networks')
+    parties = models.ManyToManyField("Party", related_name='parties')
     location = models.ForeignKey(PhysicalAddress, null=True)
     temp_location = models.ForeignKey(PhysicalAddress, null=True, related_name='temp_users')
     old_locations = models.ManyToManyField(PhysicalAddress, related_name='old_users')
@@ -1075,27 +1036,26 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
     num_posts = models.IntegerField(default=0)
     # old address
     userAddress = models.ForeignKey(UserPhysicalAddress, null=True)
-    # CONTENT LISTS
-    last_answered = models.DateTimeField(auto_now_add=True, default=datetime.datetime.now, blank=True)     # last time answer question
+    # hidden groups
     i_follow = models.ForeignKey('Group', null=True, related_name='i_follow')
     follow_me = models.ForeignKey('Group', null=True, related_name='follow_me')
-    private_follow = models.BooleanField(default=False)
-    my_involvement = models.ManyToManyField(Involved)       # deprecated
-    my_history = models.ManyToManyField(Content, related_name = 'history')   # everything I have viewed
-    privileges = models.ManyToManyField(Content, related_name = 'priv')     # for custom privacy these are the content I am allowed to see
+    like_minded = models.ForeignKey('CalculatedGroup', null=True, related_name="user_origin")
+    # temp data
     last_page_access = models.IntegerField(default=-1, null=True)       # foreign key to page access
-    parties = models.ManyToManyField("Party", related_name='parties')
+    last_answered = models.DateTimeField(auto_now_add=True, default=datetime.datetime.now, blank=True)     # last time answer question
     # my groups and feeds
     group_subscriptions = models.ManyToManyField("Group")
+    group_views = models.ManyToManyField("GroupView")
     # SETTINGS
+    private_follow = models.BooleanField(default=False)
     user_notification_setting = custom_fields.ListField()               # list of allowed types
     content_notification_setting = custom_fields.ListField()            # list of allowed types
     email_notification_setting = custom_fields.ListField()              # list of allowed types
     custom_notification_settings = models.ManyToManyField(CustomNotificationSetting)
-    ghost = models.BooleanField(default=False)
     # Government Stuff
     political_title = models.CharField(max_length=100, default="Citizen")
     primary_role = models.ForeignKey("OfficeHeld", null=True)
+    ghost = models.BooleanField(default=False)
     politician = models.BooleanField(default=False)
     elected_official = models.BooleanField(default=False)
     currently_in_office = models.BooleanField(default=False)
@@ -1103,30 +1063,35 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
     num_supporters = models.IntegerField(default=0)
     num_messages = models.IntegerField(default=0)
     govtrack_id = models.IntegerField(default=-1)
-    political_statement = models.TextField(null=True)
     # anon ids
     anonymous = models.ManyToManyField(AnonID)
-    # deprecated
-    my_feed = models.ManyToManyField(FeedItem, related_name="newfeed")  # for storing feed based on my custom setting below
-    filter_setting = models.ForeignKey(FilterSetting, null=True)
-    evolve = models.BooleanField(default=False)     # boolean as to whether their filter setting should learn from them and evolve
+
 
     def __unicode__(self):
         return self.first_name
+
+    #-------------------------------------------------------------------------------------------------------------------
+    # on register, autosubscribe for some groups
+    #-------------------------------------------------------------------------------------------------------------------
+    def autoSubscribe(self):
+        from lovegov.modernpolitics.initialize import getLoveGovGroup, getPresidentialElection2012
+        from lovegov.modernpolitics.actions import followGroupAction
+
+        lg = getLoveGovGroup()
+        followGroupAction(self, lg, True, "PRI")
+
+        p = getPresidentialElection2012()
+        followGroupAction(self, p, True, "PRI")
+
+    #-------------------------------------------------------------------------------------------------------------------
+    # duck typing
+    #-------------------------------------------------------------------------------------------------------------------
     def get_url(self):
         if self.alias!='' and self.alias!='default':
             return '/' + self.alias + '/'
         else:
             return '/profile/' + str(self.id) + '/'
-    def getQuestionsURL(self):
-        return self.get_url() + 'worldview/'
 
-    def getWebUrl(self):
-        return self.getWebURL()
-    def getWebURL(self):
-        return '/profile/web/' + self.alias + '/'
-    def getAlphaURL(self):
-        return self.get_url()
     def get_name(self):
         try:
             to_return = (self.first_name + " " + self.last_name)
@@ -1139,6 +1104,16 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
         except UnicodeEncodeError:
             to_return = "UnicodeEncodeError"
         return to_return
+
+    #-------------------------------------------------------------------------------------------------------------------
+    # getters and setters and helpers
+    #-------------------------------------------------------------------------------------------------------------------
+    def getQuestionsURL(self):
+        return self.get_url() + 'worldview/'
+
+    def getIFollowHistogramURL(self):
+        return self.i_follow.getHistogramURL()
+
     def get_nameShort(self, max_length=15):
         try:
             fullname = str(self.first_name) + " " + str(self.last_name)
@@ -1185,6 +1160,30 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
         self.age = years
         self.save()
 
+    def clearResponses(self):
+        return self.getView().clearResponses()
+
+    def getResponseToQuestion(self, question):
+        response = self.view.responses.filter(question=question)
+        if response:
+            response = response[0]
+            return response
+        else:
+            return None
+
+    def getGroupView(self, group):
+        group_view = self.group_views.filter(group=group)
+        if not group_view:
+            group_view = GroupView(group=group)
+            group_view.save()
+            self.group_views.add(group_view)
+        else:
+            group_view = group_view[0]
+        return group_view
+
+    #-------------------------------------------------------------------------------------------------------------------
+    # special user checks
+    #-------------------------------------------------------------------------------------------------------------------
     def isAnon(self):
         return self.alias == 'anonymous'
 
@@ -1193,9 +1192,6 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
 
     def isNormal(self):
         return not (self.politician or self.elected_official)
-
-    def clearResponses(self):
-        return self.getView().clearResponses()
 
     #-------------------------------------------------------------------------------------------------------------------
     # automatically parse city and state groups
@@ -1221,6 +1217,22 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
         if self.location:
             self.joinTownGroup(self.location.city, self.location.state)
             self.joinStateGroup(self.location.state)
+
+
+    def getRepresentatives(self, location=None):
+        from lovegov.modernpolitics.initialize import getSensFromState, getRepsFromLocation
+        congressmen = []
+        if not location:
+            location = self.location or self.temp_location
+        if location and location.state:
+            senators = getSensFromState(location.state)
+            for s in senators:
+                congressmen.append(s)
+            if location.district:
+                reps = getRepsFromLocation(location.state, location.district)
+                for r in reps:
+                    congressmen.append(r)
+        return congressmen
 
     #-------------------------------------------------------------------------------------------------------------------
     # returns the number of separate sessions a user has had.
@@ -1295,7 +1307,7 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
 
     def getComparisonJSON(self, viewer):
         comparison = self.getComparison(viewer)
-        return comparison, comparison.toJSON(viewB_url=self.getWebURL())
+        return comparison, comparison.toJSON()
 
     def prepComparison(self, viewer):
         comparison, json = self.getComparisonJSON(viewer)
@@ -1325,12 +1337,35 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
         self.save()
 
     #-------------------------------------------------------------------------------------------------------------------
-    # create default fillter
+    # get my like-minded group if it exists, or return none
     #-------------------------------------------------------------------------------------------------------------------
-    def createDefaultFilter(self):
-        filter = SimpleFilter(creator=self, ranking="N")
-        filter.save()
-        self.my_filters.add(filter)
+    def getLikeMindedGroup(self):
+        if self.like_minded:
+            return self.like_minded
+        else:
+            return self.initializeLikeMindedGroup()
+
+    def initializeLikeMindedGroup(self):
+        if self.num_answers < 20:
+            return None
+        like_minded = CalculatedGroup().createLikeMinded(self)
+        self.like_minded = like_minded
+        self.save()
+        return like_minded
+
+    def findLikeMinded(self, num=LIKE_MINDED_FIND_INCREMENT):
+        like_minded = self.getLikeMindedGroup()
+        if like_minded:
+            return like_minded.calculate(num=num)
+        else:
+            return None
+
+    def clearLikeMinded(self):
+        like_minded = self.getLikeMindedGroup()
+        if like_minded:
+            return like_minded.clear()
+        else:
+            return None
 
     #-------------------------------------------------------------------------------------------------------------------
     # get last page access
@@ -1356,7 +1391,6 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
         else:
             return "Anonymous"
 
-
     #-------------------------------------------------------------------------------------------------------------------
     # Gets profile image for this user.
     #-------------------------------------------------------------------------------------------------------------------
@@ -1379,6 +1413,9 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
     def getImageURL(self):
         return self.getProfileImageURL()
 
+    #-------------------------------------------------------------------------------------------------------------------
+    # Stats recalculate
+    #-------------------------------------------------------------------------------------------------------------------
     def userPetitionsRecalculate(self):
         self.num_petitions = Created.objects.filter(user=self,content__type="P").count()
         self.save()
@@ -1396,6 +1433,9 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
         self.userNewsRecalculate()
         self.userCommentsRecalculate()
 
+    #-------------------------------------------------------------------------------------------------------------------
+    # politician support
+    #-------------------------------------------------------------------------------------------------------------------
     def getSupporters(self):
         support = Supported.objects.filter(user=self, confirmed=True)
         supporter_ids = support.values_list('to_user', flat=True)
@@ -1614,33 +1654,6 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
             self.profile_image = img
             self.save()
 
-
-
-    #-------------------------------------------------------------------------------------------------------------------
-    # Creates involvement tuple and adds it to myinvolvement if user is not already involved with inputted content
-    # otherwise just increases amount of invovlement in tupble.
-    #-------------------------------------------------------------------------------------------------------------------
-    def updateInvolvement(self, content, amount):
-        c = self.my_involvement.filter(content=content)
-        # if already involved with content, increase your involvement
-        if c:
-            c[0].involvement += amount
-            c[0].when = datetime.datetime.now()
-            c[0].save()
-        # else create new involved and add to myinvolvement
-        else:
-            i = Involved(content=content, involvement=amount)
-            i.save()
-            self.my_involvement.add(i)
-
-    #-------------------------------------------------------------------------------------------------------------------
-    # Send email to user alerting them of notificaiton... depending on their settings.
-    #-------------------------------------------------------------------------------------------------------------------
-    def emailNotification(self, notification):
-        pass
-        #send_mail(subject='Notification', message=notification.getEmail(),
-        # from_email='info@lovegov.com', recipient_list=[self.email])
-
     #-------------------------------------------------------------------------------------------------------------------
     # If user has settings to get notified for inputted notification, saves notification and returns True
     # otherwise, does nothing and returns false
@@ -1727,12 +1740,6 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
         lovegov.joinMember(self)
 
     #-------------------------------------------------------------------------------------------------------------------
-    # Clears m2m and deletes tuples
-    #-------------------------------------------------------------------------------------------------------------------
-    def smartClearMyFeed(self):
-        self.my_feed.all().delete()
-
-    #-------------------------------------------------------------------------------------------------------------------
     # Returns a query set of all notifications.
     #-------------------------------------------------------------------------------------------------------------------
     def getNotifications(self, start=0, num=-1, new=False, old=False):
@@ -1756,7 +1763,7 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
     # Returns a users recent activity.
     #-------------------------------------------------------------------------------------------------------------------
     def getActivity(self, start=0, num=-1):
-        actions = self.actions.all().order_by('-when')
+        actions = self.actions.filter(privacy="PUB").order_by('-when')
         if num != -1:
             actions = actions[start:start+num]
         return actions
@@ -1807,6 +1814,13 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
         return self.networks.all()
 
     def getGroupSubscriptions(self):
+        return self.getSubscriptions().filter(is_election=False)
+
+    def getElectionSubscriptions(self):
+        e_ids = self.getSubscriptions().filter(is_election=True).values_list("id", flat=True)
+        return Election.objects.filter(id__in=e_ids)
+
+    def getSubscriptions(self):
         return self.group_subscriptions.all()
 
     def getPoliticians(self):
@@ -1913,45 +1927,6 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
 
         return qr
 
-
-    def setAddress(self, newAddress):
-        self.userAddress.currentAddress = False
-        self.userAddress.save()
-        newAddress.currentAddress = True
-        self.userAddress = newAddress
-        self.save()
-
-
-#    def getSupporters(self):
-#        support = Supported.objects.filter(user=self, confirmed=True)
-#        supporter_ids = support.values_list('to_user', flat=True)
-#        return UserProfile.objects.filter(id__in=supporter_ids)
-
-    def addSupporter(self, user):
-        supported = Supported.lg.get_or_none(user=user, to_user=self)
-        if not supported:
-            supported = Supported(user=user, to_user=self)
-            supported.confirmed()
-            supported.autoSave()
-            supporters.add(user)
-            self.num_supporters += 1
-            self.save()
-        if not supported.confirmed:
-            supported.confirmed = True
-            supported.save()
-            self.num_supporters += 1
-            self.save()
-
-    def removeSupporter(self, user):
-        supported = Supported.lg.get_or_none(user=user, to_user=self)
-        if supported and supported.confirmed:
-            supported.confirmed = False
-            supported.save()
-            self.num_supporters -= 1
-            self.save()
-        if user in supporters:
-            supporters.remove(user)
-
 #=======================================================================================================================
 # Permissions for user to modify shit.. right now just char Field, but could be expanded later
 #=======================================================================================================================
@@ -2014,6 +1989,12 @@ class Action(Privacy):
             object = self.messagedaction
         elif action_type == 'GF':
             object = self.groupfollowaction
+        elif action_type == 'PI':
+            object = self.pinnedaction
+        elif action_type == 'RU':
+            object = self.runningforaction
+        elif action_type == 'AD':
+            object = self.addtoscorecardaction
         else:
             object = None
         return object
@@ -2056,6 +2037,35 @@ class SignedAction(Action):
         return render_to_string('site/pieces/actions/signed_verbose.html',vals)
 
 #=======================================================================================================================
+# Running for an election
+#=======================================================================================================================
+class RunningForAction(Action):
+    election = models.ForeignKey('Election')
+    modifier = models.CharField(max_length=1, choices=ACTION_MODIFIERS)
+
+    def autoSave(self):
+        self.action_type = 'RU'
+        super(RunningForAction,self).autoSave()
+
+    def getTo(self):
+        return self.election
+
+    def getVerbose(self,viewer=None,vals={}):
+        you_acted = False
+        if viewer.id == self.user.id:
+            you_acted = True
+
+        vals.update({
+            'timestamp' : self.when,
+            'user' : self.user,
+            'you_acted' : you_acted,
+            'to_object' : self.election,
+            'modifier' : self.modifier
+        })
+
+        return render_to_string('site/pieces/actions/runningfor_verbose.html',vals)
+
+#=======================================================================================================================
 # Following or unfollowing a group, aka adding or removing from group subscriptions
 #=======================================================================================================================
 class GroupFollowAction(Action):
@@ -2070,14 +2080,28 @@ class GroupFollowAction(Action):
 
     def autoSave(self):
         self.action_type = 'GF'
-        self.privacy = "PRI"
+        if not self.group.is_election:
+            self.privacy = "PRI"
         super(GroupFollowAction,self).autoSave()
 
     def getTo(self):
         return self.group
 
     def getVerbose(self,viewer=None,vals={}):
-        return None
+        you_acted = False
+        if viewer.id == self.user.id:
+            you_acted = True
+
+        vals.update({
+            'timestamp' : self.when,
+            'user' : self.user,
+            'you_acted' : you_acted,
+            'to_object' : self.group,
+            'modifier' : self.modifier
+        })
+
+        return render_to_string('site/pieces/actions/group_follow_verbose.html',vals)
+
 
 
 #=======================================================================================================================
@@ -2086,6 +2110,7 @@ class GroupFollowAction(Action):
 class MessagedAction(Action):
     politician = models.ForeignKey(UserProfile)
     message = models.TextField()
+    phone_number = models.CharField(max_length=50, null=True)
 
     def autoSave(self):
         self.action_type = 'ME'
@@ -2197,7 +2222,7 @@ class EditedAction(Action):
             'timestamp' : self.when,
             'user' : self.user,
             'you_acted' : you_acted,
-            'to_object' : self.content
+            'to_object' : self.content.downcast()
         })
 
         return render_to_string('site/pieces/actions/edited_verbose.html',vals)
@@ -2245,6 +2270,73 @@ class SharedAction(Action):
 
         return render_to_string('site/pieces/actions/shared_verbose.html',vals)
 
+
+#=======================================================================================================================
+# Pinning content to a group
+#=======================================================================================================================
+class PinnedAction(Action):
+    content = models.ForeignKey(Content)
+    to_group = models.ForeignKey('Group',null=True,related_name="pinned_to_actions")
+    confirmed = models.BooleanField(default=True)
+
+    def getTo(self):
+        return self.to_group
+
+    def autoSave(self):
+        self.action_type = 'PI'
+        super(PinnedAction,self).autoSave()
+
+    def getVerbose(self,viewer=None,vals={}):
+        you_acted = False
+        if viewer.id == self.user.id:
+            you_acted = True
+
+        to_object = self.to_group
+
+        vals.update({
+            'timestamp' : self.when,
+            'user' : self.user,
+            'you_acted' : you_acted,
+            'pinned_object' : self.content,
+            'to_object' : to_object,
+            'confirmed': self.confirmed
+        })
+
+        return render_to_string('site/pieces/actions/pinned_verbose.html',vals)
+
+#=======================================================================================================================
+# Add a person to a scorecard
+#=======================================================================================================================
+class AddToScorecardAction(Action):
+    politician = models.ForeignKey(UserProfile, null=True)                          # if null, then it was an invite
+    invite_email = models.EmailField(null=True)
+    scorecard = models.ForeignKey("Scorecard", related_name="added_actions")
+    confirmed = models.BooleanField(default=True)
+
+    def getTo(self):
+        return self.scorecard
+
+    def autoSave(self):
+        self.action_type = 'AD'
+        super(AddToScorecardAction,self).autoSave()
+
+    def getVerbose(self,viewer=None,vals={}):
+        you_acted = False
+        if viewer.id == self.user.id:
+            you_acted = True
+
+        to_object = self.scorecard
+
+        vals.update({
+            'timestamp' : self.when,
+            'user' : self.user,
+            'you_acted' : you_acted,
+            'added' : self.politician,
+            'to_object' : to_object,
+            'confirmed': self.confirmed
+        })
+
+        return render_to_string('site/pieces/actions/add_to_scorecard_verbose.html',vals)
 
 #=======================================================================================================================
 # Deleting some content action
@@ -2412,7 +2504,8 @@ class GroupJoinedAction(Action):
             'group' : group_joined.group,
             'inviter' : inviter,
             'from_user' : group_joined.user,
-            'modifier' : self.modifier
+            'modifier' : self.modifier,
+            'election': group_joined.group.is_election
         })
 
         return render_to_string('site/pieces/actions/group_joined_verbose.html',vals)
@@ -2436,12 +2529,13 @@ class VotedAction(Action):
         you_acted = False
         if viewer.id == self.user.id:
             you_acted = True
+        content = self.content
 
         vals.update({
             'timestamp' : self.when,
             'user' : self.user,
             'you_acted' : you_acted,
-            'to_object' : self.content,
+            'to_object' : content,
             'value' : self.value
         })
 
@@ -2452,20 +2546,42 @@ class VotedAction(Action):
 # Notifying a user of something important to them. privacy is in case they ought not be able to see who
 #=======================================================================================================================
 class Notification(Privacy):
-    notify_user = models.ForeignKey(UserProfile, related_name="notifications")
+    notify_user = models.ForeignKey(UserProfile, related_name="notifications", null=True)
     action = models.ForeignKey(Action , related_name="notifications") ## For Aggregate Notifications :: most recent action
     viewed = models.BooleanField(default=False)
     when = models.DateTimeField(auto_now_add=True)
     # for aggregating notifications like facebook
     agg_actions = models.ManyToManyField(Action , related_name="agg_notifications")
+    # for inviting people who are off of LoveGov
+    notify_email = models.EmailField(null=True)
 
+    ## when someone registers and notification gets associated with them ##
+    def claimedByProfile(self, user):
+        self.notify_user = user
+        self.save()
+        # based on action type could actually do some stuff
+        action = self.action.downcast()
+        if action.action_type == 'AD':
+            action.politician = user
+            action.save()
+            action.scorecard.politicians.add(user)
+        if action.action_type == 'JO':
+            relationship = action.group_joined
+            if relationship.invite_email == user.email:
+                logger.debug("successful claim of invite relationship by " + user.email)
+                relationship.user = user
+                relationship.save()
+            else:
+                logger.error("user was made to claim invited relationship that wasn't their email? " + str(relationship.invite_email) + " | " + user.email)
+
+
+    ## aggregate actions ##
     def addAggAction(self,action):
         self.agg_actions.add(action)
         if action.privacy == "PUB":
             self.action = action
         self.viewed = False
         self.save()
-
 
     ## Notificaitons Verbose Switch ##
     def getVerbose(self,viewer,vals={}):
@@ -2486,6 +2602,8 @@ class Notification(Privacy):
             return self.getSharedVerbose(viewer,vals)
         elif type == 'SU':
             return self.getSupportedVerbose(viewer, vals)
+        elif type == 'AD':
+            return self.getAddedToScorecardVerbose(viewer, vals)
         else:
             return ''
 
@@ -2522,8 +2640,7 @@ class Notification(Privacy):
             'timestamp' : action.when,
             'user' : action_user,
             'you_acted' : you_acted,
-            'to_object' : action.content,
-            'tally' : action.agg_actions.count()
+            'to_object' : action.petition,
         })
 
         return render_to_string('site/pieces/notifications/signed_verbose.html',vals)
@@ -2610,7 +2727,8 @@ class Notification(Privacy):
             'inviter' : inviter,
             'from_user' : group_joined.user,
             'modifier' : action.modifier,
-            'group_join' : group_joined
+            'group_join' : group_joined,
+            'election': group_joined.group.is_election
         })
 
         return render_to_string('site/pieces/notifications/group_joined_verbose.html',vals)
@@ -2690,6 +2808,27 @@ class Notification(Privacy):
 
         return render_to_string('site/pieces/notifications/support_verbose.html',vals)
 
+
+        ## Added to scorecard Verbose ##
+    def getAddedToScorecardVerbose(self,viewer=None,vals={}):
+        action = self.action.downcast()
+        action_user = self.action.user
+
+        you_acted = False
+        if viewer.id == action_user.id:
+            you_acted = True
+
+        vals.update({
+            'timestamp' : action.when,
+            'from_user' : action_user,
+            'you_acted' : you_acted,
+            'scorecard' : action.scorecard,
+            'confirmed': action.confirmed
+        })
+
+        return render_to_string('site/pieces/notifications/added_to_scorecard_verbose.html',vals)
+
+
 ########################################################################################################################
 ############ POLITICAL_ROLE ############################################################################################
 class Office(Content):
@@ -2740,6 +2879,11 @@ class Petition(Content):
 
     def getTitleDisplay(self):
         return "Petition: " + self.title
+    def getFeedTitle(self):
+        return self.getTitleDisplay()
+
+    def getTypeIconClass(self):
+        return "petition-image"
 
     def getFilledPercent(self):
         return int(100*(self.current / float(self.goal)))
@@ -2776,6 +2920,9 @@ class Petition(Content):
 
                 user.num_signatures += 1
                 user.save()
+
+                # if you signed then you liked it
+                self.like(user, "PRI")
 
                 return True
         else:
@@ -2832,9 +2979,15 @@ class News(Content):
     link = models.URLField()
     link_summary = models.TextField(default="")
     link_screenshot = models.ImageField(upload_to='screenshots/')
+    link_clicks = models.IntegerField(default=0)
 
     def getTitleDisplay(self):
         return "News: " + self.title
+    def getFeedTitle(self):
+        return self.title
+
+    def getTypeIconClass(self):
+        return "news-image"
 
     def autoSave(self, creator=None, privacy='PUB'):
         self.type = 'N'
@@ -2876,6 +3029,12 @@ class Discussion(Content):
 
     def getTitleDisplay(self):
         return "Discussion: " + self.title
+
+    def getFeedTitle(self):
+        return self.getTitleDisplay()
+
+    def getTypeIconClass(self):
+        return "discussion-image"
 
 #=======================================================================================================================
 # Comment (the building block of forums)
@@ -2985,6 +3144,7 @@ class Legislation(Content):
     # Bill Identifiers
     congress_session = models.ForeignKey(CongressSession)
     bill_type = models.CharField(max_length=2)
+    congress_body = models.CharField(max_length=1, default="H")             # can be h or s (house or senate)
     bill_number = models.IntegerField()
     # Bill Times
     bill_updated = models.DateTimeField(null=True)
@@ -2994,7 +3154,7 @@ class Legislation(Content):
     state_text = models.CharField(max_length=50,null=True)
     # Title
     full_title = models.CharField(max_length=5000,null=True)
-    # Sponsors
+    # Sponsorsmodels.py
     # cosponsor relationship is stored in LegislationCosponsor object.  To retrieve them you can use "self.legislation_cosponsors"
     sponsor = models.ForeignKey(UserProfile, related_name="sponsored_legislation", null=True)
     committees = models.ManyToManyField('Committee', related_name="legislation_committees", null=True)
@@ -3004,6 +3164,13 @@ class Legislation(Content):
     bill_summary = models.TextField(null=True,max_length=400000)
     # action relationship is stored in LegislationAction object.  To retrieve them you can use "self.legislation_actions"
 
+    def setCongressBody(self):
+        if self.bill_type.startswith("h"):
+            self.congress_body = "H"
+        elif self.bill_type.startswith("s"):
+            self.congress_body = "S"
+        self.save()
+
     def getTitle(self):
         if self.title and self.title != '':
             return self.title
@@ -3011,6 +3178,12 @@ class Legislation(Content):
             return self.full_title
         else:
             return 'No Legislation Title Available'
+
+    def getTitleDisplay(self):
+        return "Legislation: " + self.getTitle()
+
+    def getFeedTitle(self):
+        return self.getTitleDisplay()
 
     # Returns a list of UserProfile objects that are cosponsors
     # in order to return a list of all LegislationCosponsor relationships, use the query "self.legislation_cosponsors"
@@ -3347,6 +3520,11 @@ class Poll(Content):
 
     def getTitleDisplay(self):
         return "Poll: " + self.title
+    def getFeedTitle(self):
+        return self.getTitleDisplay() + ' (' + str(self.num_questions) + ' questions)'
+
+    def getTypeIconClass(self):
+        return "poll-image"
 
     def get_url(self):
         return '/poll/' + str(self.id) + '/'
@@ -3358,10 +3536,66 @@ class Poll(Content):
         super(Poll, self).autoSave(creator=creator, privacy=privacy)
 
     def addQuestion(self, q):
-        if q not in self.questions.all():
-            self.questions.add(q)
-            self.num_questions += 1
-            self.save()
+        self.questions.add(q)
+        self.num_questions += 1
+        self.save()
+
+    def getPollProgress(self, viewer):
+        q_ids = self.questions.all().values_list('id', flat=True)
+        responses = viewer.view.responses.filter(question_id__in=q_ids).exclude(most_chosen_answer_id=-1)
+        completed = responses.count()
+        total = len(q_ids)
+        finished = completed >= total
+        poll_progress = {'completed':completed, 'total':total, 'finished':finished}
+        return poll_progress
+
+#=======================================================================================================================
+# Scorecard, a group response to a poll
+#
+#=======================================================================================================================
+class Scorecard(Content):
+    group = models.ForeignKey("Group", null=True, related_name="scorecards")
+    poll = models.ForeignKey(Poll)
+    scorecard_view = models.ForeignKey("WorldView")
+    politicians = models.ManyToManyField(UserProfile)
+    full_text = models.TextField()
+
+    def autoSave(self, creator=None, privacy="PUB"):
+        self.type = "S"
+        scorecard_view = WorldView()
+        scorecard_view.save()
+        self.scorecard_view = scorecard_view
+        self.in_feed = False
+        if not self.summary:
+            self.summary = self.full_text[:200]
+        self.save()
+        if self.group:
+            self.group.scorecard = self
+            self.group.save()
+        super(Scorecard, self).autoSave(creator=creator, privacy=privacy)
+
+
+    def getTitleDisplay(self):
+        return "Scorecard: " + self.title
+    def getFeedTitle(self):
+        return self.getTitleDisplay()
+
+    def getEditURL(self):
+        return self.get_url() + 'edit/'
+
+
+    def getPermissionToEdit(self, viewer):
+        if self.group:
+            return self.group.hasAdmin(viewer)
+        else:
+            return viewer == self.creator
+
+    def getScorecardComparisonURL(self, user):
+        return self.get_url() + user.alias + '/'
+
+    def getComparison(self, user):
+        from lovegov.modernpolitics.compare import getUserScorecardComparison
+        return getUserScorecardComparison(user=user, scorecard=self)
 
 #=======================================================================================================================
 # Answer
@@ -3375,6 +3609,8 @@ class Answer(LGModel):
         pass
     def __unicode__(self):
         return self.answer_text
+    def autoSave(self):
+        self.save()
 
 #=======================================================================================================================
 # Question
@@ -3384,6 +3620,7 @@ class Question(Content):
     question_text = models.TextField(max_length=500)
     question_type = models.CharField(max_length=2, default="D")
     relevant_info = models.TextField(max_length=1000, blank=True, null=True)
+    source = models.TextField(max_length=500, blank=True, null=True)
     official = models.BooleanField()
     lg_weight = models.IntegerField(default=5)
     answers = models.ManyToManyField(Answer)
@@ -3396,6 +3633,11 @@ class Question(Content):
 
     def getTitleDisplay(self):
         return "Question: " + self.title
+    def getFeedTitle(self):
+        return ""
+
+    def getTypeIconClass(self):
+        return "question-image"
 
     def autoSave(self, creator=None, privacy='PUB'):
         self.type = "Q"
@@ -3417,6 +3659,10 @@ class Question(Content):
             return self.main_image.image.url
         else:
             return DEFAULT_DISCUSSION_IMAGE_URL
+
+    def addAnswer(self, a):
+        self.answers.add(a)
+        self.save()
 
 
 #=======================================================================================================================
@@ -3455,9 +3701,6 @@ class Response(Content):
         self.in_feed = False
         self.save()
         self.type = 'R'
-        if creator:
-            view = creator.getView()
-            view.responses.add(self)
         super(Response, self).autoSave(creator=creator, privacy=privacy)
         self.setMainTopic(self.question.getMainTopic())
 
@@ -3551,7 +3794,7 @@ class ViewComparison(LGModel):
         else: vals['user_url'] = ''
         return vals
 
-    def  toDict(self, viewB_url=''):
+    def toDict(self, viewB_url=''):
         from lovegov.modernpolitics.helpers import getMainTopics
         to_return = []
         fast_comparison = self.loadOptimized()
@@ -3604,9 +3847,6 @@ class ViewComparison(LGModel):
             to_return['main'] = {'result':total_bucket.getSimilarityPercent(),'num_q':total_bucket.num_questions}
             to_return['main']['empty'] = 100 - to_return['main']['result']
             return to_return
-
-
-
 
     def toJSON(self, viewB_url=''):
         return json.dumps(self.toDict(viewB_url))
@@ -3671,17 +3911,23 @@ class Group(Content):
     admins = models.ManyToManyField(UserProfile, related_name='admin_of')
     members = models.ManyToManyField(UserProfile, related_name='member_of')
     num_members = models.IntegerField(default=0)
+    num_followers = models.IntegerField(default=0)
+    # content
+    scorecard = models.ForeignKey(Scorecard, null=True, related_name="group_origins")
+    group_content = models.ManyToManyField(Content, related_name="in_groups")
+    num_group_content = models.IntegerField(default=0)
     # info
     full_text = models.TextField(max_length=1000)
     pinned_content = models.ManyToManyField(Content, related_name='pinned_to')
     group_view = models.ForeignKey(WorldView)           # these are all aggregate response, so they can be downcasted
     # group type
-    group_type = models.CharField(max_length=1,choices=GROUP_TYPE_CHOICES, default='S')
+    group_type = models.CharField(max_length=1,choices=GROUP_TYPE_CHOICES, default='U')
     group_privacy = models.CharField(max_length=1,choices=GROUP_PRIVACY_CHOICES, default='O')   # for non-system groups, is it open or invite-only?
     system = models.BooleanField(default=False)                                                 # indicates users can't voluntarily join or leave
     hidden = models.BooleanField(default=False)                                                 # indicates that a group shouldn't be visible in lists [like-minded, folow groups etc]
     autogen = models.BooleanField(default=False)                                                # indicates whether we created group or not
     subscribable = models.BooleanField(default=True)                                            # indicates whether or not you can follow or unfollow this group
+    is_election = models.BooleanField(default=False)
     content_by_posting = models.BooleanField(default=True)                                      # if true, group content is determined based on what is posted to group
                                                                                                 # else false, then group content is determined by things created by members anywhere
     # democratic groups
@@ -3693,12 +3939,38 @@ class Group(Content):
 
     def getTitleDisplay(self):
         return "Group: " + self.title
+    def getFeedTitle(self):
+        return self.getTitleDisplay()
 
     #-------------------------------------------------------------------------------------------------------------------
     # gets content posted to group, for feed
     #-------------------------------------------------------------------------------------------------------------------
     def getContent(self):
-        return Content.objects.filter(posted_to=self, in_feed=True)
+        if self.content_by_posting:
+            return Content.objects.filter(posted_to=self, in_feed=True)
+        else:
+            members_ids = self.members.all().values_list("id", flat=True)
+            content = Content.objects.filter(in_feed=True, creator_id__in=members_ids)
+            return content
+
+    def recalculateGroupContent(self):
+        self.group_content.clear()
+        for x in self.getContent():
+            self.group_content.add(x)
+        self.recalculateNumContent()
+
+    def recalculateNumContent(self):
+        self.num_group_content = self.group_content.count()
+        self.save()
+
+    def getNumNewContent(self, viewer):
+        group_view = viewer.getGroupView(self)
+        return self.num_group_content - group_view.seen
+
+    def setNewContentSeen(self, viewer):
+        group_view = viewer.getGroupView(self)
+        group_view.seen = self.num_group_content
+        group_view.save()
 
     #-------------------------------------------------------------------------------------------------------------------
     # gets url for content
@@ -3720,8 +3992,6 @@ class Group(Content):
             object = self.party
         elif type == 'U':
             object = self.usergroup
-        elif type == 'E':
-            object = self.election
         elif type == 'S':
             object = self.stategroup
         elif type == 'C':
@@ -3730,6 +4000,10 @@ class Group(Content):
             object = self.towngroup
         elif type == 'Y':
             object = self.politiciangroup
+        elif type == 'X':
+            object = self.calculatedgroup
+        elif type == 'E':
+            object = self.election
         else: object = self
         return object
 
@@ -3805,6 +4079,14 @@ class Group(Content):
         self.save()
 
     #-------------------------------------------------------------------------------------------------------------------
+    # Thin wrapper for adding admin.
+    #-------------------------------------------------------------------------------------------------------------------
+    def addAdmin(self, user):
+        if not self.is_election and not self.hasMember(user):
+            self.joinMember(user)
+        self.admins.add(user)
+
+    #-------------------------------------------------------------------------------------------------------------------
     # Joins a member to the group and creates GroupJoined appropriately.
     #-------------------------------------------------------------------------------------------------------------------
     def joinMember(self, user, privacy='PUB'):
@@ -3812,8 +4094,9 @@ class Group(Content):
         if not group_joined:
             group_joined = GroupJoined(user=user, group=self)
             group_joined.autoSave()
+        group = group_joined.group
         group_joined.privacy = privacy
-        if not group_joined.confirmed and not group_joined.group.system:
+        if not group_joined.confirmed and not group.hidden and not group.is_election:
             user.num_groups += 1
             user.save()
         group_joined.confirm()
@@ -3832,8 +4115,9 @@ class Group(Content):
         if not group_joined:
             group_joined = GroupJoined(user=user, group=self)
             group_joined.autoSave()
+        group = group_joined.group
         group_joined.privacy = privacy
-        if group_joined.confirmed and not group_joined.group.hidden:
+        if group_joined.confirmed and not group.hidden and not group.is_election:
             user.num_groups -= 1
             user.save()
         group_joined.clear()
@@ -3885,12 +4169,6 @@ class Group(Content):
         super(Group, self).autoSave(creator=creator, privacy=privacy)
 
     #-------------------------------------------------------------------------------------------------------------------
-    # getFeed
-    #-------------------------------------------------------------------------------------------------------------------
-    def getFeed(self):
-        return self.group_newfeed.order_by('-rank')
-
-    #-------------------------------------------------------------------------------------------------------------------
     # getGroupView
     #-------------------------------------------------------------------------------------------------------------------
     def getGroupView(self):
@@ -3907,22 +4185,21 @@ class Group(Content):
             return False
 
     #-------------------------------------------------------------------------------------------------------------------
+    # check if group has admin
+    #-------------------------------------------------------------------------------------------------------------------
+    def hasAdmin(self, user):
+        test = self.admins.filter(id=user.id)
+        if test:
+            return True
+        else:
+            return False
+
+    #-------------------------------------------------------------------------------------------------------------------
     # gets group motions
     #-------------------------------------------------------------------------------------------------------------------
     def getMotions(self):
         motions = Motion.objects.filter(group=self)
         return motions
-
-    #-------------------------------------------------------------------------------------------------------------------
-    # Clears m2m and deletes tuples
-    #-------------------------------------------------------------------------------------------------------------------
-    def smartClearGroupFeed(self, feed_type):
-        if feed_type=='N':
-            self.group_newfeed.all().delete()
-        elif feed_type=='B':
-            self.group_bestfeed.all().delete()
-        elif feed_type=='H':
-            self.group_hotfeed.all().delete()
 
     #-------------------------------------------------------------------------------------------------------------------
     # Get members, filtered by some criteria
@@ -3959,7 +4236,6 @@ class Group(Content):
         if num != 1:
             return actions[start:start+num]
         return actions[start:]
-
 
     #-------------------------------------------------------------------------------------------------------------------
     # Returns the number of petitions the whole group has created
@@ -4005,6 +4281,9 @@ class Group(Content):
         self.save()
         return self.alias
 
+    #-------------------------------------------------------------------------------------------------------------------
+    # Democratic group stuff
+    #-------------------------------------------------------------------------------------------------------------------
     def getMotionExpiration(self):
         now = datetime.datetime.now()
         delta = datetime.timedelta(days=self.motion_expiration)
@@ -4018,6 +4297,13 @@ class Group(Content):
         else:
             self.democratic = True
         self.save()
+
+
+# for keeping track of how much a groups content a user has seen
+class GroupView(LGModel):
+    group = models.ForeignKey(Group)
+    seen = models.IntegerField(default=0)
+
 
 #=======================================================================================================================
 # Motion, for democratic groups.
@@ -4116,6 +4402,7 @@ class Motion(Content):
     def isActionable(self):
         return not (self.passed or self.expired)
 
+
 #=======================================================================================================================
 # Network Group, created by parsing facebook networks
 #
@@ -4190,6 +4477,68 @@ class DistrictPoliticianGroup(PoliticianGroup):
     pass
 
 #=======================================================================================================================
+# Calculated group, is a system group for doing like-minded and opposite minded
+#
+#=======================================================================================================================
+class CalculatedGroup(Group):
+    calculation_type = models.CharField(max_length=2, default="LM")
+    user = models.ForeignKey(UserProfile)
+    processed = models.ManyToManyField(UserProfile, related_name="processed_by")
+    def autoSave(self):
+        self.group_type = 'X'
+        self.system = True
+        self.autogen = True
+        self.hidden = True
+        self.content_by_posting = False
+        self.group_privacy = 'O'
+        super(CalculatedGroup, self).autoSave()
+
+    def createLikeMinded(self, user):
+        self.title = user.get_name() + " Like-Minded Group"
+        self.user = user
+        self.calculation_type = "LM"
+        self.autoSave()
+        return self
+
+    def update(self):
+        self.clear()
+        if self.calculation_type == "LM":
+            self.updateLikeMinded()
+
+    def updateLikeMinded(self):
+        self.calculateLikeMinded(num=100)
+
+    def calculate(self, num=0):
+        if self.calculation_type == "LM":
+            return self.calculateLikeMinded(num=num)
+
+    def clear(self):
+        self.members.clear()
+        self.processed.clear()
+
+    def calculateLikeMinded(self, num=0):
+        viewer = self.user
+        # the pool to consider is all non-members
+        processed_ids = self.processed.all().values_list("id", flat=True)
+        to_process = UserProfile.objects.exclude(id__in=processed_ids).order_by("-num_answers")
+        if num: #paginate
+            to_process = to_process[:num]
+
+        # for each person in pool, do comparison, and
+        found = []
+        processed_num = 0
+        for x in to_process:
+            comparison = x.getComparison(viewer)
+            if comparison.result > LIKE_MINDED_RESULT_THRESHOLD and comparison.num_q > LIKE_MINDED_NUMQ_THRESHOLD:
+                self.members.add(x)
+                found.append(x)
+            self.processed.add(x)
+            processed_num += 1
+        return found, processed_num
+
+
+
+#=======================================================================================================================
 # Political party group
 #
 #=======================================================================================================================
@@ -4203,9 +4552,6 @@ class Party(Group):
         self.system = False
         self.group_privacy = 'O'
         super(Party, self).autoSave()
-
-    def get_url(self):
-        return '/group/' + str( self.id ) + '/'
 
     def joinMember(self, user, privacy='PUB'):
         user.parties.add(self)
@@ -4230,19 +4576,30 @@ class UserGroup(Group):
 # an election, is a group centered around a particular office
 #=======================================================================================================================
 class Election(Group):
-    running = models.ManyToManyField(UserProfile, related_name="running_for")
     winner = models.ForeignKey(UserProfile, null=True, related_name="elections_won")
     office = models.ForeignKey(Office, null=True)
-    election_date = models.DateTimeField(auto_now_add=True)
+    election_date = models.DateTimeField()
     start_date = models.DateTimeField(auto_now_add=True)
     end_date = models.DateTimeField(auto_now_add=True)
     def autoSave(self, creator=None, privacy="PUB"):
         self.group_type = 'E'
+        self.is_election = True
         super(Election, self).autoSave(creator=creator,privacy=privacy)
 
     def joinRace(self, user):
-        if not user in self.running.all():
-            self.running.add(user)
+        if not self.hasMember(user):
+            self.joinMember(user)
+            action = RunningForAction(user=user, election=self, modifier="A")
+            action.autoSave()
+            if not user.politician:
+                user.politician = True
+                user.save()
+
+    def leaveRace(self, user):
+        if self.hasMember(user):
+            self.removeMember(user)
+            action = RunningForAction(user=user, election=self, modifier="S")
+            action.autoSave()
 
     def getCandidatesURL(self):
         return self.get_url() + '/candidates/'
@@ -4458,6 +4815,15 @@ class ValidEmailExtension(LGModel):
     extension = models.CharField(max_length=100)
     date_added = models.DateTimeField(auto_now_add=True)
 
+#=======================================================================================================================
+# Save when someone invites someone from off lovegov to do something
+#
+#=======================================================================================================================
+class InvitedToRegister(LGModel):
+    invite_email = models.EmailField()
+    inviter = models.ForeignKey("UserProfile")
+    notification = models.ForeignKey(Notification)
+
 ########################################################################################################################
 ########################################################################################################################
 #   Relationships
@@ -4466,7 +4832,8 @@ class ValidEmailExtension(LGModel):
 ########################################################################################################################
 ########################################################################################################################
 class Relationship(Privacy):
-    user = models.ForeignKey(UserProfile, related_name='relationships')
+    user = models.ForeignKey(UserProfile, related_name='relationships', null=True)
+    invite_email = models.EmailField(null=True)
     created_when = models.DateTimeField(auto_now_add=True)
     relationship_type = models.CharField(max_length=2,choices=RELATIONSHIP_CHOICES)
     #-------------------------------------------------------------------------------------------------------------------
@@ -4507,6 +4874,8 @@ class Invite(LGModel):
     inviter = models.IntegerField(default=-1)           # foreign key to userprofile, inviter
     rejected = models.BooleanField(default=False)
     declined = models.BooleanField(default=False)
+
+    invite_email = models.EmailField(null=True)
 
     class Meta:
         abstract=True
@@ -4626,6 +4995,18 @@ class Voted(UCRelationship):
         else: value = 0
         return value
 
+    def getHotValue(self):
+
+        age = datetime.datetime.now() - self.created_when
+        days_old = age.days
+        if days_old < HOT_VOTE_MAX_DAYS:
+            seconds = age.seconds
+            max_seconds = 10*24*60*60           # days * hours * minutes * seconds
+            value = max_seconds - seconds
+            return value
+        else:
+            return 0
+
 
 #=======================================================================================================================
 # Stores a user sharing a piece of content.
@@ -4649,7 +5030,6 @@ class GroupJoined(UCRelationship, Invite):
         self.content = self.group
         self.creator = self.user
         self.save()
-
 
 #=======================================================================================================================
 # relationship between two users
@@ -4739,7 +5119,6 @@ class US_ConDistr(LGModel):
 ########################################################################################################################
 ########################################################################################################################
 
-
 class LGNumber(LGModel):
     alias = models.CharField(max_length=50)
     number = models.IntegerField()
@@ -4787,78 +5166,5 @@ class BlogEntry(LGModel):
 
     def getURL(self):
         return '/blog/' + self.creator.alias + '/' + str(self.id)
-
-
-
-
-
-
-########################################################################################################################
-########################################################################################################################
-#  Deprecated
-#
-########################################################################################################################
-#####################################################################################################################
-class LoveGov(LGModel):
-    default = models.BooleanField()             # for getting THEONE
-    average_votes = models.IntegerField(default=1)       # the average number of votes on a piece of in_search content
-    average_rating = models.IntegerField(default=50)      # the average rating of a piece of content in in_search
-    lovegov_user = models.ForeignKey(UserProfile, null=True, related_name="lovegovuser")
-    lovegov_group = models.ForeignKey(Group, null=True, related_name="anonuser")
-    anon_user = models.ForeignKey(UserProfile, null=True) # user who represents anonymous users
-    default_image = models.ForeignKey(UserImage, null=True)
-    default_filter = models.ForeignKey(FilterSetting, null=True, related_name="defaultfilter")
-    best_filter = models.ForeignKey(FilterSetting, null=True, related_name="bestfilter")
-    new_filter = models.ForeignKey(FilterSetting, null=True, related_name="newfilter")
-    hot_filter = models.ForeignKey(FilterSetting, null=True, related_name="hotfilter")
-    worldview = models.ForeignKey(WorldView, null=True)
-
-    def update(self):
-        self.calcAverageVotes()
-        self.calcAverageRating()
-
-    def calcAverageVotes(self):
-        total_content = Content.objects.filter(in_search=True).count()
-        total_votes = Voted.objects.all().count()
-        self.average_votes = max(int(total_votes / total_content), 1)
-        self.save()
-
-    def calcAverageRating(self):
-        all_content = Content.objects.filter(in_search=True)
-        count = 0
-        sum = 0
-        for c in all_content:
-            rating = c.getRating()
-            sum += rating
-            count += 1
-        self.average_rating = int((sum/count)*10)
-        self.save()
-
-#=======================================================================================================================
-# Each setting has a name and value, for any given setting, there should be only one default=True
-# this model is in addition to LoveGov, to make it easy to add settings after launch.. without
-# necessarily having to migrate
-#=======================================================================================================================
-class LoveGovSetting(LGModel):
-    default = models.BooleanField()
-    setting = models.CharField(max_length=30)           # unique identifier
-    value = models.CharField(max_length=50)
-
-#=======================================================================================================================
-# Temp models and models for optimization.
-#=======================================================================================================================
-class QuestionDiscussed(LGModel):
-    question = models.ForeignKey(Question)
-    num_comments = models.IntegerField()        # number of comments, including replies
-
-# for ordering questions
-class qOrdered(LGModel):
-    question = models.ForeignKey(Question)
-    rank = models.IntegerField()
-
-# model for creating ordered lists of questions
-class QuestionOrdering(LGModel):
-    alias = models.CharField(max_length=30)
-    questions = models.ManyToManyField(qOrdered)
 
 

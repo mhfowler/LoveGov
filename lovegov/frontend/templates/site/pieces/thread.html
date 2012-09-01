@@ -5,4 +5,10 @@
     {{ thread_html|safe }}
 </div>
 <div class="load-more-comments">load more comments</div>
-
+<script type="text/javascript">
+    $(document).ready(function() {
+        $('div.load-more-comments').click();
+    });
+    // New comments loaded - prevents them from being
+    var new_comments = [];
+</script>

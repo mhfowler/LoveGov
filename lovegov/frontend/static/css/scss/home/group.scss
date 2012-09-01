@@ -4,33 +4,83 @@
 
 @import "compass";
 
+/* group action buttons */
+div.group-actions
+{
+  margin-top: 6px;
+  float:right;
+  @include clearfix();
+
+  .group-action
+  {
+    padding:5px;
+    background-color:$light-gray;
+    width:160px;
+    text-align:center;
+    margin-bottom:7px;
+    display: block;
+    color: $black;
+    @include border-radius(8px);
+
+    &:hover
+    {
+      background-color:$dark-gray;
+      cursor:pointer;
+    }
+  }
+
+  div.on-button {
+    background-color:$green;
+    color:white;
+    &:hover { background-color: $dark-gray; }
+  }
+  div.group-membership {
+    background-color:$black;
+    color:white;
+    &:hover { background-color: $dark-gray; }
+  }
+  div.group-admin {
+    background-color:$purple;
+    color:white;
+    &:hover { background-color: $dark-gray; }
+  }
+  a.running-for {
+    background-color:$purple;
+    color:white;
+    &:hover { background-color: $dark-gray; }
+  }
+}
+
+
+span.group-title
+{
+  text-transform: uppercase;
+  font-weight: bold;
+  font-size: 16px;
+  margin-right: 10px;
+  @include inline-block();
+  a {
+    color:$black;
+  }
+}
+
+span.group-scale
+{
+  color: $dark-gray;
+  font-size: 12px;
+  @include inline-block();
+  margin-right: 10px;
+}
+
+span.group-num-members
+{
+  font-size: 12px;
+  @include inline-block();
+}
 
 div.group-top
 {
   @include inline-block();
-
-  span.group-title
-  {
-    text-transform: uppercase;
-    font-weight: bold;
-    font-size: 16px;
-    margin-right: 10px;
-    @include inline-block();
-  }
-
-  span.group-scale
-  {
-    color: $dark-gray;
-    font-size: 12px;
-    @include inline-block();
-    margin-right: 10px;
-  }
-
-  span.group-num-members
-  {
-    font-size: 12px;
-    @include inline-block();
-  }
 }
 
 div.group-expanded
@@ -51,46 +101,14 @@ div.group-expanded
       margin-bottom: 2px;
     }
 
-    div.group-actions
-    {
-      float:right;
-      @include clearfix();
-
-      .group-action
-      {
-        padding:5px;
-        background-color:$light-gray;
-        width:160px;
-        text-align:center;
-        margin-bottom:7px;
-        display: block;
-        color: $black;
-        @include border-radius(8px);
-
-        &:hover
-        {
-          background-color:$dark-gray;
-          cursor:pointer;
-        }
-      }
-
-      div.on-button {
-        background-color:$green;
-        color:white;
-        &:hover { background-color: $dark-gray; }
-      }
-      div.group-membership {
-        background-color:$black;
-        color:white;
-        &:hover { background-color: $dark-gray; }
-      }
-    }
-
     div.group-column
     {
       @include clearfix();
       float:left;
-      margin-right: 20px;
+      margin-right: 30px;
+    }
+    div.group-left-column {
+      width:245px;
     }
 
     div.group-image
@@ -99,7 +117,7 @@ div.group-expanded
       height: 100px;
       width: 140px;
       background-color: $gray; //Temporary
-      margin-right: 20px;
+      margin-right: 30px;
     }
 
     div.group-match
@@ -123,21 +141,64 @@ div.group-expanded
         height: 20px;
         text-align: center;
       }
-
     }
 
     div.group-histogram
     {
-      width:230px;
-      height:180px;
+      width:250px;
+      height: 199px;
       position:relative;
-      top:-20px;
+      top:-29px;
+    }
+
+    div.group-topic-comparison {
+      width:100%;
+      margin-top: 30px;
+      height: 170px;
+      float:left;
+      position:relative;
+
+      div.hundred {
+          position:absolute;
+          top:-19px;
+          left:0px;
+          border-bottom:1px solid $gray;
+          width:40px;
+          display:none;
+          //width:100%;
+      }
+
+      div.group-header-topic-bar {
+        float:left;
+        width:25px;
+        margin-left:11px;
+        &.first {
+          margin-left:0px;
+        }
+        height:100%;
+        position:relative;
+        div.topic-icon {
+          position:absolute;
+          top:86%;
+          z-index:1;
+        }
+        div.topic-bar {
+          display:block;
+          width:100%;
+          height:100%;
+          div.colored_area {
+            position:relative;
+            width:100%;
+          }
+        }
+      }
+
     }
 
     a.see-more {
       background-color:$light-gray;
       padding:5px;
-      margin-top:20px;
+      margin-top:0px;
       color:$black;
       width:100%;
       float:left;
@@ -154,6 +215,18 @@ div.group-expanded
       overflow:hidden;
       margin-right: 30px;
 
+      div.group-info-title-wrapper {
+        width:100%;
+        display:block;
+        div.group-info-title {
+          float:left;
+        }
+        div.pencil-button {
+          float:left;
+          margin-left:5px;
+        }
+      }
+
       textarea.group-description-edit
       {
         width:300px;
@@ -161,7 +234,9 @@ div.group-expanded
       }
 
       div.group-full-text {
-        height:254px;
+        height: 263px;
+        margin-bottom: 10px;
+        overflow: hidden;
       }
     }
 
@@ -177,7 +252,14 @@ div.group-expanded
       div.group-members
       {
         width: 160px;
-        height: 170px;
+        height: 190px;
+
+        &.no-admins {
+          height:299px;
+          div.group-info-title {
+            margin-bottom:7px;
+          }
+        }
 
         div.group-member-avatar
         {
@@ -192,6 +274,16 @@ div.group-expanded
   div.group-pinned-content
   {
     padding: 10px;
+    div.pinned-wrapper {
+      position:relative;
+      a.unpin-content {
+        color:$gray;
+        margin-left: 8px;
+        &:hover {
+          color:$dark-gray;
+        }
+      }
+    }
   }
 }
 
@@ -291,5 +383,20 @@ div.group-histogram {
       @include h5;
       color:white;
     }
+  }
+}
+
+
+
+/* group description modal */
+div.group-description-modal {
+  width:500px;
+  div.group-title {
+    @include fontSize(24px);
+    width:100%;
+    text-align:Center;
+  }
+  div.group-description {
+    margin-top:15px;
   }
 }

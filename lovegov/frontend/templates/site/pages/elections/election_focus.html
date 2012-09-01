@@ -1,9 +1,9 @@
 {% extends 'site/pages/home/focus.html' %}
 
 {% block home_header %}
-    {% include 'site/pages/elections/election_header.html' with info_height="185px" %}
+    {% include 'site/pages/elections/election_header.html' with info_height="285px" %}
 {% endblock %}
 
 {% block home_feed %}
-    {% include 'site/pages/feed/feed.html' %}
+    {% include 'site/pages/feed/feed.html' with feed_boxed=1 %}
 {% endblock %}

@@ -40,9 +40,10 @@ div.reply {
 div.comment
 {
     position:relative;
-    margin-left:30px;
     padding: 30px;
     padding-bottom:20+30px;
+    padding-left: 70px;
+    min-height: 110px;
     &.level1 {
 	    background-color: $white-gray;
 	    border-bottom: 1px solid $gray;
@@ -51,6 +52,7 @@ div.comment
 	    border:1px dashed $gray;
 	    border-right: none;
 	    border-top: none;
+        background-color: white;
     }
     &.toplevel {
 	    margin-top: 10px;
@@ -58,6 +60,12 @@ div.comment
     div.change-privacy {
         float:left;
     }
+  div.comment-footer
+  {
+    position: absolute;
+    top: 30px;
+    left: 27px;
+  }
 }
 
 div#content-div p {
@@ -116,7 +124,7 @@ div.bar-wrapper {
     margin-top:10px;
     @include titleFont;
     color: #f0503b;
-    font-size:13pt;
+    font-size:14px;
     cursor:pointer;
     margin-top:10px;
     margin-bottom:10px;
@@ -164,13 +172,6 @@ div.bar-wrapper {
     outline:none;
 }
 
-#comment-thread
-{
-    margin-top:0px;
-    position:relative;
-    width:700px;
-}
-
 
 span.discuss
 {
@@ -201,6 +202,7 @@ div.thread
     position:relative;
     padding-top:20px;
     left:-20px;
+  @include clearfix;
 }
 
 div.comment span.timestamp {
@@ -211,18 +213,15 @@ div.comment span.timestamp {
     margin-top: 18px;
     display: block;
     float: left;
-    font-family: $body-fonts;
 }
 
 
 span.collapse {
     cursor: pointer;
     position: relative;
-    float: left;
     z-index: 1;
     color: $deep-gray;
-    top: 85px;
-    left: 10px;
+    left: 3px;
 }
 
 span.flag {
@@ -239,5 +238,33 @@ span.flag {
 }
 
 div.threaddiv {
-    min-height: 50px;
+  min-height: 50px;
+  margin-left: 30px;
+  position: relative;
+  &:before {
+    position: absolute;
+    content: '';
+    height: 100%;
+    width: 1px;
+    border-left: 1px dotted #DFDFDF;
+    background-color: white;
+  }
+}
+
+div.load-more-comments {
+  border: 1px solid $gray;
+  padding: 2px;
+  text-align: center;
+  margin: 20px 0;
+  width: 100%;
+  color: $black;
+  background-color: $white-gray;
+  cursor: pointer;
+  &:hover {
+    background-color: $gray;
+  }
+  &:not(.disabled):active {
+    background-color: $red;
+    color: white;
+  }
 }

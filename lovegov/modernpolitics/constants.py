@@ -19,6 +19,10 @@ import os
 
 LOCAL = settings.LOCAL
 
+########################################## Content we cycle through ####################################################
+
+DISMISSIBLE_HEADERS = ['congress_teaser', 'find_reps', 'lovegov_poll']
+
 ########################################## SPECIAL ALIASES #############################################################
 
 SUPER_HEROES = ['lovegov', 'anonymous']
@@ -132,10 +136,9 @@ FEED_MAX = 100              # feed max (for sitewide feeds)
 
 # constants for new filter
 NEWFILTER_DAYS = 14
-TIME_BONUS = 5          # this should be how many upvotes a day we think a good piece of content should get
 
 # constants for hot filter
-HOT_WINDOW = 3 # number of days to count votes within when using hot algo
+HOT_VOTE_MAX_DAYS = 10
 
 ########################################### DEFAULT SETTINGS ###########################################################
 
@@ -151,7 +154,7 @@ STATUS_SHARE = 0
 STATUS_FOLLOW = 0
 
 NOTIFICATION_INCREMENT = 5
-MEMBER_INCREMENT = 24
+MEMBER_INCREMENT = 16
 GROUP_INCREMENT = 4
 
 PRESIDENTIAL_CANDIDATES = ['rick@lovegov.com','barack@lovegov.com','newt@lovegov.com','mitt@lovegov.com','ron@lovegov.com']
@@ -168,6 +171,7 @@ DEFAULT_USER_NOTIFICATIONS = ['SI', 'CR', 'JO', 'DM', 'AE']
 DEFAULT_EMAIL_NOTIFICATIONS = ['VO', 'DM', 'CO', 'FO', 'JO']
 
 HISTOGRAM_RESOLUTION = 10
+MINI_HISTOGRAM_MAXIMUM = 20
 
 FIRST_LOGIN_LAST_STAGE = 7
 
@@ -266,18 +270,20 @@ PRIVACY_CHOICES = (
 
 # content types
 TYPE_CHOICES = (
-    ('E','event'),
     ('P','petition'),
     ('N','news'),
     ('L','legislation'),
     ('Q','question'),
     ('O','poll'),
+    ('S','scorecard'),
     ('R','response'),
     ('G','group'),
     ('C','comment'),
     ('A','amendment'),
     ('D','discussion'),
+    # coming soon
     ('M', 'motion'),
+    ('E','event'),
     )
 
 # types of notifications
@@ -319,7 +325,10 @@ ACTION_CHOICES = (
     ('SU', 'supported'),
     ('ME', 'messaged'),
     ('AS', 'asked'),
-    ('GF', 'group_follow')
+    ('GF', 'group_follow'),
+    ('PI', 'pinned'),
+    ('RU', 'running_for'),
+    ('AD', 'added_to'),
 )
 
 # default, request, invite, deny, reject
@@ -333,7 +342,7 @@ ACTION_MODIFIERS = (
     ('S', 'stopped_following'),
 )
 
-NOTIFY_TYPES = ['FO','SI','JO','CO','VO','SH', 'SU']
+NOTIFY_TYPES = ['FO','SI','JO','CO','VO','SH', 'SU', 'AD']
 
 AGGREGATE_NOTIFY_TYPES = ['SI','VO','CO','SH']
 
@@ -377,6 +386,7 @@ GROUP_TYPE_CHOICES = (
     ('C','committee'),
     ('U','user'),
     ('E', 'election'),
+    ('X', 'calculated'),
     ('S','system')
     )
 
@@ -532,6 +542,12 @@ PETITION_LEVELS = [0, 10, 50, 100, 500, 1000, 5000, 10000, 50000,
                    50000000, 100000000, 500000000, 1000000000,
                    5000000000, 10000000000]
 
+###################################### LIKE MINDED GROUP ###############################################################
+
+LIKE_MINDED_RESULT_THRESHOLD = 80
+LIKE_MINDED_NUMQ_THRESHOLD = 5
+LIKE_MINDED_FIND_INCREMENT = 100
+
 ###################################### ACTIONS #########################################################################
 
 ACTIONS = [
@@ -611,6 +627,7 @@ ACTIONS = [
     'getGroups',
     'getUsersByUID',
     'getGroupMembers',
+    'getLegislation',
     'getGroupMembersForDisplay',
     'getNextPollQuestion',
     'getElections',
@@ -625,7 +642,24 @@ ACTIONS = [
     'claimProfile',
     'messagePolitician',
     'followGroup',
-    'submitTempAddress'
+    'submitTempAddress',
+    'getFBInviteFriends',
+    'findLikeMinded',
+    'clearLikeMinded',
+    'pinContent',
+    'changeAnswerPrivacy',
+    'editExplanation',
+    'editPetitionFullText',
+    'saveScorecardAnswer',
+    'saveAnswerInFeed',
+    'logLinkClick',
+    'runForElection',
+    'addToScorecard',
+    'removeFromScorecard',
+    'inviteToScorecard',
+    'inviteToRunForElection',
+    'changePrivacyMode'
+
 ]
 
 UNAUTHENTICATED_ACTIONS = [

@@ -15,7 +15,13 @@ div.load-more {
   color:$black;
   text-align:center;
   padding:6px;
-  margin-top:20px;
+
+  //margin-top:20px;
+
+  //position: relative;
+  //left: -20px;
+
+  //top: 6px;
 }
 div.load-more:hover {
   background-color: $dark-gray;
@@ -25,6 +31,7 @@ div.load-more:hover {
 td.create-button
 {
   @include staticImage('/images/icons/white_create.png');
+  /*
   background-repeat: no-repeat;
   background-position: 12px 7px;
   font-size: 22px;
@@ -33,7 +40,20 @@ td.create-button
   vertical-align: middle;
   height: 60px;
   padding: 0 18px 0 75px;
+  text-decoration: none; */
+  background-repeat: no-repeat;
+  background-size: 31px 26px;
+  background-position: 14px 8px;
+  font-size: 22px;
+  color: white;
+  background-color: $red;
+  height: 40px;
+  padding: 5px 24px 0 58px;
+  margin-bottom: 3px;
   text-decoration: none;
+  text-align: left;
+  position: relative;
+  top: -1px;
 
   &:hover
   {
@@ -55,12 +75,20 @@ a.view-all {
 div.feed-main
 {
   width: 100%;
-  padding: 10px;
   min-height:600px;
+  width: 960px;
+
+  div.feed-content.feed-boxed {
+    border-left:1px solid $light-gray;
+    border-right:1px solid $light-gray;
+    border-bottom:1px solid $light-gray;
+    margin-top:30px;
+  }
 
   table.feed-top-bar
   {
     width: 100%;
+    margin-top:15px;
     margin-bottom: 15px;
 
     td.feed-left-buttons
@@ -119,6 +147,61 @@ div.feed-main
             background-color:$light-gray;
           }
         }
+
+        span.only-unanswered {
+          border: 1px solid $light-gray;
+          padding:8px;
+          float: left;
+          margin-right: 23px;
+          margin-top: -3px;
+          margin-left:0px;
+          &.clicked {
+            background-color:$light-gray;
+          }
+          &:hover {
+            background-color:$light-gray;
+            cursor:pointer;
+          }
+        }
+
+        div.feed-location-filters {
+          height:40px;
+          padding-top:5px;
+          div.filter-by-location {
+            float:left;
+            display:inline;
+            margin-top:5px;
+          }
+          div.filter-by-state {
+            float:left;
+            //padding-top:4px;
+            margin-left:25px;
+            display:inline;
+            width:100px;
+            select {
+              height:25px;
+              width:100px;
+            }
+          }
+          div.filter-by-city {
+            float:left;
+            margin-left:25px;
+            margin-top:1px;
+            display:none;
+            input.filter-by-city-input {
+              height: 26px;
+              padding-left: 5px;
+              float:left;
+            }
+            span.input-explanation {
+              float:left;
+              margin-left: 15px;
+              margin-top:10px;
+            }
+          }
+        }
+
+
       }
 
     }
@@ -132,6 +215,8 @@ div.feed-main
   div.feed-content-wrapper {
 
     div.feed-item {
+      //display:none;
+      color:$black;
       margin-bottom:25px;
     }
 
@@ -144,6 +229,365 @@ div.feed-main
       margin-bottom:50px;
       margin-top:70px;
     }
+
+    div.everything_loaded_wrapper {
+      width:100%;
+      text-align:center;
+      display:none;
+      width:100%;
+      margin-top:50px;
+      div.everything-loaded-header {
+        @include fontSize(20px);
+        margin-bottom:15px;
+        display:none;
+      }
+      div.everything-loaded-image {
+        width:100%;
+        text-align:center;
+      }
+    }
   }
 }
 
+
+
+
+/* feed items */
+div.feed-item-wrapper {
+  width:100%;
+  margin-bottom:40px;
+
+  margin-bottom:0px;
+  padding-bottom: 25px;
+  padding-top: 30px;
+  padding-left:15px;
+  border-top:1px solid $light-gray;
+
+  div.left-part {
+    float:left;
+    width:50px;
+  }
+
+  div.main-part {
+    float:left;
+    width:500px;
+
+    div.item-main-wrapper {
+      width:100%;
+      //margin-top:5px;
+      display:block;
+    }
+  }
+
+  div.right-part {
+    float:left;
+    margin-left:20px;
+
+    div.top-comment {
+      margin-top: 35px;
+      margin-left: 45px;
+      width:300px;
+      border:1px solid $gray;
+      padding:20px;
+      @include border-radius(10px);
+      &:hover {
+        border-color:$black;
+        cursor:pointer;
+        span.triangle-wrapper {
+          span.triangle-border {
+            border-right-color:$black;
+          }
+        }
+      }
+
+      $triangle-size: 32px;
+      span.triangle-wrapper {
+        position:relative;
+        left: 1px;
+        top: 27px;
+        span.triangle {
+          @include triangle('left', $white, $triangle-size + -1px);
+          position: absolute;
+          top:-$triangle-size + 1px;
+          right:20px;
+        }
+        span.triangle-border {
+          @extend span.triangle;
+          @include triangle('left', $deep-gray, $triangle-size);
+          top: -32px;
+          right: 20px;
+        }
+      }
+
+
+      div.commenter {
+        @include fontSize(14px);
+        font-weight:bold;
+        a.commenter-name {
+          color:$black;
+          &:hover {
+            color:black;
+          }
+        }
+      }
+      div.the-comment {
+        margin-top:10px;
+        color:$dark-gray;
+        overflow:hidden;
+        font-size:$body-fonts;
+      }
+    }
+  }
+}
+
+
+
+/* feed item bottom */
+div.item-bottom {
+  //margin-top:10px;
+  width:100%;
+  display:block;
+
+  // float right
+  a.pin-button {
+    margin-right:25px;
+    float:right;
+    margin-top:18px;
+    color:$dark-gray;
+    &:hover {
+      color:red;
+    }
+  }
+  a.num-comments {
+    margin-right:20px;
+    float:right;
+    //color:$red;
+    color:$dark-gray;
+    margin-top:18px;
+    &:hover {
+      color:red;
+    }
+  }
+  a.share-button {
+    margin-right:20px;
+    float:right;
+    margin-top:18px;
+    color:$dark-gray;
+    &:hover {
+      color:red;
+    }
+  }
+
+  // float left
+  a.created-avatar {
+    float:left;
+  }
+  div.name-and-submitted {
+    margin-left:8px;
+    float:left;
+    a.name {
+      color:$black;
+      &:hover {
+        color:black;
+      }
+    }
+    div.submitted {
+      color:$gray;
+    }
+  }
+}
+
+
+/* feed item title and group posted to */
+div.group-posted-to {
+  width:100%;
+  display:block;
+  a.posted-to-link {
+    color:$dark-green;
+    @include fontSize(12px);
+    &:hover {
+      color:$green;
+    }
+  }
+}
+
+a.content-title {
+  @include fontSize(24px);
+  color:$text-blue;
+  &:hover {
+    color:$black;
+  }
+  &:visited {
+    color:purple;
+    &:hover {
+      color:$black;
+    }
+  }
+}
+
+
+
+/* petition bar */
+div.feed-petition-bar-wrapper {
+  margin-top:10px;
+  div.petition-bar-wrapper {
+    div.petition-bar {
+      border: 1px solid $gray;
+      height:15px;
+      div.red-bar {
+        height:100%;
+        background-color:$light-gray;
+      }
+    }
+    div.petition-bar-text {
+      float:right;
+      margin-top:2px;
+      color:$dark-gray;
+    }
+  }
+}
+
+
+/*  news item */
+div.feed-item-wrapper {
+
+  div.news-wrapper {
+    a.feed-news-link {
+      position: relative;
+      top: -10px;
+      color:$gray;
+      &:hover {
+        color:$dark-gray;
+      }
+    }
+  }
+
+  div.feed-item-summary {
+    position: relative;
+    top: -5px;
+    margin-bottom:10px;
+  }
+
+  div.legislation-item-summary {
+    top:0px;
+  }
+
+  div.feed-petition-wrapper {
+  }
+
+  div.feed-poll-wrapper {
+
+
+    div.poll-sample-question {
+      width:100%;
+      display:block;
+      $triangle-size:16px;
+      div.poll-arrow-left {
+        float:left;
+        @include triangle('left', $gray, $triangle-size + -1px);
+        top:-$triangle-size + 1px;
+        &:hover {
+          border-right-color:$dark-gray;
+          cursor:pointer;
+        }
+      }
+      div.poll-arrow-right {
+        float:right;
+        @include triangle('right', $gray, $triangle-size + -1px);
+        top:-$triangle-size + 1px;
+        &:hover {
+          border-left-color:$dark-gray;
+          cursor:pointer;
+        }
+      }
+      div.poll-question-wrapper {
+        float:left;
+        margin-left:20px;
+        width:450px;
+        div.current-question {
+          margin-top:5px;
+          @include fontSize(18px);
+          a {
+            color:$dark-gray;
+            &:hover {
+              color:$black;
+            }
+          }
+          padding-right:10px;
+        }
+        div.poll-answers-wrapper {
+          margin-top:5px;
+
+          div.poll-answer {
+            padding:10px;
+            @include border-radius(8px);
+            &:hover {
+              background-color:$awesome-blue;
+              cursor:pointer;
+            }
+            &.clicked {
+              background-color:$awesome-blue;
+            }
+          }
+
+          div.poll-sample-bottom {
+            height:20px;
+            margin-top:5px;
+            width:100%;
+            display:block;
+            div.saved-message {
+              float:right;
+              color:$blue;
+              display:none;
+            }
+            a.bottom-link {
+              float:right;
+              margin-left:10px;
+              color:$dark-gray;
+              &:hover {
+                color:$black;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+
+
+/* feed item hearts */
+div.item-ranking
+{
+  text-align: center;
+
+  div.heart-plus
+  {
+    @include staticImage('/images/icons/hearts/plusheart-gray.png');
+    background-repeat: no-repeat;
+    height: 18px;
+    width: 18px;
+    margin: 8px auto 4px auto;
+    cursor: pointer;
+
+    &:hover{ @include staticImage('/images/icons/hearts/plusheart-red.png'); }
+    &.clicked{ @include staticImage('/images/icons/hearts/plusheart-red.png'); }
+  }
+  div.heart-number {
+    @include fontSize(20px);
+    font-weight:bold;
+  }
+  div.heart-minus
+  {
+    @include staticImage('/images/icons/hearts/minusheart-gray.png');
+    background-repeat: no-repeat;
+    height: 18px;
+    width: 18px;
+    margin: 4px auto 0px auto;
+    cursor: pointer;
+
+    &:hover{ @include staticImage('/images/icons/hearts/minusheart-red.png'); }
+    &.clicked{ @include staticImage('/images/icons/hearts/minusheart-red.png'); }
+  }
+}

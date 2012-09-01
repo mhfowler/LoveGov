@@ -1,0 +1,16 @@
+<div class="answer-explanation inline-editable inline_editable"
+     data-model="Explanation" data-r_id="{{ your_response.id }}" data-q_id="{{ question.id }}">
+    <div class="not_editing_display">
+        <div class="inline-div being_edited">
+            {% if your_response.explanation %} "{{ your_response.explanation }}" {% else %} add an explanation {% endif %}
+        </div>
+        <div class="edit-link pencil-button edit_button"></div>
+    </div>
+    <div class="inline-edit-input doing_editing_display">
+        <textarea type="text" maxlength="500" class="edit_input explanation-inline" name="explanation">{{ your_response.explanation }}</textarea>
+        <div class="edit-links edit_links">
+            <a href="" class="edit-link submit_inline_edit dummy_link">save</a>
+            <a href="" class="edit-link cancel_inline_edit dummy_link">cancel</a>
+        </div>
+    </div>
+</div>

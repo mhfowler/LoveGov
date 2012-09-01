@@ -8,6 +8,8 @@
 ########################################################################################################################
 
 from lovegov.modernpolitics.modals import *
+from django.core.files.base import ContentFile
+
 
 #-----------------------------------------------------------------------------------------------------------------------
 # register from login page via form
@@ -187,7 +189,7 @@ def getLinkInfo(request, vals={}, html="",URL=""):
             list = []
             first_image = None
 
-            for num in range(0,len(image_refs)):
+            for num in range(len(image_refs)):
                 try:
                     img_url = image_refs[num]['src']
                     if num == 0:
@@ -219,12 +221,12 @@ def getLinkInfo(request, vals={}, html="",URL=""):
 
             vals['imglink'] = list
 
-            html = ajaxRender('site/snippets/news-autogen.html', vals, request)
+            html = ajaxRender('site/pieces/news-link-autogen.html', vals, request)
             return HttpResponse(json.dumps({'html':html}))
         else:
-            return HttpResponse("-")
+            return HttpResponseBadRequest("Something went wrong.")
     except:
-        return HttpResponse("-")
+        return HttpResponseBadRequest("Something went wrong parsing the page.")
 
 #-----------------------------------------------------------------------------------------------------------------------
 # Takes address and/or zip code, finds a geolocation from Google Maps, finds congressional district, POSTs congressmen,
@@ -498,31 +500,6 @@ def invite(request, vals={}):
 #-----------------------------------------------------------------------------------------------------------------------
 # Signs a petition.
 #-----------------------------------------------------------------------------------------------------------------------
-def sign(request, vals={}):
-    user = vals['viewer']
-    privacy = getPrivacy(request)
-    if privacy == 'PUB':
-        petition = Petition.lg.get_or_none(id=request.POST['c_id'])
-        if not petition:
-            return HttpResponse("This petition does not exist")
-        if petition.finalized:
-            if petition.sign(user):
-                vals['signer'] = user
-                context = RequestContext(request,vals)
-                context['p'] = petition
-                template = loader.get_template('deployment/snippets/signer.html')
-                signer_string = template.render(context)  # render html snippet
-                template = loader.get_template('deployment/snippets/petition_bar.html')
-                bar_string = template.render(context)  # render html snippet
-                vals = {"success":True, "signer":signer_string, "bar":bar_string}
-            else:
-                vals = {"success":False, "error": "You have already signed this petition."}
-        else:
-            vals = {"success":False, "error": "This petition has not been finalized."}
-    else:
-        vals = {"success":False, "error": "You must be in public mode to sign a petition."}
-    return HttpResponse(json.dumps(vals))
-
 def signPetition(request, vals={}):
     from lovegov.frontend.views_helpers import valsPetition
     viewer = vals['viewer']
@@ -544,10 +521,11 @@ def signPetition(request, vals={}):
         error = "You must be in public mode to sign a petition."
     if not error:
         valsPetition(viewer, petition, vals)
-        html = ajaxRender('site/pages/content_detail/signers_sidebar.html', vals, request)
+        signers_sidebar = ajaxRender('site/pages/content_detail/signers_sidebar.html', vals, request)
+        sign_area = ajaxRender('site/pages/content_detail/petition_sign_area.html', vals, request)
     else:
-        html = error
-    return HttpResponse(json.dumps({'html':html}))
+        signers_sidebar = sign_area = error
+    return HttpResponse(json.dumps({'signers_sidebar':signers_sidebar,'sign_area':sign_area}))
 
 def finalizePetition(request, vals={}):
     from lovegov.frontend.views_helpers import valsPetition
@@ -558,7 +536,22 @@ def finalizePetition(request, vals={}):
     if viewer==creator:
         petition.finalize()
     valsPetition(viewer, petition, vals)
-    html = ajaxRender('site/pages/content_detail/signers_sidebar.html', vals, request)
+    signers_sidebar = ajaxRender('site/pages/content_detail/signers_sidebar.html', vals, request)
+    sign_area = ajaxRender('site/pages/content_detail/petition_sign_area.html', vals, request)
+    return HttpResponse(json.dumps({'signers_sidebar':signers_sidebar,'sign_area':sign_area}))
+
+#-----------------------------------------------------------------------------------------------------------------------
+# run for or stop running for an election
+#-----------------------------------------------------------------------------------------------------------------------
+def runForElection(request, vals={}):
+    from lovegov.frontend.views_helpers import valsElection
+    e_id = request.POST['e_id']
+    election = Election.objects.get(id=e_id)
+    run = int(request.POST['run'])
+    viewer = vals['viewer']
+    election = runForElectionAction(viewer, election, run)
+    vals['info'] = valsElection(viewer, election, {})
+    html = ajaxRender('site/pages/elections/run_for_button.html', vals, request)
     return HttpResponse(json.dumps({'html':html}))
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -858,7 +851,7 @@ def comment(request, vals={}):
         html = '<div class="threaddiv">'
         html += renderComment(request, vals, comment, depth)
         html += '</div>'
-        return HttpResponse(html)
+        return HttpResponse(json.dumps({'html':html, 'cid': comment.id}))
     else:
         if request.is_ajax():
             to_return = {'errors':[]}
@@ -896,6 +889,19 @@ def setPrivacy(request, vals={}):
     path = request.POST['path']
     mode = request.POST['mode']
     response = shortcuts.redirect(path)
+    response.set_cookie('privacy',value=mode)
+    return response
+
+#-----------------------------------------------------------------------------------------------------------------------
+# Toggles privacy cookies and returns html for button
+#-----------------------------------------------------------------------------------------------------------------------
+def changePrivacyMode(request, vals={}):
+    old_mode = request.POST['mode']
+    if old_mode == 'PUB':
+        mode = "PRI"
+    else:
+        mode = "PUB"
+    response = HttpResponse("changed privacy modes")
     response.set_cookie('privacy',value=mode)
     return response
 
@@ -984,15 +990,114 @@ def stubAnswer(request, vals={}):
 
 def saveAnswer(request, vals={}):
     question = Question.objects.get(id=request.POST['q_id'])
-    privacy = getPrivacy(request)
+    privacy = request.POST.get("privacy")
+    if not privacy:
+        privacy = getPrivacy(request)
     a_id = request.POST['a_id']
-    user = vals['viewer']
-    response = answerAction(user=user, question=question,privacy=privacy, answer_id=a_id)
+    weight = int(request.POST['weight'])
+    viewer = vals['viewer']
+    your_response = answerAction(user=viewer, question=question,privacy=privacy, answer_id=a_id, weight=weight)
     vals['question'] = question
-    vals['your_response'] = response
+    vals['your_response'] = your_response
     vals['default_display'] = request.POST.get('default_display')
+
+    responses = []
+    # get scorecard response if it is there
+    scorecard_id = request.POST.get('scorecard_id')
+    if scorecard_id:
+        scorecard = Scorecard.objects.get(id=scorecard_id)
+        scorecard_response = getResponseHelper(responses=scorecard.scorecard_view.responses.all(), question=question)
+        if scorecard_response:
+            responses.append({'response':scorecard_response,'responder':scorecard})
+    # get to_compare response if it is there
+    to_compare_id = request.POST.get('to_compare_id')
+    if to_compare_id and to_compare_id != 'null':
+        to_compare = UserProfile.lg.get_or_none(id=to_compare_id)
+        their_response = getResponseHelper(responses=to_compare.view.responses.all(), question=question)
+        if their_response:
+            responses.append({'response':their_response,'responder':to_compare})
+    responses.append({'response':your_response,'responder':viewer})
+    vals['compare_responses'] = responses
+
     html = ajaxRender('site/pages/qa/question_stub.html', vals, request)
     return HttpResponse(json.dumps({'html':html}))
+
+def saveScorecardAnswer(request, vals):
+    question = Question.objects.get(id=request.POST['q_id'])
+    a_id = request.POST['a_id']
+    user = vals['viewer']
+    scorecard = Scorecard.objects.get(id=request.POST['scorecard_id'])
+    if scorecard.getPermissionToEdit(user):
+        if question in scorecard.poll.questions.all():
+            scorecard_response = scorecardAnswerAction(user=user, scorecard=scorecard, question=question,answer_id=a_id)
+            vals['question'] = question
+            vals['your_response'] = scorecard_response
+            vals['default_display'] = request.POST.get('default_display')
+            responses = []
+            vals['compare_responses'] = responses
+            html = ajaxRender('site/pages/qa/question_stub.html', vals, request)
+            return HttpResponse(json.dumps({'html':html}))
+        else:
+            LGException("user " + str(user.id) + " trying to answer question for scorecard which isn't on scorecard poll")
+            return HttpResponse("didn't work")
+    else:
+        LGException("user " + str(user.id) + " trying to edit scorecard which they are not allowed to." + str(scorecard.id))
+        return HttpResponse("didnt' work")
+
+def saveAnswerInFeed(request, vals):
+    question = Question.objects.get(id=request.POST['q_id'])
+    privacy = request.POST.get("privacy")
+    if not privacy:
+        privacy = getPrivacy(request)
+    a_id = request.POST['a_id']
+    viewer = vals['viewer']
+    your_response = answerAction(user=viewer, question=question,privacy=privacy, answer_id=a_id)
+    return HttpResponse("saved")
+
+def changeAnswerPrivacy(request, vals):
+
+    viewer = vals['viewer']
+    q_id = request.POST['q_id']
+    r_id = request.POST.get("r_id")
+    if r_id:
+        response = Response.objects.get(id=r_id)
+    else:
+        question = Question.objects.get(id=q_id)
+        response = answerAction(user=viewer, question=question,privacy=getPrivacy(request), answer_id=-1)
+    if viewer == response.creator:
+        if response.getPublic():
+            response.setPrivate()
+            privacy = "PRI"
+        else:
+            response.setPublic()
+            privacy = "PUB"
+        vals['your_response'] = response
+        vals['anonymous'] = response.getPrivate()
+        vals['q_id'] = q_id
+        html = ajaxRender('site/pages/qa/answer_privacy.html', vals, request)
+        return HttpResponse(json.dumps({'html':html, 'privacy':privacy}))
+    else:
+        LGException("trying to change privacy of response that was not their own. u_id:" + str(viewer.id))
+        return HttpResponse("didn't work")
+
+def editExplanation(request, vals):
+
+    viewer = vals['viewer']
+    explanation = request.POST['explanation']
+    q_id = request.POST['q_id']
+    r_id = request.POST.get("r_id")
+    if r_id:
+        response = Response.objects.get(id=r_id)
+    else:
+        question = Question.objects.get(id=q_id)
+        response = answerAction(user=viewer, question=question,privacy=getPrivacy(request), answer_id=-1)
+    if viewer == response.creator:
+        response.explanation = explanation
+        response.save()
+        return HttpResponse(json.dumps({'explanation':explanation}))
+    else:
+        LGException("trying to edit explanation of response that was not their own. u_id:" + str(viewer.id))
+        return HttpResponse("didn't work")
 
 #-----------------------------------------------------------------------------------------------------------------------
 # recalculates comparison between viewer and to_compare, and returns match html in the desired display form
@@ -1031,7 +1136,12 @@ def updateStats(request, vals={}):
     object = request.POST['object']
     if object == 'poll_stats':
         from lovegov.frontend.views_helpers import getQuestionStats
-        getQuestionStats(vals)
+        p_id = request.POST['p_id']
+        if p_id:
+            poll = Poll.lg.get_or_none(id=p_id)
+        else:
+            poll = None
+        getQuestionStats(vals, poll)
         html = ajaxRender('site/pages/qa/poll_progress_by_topic.html', vals, request)
     elif object == 'you_agree_with':
         from lovegov.frontend.views_helpers import getGroupTuples
@@ -1047,9 +1157,8 @@ def updateStats(request, vals={}):
         else:
             html = "<p> answer to see how many people agree with you. </p>"
     elif object == 'poll_progress':
-        from lovegov.frontend.views_helpers import getPollProgress
         poll = Poll.objects.get(id=request.POST['p_id'])
-        poll_progress = getPollProgress(viewer, poll)
+        poll_progress = poll.getPollProgress(viewer)
         vals['poll'] = poll
         vals['poll_progress'] = poll_progress
         html = ajaxRender('site/pages/qa/poll_progress.html', vals, request)
@@ -1066,12 +1175,15 @@ def updateStats(request, vals={}):
         election = Election.objects.get(id=request.POST['e_id'])
         vals['info'] = valsElection(viewer, election, {})
         html = ajaxRender('site/pages/elections/election_leaderboard.html', vals, request)
+    elif object == 'like_minded_counter':
+        html = ajaxRender('site/pages/groups/like_minded_counter.html', vals, request)
     return HttpResponse(json.dumps({'html':html}))
 
 #----------------------------------------------------------------------------------------------------------------------
 # gets html for next poll question
 #-----------------------------------------------------------------------------------------------------------------------
 def getNextPollQuestion(request, vals={}):
+    viewer = vals['viewer']
     p_id = int(request.POST['p_id'])
     which = int(request.POST['which'])
     direction = request.POST['direction']
@@ -1088,6 +1200,8 @@ def getNextPollQuestion(request, vals={}):
     vals['question'] = question
     vals['poll'] = poll
     vals['which'] = next
+    response = viewer.getResponseToQuestion(question)
+    vals['your_response'] = response
     html = ajaxRender('site/pages/content_detail/poll_sample.html', vals, request)
     return HttpResponse(json.dumps({'html':html}))
 
@@ -1284,7 +1398,12 @@ def followGroup(request, vals={}):
     followGroupAction(viewer, group, follow_bool, getPrivacy(request))
     vals['is_user_following'] = follow_bool
     html = ajaxRender('site/pages/group/group_follow_button.html',vals,request)
-    return HttpResponse(json.dumps({'html':html, 'href':group.get_url()}))
+    to_return = {'html':html, 'href':group.get_url(), 'group_type':group.group_type}
+    if follow_bool:
+        vals['x'] = group
+        navlink = ajaxRender('site/pages/home/navbar_snippet.html', vals, request)
+        to_return['navlink_html'] = navlink
+    return HttpResponse(json.dumps(to_return))
 
 #----------------------------------------------------------------------------------------------------------------------
 # Invites inputted user to join group.
@@ -1588,10 +1707,14 @@ def matchComparison(request,vals={}):
 def ajaxThread(request, vals={}):
     from lovegov.frontend.views import makeThread
     content = Content.objects.get(id=request.POST['c_id'])
+    excluded = request.POST.get('new_comments')
+    if excluded:
+        excluded = json.loads(excluded)
     user = vals['viewer']
     limit = int(request.POST.get('limit', 500))
     start = int(request.POST.get('start', 0))
-    thread, top_count = makeThread(request, content, user, vals=vals, start=start, limit=limit)
+
+    thread, top_count = makeThread(request, content, user, vals=vals, start=start, limit=limit, excluded=excluded)
     to_return = {'html':thread, 'top_count': top_count}
     return HttpResponse(json.dumps(to_return))
 
@@ -1655,7 +1778,17 @@ def getFeed(request, vals):
     vals['feed_items'] = feed_items
 
     html = ajaxRender('site/pages/feed/feed_helper.html', vals, request)
-    to_return = {'html':html, 'num_items':len(feed_items)}
+
+    # if no items, return a random picture of a politician
+    num_items = len(feed_items)
+    if not num_items:
+        p = random.choice(UserProfile.objects.filter(politician=True))
+        vals['politician'] = p
+        everything_loaded = ajaxRender('site/pages/microcopy/everything_loaded.html', vals, request)
+    else:
+        everything_loaded = ""
+
+    to_return = {'html':html, 'num_items':num_items, 'everything_loaded':everything_loaded}
     return HttpResponse(json.dumps(to_return))
 
 def contentToFeedItems(content, user):
@@ -1677,6 +1810,16 @@ def getQuestions(request, vals):
     feed_start = int(request.POST['feed_start'])
     feed_topic_alias = request.POST.get('feed_topic')
     to_compare_id = request.POST.get('to_compare_id')
+    p_id = request.POST.get('p_id')
+    scorecard_id = request.POST.get('scorecard_id')
+    if p_id:
+        poll = Poll.objects.get(id=p_id)
+    else:
+        poll = None
+    if scorecard_id:
+        scorecard = Scorecard.objects.get(id=scorecard_id)
+    else:
+        scorecard = None
     only_unanswered_string = request.POST['only_unanswered']
     only_unanswered = only_unanswered_string == 'true'
     if to_compare_id and to_compare_id != 'null':
@@ -1687,13 +1830,13 @@ def getQuestions(request, vals):
         feed_topic = Topic.lg.get_or_none(alias=feed_topic_alias)
     else:
         feed_topic = None
-
     if to_compare:
         question_items = getQuestionComparisons(viewer=viewer, to_compare=to_compare, feed_ranking=feed_ranking,
-            question_ranking=question_ranking, feed_topic=feed_topic, feed_start=feed_start, num=10)
+            question_ranking=question_ranking, feed_topic=feed_topic, scorecard=scorecard, feed_start=feed_start, num=10)
     else:
         question_items = getQuestionItems(viewer=viewer, feed_ranking=feed_ranking,
-            feed_topic=feed_topic,  only_unanswered=only_unanswered, feed_start=feed_start, num=10)
+            feed_topic=feed_topic,  poll=poll, scorecard=scorecard,
+            only_unanswered=only_unanswered, feed_start=feed_start, num=10)
     vals['question_items']= question_items
     vals['to_compare'] = to_compare
     vals['default_display'] = request.POST.get('default_display')
@@ -1701,13 +1844,44 @@ def getQuestions(request, vals):
     html = ajaxRender('site/pages/qa/feed_helper_questions.html', vals, request)
     return HttpResponse(json.dumps({'html':html, 'num_items':len(question_items)}))
 
+def getLegislation(request, vals={}):
+    feed_start = int(request.POST['feed_start'])
+    session_set = json.loads(request.POST['session_set'])
+    type_set = json.loads(request.POST['type_set'])
+    subject_set = json.loads(request.POST['subject_set'])
+    committee_set = json.loads(request.POST['committee_set'])
+    introduced_set = json.loads(request.POST['introduced_set'])
+    sponsor_body_set = json.loads(request.POST['sponsor_body_set'])
+    sponsor_name_set = json.loads(request.POST['sponsor_name_set'])
+    sponsor_party_set = json.loads(request.POST['sponsor_party_set'])
+    sponsor_district_set = json.loads(request.POST['sponsor_district_set'])
+
+    legislation_items = getLegislationItems(session_set=session_set, type_set=type_set, subject_set=subject_set,
+        committee_set=committee_set, introduced_set=introduced_set, sponsor_body_set=sponsor_body_set, sponsor_name_set=sponsor_name_set,
+        sponsor_party_set=sponsor_party_set, sponsor_district_set=sponsor_district_set,
+        feed_start=feed_start)
+
+    vals['legislation_items'] = legislation_items
+
+    html = ajaxRender('site/pages/legislation/feed_helper_legislation.html', vals, request)
+    return HttpResponse(json.dumps({'html':html, 'num_items':len(legislation_items)}))
+
 #-----------------------------------------------------------------------------------------------------------------------
 # get groups
 #-----------------------------------------------------------------------------------------------------------------------
 def getGroups(request, vals={}):
     from lovegov.frontend.views_helpers import valsGroup
     viewer = vals['viewer']
-    groups = Group.objects.filter(hidden=False).order_by("-num_members")
+    groups = Group.objects.filter(hidden=False, is_election=False).order_by("-num_members")
+
+    # filter by location
+    state = request.POST['state']
+    city = request.POST['city']
+    if city and state and state != 'all':
+        groups = groups.filter(location__state=state, location__city=city)
+    elif state and state != 'all':
+        groups = groups.filter(location__state=state)
+
     feed_start = int(request.POST['feed_start'])
     groups = groups[feed_start:feed_start+5]
 
@@ -1730,6 +1904,18 @@ def getElections(request, vals={}):
     viewer = vals['viewer']
     elections = Election.objects.order_by("-num_members")
     feed_start = int(request.POST['feed_start'])
+    elections = elections
+
+    # filter by location
+    state = request.POST['state']
+    city = request.POST['city']
+    if city and state and state != 'all':
+        elections = elections.filter(location__state=state, location__city=city)
+    elif state and state != 'all':
+        elections = elections.filter(location__state=state)
+
+
+    # paginate
     elections = elections[feed_start:feed_start+5]
 
     vals['elections'] = elections
@@ -1901,8 +2087,7 @@ def getUserActivity(request, vals={}):
     actions_text = []
     for action in actions:
         action_text = action.getVerbose(viewer=viewer, vals=vals)
-        if action_text:
-            actions_text.append(action_text)
+        actions_text.append(action_text)
 
     vals['actions_text'] = actions_text
 
@@ -2326,19 +2511,43 @@ def logCompatability(request, vals={}):
         user_agent=request.META.get('HTTP_USER_AGENT')).autoSave()
     return HttpResponse('compatability logged')
 
+#-----------------------------------------------------------------------------------------------------------------------
+# saves a link click on some news
+#-----------------------------------------------------------------------------------------------------------------------
+def logLinkClick(request, vals):
+    news = News.objects.get(id=request.POST['n_id'])
+    news.link_clicks += 1
+    news.save()
+    return HttpResponse("saved")
 
 #-----------------------------------------------------------------------------------------------------------------------
 # Creates a piece of content, e.g. from the create modal
 #-----------------------------------------------------------------------------------------------------------------------
 def createContent(request, vals={}):
+    # Get possible values from post request
     section = request.POST.get('sectionType')
     title = request.POST.get('title')
     full_text = request.POST.get('full_text')
     post_to = request.POST.get('post_to')
-    group = Group.lg.get_or_none(id=post_to)
+    group = None
+    if post_to:
+        group = Group.lg.get_or_none(id=post_to)
     post_as = request.POST.get('post_as')
     image = request.POST.get('content-image')
+    link = request.POST.get('link')
+    screenshot = request.POST.get('screenshot')
     viewer = vals['viewer']
+    questions = request.POST.get('questions')
+    topic_alias = request.POST.get('topic')
+    topic = Topic.lg.get_or_none(alias=topic_alias)
+    poll_id = request.POST.get('poll')
+    gendate = request.POST.get('gendate')
+    state = request.POST.get('state')
+    city = request.POST.get('city')
+    polltype = request.POST.get('polltype')
+    if poll_id:
+        poll = Poll.lg.get_or_none(id=poll_id)
+    if questions: questions = json.loads(questions)
     if post_as == 'user':
         privacy = 'PUB'
     elif post_as == 'anonymous':
@@ -2348,19 +2557,131 @@ def createContent(request, vals={}):
     redirect = ''
     if section=='discussion':
         if title and full_text:
-            newDiscussion = Discussion(user_post=full_text, title=title, in_feed=True, in_search=True, in_calc=True,
+            newc = Discussion(user_post=full_text, title=title, in_feed=True, in_search=True, in_calc=True,
                                         posted_to=group)
-            newDiscussion.autoSave(creator=viewer, privacy=privacy)
-            redirect = newDiscussion.getUrl()
+            newc.autoSave(creator=viewer, privacy=privacy)
+            try:
+                if 'content-image' in request.FILES:
+                    file_content = ContentFile(request.FILES['content-image'].read())
+                    Image.open(file_content)
+                    newc.setMainImage(file_content)
+            except IOError:
+                return HttpResponseBadRequest("Image Upload Error")
+        else:
+            return HttpResponseBadRequest("A required field was not included.")
     elif section=='petition':
         if title and full_text:
-            newPetition = Petition(full_text=full_text, title=title, in_feed=True, in_search=True, in_calc=True,
+            newc = Petition(full_text=full_text, title=title, in_feed=True, in_search=True, in_calc=True,
                                         posted_to=group)
-            newPetition.autoSave(creator=viewer, privacy=privacy)
-            redirect = newPetition.getUrl()
-    return HttpResponse(json.dumps({'redirect': redirect}))
+            newc.autoSave(creator=viewer, privacy=privacy)
+            try:
+                if 'content-image' in request.FILES:
+                    file_content = ContentFile(request.FILES['content-image'].read())
+                    Image.open(file_content)
+                    newc.setMainImage(file_content)
+            except IOError:
+                return HttpResponseBadRequest("Image Upload Error")
+        else:
+            return HttpResponseBadRequest("A required field was not included.")
+    elif section=='news':
+        if link:
+            newc = News(link=link)
+            ref = str(screenshot)
+            if ref != 'undefined':
+                newc.saveScreenShot(ref)
+            newc.autoSave(creator=viewer, privacy=privacy)
+        else:
+            return HttpResponseBadRequest("A required field was not included.")
+    elif section=='poll':
+        # Make sure polltype exists, and if its a poll, then title and fulltext must exist
+        if polltype and (polltype=='q' or (title and full_text)) and len(questions) > 0:
+            if polltype=='p':
+                newc = Poll(description=full_text, summary=full_text, title=title, in_feed=True, in_search=True, in_calc=True,
+                    posted_to=group)
+                newc.autoSave()
+            for q in questions:
+                newQ = Question(question_text=q['question'], title=q['question'], source=q['source'], official=False)
+                newQ.save()
+                for a in q['answers']:
+                    newA = Answer(answer_text=a, value=-1)
+                    newA.save()
+                    newQ.addAnswer(newA)
+                newQ.save()
+                if polltype=='p':
+                    newc.addQuestion(newQ)
+            if polltype=='q':
+                newc = newQ
+            newc.autoSave(creator=viewer, privacy=privacy)
+            try:
+                if 'content-image' in request.FILES:
+                    file_content = ContentFile(request.FILES['content-image'].read())
+                    Image.open(file_content)
+                    newc.setMainImage(file_content)
+            except IOError:
+                return HttpResponseBadRequest("Image Upload Error")
+        else:
+            return HttpResponseBadRequest("A required field was not included.")
+    elif section=='group':
+        if title and full_text:
+            newc = UserGroup(title=title, full_text=full_text, in_feed=True, in_search=True, in_calc=True)
+            newc.autoSave(creator=viewer, privacy=privacy)
+            try:
+                if 'content-image' in request.FILES:
+                    file_content = ContentFile(request.FILES['content-image'].read())
+                    Image.open(file_content)
+                    newc.setMainImage(file_content)
+            except IOError:
+                return HttpResponseBadRequest("Image Upload Error")
+            if state:
+                newPhyAddr = PhysicalAddress(state=state,city=city)
+                newPhyAddr.save()
+                newc.location = newPhyAddr
+            newc.save()
+            newc.joinMember(viewer)
+            newc.addAdmin(viewer)
+        else:
+            return HttpResponseBadRequest("A required field was not included.")
+    elif section=='scorecard':
+        if title and full_text:
+            newc = Scorecard(title=title, full_text=full_text, in_feed=True, in_search=True, in_calc=True,
+                group=group, poll=poll)
+            newc.autoSave(creator=viewer, privacy=privacy)
+            redirect = newc.getEditURL()
+        else:
+            return HttpResponseBadRequest("A required field was not included.")
+    elif section=='election':
+        if title and full_text and gendate:
+            try:
+                from dateutil import parser
+                valid_datetime = parser.parse(gendate)
+            except ValueError:
+                return HttpResponseBadRequest("Could not parse election date.")
+            from datetime import datetime
+            newc = Election(title=title, full_text=full_text, in_feed=True, in_search=True, in_calc=True,
+                    election_date=valid_datetime)
+            newc.autoSave(creator=viewer, privacy=privacy)
+            if state:
+                newPhyAddr = PhysicalAddress(state=state,city=city)
+                newPhyAddr.save()
+                newc.location = newPhyAddr
+            newc.addAdmin(viewer)
+            followGroupAction(viewer, newc, True, privacy)
+        else:
+            return HttpResponseBadRequest("A required field was not included.")
+    else:
+        return HttpResponseBadRequest("The specified type of content is not valid.")
 
-###############
+
+    newc.setMainTopic(topic)
+
+    action = CreatedAction(content=newc,user=viewer,)
+
+    if not redirect:
+        redirect = newc.getUrl()
+
+    return HttpResponseRedirect(redirect)
+
+#-----------------------------------------------------------------------------------------------------------------------
 # asks a politicain to join the website
 #-----------------------------------------------------------------------------------------------------------------------
 def askToJoin(request, vals={}):
@@ -2397,11 +2718,168 @@ def messagePolitician(request, vals={}):
     viewer = vals['viewer']
     message = request.POST['message']
     politician = UserProfile.objects.get(politician=True, id=request.POST['p_id'])
+    phone_number = request.POST['phone_number']
 
-    messaged = MessagedAction(user=viewer, message=message, politician=politician)
+    messaged = MessagedAction(user=viewer, message=message, politician=politician, phone_number=phone_number)
     messaged.autoSave()
 
     return HttpResponse("success")
+
+#-----------------------------------------------------------------------------------------------------------------------
+# gets fb friend snippet html for invite sidebar
+#-----------------------------------------------------------------------------------------------------------------------
+def getFBInviteFriends(request, vals={}):
+    from lovegov.frontend.views_helpers import valsFBFriends
+    valsFBFriends(request, vals)
+    html =  ajaxRender('site/pages/friends/fb_invite_friends_helper.html', vals, request)
+    return HttpResponse(json.dumps({'html':html}))
+
+#-----------------------------------------------------------------------------------------------------------------------
+# calculate like minded group members
+#-----------------------------------------------------------------------------------------------------------------------
+def findLikeMinded(request, vals={}):
+    viewer = vals['viewer']
+    new_members, num_processed = viewer.findLikeMinded()
+    vals['display'] = 'avatar'
+    vals['users'] = new_members
+    html = ajaxRender('site/pieces/render_users_helper.html', vals, request)
+    return HttpResponse(json.dumps({"num_new_members":len(new_members), 'num_processed':num_processed, 'html':html}))
+
+#-----------------------------------------------------------------------------------------------------------------------
+# calculate like minded group members
+#-----------------------------------------------------------------------------------------------------------------------
+def clearLikeMinded(request, vals={}):
+    viewer = vals['viewer']
+    viewer.clearLikeMinded()
+    return HttpResponse("cleared")
+
+#-----------------------------------------------------------------------------------------------------------------------
+# pin a piece of content to a group
+#-----------------------------------------------------------------------------------------------------------------------
+def pinContent(request, vals={}):
+    viewer = vals['viewer']
+    group = Group.objects.get(id=request.POST['g_id'])
+    content = Content.objects.get(id=request.POST['c_id'])
+    pin = int(request.POST['pin'])
+    if pin==1:
+        pinContentAction(viewer=viewer, content=content, group=group, privacy=getPrivacy(request))
+    else:
+        unpinContentAction(viewer=viewer, content=content, group=group, privacy=getPrivacy(request))
+    vals['content'] = content
+    vals['group'] = group
+    success_link = ajaxRender('site/pages/content_detail/pin_content_success.html', vals, request)
+    return HttpResponse(json.dumps({'html':success_link}))
+
+#-----------------------------------------------------------------------------------------------------------------------
+# edit a petitions full text
+#-----------------------------------------------------------------------------------------------------------------------
+def editPetitionFullText(request, vals={}):
+    petition = Petition.objects.get(id=request.POST['p_id'])
+    viewer = vals['viewer']
+    if viewer == petition.creator and not petition.finalized:
+        full_text = request.POST['full_text']
+        petition.full_text = full_text
+        petition.save()
+        action = EditedAction(user=viewer, content=petition, privacy = getPrivacy(request))
+        action.autoSave()
+        return HttpResponse(json.dumps({'value':full_text}))
+    else:
+        LGException( "User editing petition and is finalized or is not owner #" + str(viewer.id) )
+        return HttpResponse("didnt work")
+
+#-----------------------------------------------------------------------------------------------------------------------
+# add people to a scorecard
+#-----------------------------------------------------------------------------------------------------------------------
+def addToScorecard(request, vals={}):
+
+    viewer = vals['viewer']
+    s_id = request.POST['s_id']
+    scorecard = Scorecard.objects.get(id=s_id)
+    if scorecard.getPermissionToEdit(viewer):
+        add_ids = json.loads(request.POST['add_ids'])
+        politicians = UserProfile.objects.filter(id__in=add_ids, politician=True)
+        for p in politicians:
+            if not p in scorecard.politicians.all():
+                scorecard.politicians.add(p)
+                action = AddToScorecardAction(user=viewer, politician=p, scorecard=scorecard, confirmed=True, privacy=getPrivacy(request))
+                action.autoSave()
+                p.notify(action)
+
+        return HttpResponse("added")
+    else:
+        LGException( "User adding to scorecard that is not theirs #" + str(viewer.id) )
+        return HttpResponse("didnt work")
+
+
+def removeFromScorecard(request, vals):
+
+    viewer = vals['viewer']
+    s_id = request.POST['s_id']
+    scorecard = Scorecard.objects.get(id=s_id)
+    if scorecard.getPermissionToEdit(viewer):
+        p_id = request.POST['p_id']
+        politician = scorecard.politicians.filter(id=p_id)
+        if politician:
+            politician = politician[0]
+            scorecard.politicians.remove(politician)
+            action = AddToScorecardAction(user=viewer, politician=politician, scorecard=scorecard, confirmed=False, privacy=getPrivacy(request))
+            action.autoSave()
+            return HttpResponse("removed")
+        else:
+            LGException( "User tried to remove person from scorecard who  wasn't on it #" + str(viewer.id) )
+            return HttpResponse("didnt work")
+    else:
+        LGException( "User tried to remove person from scorecard that wasn't theirs #" + str(viewer.id) )
+        return HttpResponse("didnt work")
+
+## invite user from off lovegov to join lovegov and auto get added to your scorecard
+def inviteToScorecard(request, vals):
+    viewer = vals['viewer']
+    s_id = request.POST['s_id']
+    scorecard = Scorecard.objects.get(id=s_id)
+    if scorecard.getPermissionToEdit(viewer):
+        invite_email = request.POST['invite_email']
+        already = UserProfile.objects.filter(email=invite_email)
+        if not already:
+            action = AddToScorecardAction(user=viewer, invite_email=invite_email, scorecard=scorecard, confirmed=True, privacy="PRI")
+            action.autoSave()
+            notification = Notification(action=action, notify_email=invite_email)
+            notification.save()
+            return HttpResponse(json.dumps({'success':True}))
+        else:
+            return HttpResponse(json.dumps({'success':False}))
+    else:
+        LGException( "User inviting to scorecard that is not theirs #" + str(viewer.id) )
+        return HttpResponse("didnt work")
+
+#-----------------------------------------------------------------------------------------------------------------------
+# Splitter between all actions. [checks is post]
+# post: actionPOST - which actionPOST to call
+#-----------------------------------------------------------------------------------------------------------------------
+def inviteToRunForElection(request, vals):
+    viewer = vals['viewer']
+    e_id = request.POST['e_id']
+    election = Election.objects.get(id=e_id)
+    if election.creator == viewer:
+        invite_email = request.POST['invite_email']
+        already = UserProfile.objects.filter(email=invite_email)
+        if not already:
+            privacy = getPrivacy(request)
+            join = GroupJoined(invite_email=invite_email, group=election, privacy=privacy)
+            join.autoSave()
+            join.invite_email = invite_email
+            join.save()
+            join.invite(viewer)
+            action = GroupJoinedAction(user=viewer,privacy=privacy,group_joined=join,modifier="I")
+            action.autoSave()
+            notification = Notification(action=action, notify_email=invite_email)
+            notification.save()
+            return HttpResponse(json.dumps({'success':True}))
+        else:
+            return HttpResponse(json.dumps({'success':False}))
+    else:
+        LGException( "User inviting to election that is not theirs #" + str(viewer.id) )
+        return HttpResponse("didnt work")
 
 #-----------------------------------------------------------------------------------------------------------------------
 # Splitter between all actions. [checks is post]
@@ -2449,7 +2927,7 @@ def getModal(request,vals={}):
         if not group:
             LGException( "Group requests modal requested for invalid group ID #" + str(g_id) + " by user ID #" + str(viewer.id) )
             return HttpResponseBadRequest( "Group requests requested with an invalid group ID" )
-        modal_html = getGroupRequestsModal(group,viewer,vals)
+        modal_html = getGroupRequestsModal(group,viewer,request,vals)
 
 
     ## Group Invite Modal ## Where a user invites someone to their group
@@ -2467,17 +2945,17 @@ def getModal(request,vals={}):
             LGException( "group invite modal requested for invalid group ID #" + str(g_id) + " by user ID #" + str(viewer.id) )
             return HttpResponseBadRequest( "Group invite modal requested with an invalid group ID" )
 
-        modal_html = getGroupInviteModal(group,viewer,vals)
+        modal_html = getGroupInviteModal(group,viewer,request,vals)
 
 
     ## Group Invited Modal ## Where a user see's his or her gropu invites
     elif modal_name == "group_invited_modal":
-        modal_html = getGroupInvitedModal(viewer,vals)
+        modal_html = getGroupInvitedModal(viewer,request,vals)
 
 
     ## Group Invite Modal ##
     elif modal_name == "follow_requests_modal":
-        modal_html = getFollowRequestsModal(viewer,vals)
+        modal_html = getFollowRequestsModal(viewer,request,vals)
 
 
     ## Facebook Share Modal ##
@@ -2489,33 +2967,61 @@ def getModal(request,vals={}):
             LGException( "Facebook Share modal requested without facebook share ID by user ID #" + str(viewer.id) )
             return HttpResponseBadRequest( "Facebook Share modal requested without facebook share ID" )
 
-        modal_html = getFacebookShareModal(fb_share_id,fb_name,fb_image,vals)
+        modal_html = getFacebookShareModal(fb_share_id,fb_name,request,vals)
 
     ## create modal ##
     elif modal_name == "create_modal":
-       modal_html = getCreateModal(vals)
+       modal_html = getCreateModal(request,vals)
 
     ## message politician modal ##
     elif modal_name == "message_politician":
         politician = UserProfile.objects.get(id=request.POST['p_id'])
-        modal_html = getMessagePoliticianModal(politician, vals)
+        modal_html = getMessagePoliticianModal(politician, request,vals)
 
     ## Pin Content Modal ##
-#    elif modal_name == "pin_content_modal":
-#        c_id = request.POST.get('c_id')
-#
-#        if not c_id:
-#            LGException( "Pin content modal requested without content ID by user ID #" + str(viewer.id) )
-#            return HttpResponseBadRequest( "Pin content modal requested without content ID" )
-#
-#        content = Content.lg.get_or_none( id=c_id )
-#
-#        if not content:
-#            LGException( "Pin content modal requested with invalid content ID #" + str(c_id) + " by user ID #" + str(viewer.id) )
-#            return HttpResponseBadRequest( "Pin content modal requested with invalid content ID" )
-#
-#        modal_html = getPinContentModal(content,viewer,vals)
+    elif modal_name == "pin_content_modal":
+        c_id = request.POST.get('c_id')
 
+        if not c_id:
+            LGException( "Pin content modal requested without content ID by user ID #" + str(viewer.id) )
+            return HttpResponseBadRequest( "Pin content modal requested without content ID" )
+
+        content = Content.lg.get_or_none( id=c_id )
+
+        if not content:
+            LGException( "Pin content modal requested with invalid content ID #" + str(c_id) + " by user ID #" + str(viewer.id) )
+            return HttpResponseBadRequest( "Pin content modal requested with invalid content ID" )
+
+        modal_html = getPinContentModal(content,viewer,request,vals)
+
+
+    ## get full group description ##
+    elif modal_name == 'group_description':
+        g_id = request.POST['g_id']
+        group = Group.objects.get(id=g_id)
+        modal_html = getGroupDescriptionModal(group,request,vals)
+
+    ## see all signers ##
+    elif modal_name == 'see_all_signers_modal':
+        p_id = request.POST['p_id']
+        petition = Petition.objects.get(id=p_id)
+        modal_html = getPetitionSignersModal(petition, request, vals)
+
+    ## add people to your scorecard ##
+    elif modal_name == 'add_to_scorecard_modal':
+        s_id = request.POST['s_id']
+        scorecard = Scorecard.objects.get(id=s_id)
+        modal_html = getAddToScorecardModal(scorecard, request, vals)
+
+    ## invite people off lovegov to join lovegov and run for your election ##
+    elif modal_name == "invite_to_run_for_modal":
+        e_id = request.POST['e_id']
+        election = Election.objects.get(id=e_id)
+        modal_html = getInviteToRunForModal(election, request, vals)
+
+    ## answer more questions warning ##
+    elif modal_name == "answer_questions_warning_modal":
+        modal_html = getAnswerQuestionsWarningModal(request, vals)
 
     ## If a modal was successfully made, return it ##
     if modal_html:

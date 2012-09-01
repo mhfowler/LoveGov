@@ -135,8 +135,8 @@ div.profile-page {
               margin-top:5px;
             }
             &:hover {
-              cursor:pointer;
-              background-color:$dark-gray;
+              //cursor:pointer;
+              //background-color:$dark-gray;
             }
           }
           div.stats-box.supporter-box {
@@ -240,20 +240,34 @@ div.profile-page {
           width:300px;
           margin-right:30px;
           div.bio-statement {
-            height:180px;
+            height:308px;
             display:block;
             width:100%;
+            div.profile-header {
+              float:left;
+              width:90px;
+            }
+            div.pencil-button {
+              margin-top:3px;
+              float:left;
+            }
             div.bio-text {
               overflow:hidden;
               //padding-left:10px;
               width:100%;
               margin-top:6px;
+              height:220px;
               div.inline-div {
                 width:100%;
               }
+              a.edit-link {
+                float:right;
+                margin-left:8px;
+              }
               textarea.bio-inline
               {
-                height: 60px;
+                height: 130px;
+                padding:5px;
                 width: 100%;
               }
             }
@@ -276,7 +290,7 @@ div.profile-page {
               img.party-label
               {
                 margin-right: 5px;
-                margin-bttom: 10px;
+                margin-bottom: 10px;
               }
             }
           }
@@ -342,18 +356,27 @@ div.profile-page {
               margin-top:15px;
             }
           }
+
+          div.profile-is-running-for {
+            margin-top:50px;
+            padding-left:15px;
+          }
+
         }
         div.profile-ghost {
           padding-top:20px;
+          float: left;
+          width: 620px;
           div.ghost-header {
             @include fontSize(24px);
           }
           .claim-button {
             float:right;
-            margin-right:70px;
             margin-top:8px;
-            //background-color:$light-gray;
-            padding:5px;
+            padding:8px;
+            background-color:$gray;
+            color:white;
+            @include border-radius(7px);
             &:hover {
               background-color:$light-gray;
             }
@@ -377,7 +400,7 @@ div.profile-page {
             p.claimed-message {
               @include fontSize(12px);
               position: absolute;
-              left: 546px;
+              left: 105px;
               top: 68px;
               width: 450px;
               color:$dark-gray;
@@ -390,14 +413,17 @@ div.profile-page {
             @include fontSize(14px);
             a.ask-to-join {
               @extend .claim-button;
-              margin-right: 245px;
+              background-color:$red;
+              &:hover {
+                background-color:red;
+              }
             }
             p.asked-message {
               @include fontSize(12px);
               position: absolute;
-              left: 769px;
+              left: 282px;
               top: 31px;
-              width: 150px;
+              width: 261px;
               color:$dark-gray;
               display:none;
             }
@@ -463,37 +489,37 @@ div.profile-page {
           }
         }
       }
+    }
+  }
+}
 
 
-      div.profile-questions {
+/* profile questions */
+div.profile-questions {
 
-        div.breakdown-wrapper {
-          float:left;
-          width:800px;
-        }
+  div.breakdown-wrapper {
+    float:left;
+    width:800px;
+  }
 
-        div.has-answered-text {
-          margin-top: 20px;
-          @include fontSize(16px);
-          float:left;
-        }
+  div.has-answered-text {
+    @include fontSize(16px);
+    float:left;
+  }
 
-        div.questions-feed-wrapper {
-          margin-top:15px;
-          a.browse-all {
-            padding:5px;
-            padding-left:10px;
-            padding-right:10px;
-            background-color:$gray;
-            color:white;
-            margin-top:2px;
-            float:right;
-            &:hover {
-              background-color:$dark-gray;
-              color:white;
-            }
-          }
-        }
+  div.questions-feed-wrapper {
+    margin-top:15px;
+    a.browse-all {
+      padding:5px;
+      padding-left:10px;
+      padding-right:10px;
+      background-color:$gray;
+      color:white;
+      margin-top:2px;
+      float:right;
+      &:hover {
+        background-color:$dark-gray;
+        color:white;
       }
     }
   }
@@ -546,5 +572,24 @@ div.message-politician-wrapper {
       top: 80px;
       left: -300px;
     }
+  }
+  div.enter-your-phonenumber {
+    margin-top:30px;
+    span.please-enter {
+      float:left;
+    }
+    input.phonenumber-input {
+      float:left;
+      margin-left: 20px;
+      margin-top: -4px;
+      height: 25px;
+      width: 180px;
+      padding-left:8px;
+    }
+  }
+  div.why-phonenumber {
+    @include fontSize(12px);
+    width:400px;
+    color:$dark-gray;
   }
 }

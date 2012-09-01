@@ -1,26 +1,49 @@
-{% extends 'site/pages/home/top_sidebar_main.html' %}
+<div class="browse-all">
 
-{% block top %}
-{% endblock %}
+    {% comment %}
+    <div class="main-top">
+        <div class="header-title"> Browse All Elections </div>
+        <div class="red-line"></div>
+        <div style="clear:both;"></div>
+    </div>
+    {% endcomment %}
 
-{% block sidebar %}
-{% endblock %}
+    <div class="questions-header">
 
-{% block sidebar_fixed %}
-{% endblock %}
-
-{% block main %}
-    <div class="browse-all">
-        <div class="main-top">
-            <div class="header-title"> Browse All Elections </div>
-            <div class="red-line"></div>
-            <div style="clear:both;"></div>
+        <div class="questions-left">
+            <div class="header-title">
+                Elections
+            </div>
+            <div class="questions-explanation">
+                Follow the presidential election as well as local elections near you. If your town or organization
+                is having an election which isn't listed on LoveGov create it.
+            </div>
         </div>
-        <div class="browse-elections-wrapper">
-            {% include 'site/pages/browse/feed_browse_elections.html' with special_feed="getElections" %}
+
+        {% comment %}
+        <div class="questions-links">
+            <a href="/congress/" class="question-link"> match with your representatives </a>
+            <a href="/representatives/" class="question-link"> match with congress </a>
+            <a class="question-link create_election_link"> create an election </a>
         </div>
+        {% endcomment %}
+        <a class="create-a-group create_election_link">
+            create an election
+        </a>
+
+        {% comment %}
+        <div class="questions-links">
+            <a href="/presidential_election/" class="question-link"> match with presidential candidates </a>
+            <a href="/representatives/" class="question-link"> match with your representatives </a>
+            <a href="/congress/" class="question-link"> match with congress </a>
+        </div>
+        {% endcomment %}
+
+        <div style="clear:both;"></div>
+
     </div>
 
-    <script> rebind="browse"; </script>
-
-{% endblock %}
+    <div class="browse-elections-wrapper">
+        {% include 'site/pages/browse/feed_browse_elections.html' with special_feed="getElections" %}
+    </div>
+</div>

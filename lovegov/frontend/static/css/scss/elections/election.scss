@@ -7,73 +7,83 @@
 div.election-card-wrapper {
   float:left;
   margin-right:20px;
+  margin-bottom:25px;
 }
 div.election-card-wrapper.last {
   margin-right:0px;
 }
 
+
 div.election-card {
-  width:300px;
+  margin-right:30px;
+  margin-bottom:50px;
 
   div.card-top {
-    width:100%;
+
     div.politician-image {
       float:left;
     }
     div.right-side {
       float:left;
       width:120px;
+      padding-left:15px;
       line-height:64px;
-      div.match-num {
-        color:$red;
-        text-align:center;
-        width:100%;
-        @include fontSize(64px);
-        font-weight:bold;
-      }
-      div.match-text {
-        color:$red;
-        text-align:center;
-        width:100%;
-        @include fontSize(32px);
-        font-weight:bold;
-        line-height:14px;
-        margin-bottom:6px;
-      }
-      .action-button {
-        text-align:center;
-        line-height:14px;
-        float:left;
-        margin-top:10px;
-        padding:5px;
-        color:$black;
-        margin-left:10%;
-        width:90%;
-        background-color:$light-gray;
-        &:hover {
-          background-color:$dark-gray;
-          cursor:pointer;
+
+      div.match {
+        padding-top:5px;
+        a.match-num {
+          display:block;
+          font-family: $body-fonts;
+          color:$red;
+          text-align:center;
+          width:100%;
+          @include fontSize(72px);
+          line-height:48px;
+          font-weight:bold;
+          padding-top: 2px;
         }
-      }
-      div.support-politician {
-        @extend .action-button;
-      }
-      div.unsupport-politician {
-        @extend .action-button;
-        background-color:$blue;
-        color:white;
-        &:hover {
-          background-color:$red;
-          cursor:pointer;
+        div.match-text {
+          display:block;
+          color:$red;
+          text-align:center;
+          width:100%;
+          @include fontSize(28px);
+          font-weight:bold;
+          line-height:38px;
         }
       }
     }
   }
-  div.card-bottom {
+  .action-button {
+    text-align:center;
+    line-height:14px;
     float:left;
+    margin-bottom:10px;
+    padding:5px;
+    color:$black;
     width:100%;
+    background-color:$light-gray;
+    &:hover {
+      background-color:$dark-gray;
+      cursor:pointer;
+    }
+  }
+  div.support-politician {
+    @extend .action-button;
+  }
+  div.unsupport-politician {
+    @extend .action-button;
+    background-color:$blue;
+    color:white;
+    &:hover {
+      background-color:$red;
+      cursor:pointer;
+    }
+  }
+  div.card-bottom {
     a.politician-name {
-      @include fontSize(24px);
+      float:left;
+      @include fontSize(20px);
       color:$black;
       &:hover {
         color:black;
@@ -83,30 +93,87 @@ div.election-card {
 }
 
 
-div.running {
-  float:left;
-}
+
 div.election-info {
-  width:310px;
-  float:left;
-  div.election-date {
-    width:100%;
-    text-align:center;
-    background-color:$black;
-    color:white;
-    padding:15px;
-    @include fontSize(32px);
+  width:100%;
+  display:block;
+  margin-bottom:20px;
+  div.election-info-left {
     float:left;
+    div.election-date {
+      width:200px;
+      color:gray;
+      @include fontSize(32px);
+      display:block;
+    }
+    div.election-created-by {
+
+    }
   }
-  div.election-info-lower {
-    margin-top:20px;
+  div.election-description-wrapper {
     float:left;
-    width:100%;
+    margin-left:10px;
+    div.election-leader {
+      color:$gray;
+      span.leader-name {
+        color:$black;
+        font-weight:bold;
+      }
+      span.leader-num {
+        color:$red;
+      }
+    }
     div.election-description {
+      margin-top:5px;
+    }
+  }
+  div.election-buttons {
+    float:right;
+    width:165px;
+  }
+}
+div.running {
+  width:100%;
+  display:block;
+}
+
+
+/* election feed */
+div.election-feed-item-wrapper {
+  margin-top:25px;
+}
+
+
+/* invite to run for modal */
+div.invite-to-election-wrapper {
+  padding:40px;
+  div.invite-to-election-header {
+    @include fontSize(28px);
+    margin-bottom:25px;
+    width:400px;
+  }
+
+  div.invite-to-election {
+    input.invite-to-election {
+      height:30px;
+      padding:5px;
+      width:200px;
       float:left;
     }
-    div.election-actions {
-      float:right;
+    a.invite-to-button {
+      float:left;
+      margin-left:20px;
+      padding:7px;
+      background-color:$red;
+      color:white;
+      &:hover {
+        background-color:$red-light;
+      }
+    }
+    div.invite-success-message {
+      float:left;
+      margin-left:20px;
+      width:150px;
     }
   }
 }

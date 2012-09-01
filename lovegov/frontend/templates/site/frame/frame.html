@@ -14,11 +14,18 @@
 
     {% include 'site/frame/header.html' %}
 
-    <div class="main-content main_content">
-        {% block content %}
-            {{ center }}
-        {% endblock %}
+    <div class="clear-wrapper">
+        <div class="main-content main_content">
+            {% block content %}
+                {{ center }}
+            {% endblock %}
+        </div>
+        <div style="clear:both;"></div>
     </div>
+
+    <div class="page_loading page-loading"></div>
+
+    {% include 'site/frame/new_footer.html' %}
 
 </div>
 

@@ -1,60 +1,62 @@
 {% load thumbnail %}
 
-
 <header>
 
-
-    <a href="/home/"><div class="header-logo"></div></a>
-    <img src="{{ STATIC_URL }}/images/beta.png" class="beta">
-    <ul>
-        <a href="/home/" class="do_ajax_link dummy_link tooltip-right" title="Home"><li>home</li></a>
-        <a href="/questions/" class="do_ajax_link dummy_link"><li>questions</li></a>
-        <a href="/about/" class="do_ajax_link dummy_link"><li>about</li></a>
-    </ul>
-
-    <div class="head-right">
-
-        <div class="search">
-            <input type="text" placeholder="Search">
-            <img class="mag-glass" src="{{ STATIC_URL }}/images/search.png">
-            <div class="search-dropdown"></div>
+    <!-- float right -->
+    <div class="triangle-area">
+        {% include 'site/frame/user_menu.html' %}
+        <div class="triangle-wrapper user_menu_toggle">
+            <span class="head-triangle"></span>
         </div>
+    </div>
 
-        <div class="notices setting-icon">
-            <div class='notifications_dropdown_button notifications-dropdown-button'>{{ notifications_num }}</div>
-            <span class="triangle"></span>
-            <div class="notifications-dropdown notifications_dropdown">
-                {% include 'site/frame/notifications/notification_dropdown.html' %}
-            </div>
-            <div class="notifications-dropdown notifications_dropdown_loading">
-                {% include 'site/frame/notifications/notification_dropdown.html' with loading=1 %}
-            </div>
+    <span class="head-avatar">
+        <a href="{{ user.get_url }}">
+            {% include 'site/pieces/avatar.html' with user=user height='30' width='30' hoveroff=1 %}
+        </a>
+    </span>
+
+    <div class="notifications-wrapper">
+        {% include 'site/frame/notifications/notifications_button.html'%}
+
+        <span class="triangle"></span>
+        <div class="notifications-dropdown notifications_dropdown">
+            {% include 'site/frame/notifications/notification_dropdown.html' %}
         </div>
+        <div class="notifications-dropdown notifications_dropdown_loading">
+            {% include 'site/frame/notifications/notification_dropdown.html' with loading=1 %}
+        </div>
+        <div style="clear:both;"></div>
+    </div>
 
-        <img src="{{ STATIC_URL }}/images/people.png" class="setting-icon">
+    <span class="header-privacy change_privacy_mode public_mode_button public-icon"  title="You are in public mode." data-mode="PUB"
+            {% if anonymous_mode %} style="display:none;" {% endif %}></span>
 
-        <span class="header-id">
+   <span class="header-privacy change_privacy_mode private_mode_button private-icon"  title="You are in private mode." data-mode="PRI"
+           {% if not anonymous_mode %} style="display:none;" {% endif %}></span>
 
-            <span class="head-avatar">
-                <a href="{{ user.get_url }}">
-                    {% include 'site/pieces/avatar.html' with user=user height='30' width='30' hoveroff=1 %}
-                </a>
-            </span>
+    <div class="search">
+        <input type="text" placeholder="Search">
+        <img class="mag-glass" src="{{ STATIC_URL }}/images/search.png">
+        <div class="search-dropdown"></div>
+    </div>
 
+            {% comment %}
             <span class="name">
                 <div class="first-name"> {{ user.first_name }}</div>
                 <div class="last-name"> {{ user.last_name }}</div>
             </span>
+            {% endcomment %}
 
-            <div class="triangle-area">
-                {% include 'site/frame/user_menu.html' %}
-                <div class="triangle-wrapper user_menu_toggle">
-                    <span class="head-triangle"></span>
-                </div>
-            </div>
-
-        </span>
-
-    </div>
+    <!-- float left -->
+    <a href="/home/"><div class="header-logo"></div></a>
+    <ul>
+        <a href="/home/" class=" dummy_link header_link home_link home_header_link {% if request.path == '/home/' %} clicked {% endif %}"><li>home</li></a>
+        <a href="/questions/" class=" dummy_link header_link home_link {% if request.path == '/questions/' %} clicked {% endif %}"><li>questions</li></a>
+        <a href="/groups/" class=" dummy_link header_link home_link {% if request.path == '/groups/' %} clicked {% endif %}"><li> groups </li></a>
+        <a href="/elections/" class=" dummy_link  header_link home_link {% if request.path == '/elections/' %} clicked{% endif %}"><li> elections </li></a>
+        <a href="/legislation/" class=" dummy_link header_link home_link  {% if request.path == '/legislation/' %} clicked{% endif %}"><li > legislation </li></a>
+        <a href="/about/" class=" dummy_link header_link do_ajax_link {% if request.path == '/about/' %} clicked {% endif %}" ><li>about </li></a>
+    </ul>
 
 </header>

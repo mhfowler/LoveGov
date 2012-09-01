@@ -26,3 +26,35 @@ div.facebook-friend-card
     margin-top:5px;
   }
 }
+
+div.invite-friends-sidebar {
+  float:left;
+  div.invite-header {
+    margin-top:0px;
+    margin-bottom: 8px;
+    @include fontSize(20px);
+  }
+  div.fb-invite-card {
+    display:block;
+    margin-bottom:15px;
+    div.fb-image-wrapper {
+      float:left;
+    }
+    div.name-and-invite {
+      float:left;
+      margin-left:5px;
+    }
+    div.facebook-invite-button {
+      width: 39px;
+      margin-left: 12px;
+      margin-top: 5px;
+      padding:3px;
+      background-color:$gray;
+      @include border-radius(7px);
+      &:hover {
+        background-color:$dark-gray;
+        cursor:pointer;
+      }
+    }
+  }
+}

@@ -38,3 +38,222 @@ div.groups-header {
     }
   }
 }
+
+/* create a group button */
+a.create-a-group {
+  float:right;
+  padding:6px;
+  background-color:$red;
+  color:white;
+  width:150px;
+  text-align:center;
+  margin-right: 70px;
+  margin-top: 40px;
+  &:hover {
+    background-color:$red-light;
+  }
+}
+
+
+
+/* like minded page */
+div.like-minded-title {
+  float:left;
+  span.group-title {
+    float:left;
+  }
+  span.group-num-members {
+    float:left;
+  }
+  a.view-all-friends {
+    float:left;
+    margin-left:16px;
+    margin-top:-3px;
+  }
+}
+
+div.like-minded-header {
+  div.not-yet {
+    margin-bottom:15px;
+    div.not-yet-message {
+      margin-top:15px;
+      float:left;
+      width:500px;
+      @include fontSize(18px);
+      div.hi-top {
+        margin-bottom:8px;
+      }
+    }
+    div.not-yet-counter {
+      float:right;
+      margin-right: 153px;
+      margin-top: 40px;
+      div.counter-num {
+        @include fontSize(64px);
+        float:left;
+      }
+      div.counter-text {
+        float:left;
+      }
+    }
+    div.fixed-counter {
+      position:fixed;
+      left: 1400px;
+    }
+  }
+
+  div.real-like-minded-header {
+    position:relative;
+    div.like-minded-top {
+      width:100%;
+      float:left;
+      div.like-minded-buttons {
+        float:left;
+        @include inline-block;
+        width:100px;
+        a.like-minded-explanation {
+          color:$gray;
+          margin-left:6px;
+          positioN: relative;
+          top:3px;
+          &:hover {
+            color:$black;
+          }
+        }
+        a.like-minded-button {
+          display:block;
+          padding:7px;
+          width:80px;
+          color:white;
+          text-transform:uppercase;
+          @include border-radius(7px);
+          margin-top: 7px;
+          text-align: center;
+        }
+        a.find-button {
+          background-color:$gray;
+          &:hover {
+            background-color:$dark-gray;
+          }
+        }
+        a.clear-button {
+          background-color:$blue;
+          &:hover {
+            background-color:$blue-light;
+          }
+        }
+      }
+      div.button-explanations {
+        position:absolute;
+        z-index:1;
+        padding:20px;
+        border:1px solid $black;
+        @include border-radius(8px);
+        width:300px;
+        height:300px;
+        background-color:white;
+        top: 104px;
+        left: -14px;
+        display:none;
+        div.explanation-header {
+          font-weight:bold;
+        }
+        div.button-explanation {
+          display:block;
+          margin-top:10px;
+          div.click-for-explanation {
+            @include fontSize(18px);
+          }
+          div.click-explanation {
+            display:none;
+          }
+        }
+        a.close-like-minded {
+          float:right;
+        }
+      }
+      div.like-minded-description {
+        margin-left: 15px;
+        float: left;
+        width: 800px;
+        margin-top:7px;
+        div.like-minded-description-header {
+          @include fontSize(16px);
+        }
+        div.like-minded-description-text {
+          margin-top:3px;
+        }
+      }
+    }
+    div.like-minded-bottom {
+      margin-top: 12px;
+      width:100%;
+      float:left;
+      border-top:1px solid $gray;
+      div.like-minded-bottom-header {
+        margin-top:6px;
+        width:100%;
+        height: 30px;
+        float:left;
+        div.members-header {
+          float:left;
+          @include fontSize(20px);
+        }
+        a.view-all-friends {
+          float:left;
+          margin-left: 15px;
+          margin-top: 4px;
+        }
+        div.button-result {
+          float:left;
+          margin-top: 5px;
+          margin-left: 40px;
+          div.find-result {
+            display:none;
+            color:green;
+            position: absolute;
+            left: 235px;
+            div.num-found {
+              @include inline-block;
+            }
+            &.toggle {
+              color:blue;
+            }
+          }
+          div.clear-result {
+            display:none;
+            color:$red;
+            position: absolute;
+            left: 235px;
+          }
+          div.find-loading {
+            @include staticImage("/images/gifs/ajax-loader.gif");
+            width: 15px;
+            height: 15px;
+            background-size: 15px 13px;
+            background-repeat: no-repeat;
+            display:none;
+            float:left;
+          }
+        }
+        div.total-processed-count {
+          float:right;
+          margin-top:6px;
+        }
+      }
+      div.like-minded-members {
+        float:left;
+        width:100%;
+        a.href-avatar {
+          float:left;
+          margin-right: 20px;
+          margin-bottom: 15px;
+        }
+      }
+    }
+  }
+
+  div.no-members {
+    margin-top:10px;
+  }
+}

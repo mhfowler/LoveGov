@@ -1,0 +1,22 @@
+<div class="friend-card">
+
+    <div class="friend-top">
+        <div class="friend-image">
+            {% include 'site/pieces/avatar.html' with user=friend width="50" height="50" %}
+        </div>
+        <div class="friend-match">
+            <div class="match-num">
+                {{ friend.comparison.result }}
+            </div>
+            <div class="match-text">
+                match
+            </div>
+        </div>
+        <div style="clear:both;"></div>
+    </div>
+
+    <div class="friend-name">
+          <a href="{{ friend.get_url }}"> {{ friend.get_name }} </a>
+    </div>
+
+</div>

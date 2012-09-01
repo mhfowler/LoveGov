@@ -1,0 +1,84 @@
+{% load humanize %}
+{% load customtags %}
+{% load macros %}
+
+<div class="feed-item-wrapper">
+
+    <div class="left-part">
+        {% macro hearts_rank content my_vote %}
+        <div class="item-ranking" data-c_id="{{ content.id }}">
+            <div class="heart-plus heart_plus heart_button{% if my_vote == 1 %} clicked{% endif %}"></div>
+            <div class="heart-number heart_number">{{ content.status }}</div>
+            <div class="heart-minus heart_minus heart_button{% if my_vote == -1 %} clicked{% endif %}"></div>
+        </div>
+        {% endmacro %}
+        {% usemacro hearts_rank content my_vote %}
+    </div>
+
+    <div class="main-part">
+        {% macro feed_title content %}
+        <div class="group-posted-to">
+            {% with posted_to=content.posted_to %}
+                <a href="{{ posted_to.get_url }}" class="posted-to-link"> {{ posted_to.get_name }} </a>
+            {% endwith %}
+        </div>
+        <a href="{{ content.get_url }}" class="content-title"> {{ content.getFeedTitle }}</a>
+        {% endmacro %}
+        {% usemacro feed_title content %}
+        <div class="item-main-wrapper">
+            {% block item_main %}
+                This is a group of all the people on LoveGov who answered questions similarly to you.
+                Below is a feed of only the content created by those people.
+                Your like-minded group currently has 1 member.
+                To find more like-minded people,
+                click the find button to the left and it will search LoveGov for other
+                people who share over 20 questions with you and are atleast 80% similar.
+            {% endblock %}
+        </div>
+
+        {% macro feed_bottom content %}
+        <div class="item-bottom">
+
+            <!-- float right -->
+            <a href="{{ content.getCommentsURL }}" class="num-comments">
+                {{ content.num_comments }} comment {{ content.num_comments|pluralize }}
+            </a>
+            <a class="share-button">
+                share +
+            </a>
+            <a class="pin-button pin_content" data-c_id="{{ content.id }}">
+                pin
+            </a>
+
+            <!-- float left -->
+            {% with creator=content.getCreatorDisplay %}
+                <a href="{{ creator.get_url }}" class="created-avatar">
+                    {% include 'site/pieces/avatar.html' with user=creator height="30" width="30" %}
+                </a>
+
+                <div class="name-and-submitted">
+                    <a href="{{ creator.get_url }}" class="name"> {{ creator.get_name }} </a>
+                    <div class="submitted"> {{ content.created_when|naturaltime }}</div>
+                </div>
+            {% endwith %}
+
+            <div style="clear:both;"></div>
+
+        </div>
+        {% endmacro %}
+        {% usemacro feed_bottom content %}
+    </div>
+
+    <div class="right-part">
+        {% block right_part %}
+            {% with top_comment=content.getTopComment %}
+                {% if top_comment %}
+                    {% include 'site/pages/feed/feed_items/top_comment.html' %}
+                {% endif %}
+            {% endwith %}
+        {% endblock %}
+    </div>
+
+    <div style="clear:both;"></div>
+
+</div>

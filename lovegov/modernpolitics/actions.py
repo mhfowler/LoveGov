@@ -25,7 +25,8 @@ def answerAction(user, question, privacy, answer_id, weight=None, explanation=No
     user.last_answered = datetime.datetime.now()
     user.save()
 
-    my_response = user.view.responses.filter(question=question)
+    view = user.view
+    my_response = view.responses.filter(question=question)
 
     if not my_response:
         if not weight:
@@ -40,6 +41,7 @@ def answerAction(user, question, privacy, answer_id, weight=None, explanation=No
             response.most_chosen_num = 1
             response.total_num = 1
         response.autoSave(creator=user, privacy=privacy)
+        view.responses.add(response)
         user.num_answers += 1
         user.save()
     # else update old response
@@ -52,17 +54,59 @@ def answerAction(user, question, privacy, answer_id, weight=None, explanation=No
         response.most_chosen_answer = chosen_answer
         response.weight = weight
         response.explanation = explanation
-        # update creation relationship
         if chosen_answer:
             response.most_chosen_num = 1
             response.total_num = 1
+        response.created_when = datetime.datetime.now()
         response.saveEdited(privacy)
 
-    action = CreatedAction(user=user,privacy=privacy,content=response)
-    action.autoSave()
+    # if you answered, then you liked the question
+    if chosen_answer:
+        response.question.like(user, "PRI")
 
     return response
 
+
+def scorecardAnswerAction(user, scorecard, question, answer_id):
+
+    chosen_answer = Answer.lg.get_or_none(id=answer_id)
+    if not chosen_answer:
+        chosen_answer = None
+    scorecard.last_answered = datetime.datetime.now()
+    scorecard.save()
+
+    scorecard_view = scorecard.scorecard_view
+    my_response = scorecard_view.responses.filter(question=question)
+
+    weight = 50
+    explanation = ""
+
+    if not my_response:
+        response = Response( question = question,
+            most_chosen_answer = chosen_answer,
+            weight = weight,
+            explanation = explanation)
+        if chosen_answer:
+            response.most_chosen_num = 1
+            response.total_num = 1
+        response.autoSave(creator=user, privacy="PRI")
+        scorecard_view.responses.add(response)
+    # else update old response
+    else:
+        response = my_response[0]
+        if not weight:
+            weight = response.weight
+        if not explanation:
+            explanation = response.explanation
+        response.most_chosen_answer = chosen_answer
+        response.weight = weight
+        response.explanation = explanation
+        if chosen_answer:
+            response.most_chosen_num = 1
+            response.total_num = 1
+        response.saveEdited("PRI")
+
+    return response
 
 #-----------------------------------------------------------------------------------------------------------------------
 # Likes or dislikes content based on post.
@@ -85,6 +129,8 @@ def voteAction(vote,user,content,privacy):
         value = content.like(user=user, privacy=privacy)
     elif vote == -1:
         value = content.dislike(user=user, privacy=privacy)
+    else:
+        value = content.unvote(user=user, privacy=privacy)
 
     return value
 
@@ -392,14 +438,61 @@ def followGroupAction(viewer, group, follow, privacy):
         change = False
         if follow:
             modifier = "A"
-            if not group in viewer.group_subscriptions.all():
+            if group.id not in viewer.group_subscriptions.all().values_list("id", flat=True):
                 viewer.group_subscriptions.add(group)
+                group.num_followers += 1
+                group.save()
                 change = True
         else:
             modifier = "S"
-            if group in viewer.group_subscriptions.all():
+            if group.id in viewer.group_subscriptions.all().values_list("id", flat=True):
                 viewer.group_subscriptions.remove(group)
+                group.num_followers -= 1
+                group.save()
                 change = True
         if change:
             action = GroupFollowAction(user=viewer,privacy=privacy,group=group,modifier=modifier)
             action.autoSave()
+
+
+## content gets pinned to group, if viewer is admin of group and content not already pinned ##
+def pinContentAction(viewer, content, group, privacy):
+    if group.hasAdmin(viewer):
+        if not content in group.pinned_content.all():
+            group.pinned_content.add(content)
+            pinned_action = PinnedAction(user=viewer, privacy=privacy, to_group=group, content=content, confirmed=True)
+            pinned_action.autoSave()
+            return True
+        else:
+            LGException("user " + str(viewer.id) + " tried to pin content to group which content was already pinned to. g_id:" + str(group.id) )
+            return False
+    else:
+        LGException("user " + str(viewer.id) + " tried to pin content to group they were not admin of. g_id:" + str(group.id) )
+        return False
+
+## content gets unpinned from group, if viewer is admin of group and content was previously pinned ##
+def unpinContentAction(viewer, content, group, privacy):
+    if group.hasAdmin(viewer):
+        if content in group.pinned_content.all():
+            group.pinned_content.remove(content)
+            pinned_action = PinnedAction(user=viewer, privacy=privacy, to_group=group, content=content, confirmed=False)
+            pinned_action.autoSave()
+            return True
+        else:
+            LGException("user " + str(viewer.id) + " tried to unpin content from group which content was not pinned to. g_id:" + str(group.id) )
+            return False
+    else:
+        LGException("user " + str(viewer.id) + " tried to unpin content from group they were not admin of. g_id:" + str(group.id) )
+        return False
+
+
+
+## run for or stop running for an election ##
+def runForElectionAction(viewer, election, run):
+    if run:
+        if not election.system:
+            election.joinRace(viewer)
+            LGException("user " + str(viewer.id) + " tried to run for an invited only election. e_id:" + str(election.id) )
+    else:
+        election.leaveRace(viewer)
+    return election

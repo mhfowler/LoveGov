@@ -105,7 +105,7 @@ def getUserUserComparison(userA, userB, force=False):
 def getUserContentComparison(user, content, force=False):
     viewA = user.getView()
     viewB = content.getCalculatedView()
-    return getViewComparison(viewA, viewB, force)
+    return getViewComparison(viewA, viewB, force=force, dateA=user.last_answered, dateB=content.last_answered)
 
 #-----------------------------------------------------------------------------------------------------------------------
 # Wrapper for getViewComparison, which takes in user and group
@@ -113,7 +113,15 @@ def getUserContentComparison(user, content, force=False):
 def getUserGroupComparison(user, group, force=False):
     userView = user.getView()
     groupView = group.getGroupView()
-    return getViewComparison(userView, groupView, force)
+    return getViewComparison(userView, groupView, force=force, dateA=user.last_answered, dateB=group.last_answered)
+
+#-----------------------------------------------------------------------------------------------------------------------
+# Wrapper for getViewComparison, which takes in user and scorecard
+#-----------------------------------------------------------------------------------------------------------------------
+def getUserScorecardComparison(user, scorecard, force=False):
+    user_view = user.getView()
+    scorecard_view = scorecard.scorecard_view
+    return getViewComparison(user_view, scorecard_view, force=force, dateA=user.last_answered, dateB=scorecard.last_answered)
 
 #-----------------------------------------------------------------------------------------------------------------------
 # Wrapper for findUserComparison which does comparison if one doesn't already exist.
@@ -423,14 +431,15 @@ def fastCompare(viewA,viewB,topics=None):
         rB = responsesB[b_index]
         # If the question IDs match, compare their answers and save it!
         if rA.question_id == rB.question_id:
-            similar = (rA.most_chosen_answer_id == rB.most_chosen_answer_id)
-            weight = rA.weight
-            comparison.getTotalBucket().update(similar, weight)
-            # And also do something with topic buckets...
-            if topics:
-                topic = rA.question.getMainTopic()
-                if topic in topics:
-                    comparison.getTopicBucket(topic).update(similar, weight)
+            if rA.most_chosen_answer_id and rB.most_chosen_answer_id:
+                similar = (rA.most_chosen_answer_id == rB.most_chosen_answer_id)
+                weight = rA.weight
+                comparison.getTotalBucket().update(similar, weight)
+                # And also do something with topic buckets...
+                if topics:
+                    topic = rA.question.getMainTopic()
+                    if topic in topics:
+                        comparison.getTopicBucket(topic).update(similar, weight)
             # Then increment both counters
             a_index += 1
             b_index += 1

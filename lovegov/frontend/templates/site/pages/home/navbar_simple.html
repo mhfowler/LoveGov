@@ -1,0 +1,38 @@
+{% load customtags %}
+<div class="left-navbar">
+
+    <div class="links-wrapper">
+        <div class="simple_navsection">
+            <div class="navbar-divider">
+                {% include 'site/pages/home/navbar_snippet.html' with section_url="/home/" section_title="home" %}
+            </div>
+            {% include 'site/pages/home/navbar_snippet.html' with section_url="/representatives/" section_title="My Representatives" %}
+            {% include 'site/pages/home/navbar_snippet.html' with section_url="/like_minded/" section_title="Like-Minded" %}
+            {% include 'site/pages/home/navbar_snippet.html' with section_url="/friends/" section_title="Friends" %}
+        </div>
+        <div class="simple_navsection">
+            <div class="navbar-divider">
+                {% include 'site/pages/home/navbar_snippet.html' with section_url="/groups/" section_title="groups" %}
+            </div>
+            <div class="subscribed-groups">
+                {% for x in group_subscriptions %}
+                    {% include 'site/pages/home/navbar_snippet.html' %}
+                {% endfor %}
+            </div>
+        </div>
+        <div class="simple_navsection">
+            <div class="navbar-divider">
+                {% include 'site/pages/home/navbar_snippet.html' with section_url="/elections/" section_title="elections" %}
+            </div>
+            <div class="subscribed-elections">
+                {% include 'site/pages/home/navbar_snippet.html' with section_url="/presidential_election/" section_title="Presidential" %}
+                {% include 'site/pages/home/navbar_snippet.html' with section_url="/presidential_election/" section_title="MA Senate" %}
+            </div>
+        </div>
+    </div>
+
+    {% if viewer.facebook_id %}
+        {% include 'site/pages/friends/fb_invite_sidebar.html' %}
+    {% endif %}
+
+</div>

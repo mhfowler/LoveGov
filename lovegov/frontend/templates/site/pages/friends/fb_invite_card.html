@@ -1,0 +1,20 @@
+{% load thumbnail %}
+
+<div class='fb-invite-card'>
+    <div class="fb-image-wrapper">
+        {% thumbnail friend.picture_url "50x50" crop="center" as im %}
+            <img src="{{ im.url }}" />
+        {% endthumbnail %}
+    </div>
+
+    <div class="name-and-invite">
+        <div class='facebook-friend-name'>
+            {{ friend.name|truncatechars:14}}
+        </div>
+        <div class="facebook-invite-button facebook_share_button" data-fb_share_id="{{ friend.id }}" data-fb_name="{{ friend.name }}">
+            invite
+        </div>
+    </div>
+
+    <div style="clear:both;"></div>
+</div>

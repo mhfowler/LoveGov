@@ -25,7 +25,15 @@ def rightSideBar(request, vals):
 #-----------------------------------------------------------------------------------------------------------------------
 def homeSidebar(request, vals):
     viewer = vals['viewer']
-    vals['group_subscriptions'] = viewer.getGroupSubscriptions()
+    subscriptions = viewer.getSubscriptions()
+    group_subscriptions = subscriptions.filter(is_election=False)
+    election_subscriptions =  subscriptions.filter(is_election=True)
+    for g in group_subscriptions:
+        g.num_new = g.getNumNewContent(viewer)
+    for g in election_subscriptions:
+        g.num_new = g.getNumNewContent(viewer)
+    vals['group_subscriptions'] = group_subscriptions
+    vals['election_subscriptions'] = election_subscriptions
 
 #-----------------------------------------------------------------------------------------------------------------------
 # gets the users responses to questions
@@ -71,6 +79,10 @@ def loadHistogram(resolution, g_id, which, increment=1, vals={}):
     bucket_uids = {}
     for x in bucket_list:
         bucket_uids[x] = []
+    if which=='mini':
+        maximum = MINI_HISTOGRAM_MAXIMUM
+    else:
+        maximum = -1
     histogram_metadata = {'total':0,
                           'identical':0,
                           'identical_uids':[],
@@ -80,7 +92,8 @@ def loadHistogram(resolution, g_id, which, increment=1, vals={}):
                           'increment':increment,
                           'topic_alias':'all',
                           'bucket_uids': bucket_uids,
-                          'current_bucket': -1 }
+                          'current_bucket': -1 ,
+                          'maximum': maximum}
     vals['histogram_metadata'] = json.dumps(histogram_metadata)
 
 
@@ -98,7 +111,7 @@ def contentDetail(request, content, vals):
         vals['my_vote'] = my_vote[0].value
     else:
         vals['my_vote'] = 0
-    vals['iown'] = (creator_display.you)
+    vals['iown'] = creator_display.you
 
 #-----------------------------------------------------------------------------------------------------------------------
 # get share button values
@@ -147,7 +160,7 @@ class AnswerClass:
         self.percent = percent
 
 #-----------------------------------------------------------------------------------------------------------------------
-# Recursively generates the html for a comment thread.
+# Recursively generates the html for a comment thread (depth-first search).
 # Paramater usage:
 #   request: the request object
 #   object: the content object (News, Petition, etc. or a parent comment)
@@ -157,12 +170,13 @@ class AnswerClass:
 #   user_commetns: list of all comments made by the user
 #   start: the comment to start rendering at
 #   limit: the max number of comments to render
-#   rendered_so_far: number of comments rendered so far, wrapped in a list so it is mutable
+#   rendered_so_far: number of comments rendered so far, wrapped in a list so it is mutable (I know)
+#   excluded: a list of comments to exclude from the results, e.g. because they were added by the user and already rendered
 # Returns:
 #   a string containing the content thread html
 #   the number of actual top-level comments (and their children) actually returned
 #-----------------------------------------------------------------------------------------------------------------------
-def makeThread(request, object, user, depth=0, user_votes=None, user_comments=None, vals={}, start=0, limit=None, rendered_so_far=None):
+def makeThread(request, object, user, depth=0, user_votes=None, user_comments=None, vals={}, start=0, limit=None, rendered_so_far=None, excluded=None):
     """Creates the html for a comment thread."""
     if not user_votes:
         user_votes = Voted.objects.filter(user=user)
@@ -170,8 +184,10 @@ def makeThread(request, object, user, depth=0, user_votes=None, user_comments=No
         user_comments = Comment.objects.filter(creator=user)
     if not rendered_so_far:
         rendered_so_far = [0]
+    if not excluded:
+        excluded = []
     # Get all comments that are children of the object
-    comments = Comment.objects.filter(on_content=object,active=True).order_by('-status')[start:]
+    comments = Comment.objects.filter(on_content=object,active=True).order_by('-status').exclude(id__in=excluded)[start:]
     viewer = vals['viewer']
     top_levels = 0
     if comments:
@@ -228,14 +244,16 @@ def renderComment(request, vals, c, depth, user_votes=None, user_comments=None):
 #-----------------------------------------------------------------------------------------------------------------------
 # fills in vals with topic_stats for poll_progress_by_topic.html
 #-----------------------------------------------------------------------------------------------------------------------
-def getQuestionStats(vals):
+def getQuestionStats(vals, poll=None):
 
     viewer = vals['viewer']
     responses = viewer.view.responses.all()
     topic_stats = []
-    lgpoll = getLoveGovPoll()
-    vals['lgpoll'] = lgpoll
-    questions = lgpoll.questions.all()
+    if poll:
+        vals['poll'] = poll
+        questions = poll.questions.all()
+    else:
+        questions = Question.objects.all()
     for t in getMainTopics():
         stat = {'topic':t}
         q_ids = questions.filter(main_topic=t).values_list('id', flat=True)
@@ -271,21 +289,14 @@ def getGroupTuples(viewer, question, response):
     return group_tuples
 
 #-----------------------------------------------------------------------------------------------------------------------
-# gets poll progress
-#-----------------------------------------------------------------------------------------------------------------------
-def getPollProgress(viewer, poll):
-    q_ids = poll.questions.all().values_list('id', flat=True)
-    responses = viewer.view.responses.filter(question_id__in=q_ids).exclude(most_chosen_answer_id=-1)
-    poll_progress = {'completed':responses.count(), 'total':len(q_ids)}
-    return poll_progress
-
-#-----------------------------------------------------------------------------------------------------------------------
 # fill dictionary for a particular group
 #-----------------------------------------------------------------------------------------------------------------------
 def valsGroup(viewer, group, vals):
     # Set group and group comparison
     vals['group'] = group
-    vals['group_comparison'] = group.getComparison(viewer)
+    comparison = group.getComparison(viewer)
+    vals['group_comparison'] = comparison
+    vals['comparison_breakdown'] = comparison.toBreakdown()
 
     # Figure out if this user is an admin
     vals['is_user_admin'] = False
@@ -296,10 +307,15 @@ def valsGroup(viewer, group, vals):
             break
 
     # Get list of all Admins
-    vals['group_admins'] = group.admins.all()
+    vals['group_admins'] = group.admins.all()[:2]
 
     # Get the list of all members and truncate it to be the number of members showing
-    vals['group_members'] = group.getMembers(num=MEMBER_INCREMENT)
+    group_members = group.getMembers()
+    if admins:
+        num_members_display = 16
+    else:
+        num_members_display = 24
+    vals['group_members'] = group_members[:num_members_display]
 
     # Get the number of group Follow Requests
     vals['num_group_requests'] = group.getNumFollowRequests()
@@ -310,10 +326,9 @@ def valsGroup(viewer, group, vals):
     # vals for group buttons
     valsGroupButtons(viewer, group, vals)
 
-    ## TEST ##
-    items = Content.objects.filter(type='N')
-    vals['item1'] = items[0]
-    vals['item2'] = items[1]
+    # pinned
+    pinned = group.pinned_content.all()
+    vals['pinned'] = pinned
 
     # histogram
     loadHistogram(5, group.id, 'mini', vals=vals)
@@ -340,21 +355,110 @@ def valsGroupButtons(viewer, group, vals):
 # fill dictionary for a particular election
 #-----------------------------------------------------------------------------------------------------------------------
 def valsElection(viewer, election, vals):
-    running = election.running.all().order_by("-num_supporters")[:2]
+    running = election.members.all().order_by("-num_supporters")
+    supporting = viewer.getPoliticians()
     for r in running:
         r.comparison = r.getComparison(viewer)
+        r.is_supporting = r in supporting
     vals['running'] = running
     vals['election'] = election
+    vals['i_am_running'] = viewer in running
+    vals['is_user_following'] = election in viewer.getElectionSubscriptions()
     return vals
 
 #-----------------------------------------------------------------------------------------------------------------------
 # fill dictionary for a petition
 #-----------------------------------------------------------------------------------------------------------------------
 def valsPetition(viewer, petition, vals):
-    signers_limit = 8
+    signers_limit = 6
     vals['petition'] = petition
     signers = petition.getSigners()
+    vals['num_signers'] = len(signers)
     vals['signers'] = signers[:signers_limit]
     vals['i_signed'] = (viewer in signers)
-    vals['num_signers'] = len(signers)
     vals['i_created'] = (petition.creator == viewer)
+
+#-----------------------------------------------------------------------------------------------------------------------
+# fill dictionary for fb friends invite sidebar
+#-----------------------------------------------------------------------------------------------------------------------
+def valsFBFriends(request, vals):
+    class FBFriend:
+        pass
+    viewer = vals['viewer']
+    fb_friends = []
+    if viewer.facebook_id:
+        fb_return = fbGet(request,'me/friends/')
+        if fb_return:
+            friends_list = fb_return['data']
+            vals['facebook_authorized'] = False
+            if friends_list:
+                vals['facebook_authorized'] = True
+                for friend in random.sample(friends_list, 4):
+                    fb_friend = FBFriend()
+                    fb_friend.name = friend['name']
+                    fb_friend.id = friend['id']
+                    fb_friend.picture_url = "https://graph.facebook.com/" + str(fb_friend.id) + "/picture?type=large"
+                    fb_friends.append(fb_friend)
+                    vals['facebook_friends'] = fb_friends
+    return fb_friends
+
+#-----------------------------------------------------------------------------------------------------------------------
+# put all state tuples in dictionary
+#-----------------------------------------------------------------------------------------------------------------------
+def getStateTuples(vals):
+    vals['states'] = STATES
+
+#-----------------------------------------------------------------------------------------------------------------------
+# fills vals for reps header
+#-----------------------------------------------------------------------------------------------------------------------
+def valsRepsHeader(vals):
+    viewer = vals['viewer']
+    location = viewer.temp_location or viewer.location
+    vals['location'] = location
+
+    if location:
+        vals['state'] = location.state
+        vals['district'] = location.district
+        vals['latitude'] = location.latitude
+        vals['longitude'] = location.longitude
+
+    congressmen = viewer.getRepresentatives(location)
+
+    if LOCAL and location:
+        bush = getUser("George Bush")
+        congressmen = [bush, bush, bush]
+    vals['congressmen'] = congressmen
+    for x in congressmen:
+        x.comparison = x.getComparison(viewer)
+    congressmen.sort(key=lambda x:x.comparison.result,reverse=True)
+    if len(congressmen) < 3:
+        vals['few_congressmen'] = True
+
+#-----------------------------------------------------------------------------------------------------------------------
+# randomly (or by user info), chooses a teaser header
+#-----------------------------------------------------------------------------------------------------------------------
+def valsDismissibleHeader(request, vals):
+
+    viewer = vals['viewer']
+    header = random.choice(DISMISSIBLE_HEADERS)
+    vals['dismissible_header'] = header
+
+    if header == 'congress_teaser':
+        congress = Group.lg.get_or_none(alias="congress")
+        #congress_members = list(UserProfile.objects.filter(primary_role__office__governmental=True))
+        #congress_members = random.sample(congress_members, min(16, len(congress_members)))
+        #congress_members = UserProfile.objects.filter(primary_role__office__governmental=True)[:16]
+        congress_members = UserProfile.objects.filter(currently_in_office=True)[:16]
+        if LOCAL:
+            congress_members = UserProfile.objects.all()[:16]
+        vals['congress'] = congress
+        vals['congress_members'] = congress_members
+
+    elif header == 'find_reps':
+        pass
+
+    elif header == 'lovegov_poll':
+        lgpoll = getLoveGovPoll()
+        poll_progress = lgpoll.getPollProgress(viewer)
+        vals['poll_progress'] = poll_progress
+        vals['lgpoll'] = lgpoll

@@ -1,0 +1,72 @@
+{% extends 'site/pages/home/top_sidebar_main.html' %}
+
+{% load humanize %}
+{% load macros %}
+{% loadmacros "site/pages/feed/feed_items/base_item.html" %}
+
+
+{% block top %}
+
+    {% macro content_detail_title content %}
+        <div class="item-title-wrapper">
+            <a href="{{ content.get_url }}" class="item-title"> {{ content.getFeedTitle }} </a>
+            <div class="posted-in"> posted in </div>
+            {% with group=content.posted_to %}
+                <a href="{{ group.get_url }}" class="posted-in-group"> {{ group.get_name }} </a>
+            {% endwith %}
+            <div style="clear:both;"></div>
+        </div>
+    {% endmacro %}
+
+{% endblock %}
+
+{% block sidebar %}
+    <div class='content-detail-sidebar'>
+
+        <div class="back-buttons">
+            <a href="/legislation/" class="back-to-button">
+                <div class="gray-triangle"></div>
+                <div class="back-container"> back to feed </div>
+            </a>
+            <a href="{{ content.posted_to.get_url }}" class="back-to-button">
+                <div class="gray-triangle"></div>
+                <div class="back-container"> back to group </div>
+            </a>
+        </div>
+
+    </div>
+{% endblock %}
+
+{% block sidebar_fixed %}
+{% endblock %}
+
+{% block main %}
+
+    <div class="content-detail-wrapper">
+        <div class="content-detail-top">
+            <div class="the-hearts">
+                {% usemacro hearts_rank content my_vote %}
+            </div>
+            <div class="detail-item-header">
+                {% usemacro feed_title content %}
+                <div class="feed-item-bottom-wrapper">
+                    {% usemacro feed_bottom content %}
+                </div>
+            </div>
+            <div style="clear:both;"></div>
+        </div>
+
+        <div class="content-main-wrapper">
+            {% block content_body %}
+            {% endblock %}
+
+            <div id="comments" class="content-discussion">
+                {% include 'site/pieces/thread.html' with content=content%}
+            </div>
+
+        </div>
+
+        <div style="clear:both;"></div>
+    </div>
+
+{% endblock %}

@@ -1,28 +1,9 @@
 <div class="representatives">
 
-    <div class="representatives-header">
-        <div class="dismissible_wrapper">
-            {% with dismissible_hide=congressmen %}
-                {% include 'site/pages/politicians/representatives_dismissible_header.html' %}
-            {% endwith %}
-        </div>
-        <div class="displayed_wrapper" {% if not congressmen %} style="display:none" {% endif %}>
-            {% include 'site/pages/politicians/representatives_header.html' with info_height="183px" info_expanded=1 %}
-        </div>
-    </div>
+    {% include 'site/pages/politicians/representatives_header_and_dismissible.html' %}
 
     <div class="representatives-feed-wrapper">
-        {% include 'site/pages/feed/feed.html' %}
+        {% include 'site/pages/feed/feed.html' with feed_boxed=1 %}
     </div>
 
 </div>
-
-<script>
-    rebind="representatives";
-    {% if state and district and latitude and longitude %}
-        reps_latitude = {{ latitude }};
-        reps_longitude = {{ longitude }};
-        reps_state = "{{ state }}";
-        reps_district = {{ district }};
-    {% endif %}
-</script>

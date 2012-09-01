@@ -1,26 +1,31 @@
 <div class="pin-content-modal">
 
-    <div class="modal-section-title">Pin content: {{ content.title }}</div>
-    <div class="modal-instructions">Only the moderators of a group can pin content to that group</div>
-
-    <div class="pinnable-groups pinnable_groups" data-c_id="{{ content.id }}">
-    {% for group in groups %}
-
-        <div class="pin_to_group pin-to-group">
-
-            <div class="group-image">
-                {% thumbnail group.getImageURL "50x50" crop="center" as im %}
-                    <img src="{{ im.url }}"/>
-                {% endthumbnail %}
-            </div>
-
-            <div class="group-title">
-                {{ group.title }}
-            </div>
-
-        </div>
-
-    {% endfor %}
+    <div class="pin-title">Pin Content </div>
+    <div class="pin-explanation">
+        A moderator of a group can pin a piece of content to that group so that it is highlighted on that group's page.
     </div>
 
+    <div class="pin-to-wrapper">
+
+        <div class="pin-to-header">
+            pin <span class="pin-what"> {{ content.title }} </span> to:
+        </div>
+
+        {% if groups %}
+            <div class="pin-select-wrapper">
+                <select class="pin-to pin_to_select select_2" data-placeholder="Choose one of your groups.">
+                    {% for group in groups %}
+                        <option value="{{ group.id }}">{{ group.title }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="was-pinned was_pinned"></div>
+            <a class="pin-it pin_it d" data-c_id="{{ content.id }}"> pin it  </a>
+        {% else %}
+            <div class="no-groups">
+                Either you aren't the moderator of any groups, or this content has already been pinned to all of your
+                groups.
+            </div>
+        {% endif %}
+    </div>
 </div>
