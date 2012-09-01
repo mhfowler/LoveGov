@@ -17,7 +17,7 @@ div.avatar-strip {
 
   div.avatar-strip-main {
     float:left;
-    width:300px;
+    width:470px;
 
     div.avatar-strip-top {
       float:left;
@@ -29,6 +29,16 @@ div.avatar-strip {
         color:$black;
         &:hover {
           color:black;
+        }
+      }
+      span.parties-wrapper {
+        margin-left:10px;
+        margin-top:7px;
+        float:left;
+        a.party-label-wrapper {
+          float:left;
+          margin-left:5px;
+          margin-bottom:5px;
         }
       }
     }
@@ -63,8 +73,10 @@ div.avatar-strip {
   div.before-match {
     float:left;
     width: 100px;
-    margin-left: 80px;
-    margin-top: 7px;
+    position:absolute;
+    left:52%;
+    margin-top: 35px;
+    color:$gray;
     a.view-all-answers {
       float:left;
       width:100%;
@@ -80,7 +92,8 @@ div.avatar-strip {
     height: 50px;
     float:right;
     line-height: 36px;
-    padding-top: 13px;
+    position: relative;
+    top: -15px;
     color:$red;
     div.match-number {
       @include fontSize(66px);
