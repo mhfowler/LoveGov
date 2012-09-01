@@ -37,6 +37,7 @@ if LOCAL:
 # lovegov urls
 urlpatterns += patterns('',
 
+    (r'^underconstruction/$', views.underConstruction),
     (r'.*/$', views.redirect),
     (r'^$', views.redirect),
 
@@ -60,7 +61,6 @@ urlpatterns += patterns('',
 
     # misc
     (r'^logout/$', viewWrapper(views.logout)),
-    (r'^underconstruction/$', views.underConstruction),
     (r'^upgrade/$', views.upgrade),
     (r'^continue/$', views.continueAtOwnRisk),
     (r'^try/$', viewWrapper(views.tryLoveGov)),
