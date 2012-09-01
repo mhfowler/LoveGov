@@ -370,7 +370,7 @@ def valsElection(viewer, election, vals):
 # fill dictionary for a petition
 #-----------------------------------------------------------------------------------------------------------------------
 def valsPetition(viewer, petition, vals):
-    signers_limit = 1
+    signers_limit = 6
     vals['petition'] = petition
     signers = petition.getSigners()
     vals['num_signers'] = len(signers)
