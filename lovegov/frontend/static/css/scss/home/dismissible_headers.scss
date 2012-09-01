@@ -31,7 +31,19 @@ div.congress-header {
   div.mouse-over {
     float:left;
     margin-left:10px;
-    margin-top:40px;
+    margin-top:35px;
+    div.mouse-over-text {
+      font-style:italic;
+    }
+    div.mouse-over-arrow {
+      @include staticImage("/images/icons/arrows/gray_arrow.png");
+      width:59px;
+      height:28px;
+      background-size:59px 28px;
+      position: relative;
+      left: 20px;
+      top:-5px;
+    }
   }
   div.congress-teaser {
     float:left;

@@ -316,7 +316,7 @@ div.feed-item-wrapper {
 
 /* feed item bottom */
 div.item-bottom {
-  margin-top:10px;
+  //margin-top:10px;
   width:100%;
   display:block;
 
@@ -498,11 +498,12 @@ div.feed-item-wrapper {
           }
 
           div.poll-sample-bottom {
+            height:20px;
             margin-top:5px;
             width:100%;
             display:block;
             div.saved-message {
-              float:left;
+              float:right;
               color:$blue;
               display:none;
             }

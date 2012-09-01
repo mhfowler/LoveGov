@@ -2896,7 +2896,7 @@ function saveAnswerInFeed(item) {
         success: function(data) {
             var saved_message = item.find(".saved_message");
             saved_message.show();
-            //setTimeout(function(){saved_message.fadeOut()},1000);
+            saved_message.fadeOut(2000);
         }
     });
 }
