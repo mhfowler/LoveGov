@@ -1,0 +1,40 @@
+{% load thumbnail %}
+{% load customtags %}
+
+<div class="sorl-test">
+
+    <p> Normal Images </p>
+
+    {% for t in main_topics %}
+
+        <img src="{{ t.getIconURL }}" width="50" height="50"/>
+
+    {% endfor %}
+
+</div>
+
+
+<div style="height:2px;width:100px;background-color:black;"></div>
+
+
+<div class="sorl-test">
+
+    <p> Normal Images </p>
+
+    {% for t in main_topics %}
+
+        <p> orig url {{ t.topic_text }}: {{t.getIconURL }}</p>
+
+        {% with full_url=t.getIconURL|media_url:MEDIA_PREFIX %}
+            <p> full url: {{ full_url }} </p>
+            {% thumbnail full_url geometry crop="center" format="PNG" geometry="50x50" as im %}
+                <img src="{{ im.url }}" />
+            {% empty %}
+                empty!
+                <img src="{{ full_url }}" />
+            {% endthumbnail %}
+        {% endwith %}
+
+    {% endfor %}
+
+</div>

@@ -57,12 +57,12 @@ urlpatterns += patterns('',
 
     # misc
     (r'^logout/$', viewWrapper(views.logout)),
-    (r'^underconstruction/$', views.underConstruction),
     (r'^upgrade/$', views.upgrade),
     (r'^continue/$', views.continueAtOwnRisk),
     (r'^try/$', viewWrapper(views.tryLoveGov)),
     (r'^try/(\S+)/$', viewWrapper(views.tryLoveGov)),
     (r'^unsubscribe/$', views.unsubscribe),
+    (r'^underconstruction/$', views.underConstruction),
 
     # home pages
     (r'^home/$', viewWrapper(views.home, requires_login=True)),
@@ -159,4 +159,5 @@ urlpatterns += patterns('',
     (r'(?P<alias>\w+)/$', views.aliasDowncast),
     (r'.*/$', views.redirect),
     (r'^$', views.redirect)
+
 )

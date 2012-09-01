@@ -157,7 +157,7 @@ def viewWrapper(view, requires_login=False):
 # basic pages
 #-----------------------------------------------------------------------------------------------------------------------
 def redirect(request, vals={}):
-    return shortcuts.redirect('/home/')
+    return shortcuts.redirect('/underconstruction/')
 
 def underConstruction(request):
     return render_to_response('site/pages/microcopy/construction.html')
@@ -243,7 +243,7 @@ def aliasDowncastEdit(request, alias=None, vals={}):
 #-----------------------------------------------------------------------------------------------------------------------
 def login(request, to_page='web/', message="", vals={}):
     if not vals.get('firstLoginStage'):
-        to_page = "match/representatives/"
+        to_page = "/home/"
 
     # Try logging in with facebook
     if fbLogin(request,vals,refresh=True):
