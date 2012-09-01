@@ -14,7 +14,13 @@
 {% if dismissible_header == 'congress_teaser' %}
     {% include 'site/pages/dismissible_headers/congress_header.html' %}
 {% elif dismissible_header == 'find_reps' %}
-    {% include 'site/pages/dismissible_headers/find_reps_header.html' %}
+    {% if not viewer.temp_location %}
+        {% include 'site/pages/dismissible_headers/find_reps_header.html' %}
+    {% endif %}
+{% elif dismissible_header == 'lovegov_poll' %}
+    {% if not poll_progress.finished %}
+        {% include 'site/pages/dismissible_headers/lgpoll_progress_header.html' %}
+    {% endif %}
 {% endif %}
 
 

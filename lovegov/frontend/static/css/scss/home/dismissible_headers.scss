@@ -122,3 +122,59 @@ div.find-your-reps-top-header {
     }
   }
 }
+
+
+/* lgpoll header */
+a.lgpoll-header {
+  float:left;
+  color:$black;
+  padding:5px 15px 15px 15px;
+  width:970px;
+  &:hover {
+    background-color:$light-gray;
+  }
+  div.lgpoll-teaser-image {
+    width: 209px;
+    height: 127px;
+    @include staticImage('/images/dismissible_headers/lovegov_poll.png');
+    background-size:209px 127px;
+    float:left;
+  }
+
+  div.poll-progress-wrapper {
+    float:left;
+    margin-left:25px;
+    margin-top:30px;
+    div.progress-numbers {
+      display:block;
+      @include fontSize(72px);
+      color:$red;
+      line-height:60px;
+      letter-spacing:-2px;
+      font-family:$body-fonts;
+    }
+    div.progress-header {
+      @include fontSize(22px);
+      display:block;
+      margin-top:0px;
+    }
+  }
+
+  div.right-part {
+    float:left;
+    margin-left:35px;
+    width:450px;
+    margin-top:30px;
+    div.header-title {
+      @include fontSize(24px);
+      color:$text-blue;
+    }
+    div.d-header-explanation {
+      margin-top:0px;
+      @include fontSize(18px);
+    }
+  }
+
+
+
+}

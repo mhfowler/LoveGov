@@ -71,7 +71,6 @@ def getQuestionComparisons(viewer, to_compare, feed_ranking, question_ranking,
     them_responses = to_compare.view.responses.filter(privacy="PUB")
     you_responses = viewer.view.responses.all()
 
-
     if scorecard:
         scorecard_responses = scorecard.scorecard_view.responses.all()
 
@@ -91,7 +90,7 @@ def getQuestionComparisons(viewer, to_compare, feed_ranking, question_ranking,
                     scorecard=scorecard, scorecard_response=scorecard_response)
                 question_items.append(q_item)
 
-    else:
+    elif viewer.id != to_compare.id:
         # filter
         if feed_topic:
             them_responses = them_responses.filter(main_topic=feed_topic)
@@ -105,6 +104,21 @@ def getQuestionComparisons(viewer, to_compare, feed_ranking, question_ranking,
                 you=viewer, your_response=your_response,
                 them=to_compare, their_response=their_response)
             question_items.append(q_item)
+
+    else:
+        # filter
+        if feed_topic:
+            you_responses = you_responses.filter(main_topic=feed_topic)
+
+        # append
+        for r in you_responses:
+            q = r.question
+            your_response = getResponseHelper(you_responses, q)
+            q_item = getQuestionItem(question=q,
+                you=viewer, your_response=your_response,
+                them=None, their_response=None)
+            question_items.append(q_item)
+
 
     # sort
     if question_ranking:

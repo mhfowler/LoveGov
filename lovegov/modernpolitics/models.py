@@ -3540,9 +3540,11 @@ class Poll(Content):
     def getPollProgress(self, viewer):
         q_ids = self.questions.all().values_list('id', flat=True)
         responses = viewer.view.responses.filter(question_id__in=q_ids).exclude(most_chosen_answer_id=-1)
-        poll_progress = {'completed':responses.count(), 'total':len(q_ids)}
+        completed = responses.count()
+        total = len(q_ids)
+        finished = completed >= total
+        poll_progress = {'completed':completed, 'total':total, 'finished':finished}
         return poll_progress
-
 
 #=======================================================================================================================
 # Scorecard, a group response to a poll

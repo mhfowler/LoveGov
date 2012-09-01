@@ -311,7 +311,11 @@ def valsGroup(viewer, group, vals):
 
     # Get the list of all members and truncate it to be the number of members showing
     group_members = group.getMembers()
-    vals['group_members'] = group_members[:16]
+    if admins:
+        num_members_display = 16
+    else:
+        num_members_display = 28
+    vals['group_members'] = group_members[:num_members_display]
 
     # Get the number of group Follow Requests
     vals['num_group_requests'] = group.getNumFollowRequests()
@@ -435,6 +439,7 @@ def valsRepsHeader(vals):
 #-----------------------------------------------------------------------------------------------------------------------
 def valsDismissibleHeader(request, vals):
 
+    viewer = vals['viewer']
     header = random.choice(DISMISSIBLE_HEADERS)
     vals['dismissible_header'] = header
 
@@ -451,3 +456,9 @@ def valsDismissibleHeader(request, vals):
 
     elif header == 'find_reps':
         pass
+
+    elif header == 'lovegov_poll':
+        lgpoll = getLoveGovPoll()
+        poll_progress = lgpoll.getPollProgress(viewer)
+        vals['poll_progress'] = poll_progress
+        vals['lgpoll'] = lgpoll

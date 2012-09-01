@@ -356,6 +356,8 @@ div.profile-page {
         }
         div.profile-ghost {
           padding-top:20px;
+          float: left;
+          width: 620px;
           div.ghost-header {
             @include fontSize(24px);
           }
@@ -390,7 +392,7 @@ div.profile-page {
             p.claimed-message {
               @include fontSize(12px);
               position: absolute;
-              left: 546px;
+              left: 105px;
               top: 68px;
               width: 450px;
               color:$dark-gray;
@@ -412,7 +414,7 @@ div.profile-page {
             p.asked-message {
               @include fontSize(12px);
               position: absolute;
-              left: 769px;
+              left: 430px;
               top: 31px;
               width: 150px;
               color:$dark-gray;

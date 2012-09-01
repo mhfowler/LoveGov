@@ -134,16 +134,18 @@
 
             <div class="group-column group-people">
 
-                <div class="group-moderators">
+                {% if info.group_admins %}
+                    <div class="group-moderators">
 
-                    <div class="group-info-title">Moderators</div>
-                    {% for admin in info.group_admins %}
-                        <a href="{{ admin.get_url }}">{% include 'site/pieces/avatar-with-name.html' with user=admin height="30" width="30" %}</a>
-                    {% endfor %}
+                        <div class="group-info-title">Moderators</div>
+                        {% for admin in info.group_admins %}
+                            <a href="{{ admin.get_url }}">{% include 'site/pieces/avatar-with-name.html' with user=admin height="30" width="30" %}</a>
+                        {% endfor %}
 
-                </div>
+                    </div>
+                {% endif %}
 
-                <div class="group-members">
+                <div class="group-members {% if not info.group_admins %} no-admins {% endif %}">
                     <div class="group-info-title">Members</div>
                     {% for member in info.group_members %}
                         <div class="group-member-avatar">
