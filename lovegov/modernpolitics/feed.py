@@ -36,11 +36,8 @@ def getFeedItems(viewer, alias, feed_ranking, feed_types, feed_start, num):
 
 
 def getContentFromAlias(alias, viewer):
-    object = aliasToObject(alias)
     content = None
-    if object:
-        content = object.getContent()
-    elif alias == 'home':
+    if alias == 'home':
         content = Content.objects.filter(in_feed=True)
     elif alias == 'friends':
         friends_ids = viewer.getIFollow().values_list("id", flat=True)
@@ -64,6 +61,11 @@ def getContentFromAlias(alias, viewer):
         groups_ids = viewer.getGroups().values_list("id", flat=True)
         friends_ids = viewer.getIFollow().values_list("id", flat=True)
         content = Content.objects.filter(Q(posted_to_id__in=groups_ids) | Q(creator_id__in=friends_ids))
+    else:
+        object = aliasToObject(alias)
+        if object:
+            content = object.getContent()
+
     return content
 
 
