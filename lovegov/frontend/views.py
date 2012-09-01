@@ -61,6 +61,8 @@ def viewWrapper(view, requires_login=False):
         vals = {'STATIC_URL':settings.STATIC_URL}
         try: # Catch all error messages
 
+            return shortcuts.redirect('/underconstruction/')
+
             # if ie<9 redirect to upgrade page
             if not checkBrowserCompatible(request):
                 return shortcuts.redirect("/upgrade/")
