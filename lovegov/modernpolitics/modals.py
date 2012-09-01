@@ -131,4 +131,4 @@ def getAnswerQuestionsWarningModal(request, vals):
     poll_progress = lgpoll.getPollProgress(viewer)
     vals['lgpoll'] = lgpoll
     vals['lgpoll_progress'] = poll_progress['completed']
-    return ajaxRender('site/pages/home/answer_warning_modal.html', vals,request)
+    return ajaxRender('site/pages/dismissible_header/answer_warning_modal.html', vals,request)
