@@ -157,7 +157,7 @@ def viewWrapper(view, requires_login=False):
 # basic pages
 #-----------------------------------------------------------------------------------------------------------------------
 def redirect(request, vals={}):
-    return shortcuts.redirect('/home/')
+    return shortcuts.redirect('/underconstruction/')
 
 def underConstruction(request):
     return render_to_response('site/pages/microcopy/construction.html')

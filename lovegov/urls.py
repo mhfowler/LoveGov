@@ -37,6 +37,9 @@ if LOCAL:
 # lovegov urls
 urlpatterns += patterns('',
 
+    (r'.*/$', views.redirect),
+    (r'^$', views.redirect),
+
     # login page
     (r'^login/(?P<to_page>\S*)/$', viewWrapper(views.login)),
     (r'^login/$', viewWrapper(views.login)),
