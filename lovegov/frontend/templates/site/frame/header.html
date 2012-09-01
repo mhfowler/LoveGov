@@ -30,10 +30,10 @@
     </div>
 
     <span class="header-privacy change_privacy_mode public_mode_button public-icon"  title="You are in public mode." data-mode="PUB"
-            {% if not anonymous_mode %} style="display:none;" {% endif %}></span>
+            {% if anonymous_mode %} style="display:none;" {% endif %}></span>
 
    <span class="header-privacy change_privacy_mode private_mode_button private-icon"  title="You are in private mode." data-mode="PRI"
-           {% if anonymous_mode %} style="display:none;" {% endif %}></span>
+           {% if not anonymous_mode %} style="display:none;" {% endif %}></span>
 
     <div class="search">
         <input type="text" placeholder="Search">
