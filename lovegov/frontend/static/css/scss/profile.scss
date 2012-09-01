@@ -240,9 +240,17 @@ div.profile-page {
           width:300px;
           margin-right:30px;
           div.bio-statement {
-            height:280px;
+            height:308px;
             display:block;
             width:100%;
+            div.profile-header {
+              float:left;
+              width:90px;
+            }
+            div.pencil-button {
+              margin-top:3px;
+              float:left;
+            }
             div.bio-text {
               overflow:hidden;
               //padding-left:10px;

@@ -27,19 +27,21 @@
 
                 <div class="profile-info">
 
-                    <div class="bio-statement">
+                    <div class="bio-statement inline_editable">
                         <div class="profile-header">
                             About Me
                         </div>
-                        <div class="bio-text inline-editable inline_editable" data-model="UserProfile" data-id="{{ profile.id }}">
+                        {% if viewer.id == profile.id %}
+                            <div class="edit-link pencil-button edit_button not_editing_display"></div>
+                        {% endif %}
+                        <div class="bio-text inline-editable" data-model="UserProfile" data-id="{{ profile.id }}">
                             <div class="inline-div being_edited not_editing_display">
                                 {{ profile.bio|linebreaksbr }}
                             </div>
                             {% if viewer.id == profile.id %}
-                                <div class="edit-link edit_button not_editing_display"></div>
                                 <div class="doing_editing_display">
                                     <div class="inline-edit-input inline_edit">
-                                        <textarea type="text" maxlength="500" class="edit_input bio-inline" name="bio">{{ profile.bio|linebreaksbr }}</textarea>
+                                        <textarea type="text" maxlength="500" class="edit_input bio-inline" name="bio">{{ profile.bio }}</textarea>
                                         <a href="" class="edit-link submit_inline_edit dummy_link">save</a>
                                         <a href="" class="edit-link cancel_inline_edit dummy_link">cancel</a>
                                     </div>

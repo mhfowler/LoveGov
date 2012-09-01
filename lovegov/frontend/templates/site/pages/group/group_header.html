@@ -110,7 +110,9 @@
             <div class="group-column group-text inline_editable">
                 <div class="group-info-title-wrapper">
                     <div class="group-info-title">Description</div>
-                    <div class="edit-link pencil-button edit_button not_editing_display"></div>
+                    {% if info.is_user_admin %}
+                        <div class="edit-link pencil-button edit_button not_editing_display"></div>
+                    {% endif %}
                     <div style="clear:both;"></div>
                 </div>
                 <div class="group-full-text inline_editable" data-model="Content" data-id="{{ group.id }}">
