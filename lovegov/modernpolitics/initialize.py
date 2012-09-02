@@ -1944,6 +1944,21 @@ def setHiddenGroup(group):
         group.content_by_posting = False
         group.save()
 
+
+def migrateResponseImportance():
+
+    responses = Response.objects.all()
+    print "goal: " + str(responses.count())
+    count = 0
+    for r in responses:
+        if r.weight <= 10:
+            r.weight *= 10
+            r.save()
+        count += 1
+        if not count%20:
+            print str(count)
+
+
 #-----------------------------------------------------------------------------------------------------------------------
 # initialize politician groups for each state
 #-----------------------------------------------------------------------------------------------------------------------

@@ -146,11 +146,14 @@ def recalculateInFeed():
     for x in n:
         x.in_feed = True
         x.save()
-    g = UserGroup.objects.all()
-    for x in g:
-        if x.group_privacy != "S":
-            x.in_feed = True
-            x.save()
+    d = Discussion.objects.all()
+    for x in d:
+        x.in_feed = True
+        x.save()
+    o = Poll.objects.all()
+    for x in o:
+        x.in_feed = True
+        x.save()
 
 
 def recalculateCreators():
