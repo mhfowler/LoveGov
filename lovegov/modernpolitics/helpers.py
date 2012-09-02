@@ -484,7 +484,9 @@ def helperAlias(alias):
 
     to_return = ""
     for k in alias:
-        if k.isalnum():
+        if k == '_':
+            to_return += '_'
+        elif k.isalnum():
             to_return += k
     return to_return
 
