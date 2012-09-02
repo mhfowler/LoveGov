@@ -1043,24 +1043,29 @@ function getFeed(container) {
         data['city'] = city;
     }
     else if (feed == 'getLegislation') {
-        var session = $('select.session_select').val();
-        var session_json = JSON.stringify(session);
-        var type = $('select.type_select').val();
-        var type_json = JSON.stringify(type);
-        var subject = $('select.subject_select').val();
-        var subject_json = JSON.stringify(subject);
-        var committee = $('select.committee_select').val();
-        var committee_json = JSON.stringify(committee);
-        var introduced = $('select.introduced_select').val();
-        var introduced_json = JSON.stringify(introduced);
-        var sponsor_body = $('select.sponsor_select_body').val();
-        var sponsor_body_json = JSON.stringify(sponsor_body);
-        var sponsor_name = $('select.sponsor_select_name').val();
-        var sponsor_name_json = JSON.stringify(sponsor_name);
-        var sponsor_party = $('select.sponsor_select_party').val();
-        var sponsor_party_json = JSON.stringify(sponsor_party);
-        var sponsor_district = $('select.sponsor_select_district').val();
-        var sponsor_district_json = JSON.stringify(sponsor_district);
+        if ($("." + $('select.session_select').data('selector')).hasClass('clicked')) {
+            var session = $('select.session_select').val();
+            var session_json = JSON.stringify(session);
+        }
+        else {
+            var session_json = False;
+        }
+            var type = $('select.type_select').val();
+            var type_json = JSON.stringify(type);
+            var subject = $('select.subject_select').val();
+            var subject_json = JSON.stringify(subject);
+            var committee = $('select.committee_select').val();
+            var committee_json = JSON.stringify(committee);
+            var introduced = $('select.introduced_select').val();
+            var introduced_json = JSON.stringify(introduced);
+            var sponsor_body = $('select.sponsor_select_body').val();
+            var sponsor_body_json = JSON.stringify(sponsor_body);
+            var sponsor_name = $('select.sponsor_select_name').val();
+            var sponsor_name_json = JSON.stringify(sponsor_name);
+            var sponsor_party = $('select.sponsor_select_party').val();
+            var sponsor_party_json = JSON.stringify(sponsor_party);
+            var sponsor_district = $('select.sponsor_select_district').val();
+            var sponsor_district_json = JSON.stringify(sponsor_district);
 
         data = {'action': 'getLegislation', 'feed_start':feed_start, 'session_set':session_json,
             'type_set':type_json, 'subject_set':subject_json, 'committee_set':committee_json,

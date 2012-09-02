@@ -101,8 +101,8 @@
                  <li>
                     <select multiple class="sponsor_select_district" data-selector="sponsor_filter">
                         <optgroup label="Sponsor district" id="bill_sponsor_district">
-                            {% for sponsor in sponsors %}
-                                <option class="sponsors" value='{{ sponsor.state }}'>{{ sponsor.state }}</option>
+                            {% for district in districts %}
+                                <option class="sponsors" value='{{ district }}'>{{ district }}</option>
                             {% endfor %}
                         </optgroup>
                     </select>

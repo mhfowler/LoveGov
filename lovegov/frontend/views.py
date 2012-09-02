@@ -935,6 +935,7 @@ def legislation (request, vals={}):
 
     vals['sponsors'] = UserProfile.objects.distinct().filter(sponsored_legislation__isnull=False)
     vals['sponsor_parties'] = Party.objects.filter(parties__sponsored_legislation__isnull=False).distinct()
+    #vals['districts'] = UserProfile.objects.filter(primary_role_office_terms_office__isnull=False)
 
     focus_html =  ajaxRender('site/pages/legislation/legislation.html', vals, request)
     url = request.path

@@ -242,32 +242,41 @@ def getLegislationItems(session_set, type_set, subject_set, committee_set, intro
     if session_set:
         legislation_items = legislation_items.filter(
             congress_session__in=session_set)
+    else: legislation_items = legislation_items
     if type_set:
         legislation_items = legislation_items.filter(
             bill_type__in=type_set)
+    else: legislation_items = legislation_items
     if subject_set:
         legislation_items = legislation_items.filter(
             bill_subjects__in=subject_set)
+    else: legislation_items = legislation_items
     if committee_set:
         legislation_items = legislation_items.filter(
             committees__in=committee_set)
+    else: legislation_items = legislation_items
     if introduced_set:
         date_dict = json.loads(introduced_set)
         date = datetime.date(year=date_dict['year'], month=date_dict['month'], day=date_dict['day'])
         legislation_items = legislation_items.filter(
             bill_introduced__gte=date)
+    else: legislation_items = legislation_items
     if sponsor_body_set:
         legislation_items = legislation_items.filter(
             congress_body__in=sponsor_body_set)
+    else: legislation_items = legislation_items
     if sponsor_name_set:
         legislation_items = legislation_items.filter(
             sponsor__in=sponsor_name_set)
+    else: legislation_items = legislation_items
     if sponsor_party_set:
         legislation_items = legislation_items.filter(
             sponsor__in=sponsor_party_set)
+    else: legislation_items = legislation_items
     if sponsor_district_set:
         legislation_items = legislation_items.filter(
             sponsor__in=sponsor_district_set)
+    else: legislation_items = legislation_items
 
     # paginate
     legislation_items = legislation_items[feed_start:feed_start+10]
