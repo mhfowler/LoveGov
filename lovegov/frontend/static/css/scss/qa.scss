@@ -420,17 +420,6 @@ div.question_stub {
             margin-left:20px;
           }
         }
-
-        span.public-icon {
-          @include staticImage("/images/icons/privacy/public_red.png");
-          background-repeat:no-repeat;
-          background-size:15px 15px;
-        }
-        span.private-icon {
-          @include staticImage("/images/icons/privacy/anon_red.png");
-          background-repeat:no-repeat;
-          background-size:15px 15px;
-        }
         span.answer-importance-num {
           color:$dark-gray;
           position: relative;
@@ -443,6 +432,13 @@ div.question_stub {
       }
       div.a-action.discuss-question {
         margin-top:21px;
+        span.discuss-icon {
+          @include staticImage("/images/icons/gray_comment.png");
+          background-size: 25px 25px;
+          background-position: -1px -2px;
+          width: 25px;
+          height: 22px;
+        }
       }
       div.a-action.answer-importance {
         margin-top:21px;
@@ -640,4 +636,17 @@ div.questions-header {
           }
       }
   }
+}
+
+
+/* privacy icons */
+span.public-icon {
+  @include staticImage("/images/icons/privacy/public_red.png");
+  background-repeat:no-repeat;
+  background-size:15px 15px;
+}
+span.private-icon {
+  @include staticImage("/images/icons/privacy/anon_red.png");
+  background-repeat:no-repeat;
+  background-size:15px 15px;
 }

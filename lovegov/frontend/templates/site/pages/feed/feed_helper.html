@@ -26,6 +26,8 @@
             {% include "site/pages/feed/feed_items/discussion_item.html" %}
         {% elif content.type == "Q" %}
             {% include "site/pages/feed/feed_items/question_item.html" %}
+        {% elif content.type == "L" %}
+            {% include "site/pages/feed/feed_items/legislation_item.html" %}
         {% endif %}
     {% endwith %}
 {% endfor %}

@@ -66,23 +66,26 @@ bind("div.create-modal span.post-as", "click", function(e) {
 
 // Add questions to create poll
 bind("div.create-modal div.add-question", "click", function(e) {
+    var num_questions = getNumQuestions();
+    if(num_questions==1) {
+        // Adding another question - now it's a poll!
+        $('div.create-modal div.create-section.poll div.poll-form').fadeIn(500);
+    }
+    $(this).data('num-questions', num_questions+1);
    var newQuestion = $('div.create-modal div.question.model').clone();
     $('div.add-question').before(newQuestion);
     newQuestion.removeClass("model");
 });
 
+function getNumQuestions() {
+    return $(this).data('num-questions');
+}
+
 // Delete questions
 bind("div.create-modal div.questions span.remove", "click", function(e) {
     var hasContent = false;
     var question = $(this).closest("div.question");
-    question.find("input,textarea").each(function(i,e) {
-        if($(this).val()!='') {
-            hasContent = true;
-            // break loop
-            return false;
-        }
-    });
-    if (hasContent) {
+    if (isEmptyQuestion(question)) {
         if(confirm("Remove this question?")) {
             question.remove();
        }
@@ -90,6 +93,16 @@ bind("div.create-modal div.questions span.remove", "click", function(e) {
         question.remove();
     }
 });
+
+function isEmptyQuestion(question) {
+    question.find("input,textarea").each(function(i,e) {
+        if($(this).val()!='') {
+            // break loop
+            return false;
+        }
+    });
+    return true;
+}
 
 // Show add source
 bind("div.create-modal div.questions span.add-source", "click", function(e) {
@@ -101,12 +114,53 @@ bind("div.create-modal div.save", "click", function(e) {
     var section = $(this).closest('div.create-section');
     var form = section.children("form");
 
-    if(!validField('input.title', 'title', form) ||
-        !validField('input.link', 'link', form) ||
-        !validField('textarea.full_text', 'description', form) ||
-        !validField('textarea.description', 'description', form)) {
+    var invalid = false;
+    var questions;
+
+    if(section.hasClass('discussion') ||
+        section.hasClass('petition') ||
+        section.hasClass('election') ||
+        section.hasClass('group') ||
+        section.hasClass('scorecard')) {
+            invalid = invalid || !validField('input.title', 'title', form);
+            invalid = invalid || !validField('textarea.description', 'description', form);
+    }
+
+    if(section.hasClass('news') ||
+        section.hasClass('discussion') ||
+        section.hasClass('petition') ||
+        section.hasClass('election') ||
+        section.hasClass('scorecard')) {
+            invalid = invalid || !validField('select.post_to', 'destination group', form);
+    }
+
+    if(section.hasClass('news')) {
+        invalid = invalid || !validField('input.link', 'link', form);
+    }
+
+    if(section.hasClass('election')) {
+        invalid = invalid || !validField('input.date_autofill', 'date', form);
+    }
+
+    if(section.hasClass('scorecard')) {
+        invalid = invalid || !validField('select.poll-select', 'poll', form);
+    }
+
+    if(section.hasClass('poll')) {
+        if(getPolltype()=='p') {
+            invalid = invalid || !validField('input.title', 'title', form);
+            invalid = invalid || !validField('textarea.description', 'description', form);
+        }
+        questions = extractQuestions();
+        invalid = invalid || questions.length < 1;
+    }
+
+    if(invalid) {
+        section.find('div.error_msg').hide().text("Some required fields were not filled in. Please fill them in.").fadeIn(500);
         return false;
     }
+
+
 
     var post_as = section.find("span.post-as.selected").data("poster");
     form.append('<input type="hidden" name="post_as" value="'+post_as+'">');
@@ -124,6 +178,7 @@ bind("div.create-modal div.save", "click", function(e) {
         questions = JSON.stringify(questions);
         $('<input type="hidden" name="questions">').attr('value', questions).appendTo(form);
 
+
     }
 
     form.append('<input type="hidden" name="action" value="createContent">');
@@ -134,7 +189,6 @@ function validField(field, name, form) {
     var fieldToFind = form.find(field);
 
     if(fieldToFind.length > 0 && fieldToFind.val()=='') {
-        alert('Enter a '+name+', plox');
         return false;
     }
     return true;
@@ -197,8 +251,12 @@ bind("div.create-modal div.create-section.news input.link", "keypress", function
 });
 
 bind("div.create-modal span.topic_button", "click", function(e) {
-    $(this).siblings("span.topic_button").removeClass("selected");
-    $(this).addClass("selected");
+    if($(this).hasClass('selected')) {
+        $(this).removeClass('selected');
+    } else {
+        $(this).siblings("span.topic_button").removeClass("selected");
+        $(this).addClass("selected");
+    }
 })
 
 function selectImageToggle() {
@@ -225,8 +283,26 @@ bind('#cycle-img-right','click',function(e) {
 
 bind("div.create-modal input.date_autofill", "keyup", evalDate);
 
+// click switch to Poll question type
+bind('div.create-modal div.create-section.poll input:radio[value="p"]', "click", switchToPoll);
+
+bind('div.create-modal div.create-section.poll input:radio[value="q"]', "click", switchToQuestion);
+
+function switchToPoll() {
+    $('div.create-modal div.create-section.poll div.poll-form').fadeIn(200);
+}
+
+function switchToQuestion() {
+    $('div.create-modal div.create-section.poll div.poll-form').fadeOut(200);
+}
+
+function getPolltype() {
+    return $('div.create-modal div.create-section.poll input:radio[name="polltype"]:checked').val();
+}
+
 function evalDate() {
-    var messages = ["Nope", "Keep trying", "Nada", "Sorry", "Bummer", "Whoops",
+    var
+        messages = ["Nope", "Keep trying", "Nada", "Sorry", "Bummer", "Whoops",
         "Snafu", "Blunder", "Almost there", "Invalid date", "Whoopsie daisy", "Try again",
         "I don't understand", "No comprendo", "That doesn't work", "Your input is bad and you should feel bad"];
     var val = $(this).val();

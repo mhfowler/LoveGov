@@ -851,7 +851,7 @@ def comment(request, vals={}):
         html = '<div class="threaddiv">'
         html += renderComment(request, vals, comment, depth)
         html += '</div>'
-        return HttpResponse(html)
+        return HttpResponse(json.dumps({'html':html, 'cid': comment.id}))
     else:
         if request.is_ajax():
             to_return = {'errors':[]}
@@ -889,6 +889,19 @@ def setPrivacy(request, vals={}):
     path = request.POST['path']
     mode = request.POST['mode']
     response = shortcuts.redirect(path)
+    response.set_cookie('privacy',value=mode)
+    return response
+
+#-----------------------------------------------------------------------------------------------------------------------
+# Toggles privacy cookies and returns html for button
+#-----------------------------------------------------------------------------------------------------------------------
+def changePrivacyMode(request, vals={}):
+    old_mode = request.POST['mode']
+    if old_mode == 'PUB':
+        mode = "PRI"
+    else:
+        mode = "PUB"
+    response = HttpResponse("changed privacy modes")
     response.set_cookie('privacy',value=mode)
     return response
 
@@ -1124,7 +1137,10 @@ def updateStats(request, vals={}):
     if object == 'poll_stats':
         from lovegov.frontend.views_helpers import getQuestionStats
         p_id = request.POST['p_id']
-        poll = Poll.lg.get_or_none(id=p_id)
+        if p_id:
+            poll = Poll.lg.get_or_none(id=p_id)
+        else:
+            poll = None
         getQuestionStats(vals, poll)
         html = ajaxRender('site/pages/qa/poll_progress_by_topic.html', vals, request)
     elif object == 'you_agree_with':
@@ -1141,9 +1157,8 @@ def updateStats(request, vals={}):
         else:
             html = "<p> answer to see how many people agree with you. </p>"
     elif object == 'poll_progress':
-        from lovegov.frontend.views_helpers import getPollProgress
         poll = Poll.objects.get(id=request.POST['p_id'])
-        poll_progress = getPollProgress(viewer, poll)
+        poll_progress = poll.getPollProgress(viewer)
         vals['poll'] = poll
         vals['poll_progress'] = poll_progress
         html = ajaxRender('site/pages/qa/poll_progress.html', vals, request)
@@ -1692,10 +1707,14 @@ def matchComparison(request,vals={}):
 def ajaxThread(request, vals={}):
     from lovegov.frontend.views import makeThread
     content = Content.objects.get(id=request.POST['c_id'])
+    excluded = request.POST.get('new_comments')
+    if excluded:
+        excluded = json.loads(excluded)
     user = vals['viewer']
     limit = int(request.POST.get('limit', 500))
     start = int(request.POST.get('start', 0))
-    thread, top_count = makeThread(request, content, user, vals=vals, start=start, limit=limit)
+
+    thread, top_count = makeThread(request, content, user, vals=vals, start=start, limit=limit, excluded=excluded)
     to_return = {'html':thread, 'top_count': top_count}
     return HttpResponse(json.dumps(to_return))
 
@@ -1851,7 +1870,7 @@ def getLegislation(request, vals={}):
 def getGroups(request, vals={}):
     from lovegov.frontend.views_helpers import valsGroup
     viewer = vals['viewer']
-    groups = Group.objects.filter(hidden=False).order_by("-num_members")
+    groups = Group.objects.filter(hidden=False, is_election=False).order_by("-num_members")
 
     # filter by location
     state = request.POST['state']
@@ -2483,12 +2502,13 @@ def setFirstLoginStage(request, vals={}):
 # saves the posted incompatability information to the db
 #-----------------------------------------------------------------------------------------------------------------------
 def logCompatability(request, vals={}):
-    incompatible = json.loads(request.POST['incompatible'])
-    user = vals.get('viewer')
-    CompatabilityLog(incompatible=incompatible, user=user,
-        page=getSourcePath(request), ipaddress=request.META.get('REMOTE_ADDR'),
-        user_agent=request.META.get('HTTP_USER_AGENT')).autoSave()
-    return HttpResponse('compatability logged')
+    return HttpResponse("temp")
+#    incompatible = json.loads(request.POST['incompatible'])
+#    user = vals.get('viewer')
+#    CompatabilityLog(incompatible=incompatible, user=user,
+#        page=getSourcePath(request), ipaddress=request.META.get('REMOTE_ADDR'),
+#        user_agent=request.META.get('HTTP_USER_AGENT')).autoSave()
+#    return HttpResponse('compatability logged')
 
 #-----------------------------------------------------------------------------------------------------------------------
 # saves a link click on some news
@@ -2523,6 +2543,7 @@ def createContent(request, vals={}):
     gendate = request.POST.get('gendate')
     state = request.POST.get('state')
     city = request.POST.get('city')
+    polltype = request.POST.get('polltype')
     if poll_id:
         poll = Poll.lg.get_or_none(id=poll_id)
     if questions: questions = json.loads(questions)
@@ -2571,10 +2592,12 @@ def createContent(request, vals={}):
         else:
             return HttpResponseBadRequest("A required field was not included.")
     elif section=='poll':
-        if title and full_text:
-            newc = Poll(description=full_text, summary=full_text, title=title, in_feed=True, in_search=True, in_calc=True,
-                posted_to=group)
-            newc.autoSave()
+        # Make sure polltype exists, and if its a poll, then title and fulltext must exist
+        if polltype and (polltype=='q' or (title and full_text)) and len(questions) > 0:
+            if polltype=='p':
+                newc = Poll(description=full_text, summary=full_text, title=title, in_feed=True, in_search=True, in_calc=True,
+                    posted_to=group)
+                newc.autoSave()
             for q in questions:
                 newQ = Question(question_text=q['question'], title=q['question'], source=q['source'], official=False)
                 newQ.save()
@@ -2583,7 +2606,10 @@ def createContent(request, vals={}):
                     newA.save()
                     newQ.addAnswer(newA)
                 newQ.save()
-                newc.addQuestion(newQ)
+                if polltype=='p':
+                    newc.addQuestion(newQ)
+            if polltype=='q':
+                newc = newQ
             newc.autoSave(creator=viewer, privacy=privacy)
             try:
                 if 'content-image' in request.FILES:
@@ -2837,8 +2863,17 @@ def inviteToRunForElection(request, vals):
         invite_email = request.POST['invite_email']
         already = UserProfile.objects.filter(email=invite_email)
         if not already:
-            #TODO: will do something cool
-            pass
+            privacy = getPrivacy(request)
+            join = GroupJoined(invite_email=invite_email, group=election, privacy=privacy)
+            join.autoSave()
+            join.invite_email = invite_email
+            join.save()
+            join.invite(viewer)
+            action = GroupJoinedAction(user=viewer,privacy=privacy,group_joined=join,modifier="I")
+            action.autoSave()
+            notification = Notification(action=action, notify_email=invite_email)
+            notification.save()
+            return HttpResponse(json.dumps({'success':True}))
         else:
             return HttpResponse(json.dumps({'success':False}))
     else:
@@ -2933,6 +2968,24 @@ def getModal(request,vals={}):
 
         modal_html = getFacebookShareModal(fb_share_id,fb_name,request,vals)
 
+
+    ## Facebook Share Content Modal ##
+    elif modal_name == "facebook_share_content_modal":
+        c_id = request.POST.get('c_id')
+
+        if not c_id:
+            LGException( "Facebook Share Content modal requested without content ID by user ID #" + str(viewer.id) )
+            return HttpResponseBadRequest( "Facebook Share Content modal requested without facebook content ID" )
+
+        share_content = Content.lg.get_or_none(id=c_id)
+
+        if not share_content:
+            LGException( "Facebook Share Content modal requested with invalid content ID #" + str(c_id) + " by user ID #" + str(viewer.id) )
+            return HttpResponseBadRequest( "Facebook Share Content modal requested with invalid facebook content ID")
+
+        modal_html = getFacebookShareContentModal(share_content,request,vals)
+
+
     ## create modal ##
     elif modal_name == "create_modal":
        modal_html = getCreateModal(request,vals)
@@ -2982,6 +3035,10 @@ def getModal(request,vals={}):
         e_id = request.POST['e_id']
         election = Election.objects.get(id=e_id)
         modal_html = getInviteToRunForModal(election, request, vals)
+
+    ## answer more questions warning ##
+    elif modal_name == "answer_questions_warning_modal":
+        modal_html = getAnswerQuestionsWarningModal(request, vals)
 
     ## If a modal was successfully made, return it ##
     if modal_html:

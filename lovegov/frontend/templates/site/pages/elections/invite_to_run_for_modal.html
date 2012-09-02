@@ -5,8 +5,8 @@
         <a href="{{ election.get_url }}">{{ election.get_name }} </a> </div>
 
     <div class="invite-to-election">
-        <input type="text" class="invite-to-election invite_to_election_email"/>
-        <a class="invite-to-button invite_to_election_button" data-s_id="{{ scorecard.id }}"> Invite </a>
+        <input type="text" class="invite-to-election invite_to_election_email" placeholder="email"/>
+        <a class="invite-to-button invite_to_run_for_button" data-e_id="{{ election.id }}"> Invite </a>
 
         <div class="invite-success-message invite_success_message success_message">
             Sent an invite email. Hopefully they sign up!

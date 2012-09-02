@@ -67,7 +67,7 @@ class LGModel(models.Model):
 #=======================================================================================================================
 class Privacy(LGModel):
     privacy = models.CharField(max_length=3, choices=PRIVACY_CHOICES, default='PUB')
-    creator = models.ForeignKey("UserProfile", default=1)             # 154 is lovegov user
+    creator = models.ForeignKey("UserProfile", null=True)             # 154 is lovegov user
     class Meta:
         abstract = True
     #-------------------------------------------------------------------------------------------------------------------
@@ -1071,6 +1071,19 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
         return self.first_name
 
     #-------------------------------------------------------------------------------------------------------------------
+    # on register, autosubscribe for some groups
+    #-------------------------------------------------------------------------------------------------------------------
+    def autoSubscribe(self):
+        from lovegov.modernpolitics.initialize import getLoveGovGroup, getPresidentialElection2012
+        from lovegov.modernpolitics.actions import followGroupAction
+
+        lg = getLoveGovGroup()
+        followGroupAction(self, lg, True, "PRI")
+
+        p = getPresidentialElection2012()
+        followGroupAction(self, p, True, "PRI")
+
+    #-------------------------------------------------------------------------------------------------------------------
     # duck typing
     #-------------------------------------------------------------------------------------------------------------------
     def get_url(self):
@@ -1458,7 +1471,6 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
         # self.gender = fb_data['gender']
         self.confirmed = True
 
-
         if 'birthday' in fb_data:
             split_bday = fb_data['birthday'].split('/')
             birthday = datetime.date.min
@@ -1476,7 +1488,6 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
 
             self.dob = birthday
             self.save()
-
 
         if 'education' in fb_data:
             education = fb_data['education']
@@ -2491,7 +2502,8 @@ class GroupJoinedAction(Action):
             'group' : group_joined.group,
             'inviter' : inviter,
             'from_user' : group_joined.user,
-            'modifier' : self.modifier
+            'modifier' : self.modifier,
+            'election': group_joined.group.is_election
         })
 
         return render_to_string('site/pieces/actions/group_joined_verbose.html',vals)
@@ -2551,6 +2563,15 @@ class Notification(Privacy):
             action.politician = user
             action.save()
             action.scorecard.politicians.add(user)
+        if action.action_type == 'JO':
+            relationship = action.group_joined
+            if relationship.invite_email == user.email:
+                logger.debug("successful claim of invite relationship by " + user.email)
+                relationship.user = user
+                relationship.save()
+            else:
+                logger.error("user was made to claim invited relationship that wasn't their email? " + str(relationship.invite_email) + " | " + user.email)
+
 
     ## aggregate actions ##
     def addAggAction(self,action):
@@ -2704,7 +2725,8 @@ class Notification(Privacy):
             'inviter' : inviter,
             'from_user' : group_joined.user,
             'modifier' : action.modifier,
-            'group_join' : group_joined
+            'group_join' : group_joined,
+            'election': group_joined.group.is_election
         })
 
         return render_to_string('site/pieces/notifications/group_joined_verbose.html',vals)
@@ -3516,6 +3538,15 @@ class Poll(Content):
         self.num_questions += 1
         self.save()
 
+    def getPollProgress(self, viewer):
+        q_ids = self.questions.all().values_list('id', flat=True)
+        responses = viewer.view.responses.filter(question_id__in=q_ids).exclude(most_chosen_answer_id=-1)
+        completed = responses.count()
+        total = len(q_ids)
+        finished = completed >= total
+        poll_progress = {'completed':completed, 'total':total, 'finished':finished}
+        return poll_progress
+
 #=======================================================================================================================
 # Scorecard, a group response to a poll
 #
@@ -4049,7 +4080,7 @@ class Group(Content):
     # Thin wrapper for adding admin.
     #-------------------------------------------------------------------------------------------------------------------
     def addAdmin(self, user):
-        if not self.election and not self.hasMember(user):
+        if not self.is_election and not self.hasMember(user):
             self.joinMember(user)
         self.admins.add(user)
 
@@ -4544,10 +4575,12 @@ class UserGroup(Group):
 #=======================================================================================================================
 class Election(Group):
     winner = models.ForeignKey(UserProfile, null=True, related_name="elections_won")
-    office = models.ForeignKey(Office, null=True)
     election_date = models.DateTimeField()
+
+    office = models.ForeignKey(Office, null=True)
     start_date = models.DateTimeField(auto_now_add=True)
     end_date = models.DateTimeField(auto_now_add=True)
+
     def autoSave(self, creator=None, privacy="PUB"):
         self.group_type = 'E'
         self.is_election = True
@@ -4799,7 +4832,8 @@ class InvitedToRegister(LGModel):
 ########################################################################################################################
 ########################################################################################################################
 class Relationship(Privacy):
-    user = models.ForeignKey(UserProfile, related_name='relationships')
+    user = models.ForeignKey(UserProfile, related_name='relationships', null=True)
+    invite_email = models.EmailField(null=True)
     created_when = models.DateTimeField(auto_now_add=True)
     relationship_type = models.CharField(max_length=2,choices=RELATIONSHIP_CHOICES)
     #-------------------------------------------------------------------------------------------------------------------
@@ -4840,6 +4874,8 @@ class Invite(LGModel):
     inviter = models.IntegerField(default=-1)           # foreign key to userprofile, inviter
     rejected = models.BooleanField(default=False)
     declined = models.BooleanField(default=False)
+
+    invite_email = models.EmailField(null=True)
 
     class Meta:
         abstract=True
@@ -4918,7 +4954,7 @@ class OfficeHeld(UCRelationship):
         self.save()
 
     def isCurrent(self):
-        if (datetime.date.today() - self.end_date).days <= 0:
+        if datetime.date.today() > self.end_date:
             return True
         return False
 

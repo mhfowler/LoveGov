@@ -9,6 +9,11 @@ div.dismissible-header {
 
 div.find-your-reps {
 
+  width:100%;
+  background-color:$blue-light;
+  padding:10px;
+  @include clearfix;
+
   div.error-message {
     margin-left: 130px;
     display:none;

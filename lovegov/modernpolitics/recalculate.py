@@ -146,11 +146,14 @@ def recalculateInFeed():
     for x in n:
         x.in_feed = True
         x.save()
-    g = UserGroup.objects.all()
-    for x in g:
-        if x.group_privacy != "S":
-            x.in_feed = True
-            x.save()
+    d = Discussion.objects.all()
+    for x in d:
+        x.in_feed = True
+        x.save()
+    o = Poll.objects.all()
+    for x in o:
+        x.in_feed = True
+        x.save()
 
 
 def recalculateCreators():
@@ -185,7 +188,7 @@ def calculateResponseAnswers():
         if (not response.most_chosen_answer) and response.question:
             for answer in response.question.answers.all():
                 if response.answer_val != -1 and answer.value == response.answer_val:
-                    response.answer = answer
+                    response.most_chosen_answer = answer
                     response.save()
                     count += 1
                     print count
@@ -253,6 +256,7 @@ def removeDeprecatedPoliticians():
                 # Is most likely a deprecated politician
                 print "+II+ Deleting " + person.get_name() + " - Num duplicates: " + str(len(dups))
                 person.delete()
+
 
 def resetGroupSystemBooleans():
     print "SETTING ALL NETWORKS TO AUTOGEN=True and SYSTEM=False"

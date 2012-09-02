@@ -21,7 +21,7 @@ LOCAL = settings.LOCAL
 
 ########################################## Content we cycle through ####################################################
 
-DISMISSIBLE_HEADERS = ['congress_teaser']
+DISMISSIBLE_HEADERS = ['congress_teaser', 'find_reps', 'lovegov_poll']
 
 ########################################## SPECIAL ALIASES #############################################################
 
@@ -627,9 +627,7 @@ ACTIONS = [
     'getGroups',
     'getUsersByUID',
     'getGroupMembers',
-
     'getLegislation',
-
     'getGroupMembersForDisplay',
     'getNextPollQuestion',
     'getElections',
@@ -655,12 +653,12 @@ ACTIONS = [
     'saveScorecardAnswer',
     'saveAnswerInFeed',
     'logLinkClick',
-
     'runForElection',
     'addToScorecard',
     'removeFromScorecard',
     'inviteToScorecard',
-    'inviteToRunForElection'
+    'inviteToRunForElection',
+    'changePrivacyMode'
 
 ]
 

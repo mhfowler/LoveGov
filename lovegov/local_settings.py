@@ -10,14 +10,16 @@ PROJECT_PATH = base_settings.PROJECT_PATH
 
 DATABASES = {
     'default': {
-         'ENGINE':  'django.db.backends.mysql',
-        'NAME':     'localmirror',
-        'USER':     'root',
-        'PASSWORD': 'pel1ayo7val',
-        'HOST':     '127.0.0.1',
-        'PORT':     '3306',
+         'ENGINE':  'django.db.backends.sqlite3',
+        'NAME':     os.path.join(PROJECT_PATH, 'db/local.db'),
+        'USER':     '',
+        'PASSWORD': '',
+        'HOST':     '',
+        'PORT':     '',
         },
 }
+
+
 
 STATIC_ROOT = base_settings.STATIC_ROOT
 
@@ -143,6 +145,11 @@ BROKER_URL = base_settings.BROKER_URL
 EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
 EMAIL_FILE_PATH = '/log/emails'
 
+#EMAIL_HOST = 'smtpout.secureserver.net'
+#EMAIL_HOST_USER = 'team@lovegov.com'
+#EMAIL_HOST_PASSWORD = 'lglglgLG'
+#EMAIL_PORT = '25'
+
 ########################################################################################################################
 #    misc settings
 #
@@ -174,3 +181,4 @@ from compressor_settings import *
 COMPRESS_ENABLED = False
 
 STATIC_URL = '/static'
+

@@ -7,7 +7,6 @@
 /* dismissible header */
 div.random-dismissible-header {
   width:100%;
-  overflow:hidden;
   position:relative;
   div.dismissible-x {
     position:absolute;
@@ -32,7 +31,19 @@ div.congress-header {
   div.mouse-over {
     float:left;
     margin-left:10px;
-    margin-top:40px;
+    margin-top:35px;
+    div.mouse-over-text {
+      font-style:italic;
+    }
+    div.mouse-over-arrow {
+      @include staticImage("/images/icons/arrows/gray_arrow.png");
+      width:59px;
+      height:28px;
+      background-size:59px 28px;
+      position: relative;
+      left: 20px;
+      top:-5px;
+    }
   }
   div.congress-teaser {
     float:left;
@@ -60,4 +71,122 @@ div.congress-header {
       @include fontSize(16px);
     }
   }
+}
+
+/* answer questions warning modal */
+div.warning-popup {
+  padding:15px;
+  width:300px;
+  @include fontSize(18px);
+}
+
+
+/* find reps header */
+div.find-your-reps-top-header {
+  div.reps-teaser-image {
+    width: 240px;
+    height: 120px;
+    @include staticImage('/images/dismissible_headers/find_reps.png');
+    background-size:300px 150px;
+    float:left;
+  }
+  div.right-part {
+    float:left;
+    margin-left:30px;
+    width:600px;
+    div.top-text {
+      float:left;
+      width:100%;
+      margin-top:15px;
+      div.header-title {
+        float:left;
+        @include fontSize(24px);
+        color:$text-blue;
+      }
+      input.reps-zip-input {
+        float: left;
+        margin-left: 25px;
+        margin-top:0px;
+        height: 30px;
+        padding-left: 10px;
+        font-size: 18px;
+        width: 110px;
+      }
+      a.go-button {
+        float:left;
+        margin-left:15px;
+        padding:2px 14px;
+        background-color:$teal;
+        color:white;
+        position:relative;
+        top:0px;
+        @include fontSize(20px);
+        &:hover {
+          background-color:$blue;
+        }
+      }
+    }
+    div.find-reps-explanation {
+      float:left;
+      margin-top:10px;
+      width:100%;
+      @include fontSize(18px);
+    }
+  }
+}
+
+
+/* lgpoll header */
+a.lgpoll-header {
+  float:left;
+  color:$black;
+  padding:5px 15px 15px 15px;
+  width:970px;
+  &:hover {
+    background-color:$light-gray;
+  }
+  div.lgpoll-teaser-image {
+    width: 209px;
+    height: 127px;
+    @include staticImage('/images/dismissible_headers/lovegov_poll.png');
+    background-size:209px 127px;
+    float:left;
+  }
+
+  div.poll-progress-wrapper {
+    float:left;
+    margin-left:25px;
+    margin-top:30px;
+    div.progress-numbers {
+      display:block;
+      @include fontSize(72px);
+      color:$red;
+      line-height:60px;
+      letter-spacing:-2px;
+      font-family:$body-fonts;
+    }
+    div.progress-header {
+      @include fontSize(22px);
+      display:block;
+      margin-top:0px;
+    }
+  }
+
+  div.right-part {
+    float:left;
+    margin-left:35px;
+    width:450px;
+    margin-top:30px;
+    div.header-title {
+      @include fontSize(24px);
+      color:$text-blue;
+    }
+    div.d-header-explanation {
+      margin-top:0px;
+      @include fontSize(18px);
+    }
+  }
+
+
+
 }

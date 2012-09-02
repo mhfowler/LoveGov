@@ -1700,12 +1700,11 @@ def initFirstLogin():
             p.first_login = 0
         p.save()
 
-
 #-----------------------------------------------------------------------------------------------------------------------
 # initialize elections
 #-----------------------------------------------------------------------------------------------------------------------
 def getPresidentialElection2012():
-    return Election.objects.get(alias="presidential_election") or initializePresidentialElection2012()
+    return Election.lg.get_or_none(alias="presidential_election") or initializePresidentialElection2012()
 
 def initializePresidentialElection2012():
     print "initializing presidential election!"
@@ -1867,7 +1866,8 @@ def getPoliticiansFromLocation(state, district=None):
 # Initialize politiciangroup for congress
 #-----------------------------------------------------------------------------------------------------------------------
 def getCongressGroup():
-    return PoliticianGroup.lg.get_or_none(alias="congress") or initializeCongressGroup()
+    return Group.lg.get_or_none(alias="congress")
+    #return PoliticianGroup.lg.get_or_none(alias="congress") or initializeCongressGroup()
 
 def initializeCongressGroup():
     if PoliticianGroup.objects.filter(alias="congress"):
@@ -1898,15 +1898,65 @@ def syncCongressGroupMembers():
 
 
 
+#-----------------------------------------------------------------------------------------------------------------------
+# scripts for migration
+#-----------------------------------------------------------------------------------------------------------------------
 
 
 
+system = models.BooleanField(default=False)
+hidden = models.BooleanField(default=False)
+autogen = models.BooleanField(default=False)
+subscribable = models.BooleanField(default=True)
+is_election = models.BooleanField(default=False)
+content_by_posting = models.BooleanField(default=True)
+
+def migrateFollowGroupBooleans():
+    print "migrate follow group booleans"
+    users = UserProfile.objects.all()
+    count = 0
+    for x in users:
+        ifollow = x.i_follow
+        followme = x.follow_me
+        setHiddenGroup(ifollow)
+        setHiddenGroup(followme)
+        count += 1
+        if not count%20:
+            print str(count)
+
+def migrateNetworkGroupBooleans():
+    print "migrate network group booleasn"
+    count = 0
+    for n in Network.objects.all():
+        n.system = False
+        n.autogen = True
+        n.save()
+        count += 1
+        if not count%20:
+            print str(count)
+
+def setHiddenGroup(group):
+    if group:
+        group.system = True
+        group.hidden = True
+        group.subscribable = False
+        group.autogen = True
+        group.content_by_posting = False
+        group.save()
 
 
+def migrateResponseImportance():
 
-
-
-
+    responses = Response.objects.all()
+    print "goal: " + str(responses.count())
+    count = 0
+    for r in responses:
+        if r.weight <= 10:
+            r.weight *= 10
+            r.save()
+        count += 1
+        if not count%20:
+            print str(count)
 
 
 #-----------------------------------------------------------------------------------------------------------------------

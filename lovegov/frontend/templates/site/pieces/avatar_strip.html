@@ -9,15 +9,10 @@
     <div class="avatar-strip-main">
         <div class="avatar-strip-top">
             <a href="{{ user.get_url }}"><span class="user-name"> {{ user.get_name }} </span></a>
-        </div>
-        <div class="avatar-strip-bottom">
-            <span class="user-title"> {% if user.location.state %} {{ user.location.state }}, {% endif %}MA, {{ user.political_title }} </span>
-            <span class="heart-icon"> </span>
-            <span class="heart-score"> {{ user.upvotes }}</span>
             <span class="parties-wrapper">
                 {% for p in user.parties.all %}
                     {% with full_url=p.party_label %}
-                        <a href="{{ p.get_url }}">
+                        <a href="{{ p.get_url }}" class="party-label-wrapper">
                             {% thumbnail full_url "x20" format="PNG" as im %}
                                 <img src="{{ im.url }}" class="party-label"/>
                             {% endthumbnail %}
@@ -25,6 +20,11 @@
                     {% endwith %}
                 {% endfor %}
             </span>
+        </div>
+        <div class="avatar-strip-bottom">
+            <span class="user-title"> {% if user.location.state %} {{ user.location.state }}, {% endif %}MA, {{ user.political_title }} </span>
+            <span class="heart-icon"> </span>
+            <span class="heart-score"> {{ user.upvotes }}</span>
         </div>
     </div>
 

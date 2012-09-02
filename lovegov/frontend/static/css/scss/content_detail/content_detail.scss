@@ -684,21 +684,3 @@ div.petition-signers-modal {
     padding: 50px;
 
 }
-
-div.load-more-comments {
-    border: 1px solid $gray;
-    padding: 2px;
-    text-align: center;
-    margin: 20px 0;
-    width: 100%;
-    color: $black;
-    background-color: $white-gray;
-    cursor: pointer;
-    &:hover {
-        background-color: $gray;
-    }
-    &:active {
-        background-color: $red;
-        color: white;
-    }
-}

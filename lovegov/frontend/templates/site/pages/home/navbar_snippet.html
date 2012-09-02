@@ -3,7 +3,7 @@
 <div class="home_link_wrapper">
     <a class="home_link left_link dummy_link navbar-link navbar_link" href="{% if x %}{{ x.get_url }}{% else %}{{ section_url }}{% endif %}" data-sequence="{{ sequence|increment }}">
         <span class="item-title"> {% if x %} {{ x.get_name }} {% else %} {{ section_title }} {% endif %}</span>
-        <span class="item-new num_new_content"> {% if x.num_new %} {{ x.num_new }} {% endif %}</span>
+        <span class="item-new num_new_content"> {% if x.num_new %}{% if x.num_news > 10 %} 10+ {% else %}{{ x.num_new }} {% endif %}{% endif %}</span>
         <div style="clear:both;"></div>
     </a>
     {% comment %}

@@ -160,7 +160,7 @@ class AnswerClass:
         self.percent = percent
 
 #-----------------------------------------------------------------------------------------------------------------------
-# Recursively generates the html for a comment thread.
+# Recursively generates the html for a comment thread (depth-first search).
 # Paramater usage:
 #   request: the request object
 #   object: the content object (News, Petition, etc. or a parent comment)
@@ -170,12 +170,13 @@ class AnswerClass:
 #   user_commetns: list of all comments made by the user
 #   start: the comment to start rendering at
 #   limit: the max number of comments to render
-#   rendered_so_far: number of comments rendered so far, wrapped in a list so it is mutable
+#   rendered_so_far: number of comments rendered so far, wrapped in a list so it is mutable (I know)
+#   excluded: a list of comments to exclude from the results, e.g. because they were added by the user and already rendered
 # Returns:
 #   a string containing the content thread html
 #   the number of actual top-level comments (and their children) actually returned
 #-----------------------------------------------------------------------------------------------------------------------
-def makeThread(request, object, user, depth=0, user_votes=None, user_comments=None, vals={}, start=0, limit=None, rendered_so_far=None):
+def makeThread(request, object, user, depth=0, user_votes=None, user_comments=None, vals={}, start=0, limit=None, rendered_so_far=None, excluded=None):
     """Creates the html for a comment thread."""
     if not user_votes:
         user_votes = Voted.objects.filter(user=user)
@@ -183,8 +184,10 @@ def makeThread(request, object, user, depth=0, user_votes=None, user_comments=No
         user_comments = Comment.objects.filter(creator=user)
     if not rendered_so_far:
         rendered_so_far = [0]
+    if not excluded:
+        excluded = []
     # Get all comments that are children of the object
-    comments = Comment.objects.filter(on_content=object,active=True).order_by('-status')[start:]
+    comments = Comment.objects.filter(on_content=object,active=True).order_by('-status').exclude(id__in=excluded)[start:]
     viewer = vals['viewer']
     top_levels = 0
     if comments:
@@ -241,13 +244,12 @@ def renderComment(request, vals, c, depth, user_votes=None, user_comments=None):
 #-----------------------------------------------------------------------------------------------------------------------
 # fills in vals with topic_stats for poll_progress_by_topic.html
 #-----------------------------------------------------------------------------------------------------------------------
-def getQuestionStats(vals, poll):
+def getQuestionStats(vals, poll=None):
 
     viewer = vals['viewer']
     responses = viewer.view.responses.all()
     topic_stats = []
     if poll:
-        poll = getLoveGovPoll()
         vals['poll'] = poll
         questions = poll.questions.all()
     else:
@@ -287,15 +289,6 @@ def getGroupTuples(viewer, question, response):
     return group_tuples
 
 #-----------------------------------------------------------------------------------------------------------------------
-# gets poll progress
-#-----------------------------------------------------------------------------------------------------------------------
-def getPollProgress(viewer, poll):
-    q_ids = poll.questions.all().values_list('id', flat=True)
-    responses = viewer.view.responses.filter(question_id__in=q_ids).exclude(most_chosen_answer_id=-1)
-    poll_progress = {'completed':responses.count(), 'total':len(q_ids)}
-    return poll_progress
-
-#-----------------------------------------------------------------------------------------------------------------------
 # fill dictionary for a particular group
 #-----------------------------------------------------------------------------------------------------------------------
 def valsGroup(viewer, group, vals):
@@ -318,7 +311,11 @@ def valsGroup(viewer, group, vals):
 
     # Get the list of all members and truncate it to be the number of members showing
     group_members = group.getMembers()
-    vals['group_members'] = group_members[:16]
+    if admins:
+        num_members_display = 16
+    else:
+        num_members_display = 24
+    vals['group_members'] = group_members[:num_members_display]
 
     # Get the number of group Follow Requests
     vals['num_group_requests'] = group.getNumFollowRequests()
@@ -373,7 +370,7 @@ def valsElection(viewer, election, vals):
 # fill dictionary for a petition
 #-----------------------------------------------------------------------------------------------------------------------
 def valsPetition(viewer, petition, vals):
-    signers_limit = 1
+    signers_limit = 6
     vals['petition'] = petition
     signers = petition.getSigners()
     vals['num_signers'] = len(signers)
@@ -442,6 +439,7 @@ def valsRepsHeader(vals):
 #-----------------------------------------------------------------------------------------------------------------------
 def valsDismissibleHeader(request, vals):
 
+    viewer = vals['viewer']
     header = random.choice(DISMISSIBLE_HEADERS)
     vals['dismissible_header'] = header
 
@@ -455,3 +453,12 @@ def valsDismissibleHeader(request, vals):
             congress_members = UserProfile.objects.all()[:16]
         vals['congress'] = congress
         vals['congress_members'] = congress_members
+
+    elif header == 'find_reps':
+        pass
+
+    elif header == 'lovegov_poll':
+        lgpoll = getLoveGovPoll()
+        poll_progress = lgpoll.getPollProgress(viewer)
+        vals['poll_progress'] = poll_progress
+        vals['lgpoll'] = lgpoll

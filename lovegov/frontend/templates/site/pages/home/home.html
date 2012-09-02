@@ -1,15 +1,31 @@
+
+{% comment %}
 <div class="random-dismissible-header dismissible_header">
 
     <div class="dismissible-x dismissible_x"> X </div>
 
     {% if dismissible_header == 'congress_teaser' %}
-        {% include 'site/pages/home/congress_header.html' %}
+        {% include 'site/pages/dismissible_headers/congress_header.html' %}
     {% endif %}
 
 </div>
+{% endcomment %}
+
+{% if dismissible_header == 'congress_teaser' %}
+    {% include 'site/pages/dismissible_headers/congress_header.html' %}
+{% elif dismissible_header == 'find_reps' %}
+    {% if not viewer.temp_location %}
+        {% include 'site/pages/dismissible_headers/find_reps_header.html' %}
+    {% endif %}
+{% elif dismissible_header == 'lovegov_poll' %}
+    {% if not poll_progress.finished %}
+        {% include 'site/pages/dismissible_headers/lgpoll_progress_header.html' %}
+    {% endif %}
+{% endif %}
+
 
 <div class="home-body">
-    {% include 'site/pages/feed/feed.html' %}
+    {% include 'site/pages/feed/feed.html' with feed_boxed=1 %}
 </div>
 
 <script> rebind="home"; </script>

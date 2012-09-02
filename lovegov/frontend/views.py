@@ -61,6 +61,8 @@ def viewWrapper(view, requires_login=False):
         vals = {'STATIC_URL':settings.STATIC_URL}
         try: # Catch all error messages
 
+#            return shortcuts.redirect('/underconstruction/')
+
             # if ie<9 redirect to upgrade page
             if not checkBrowserCompatible(request):
                 return shortcuts.redirect("/upgrade/")
@@ -94,44 +96,44 @@ def viewWrapper(view, requires_login=False):
 
             if requires_login:
 
-                    # who is logged in?
-                    controlling_user = getControllingUser(request)
-                    vals['controlling_user'] = controlling_user
+                # who is logged in?
+                controlling_user = getControllingUser(request)
+                vals['controlling_user'] = controlling_user
 
-                    # if no ControllingUser (not logged in) return the Anonymous UserProfile, else returns associated user
-                    if controlling_user:
-                        user = controlling_user.user_profile
-                        vals['prohibited_actions'] = controlling_user.prohibited_actions
-                    else:
-                        user = getAnonUser()
-                        vals['prohibited_actions'] = ANONYMOUS_PROHIBITED_ACTIONS
+                # if no ControllingUser (not logged in) return the Anonymous UserProfile, else returns associated user
+                if controlling_user:
+                    user = controlling_user.user_profile
+                    vals['prohibited_actions'] = controlling_user.prohibited_actions
+                else:
+                    user = getAnonUser()
+                    vals['prohibited_actions'] = ANONYMOUS_PROHIBITED_ACTIONS
 
-                    # get user profile associated with controlling user
-                    vals['user'] = user
-                    vals['viewer'] = user
+                # get user profile associated with controlling user
+                vals['user'] = user
+                vals['viewer'] = user
 
-                    # first login
-                    first_login = user.first_login
-                    vals['firstLoginStage'] = first_login
+                # first login
+                first_login = user.first_login
+                vals['firstLoginStage'] = first_login
 
-                    # if not authenticated user, and not lovegov_try cookie, redirect to login page
-                    if user.isAnon() and not request.COOKIES.get('lovegov_try'):
-                        # If this action can't be performed without being authenticated
-                        if not request.POST.get('action') in UNAUTHENTICATED_ACTIONS:
-                            # Redirect to login page
-                            return shortcuts.redirect("/login" + request.path)
-                        else: # otherwise action can be done without authentication
-                            return view(request,vals=vals,*args,**kwargs)
+                # if not authenticated user, and not lovegov_try cookie, redirect to login page
+                if user.isAnon() and not request.COOKIES.get('lovegov_try'):
+                    # If this action can't be performed without being authenticated
+                    if not request.POST.get('action') in UNAUTHENTICATED_ACTIONS:
+                        # Redirect to login page
+                        return shortcuts.redirect("/login" + request.path)
+                    else: # otherwise action can be done without authentication
+                        return view(request,vals=vals,*args,**kwargs)
 
-                    # IF NOT DEVELOPER AND IN UPDATE MODE or ON DEV SITE, REDIRECT TO CONSTRUCTION PAGE
-                    if UPDATE or ("dev" in host_full):
-                        if not user.developer:
-                            normal_logger.debug('blocked: ' + user.get_name())
-                            return shortcuts.redirect('/underconstruction/')
+                # IF NOT DEVELOPER AND IN UPDATE MODE or ON DEV SITE, REDIRECT TO CONSTRUCTION PAGE
+                if UPDATE or ("dev" in host_full):
+                    if not user.developer:
+                        normal_logger.debug('blocked: ' + user.get_name())
+                        return shortcuts.redirect('/underconstruction/')
 
-                    # if user not confirmed redirect to login page
-                    if not user.confirmed:
-                        return shortcuts.redirect("/need_email_confirmation/")
+                # if user not confirmed redirect to login page
+                if not user.confirmed:
+                    return shortcuts.redirect("/need_email_confirmation/")
 
             # vals for not logged in pages
             else:
@@ -155,7 +157,7 @@ def viewWrapper(view, requires_login=False):
 # basic pages
 #-----------------------------------------------------------------------------------------------------------------------
 def redirect(request, vals={}):
-    return shortcuts.redirect('/home/')
+    return shortcuts.redirect('/underconstruction/')
 
 def underConstruction(request):
     return render_to_response('site/pages/microcopy/construction.html')
@@ -172,6 +174,9 @@ def tryLoveGov(request, to_page="home/", vals={}):
     response = shortcuts.redirect("/" + to_page)
     response.set_cookie('lovegov_try', 1)
     return response
+
+def unsubscribe(request, vals={}):
+    return HttpResponse("You have unsubscribed from LoveGov emails.")
 
 #-----------------------------------------------------------------------------------------------------------------------
 # da blog
@@ -238,7 +243,7 @@ def aliasDowncastEdit(request, alias=None, vals={}):
 #-----------------------------------------------------------------------------------------------------------------------
 def login(request, to_page='web/', message="", vals={}):
     if not vals.get('firstLoginStage'):
-        to_page = "match/representatives/"
+        to_page = "/home/"
 
     # Try logging in with facebook
     if fbLogin(request,vals,refresh=True):
@@ -448,10 +453,17 @@ def home(request, vals):
     url = request.path
     return homeResponse(request, focus_html, url, vals)
 
-def groups(request, vals):
+def myGroups(request, vals):
     viewer = vals['viewer']
     vals['group_subscriptions'] = viewer.getGroupSubscriptions()
-    focus_html =  ajaxRender('site/pages/groups/groups.html', vals, request)
+    focus_html =  ajaxRender('site/pages/groups/my_groups.html', vals, request)
+    url = request.path
+    return homeResponse(request, focus_html, url, vals)
+
+def myElections(request, vals):
+    viewer = vals['viewer']
+    vals['group_subscriptions'] = viewer.getGroupSubscriptions()
+    focus_html =  ajaxRender('site/pages/elections/my_elections.html', vals, request)
     url = request.path
     return homeResponse(request, focus_html, url, vals)
 
@@ -465,6 +477,16 @@ def representatives(request, vals):
     focus_html =  ajaxRender('site/pages/politicians/representatives.html', vals, request)
     url = request.path
     return homeResponse(request, focus_html, url, vals)
+
+def discover(request, vals):
+    u_ids = UserProfile.objects.all().values_list("id", flat=True)
+    u_id = random.choice(u_ids)
+    u = UserProfile.objects.get(id=u_id)
+    vals['rando'] = u
+    focus_html =  ajaxRender('site/pages/discover/discover.html', vals, request)
+    url = request.path
+    return homeResponse(request, focus_html, url, vals)
+
 
 #-----------------------------------------------------------------------------------------------------------------------
 # friends focus (home page)
@@ -488,7 +510,10 @@ def friends(request, vals):
 def questions(request, vals={}):
 
     getMainTopics(vals)
-    getQuestionStats(vals)
+
+    lgpoll = getLoveGovPoll()
+    vals['lgpoll'] = lgpoll
+    getQuestionStats(vals, lgpoll)
 
     html =  ajaxRender('site/pages/qa/qa.html', vals, request)
     url = request.path
@@ -609,6 +634,12 @@ def profile(request, alias=None, vals={}):
     vals['web_comparison'] = comparison
     vals['web_json'] = web_json
 
+    # check if user is my rep
+    if user_profile.politician:
+        reps = viewer.getRepresentatives(viewer.location)
+        if reps:
+            vals['my_rep'] = user_profile in reps
+
     # Num Follow requests and group invites
     if viewer.id == user_profile.id:
         vals['num_follow_requests'] = user_profile.getNumFollowRequests()
@@ -644,7 +675,6 @@ def thread(request, c_id, vals={}):
     if not content:
         return HttpResponse("The indicated content item does not exist.")
     vals['content'] = content
-    vals['thread_html'], vals['num_rendered'] = makeThread(request, content, vals['viewer'], vals=vals, limit=0)
     html = ajaxRender('site/pieces/thread.html', vals, request)
     url = request.path
     return framedResponse(request, html, url, vals)
@@ -735,7 +765,7 @@ def pollDetail(request, p_id=-1, vals={}):
     vals['poll'] = poll
     contentDetail(request, poll, vals)
 
-    poll_progress = getPollProgress(viewer, poll)
+    poll_progress = poll.getPollProgress(viewer)
     vals['poll_progress'] = poll_progress
     getMainTopics(vals)
 
@@ -918,9 +948,9 @@ def legislation (request, vals={}):
     vals['subjects'] = LegislationSubject.objects.all()
     vals['committees'] = Committee.objects.distinct().filter(legislation_committees__isnull=False)
     vals['bill_numbers'] = [x['bill_number'] for x in Legislation.objects.values('bill_number').distinct()]
+
     now = datetime.now()
     time_range = [183,366,732,1464]
-
     introduced_dates = []
     for x in time_range:
         date = now - timedelta(days=x)
@@ -929,17 +959,17 @@ def legislation (request, vals={}):
         introduced_dates.append(date_tuple)
     vals['introduced_dates'] = introduced_dates
 
+
     date_comments = ["Introduced in the last 6 months", "Introduced in the last year",
                      "Introduced in the last 2 years", "Introduced in the last 4 years"]
     vals['date_comments'] = date_comments
 
     vals['sponsors'] = UserProfile.objects.distinct().filter(sponsored_legislation__isnull=False)
     vals['sponsor_parties'] = Party.objects.filter(parties__sponsored_legislation__isnull=False).distinct()
-    #vals['districts'] = UserProfile.objects.filter(primary_role_office_terms_office__isnull=False)
 
-    focus_html =  ajaxRender('site/pages/legislation/legislation.html', vals, request)
-    url = request.path
-    return homeResponse(request, focus_html, url, vals)
+    return renderToResponseCSRF(template='site/pages/legislation/legislation.html', request=request, vals=vals)
+
+
 
 #-----------------------------------------------------------------------------------------------------------------------
 # legislation detail
@@ -1167,16 +1197,14 @@ def scorecardDetail(request, s_id, vals={}):
     scorecard = Scorecard.objects.get(id=s_id)
     vals['scorecard'] = scorecard
 
-    reps = list(UserProfile.objects.all())
-    politicians = list(UserProfile.objects.all())
+    reps = viewer.getRepresentatives()
+    politicians = scorecard.politicians.all().order_by("-num_supporters")
     for r in reps:
         r.comparison = scorecard.getComparison(r)
         r.scorecard_comparison_url = scorecard.getScorecardComparisonURL(r)
     for p in politicians:
         p.comparison = scorecard.getComparison(p)
         p.scorecard_comparison_url = scorecard.getScorecardComparisonURL(p)
-    reps.sort(key=lambda x:x.comparison.result,reverse=True)
-    politicians.sort(key=lambda x:x.comparison.result,reverse=True)
 
     vals['representatives'] = reps
     vals['politicians'] = politicians

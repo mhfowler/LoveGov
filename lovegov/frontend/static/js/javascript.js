@@ -13,7 +13,7 @@ function bindOnReload() {
     getFBInviteFriends();
 
     // any feeds on the page, go get themselves
-    // refreshFeeds();
+    refreshFeeds();
 
     // for all home pages
     navSectionOpenAll();
@@ -478,6 +478,7 @@ bind(".red_triangle", 'click', null, function(event) {
 
 /* reload home page, by just replacing focus */
 bind(".home_link", 'click', null, function(event) {
+    $(".left_link").removeClass("clicked");
     homeReload($(this).attr("href"));
 
     /*
@@ -1389,6 +1390,7 @@ bind( ".edit_button" , 'click', null , function(event)
     var doing_editing_display = wrapper.find(".doing_editing_display");
     not_editing_display.hide();
     doing_editing_display.show();
+    doing_editing_display.find(".edit_links").show();
 });
 
 bind( ".cancel_inline_edit" , 'click' , null , function(event)
@@ -2907,7 +2909,7 @@ function saveAnswerInFeed(item) {
         success: function(data) {
             var saved_message = item.find(".saved_message");
             saved_message.show();
-            //setTimeout(function(){saved_message.fadeOut()},1000);
+            saved_message.fadeOut(2000);
         }
     });
 }
@@ -3579,6 +3581,40 @@ bind( '.facebook_share_submit' , 'click' , null , function(e)
 
 /***********************************************************************************************************************
  *
+ *      ~Facebook Share Content
+ *
+ ***********************************************************************************************************************/
+bind( '.facebook_share_content_button' , 'click' , null , function(e)
+{
+    var data = {
+        'c_id' : $(this).data('c_id')
+    };
+
+    getModal('facebook_share_content_modal' , data);
+});
+
+
+bind( '.facebook_share_content_submit' , 'click' , null , function(e)
+{
+    e.preventDefault();
+
+    var share_message = $(this).parents('.facebook_share_form').find('textarea[name="facebook_share_message"]').val();
+    var link = $(this).data('fb_link');
+
+    var url = "/fb/action/?fb_action=share";
+    url += "&message=" + share_message;
+
+    if( link != null ) { url += "&fb_link=" + link; }
+
+    url += "&action_to_page=" + window.location.pathname;
+
+    window.location.href = url
+
+});
+
+
+/***********************************************************************************************************************
+ *
  *      ~pin content
  *
  ***********************************************************************************************************************/
@@ -4057,3 +4093,53 @@ bind(".invite_to_scorecard_button", "click", function(e) {
     });
 });
 
+/***********************************************************************************************************************
+ *
+ *      ~ Dismissible header stuff
+ *
+ ***********************************************************************************************************************/
+bind(".congress_header_link", "click", function(e) {
+    var url = $(this).data('url');
+    var warning = $(this).data('warning');
+    if (warning == 1) {
+        getModal("answer_questions_warning_modal", {"which":"congress_header"});
+    }
+    else {
+        window.location.href = url;
+    }
+});
+
+
+bind(".find_reps_header_button", "click", function(e) {
+    var zip = $(".reps_zip_input").val();
+    action({
+            data: {'action': 'submitTempAddress', 'address': "", 'city':"", 'state':"",
+                'zip':zip},
+            success: function(data) {
+                window.location.href = "/representatives/";
+            }}
+    );
+});
+
+/***********************************************************************************************************************
+ *
+ *      ~ change privacy mode
+ *
+ ***********************************************************************************************************************/
+bind(".change_privacy_mode", "click", function(e) {
+    var mode = $(this).data('mode');
+    action({
+        'data': {'action':'changePrivacyMode', 'mode':mode},
+        success: function(data)
+        {
+            if (mode=="PRI") {
+                $(".private_mode_button").hide();
+                $(".public_mode_button").show();
+            }
+            else {
+                $(".public_mode_button").hide();
+                $(".private_mode_button").show();
+            }
+        }
+    });
+});

@@ -1,0 +1,17 @@
+<a class="change_privacy_mode private_mode_button" data-mode="PRI" {% if not anonymous_mode %} style="display:none;" {% endif %}>
+    <span>Privacy</span>
+    <span class="privacy_mode_button privacy-mode-button tooltip-top
+        private-icon"
+        title="You are in private mode.">
+        </span>
+    <div style="clear:both;"></div>
+</a>
+
+<a class="change_privacy_mode public_mode_button" data-mode="PUB" {% if anonymous_mode %} style="display:none;" {% endif %}>
+    <span>Privacy</span>
+    <span class="privacy_mode_button privacy-mode-button tooltip-top
+        public-icon"
+          title="You are in public mode.">
+        </span>
+    <div style="clear:both;"></div>
+</a>

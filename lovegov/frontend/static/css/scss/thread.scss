@@ -43,6 +43,7 @@ div.comment
     padding: 30px;
     padding-bottom:20+30px;
     padding-left: 70px;
+    min-height: 110px;
     &.level1 {
 	    background-color: $white-gray;
 	    border-bottom: 1px solid $gray;
@@ -247,5 +248,23 @@ div.threaddiv {
     width: 1px;
     border-left: 1px dotted #DFDFDF;
     background-color: white;
+  }
+}
+
+div.load-more-comments {
+  border: 1px solid $gray;
+  padding: 2px;
+  text-align: center;
+  margin: 20px 0;
+  width: 100%;
+  color: $black;
+  background-color: $white-gray;
+  cursor: pointer;
+  &:hover {
+    background-color: $gray;
+  }
+  &:not(.disabled):active {
+    background-color: $red;
+    color: white;
   }
 }

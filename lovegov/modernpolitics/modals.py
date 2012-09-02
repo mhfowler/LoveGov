@@ -69,6 +69,14 @@ def getFacebookShareModal(fb_share_id,fb_name,request,vals):
     return ajaxRender('site/pages/friends/facebook_share_modal.html',vals,request)
 
 
+def getFacebookShareContentModal(share_content,request,vals):
+
+    vals['share_content'] = share_content
+    vals['default_facebook_message'] = DEFAULT_FACEBOOK_MESSAGE
+
+    return ajaxRender('site/pages/feed/feed_items/facebook_share_content_modal.html',vals,request)
+
+
 def getCreateModal(request,vals={}):
     getMainTopics(vals)
     from lovegov.frontend.views_helpers import getStateTuples
@@ -122,3 +130,14 @@ def getAddToScorecardModal(scorecard, request, vals):
 def getInviteToRunForModal(election, request, vals):
     vals['election'] = election
     return ajaxRender('site/pages/elections/invite_to_run_for_modal.html', vals,request)
+
+
+def getAnswerQuestionsWarningModal(request, vals):
+    viewer = vals['viewer']
+    vals['which'] = request.POST['which']
+    lgpoll = getLoveGovPoll()
+    poll_progress = lgpoll.getPollProgress(viewer)
+    vals['lgpoll'] = lgpoll
+    vals['lgpoll_progress'] = poll_progress['completed']
+    vals['congress'] = getCongressGroup()
+    return ajaxRender('site/pages/dismissible_headers/answer_warning_modal.html', vals,request)
