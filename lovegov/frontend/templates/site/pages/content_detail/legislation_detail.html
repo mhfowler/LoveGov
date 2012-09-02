@@ -607,7 +607,7 @@
 
                                 <span>
                                     <ul>
-                                        <li><span class="leg-list"><a>{{ action.text }}</a></span></li>
+                                        <li><span class="leg-list">{{ action.text }}</span></li>
                                     </ul>
                                 </span>
 
@@ -616,7 +616,7 @@
 
                                 <span>
                                     <ul>
-                                        <li><span class="leg-list"><a>{{ action.datetime.date }}</a></span></li>
+                                        <li><span class="leg-list">{{ action.datetime.date }}</span></li>
                                     </ul>
                                 </span>
 
@@ -625,7 +625,7 @@
 
                                 <span>
                                     <ul>
-                                        <li><span class="leg-list"><a>{{ action.state }}</a></span></li>
+                                        <li><span class="leg-list">{{ action.state }}</span></li>
                                     </ul>
                                 </span>
 
@@ -650,7 +650,7 @@
                 <span>
                     <ul>
                         {% for subject in l.bill_subjects.all.reverse %}
-                            <li><span class="leg-list"><a href="">{{ subject.name }}</a></span></li>
+                            <li><span class="leg-list"><a class="feed_by_subject">{{ subject.name }}</a></span></li>
                         {% endfor %}
                     </ul>
                 </span>
@@ -668,7 +668,7 @@
                 <span>
                     <ul>
                         {% for committee in l.committees.all %}
-                            <li><span class="leg-list"><a href="">{{ committee.title }}</a></span></li>
+                            <li><span class="leg-list"><a class="feed_by_committee">{{ committee.title }}</a></span></li>
                         {% endfor %}
                     </ul>
                 </span>
@@ -686,7 +686,7 @@
                 <span>
                     <ul>
                         {% for related_bill in related %}
-                            <li><span class="leg-list"><a href="">{{ related_bill.congress_session }} {{ related_bill.bill_number }} {{ related_bill.full_title }}</a></span></li>
+                            <li><span class="leg-list"><a class="feed_by_related_bills">{{ related_bill.congress_session }} {{ related_bill.bill_number }} {{ related_bill.full_title }}</a></span></li>
                         {% endfor %}
                     </ul>
                 </span>

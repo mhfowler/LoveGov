@@ -1043,13 +1043,8 @@ function getFeed(container) {
         data['city'] = city;
     }
     else if (feed == 'getLegislation') {
-        if ($("." + $('select.session_select').data('selector')).hasClass('clicked')) {
             var session = $('select.session_select').val();
             var session_json = JSON.stringify(session);
-        }
-        else {
-            var session_json = False;
-        }
             var type = $('select.type_select').val();
             var type_json = JSON.stringify(type);
             var subject = $('select.subject_select').val();
@@ -1064,20 +1059,16 @@ function getFeed(container) {
             var sponsor_name_json = JSON.stringify(sponsor_name);
             var sponsor_party = $('select.sponsor_select_party').val();
             var sponsor_party_json = JSON.stringify(sponsor_party);
-            var sponsor_district = $('select.sponsor_select_district').val();
-            var sponsor_district_json = JSON.stringify(sponsor_district);
 
         data = {'action': 'getLegislation', 'feed_start':feed_start, 'session_set':session_json,
             'type_set':type_json, 'subject_set':subject_json, 'committee_set':committee_json,
             'introduced_set':introduced_json, 'sponsor_body_set':sponsor_body_json,
-            'sponsor_name_set':sponsor_name_json, 'sponsor_party_set':sponsor_party_json,
-            'sponsor_district_set':sponsor_district_json};
+            'sponsor_name_set':sponsor_name_json, 'sponsor_party_set':sponsor_party_json};
     }
     action({
             data: data,
             success: function(data) {
-                var returned = eval('(' + data + ')');
-                if (replace) {
+                 if (replace) {
                     container.find(".feed_content").html(returned.html);
                 }
                 else {
@@ -2216,6 +2207,24 @@ bind( ".notification_user_follow" , 'click' , null , function(event)
  *
  **********************************************************************************************************************/
 
+//bind(".feed_by_subject" , "click" , null , function(event) {
+//    var subject = $(this).html();
+//    var subject_json = JSON.stringify(subject);
+//    refreshFeed();
+//});
+//
+//bind(".feed_by_committee" , "click" , null , function(event) {
+//    var committee = $(this).html();
+//    var committee_json = JSON.stringify(committee);
+//    refreshFeed();
+//});
+//
+//bind(".feed_by_related_bills" , "click" , null , function(event) {
+//    var related_bills = $(this).html();
+//    var related_bills_json = JSON.stringify(related_bills);
+//    refreshFeed();
+//});
+
 bind( '.filter_box' , 'click' , null , function(event) {
     event.preventDefault();
     if ($(this).hasClass('clicked')) {
@@ -2242,9 +2251,7 @@ bind( '.expand_link' , 'click' , null , function(event) {
     }
 });
 
-function billPassageOrder() {
 
-}
 
 function loadBillSelect2() {
     $('.session_select').select2({

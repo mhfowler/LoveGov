@@ -65,7 +65,7 @@
             <select class="introduced_select" data-selector="introduced_filter">
                 <optgroup label="Bill Introduction Date Range" id="introduced-dates">
                     {% for date in introduced_dates %}
-                        <option class="introduced" value='{{ date.json }}'>{{ date.date }} {{ date_comments.0 }}</option>
+                        <option class="introduced" value='{{ date.json }}'>{{ date.date }} {{ date_comments.date.index }}</option>
                     {% endfor %}
                 </optgroup>
             </select>
@@ -98,6 +98,7 @@
                         </optgroup>
                     </select>
                 </li>
+{% comment %}
                  <li>
                     <select multiple class="sponsor_select_district" data-selector="sponsor_filter">
                         <optgroup label="Sponsor district" id="bill_sponsor_district">
@@ -107,6 +108,7 @@
                         </optgroup>
                     </select>
                 </li>
+{% endcomment %}
             </ul>
         </div>
     </div>

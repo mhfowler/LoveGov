@@ -746,6 +746,11 @@ div.legislation-wrapper {
                     margin-left: -20px;
                     list-style-type: none;
                     font-size: 14px;
+
+                    span.leg-list {
+                      text-decoration: none;
+                      font-color: $black;
+                    }
                   }
                 }
               }
@@ -769,9 +774,9 @@ div.legislation-wrapper {
                     list-style-type: none;
                     font-size: 14px;
 
-                    a {
+                    span.leg-list {
                       text-decoration: none;
-                      font-color: black;
+                      font-color: $black;
                     }
                   }
                 }
@@ -796,9 +801,9 @@ div.legislation-wrapper {
                     list-style-type: none;
                     font-size: 14px;
 
-                    a {
+                    span.leg-list {
                       text-decoration: none;
-                      font-color: black;
+                      font-color: $black;
                     }
                   }
                 }
