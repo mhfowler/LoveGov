@@ -1971,6 +1971,13 @@ def setLegislationCreator():
         x.save()
         print "+II+ " + x.get_name()
 
+
+def makeAllComparisonsStale():
+    for u in UserProfile.objects.all():
+        u.last_answered = datetime.datetime.now()
+        u.save()
+        print "+II+ stale: " + u.get_name()
+
 #-----------------------------------------------------------------------------------------------------------------------
 # initialize politician groups for each state
 #-----------------------------------------------------------------------------------------------------------------------
