@@ -1878,20 +1878,20 @@ def initializeCongressGroup():
         group.summary = "all members of Congress."
         group.system = True
         group.autoSave()
-        syncCongressGroupMembers()
+        print ("initialized: Congress Group")
         return group
 
 def syncCongressGroupMembers():
     group = getCongressGroup()
     for x in group.members.all():
         group.removeMember(x)
+        print "+II+ removed " + x.get_name()
     congress = UserProfile.objects.filter(currently_in_office=True)
     for x in congress:
         group.joinMember(x)
-    print ("initialized: Congress Group")
+        print "+II+ joined " + x.get_name()
+    print ("synced: Congress Group Members")
     return group
-
-
 
 
 

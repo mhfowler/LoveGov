@@ -494,7 +494,20 @@ def helperAlias(alias):
 
 
 
+#-----------------------------------------------------------------------------------------------------------------------
+# analyzes a queryset of content and prints out type nus
+#-----------------------------------------------------------------------------------------------------------------------
+def analyzeContentTypes(content):
+    types = {}
+    for x in content:
+        type = x.type
+        if type in types:
+            types[type] += 1
+        else:
+            types[type] = 0
 
+    for type in types:
+        print type + ": " + str(types[type])
 
 
 
