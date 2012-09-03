@@ -40,7 +40,7 @@ def scriptCreateCongressAnswers(args=None):
     print "======================"
     print "+EE+ = Error"
     print "+WW+ = Warning"
-    print "+DD+ = Duplicate"
+    print "+II+ = Information"
     print "======================"
 
     # For cells in the spreadsheet
@@ -161,6 +161,7 @@ def scriptCreateCongressAnswers(args=None):
 
                 # Answer that shit!
                 answerAction(voter,question,"PUB",answer_id)
+                print "+II+ Successful Answer for " + voter.get_name()
 
 #                # Look for that response in the database
 #                responses = voter.view.responses.filter(question=question)
