@@ -4146,11 +4146,11 @@ class Group(Content):
         if not group_joined.confirmed and not group.hidden and not group.is_election:
             user.num_groups += 1
             user.save()
+            self.num_members += 1
+            self.save()
         group_joined.confirm()
         group_joined.ever_member = True
         self.members.add(user)
-        self.num_members += 1
-        self.save()
         from lovegov.modernpolitics.actions import followGroupAction
         followGroupAction(user, self, True, privacy)
 

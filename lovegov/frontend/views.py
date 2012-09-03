@@ -243,8 +243,8 @@ def aliasDowncastEdit(request, alias=None, vals={}):
 # login, password recovery and authentication
 #-----------------------------------------------------------------------------------------------------------------------
 def login(request, to_page='home/', message="", vals={}):
-    if not vals.get('firstLoginStage'):
-        to_page = "home/"
+    if vals.get('firstLoginStage'):
+        to_page = "home"
 
     # Try logging in with facebook
     if fbLogin(request,vals,refresh=True):
