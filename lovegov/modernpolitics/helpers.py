@@ -473,25 +473,16 @@ def genAliasSlug(alias, unique=True):
     try:
         alias = unicodedata.normalize('NFKD', unicode(alias)).encode('ascii','ignore')
     except:
-        alias = helperAlias(alias)
+        alias = alias
     alias = str(alias).lower()
+    import re
+    alias = re.sub(r'\W+', '', alias)
     nonce = 0
     orig_alias = alias
     if unique:
         while not isUniqueAlias(alias):
-            nonce += 1
-            alias = orig_alias + str(nonce)
+            nonce + alias = orig_alias + str(nonce)
     return alias
-
-def helperAlias(alias):
-
-    to_return = ""
-    for k in alias:
-        if k == '_':
-            to_return += '_'
-        elif k.isalnum():
-            to_return += k
-    return to_return
 
 
 
