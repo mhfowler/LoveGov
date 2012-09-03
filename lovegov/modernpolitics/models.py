@@ -2977,11 +2977,6 @@ class Petition(Content):
     goal = models.IntegerField(default=10)
     p_level = models.IntegerField(default=1)
 
-    def getTitleDisplay(self):
-        return "Petition: " + self.title
-    def getFeedTitle(self):
-        return self.getTitleDisplay()
-
     def getTypeIconClass(self):
         return "petition-image"
 
@@ -3081,11 +3076,6 @@ class News(Content):
     link_screenshot = models.ImageField(upload_to='screenshots/')
     link_clicks = models.IntegerField(default=0)
 
-    def getTitleDisplay(self):
-        return "News: " + self.title
-    def getFeedTitle(self):
-        return self.title
-
     def getTypeIconClass(self):
         return "news-image"
 
@@ -3126,12 +3116,6 @@ class Discussion(Content):
         self.in_feed = True
         self.type = "D"
         super(Discussion, self).autoSave(creator=creator, privacy=privacy)
-
-    def getTitleDisplay(self):
-        return "Discussion: " + self.title
-
-    def getFeedTitle(self):
-        return self.getTitleDisplay()
 
     def getTypeIconClass(self):
         return "discussion-image"
@@ -3278,12 +3262,6 @@ class Legislation(Content):
             return self.full_title
         else:
             return 'No Legislation Title Available'
-
-    def getTitleDisplay(self):
-        return "Legislation: " + self.getTitle()
-
-    def getFeedTitle(self):
-        return self.getTitleDisplay()
 
     # Returns a list of UserProfile objects that are cosponsors
     # in order to return a list of all LegislationCosponsor relationships, use the query "self.legislation_cosponsors"
@@ -3618,8 +3596,6 @@ class Poll(Content):
     num_questions = models.IntegerField(default=0)
     description = models.TextField(blank=True)
 
-    def getTitleDisplay(self):
-        return "Poll: " + self.title
     def getFeedTitle(self):
         return self.getTitleDisplay() + ' (' + str(self.num_questions) + ' questions)'
 
@@ -3674,11 +3650,6 @@ class Scorecard(Content):
             self.group.save()
         super(Scorecard, self).autoSave(creator=creator, privacy=privacy)
 
-
-    def getTitleDisplay(self):
-        return "Scorecard: " + self.title
-    def getFeedTitle(self):
-        return self.getTitleDisplay()
 
     def getEditURL(self):
         return self.get_url() + 'edit/'
@@ -3736,10 +3707,6 @@ class Question(Content):
     def toJSON(self):
         pass
 
-    def getTitleDisplay(self):
-        return self.title
-    def getFeedTitle(self):
-        return self.getTitleDisplay()
     def getDetailTitle(self):
         return ""
 
@@ -4068,11 +4035,6 @@ class Group(Content):
     participation_threshold = models.IntegerField(default=30)   # % of group which must upvote on motion to pass
     agreement_threshold = models.IntegerField(default=50)       # % of group which most agree with motion to pass
     motion_expiration = models.IntegerField(default=7)          # number of days before motion expires and vote close
-
-    def getTitleDisplay(self):
-        return "Group: " + self.title
-    def getFeedTitle(self):
-        return self.getTitleDisplay()
 
     #-------------------------------------------------------------------------------------------------------------------
     # gets content posted to group, for feed
