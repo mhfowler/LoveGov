@@ -1849,13 +1849,14 @@ def getLegislation(request, vals={}):
     sponsor_name_set = json.loads(request.POST['sponsor_name_set'])
     sponsor_party_set = json.loads(request.POST['sponsor_party_set'])
 
-    legislation_items = getLegislationItems(session_set=session_set, type_set=type_set, subject_set=subject_set,
+    legislation = getLegislationItems(session_set=session_set, type_set=type_set, subject_set=subject_set,
         committee_set=committee_set, introduced_set=introduced_set, sponsor_body_set=sponsor_body_set, sponsor_name_set=sponsor_name_set,
         sponsor_party_set=sponsor_party_set,feed_start=feed_start)
 
+    legislation_items = contentToFeedItems(legislation, vals['viewer'])
     vals['legislation_items'] = legislation_items
 
-    html = ajaxRender('site/pages/legislation/feed_helper_legislation.html', vals, request)
+    html = ajaxRender('site/pages/feed/feed_helper.html', vals, request)
     return HttpResponse(json.dumps({'html':html, 'num_items':len(legislation_items)}))
 
 #-----------------------------------------------------------------------------------------------------------------------
