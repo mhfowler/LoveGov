@@ -187,6 +187,24 @@ def scriptCreateCongressAnswers(args=None):
     return metrics
 
 
+def scriptCheckPoliticians(args=None):
+    path = os.path.join(PROJECT_PATH, 'frontend/excel/' + args[0])
+    wb = open_workbook(path)
+    sheet = wb.sheet_by_index(0)
+
+    for column in range(2,sheet.ncols):
+        # Get politician Name
+        politician_name = sheet.cell(0,column).value.split(" ")
+        print politician_name
+
+        # Look for politician
+        politician = UserProfile.lg.get_or_none(first_name=politician_name[0],last_name=politician_name[1], politician=True)
+        # If they don't exist
+        if not politician:
+            name = politician_name[0] + " " + politician_name[1]
+            print "Could not find " + name
+
+
 def scriptCreateResponses(args=None):
     path = os.path.join(PROJECT_PATH, 'frontend/excel/' + args[0])
     wb = open_workbook(path)
