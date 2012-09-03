@@ -255,7 +255,6 @@ function ajaxReload(theurl, loadimg)
     $('#search-dropdown').hide();
     $('.main_content').hide();
     var old_url = window.location.href;
-    if (theurl == "/about/") { var timeout = setTimeout(function(){$(".page_loading").show();},0); }
     $.ajax
         ({
             url:theurl,
@@ -266,10 +265,6 @@ function ajaxReload(theurl, loadimg)
                 if (pre_page_nonce == current_page_nonce) {
                     var returned = eval('(' + data + ')');
                     History.pushState( {k:1}, "LoveGov: Beta", returned.url);
-                    if (theurl=="/about/") {
-                        clearTimeout(timeout);
-                        setTimeout(function() {$(".page_loading").fadeOut();}, 600);
-                    }
                     $('body').css("overflow","scroll");
                     $('.main_content').css("top","0px");
                     $(".main_content").html(returned.html);

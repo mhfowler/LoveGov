@@ -1,0 +1,56 @@
+<div class="account_div" data-url="/settings/basic_info/">
+    <form action="/action/" method="post"> {% csrf_token %}
+        <span class="edit-link-large edit_link"></span>
+        <table>
+            <tr>
+                <td></td>
+                <td><h2>Basic Information</h2></td>
+            </tr>
+            <tr>
+                <td class="left"><h3>first name</h3></td>
+                <td><input class="account_input account-input" type="text" value="{{ viewer.get_first_name }}" name="first_name"/></td>
+                <td></td>
+            </tr>
+            <tr class="break"></tr>
+            <tr>
+                <td class="left"><h3>last name</h3></td>
+                <td><input class="account_input account-input" type="text" value="{{ viewer.get_last_name }}" name="last_name"/></td>
+                <td></td>
+            </tr>
+            <tr class="break"></tr>
+            <tr>
+                <td class="left"><h3>email</h3></td>
+                <td><input class="account_input account-input" type="text" value="{{ viewer.get_email }}" name="email"/></td>
+                <td></td>
+            </tr>
+            <tr class="break"></tr>
+
+            <tr>
+                <td class="left"><h3>dob</h3><p>in any format</p></td>
+
+                <td><input class="account_input account-input" type="text" value="{% if viewer.dob %}{{ viewer.dob }}{% endif %}" name="age"/></td>
+                <td></td>
+            </tr>
+            <tr class="break"></tr>
+            <tr>
+                <td class="left"><h3>phone-number</h3><p>for providing contact info to verify you in case you message a representative. We won't call you
+                or share your phone number with anyone else.</p></td>
+
+                <td><input class="account_input account-input phone-input" type="text" value="{% if viewer.phone_number %}{{ viewer.phone_number }}{% endif %}" name="phone_number"/></td>
+                <td></td>
+            </tr>
+            <tr class="break-large"></tr>
+            <tr>
+                <td>
+                    <p class="account-message">
+                        {{ profile_message }}
+                    </p>
+                </td>
+                <td style="text-align:right"><input type="submit" class="button-red" value="save changes"/></td>
+                <td width=20></td>
+            </tr>
+        </table>
+        <input type="hidden" name="box" value="basic_info"/>
+        <input type="hidden" name="action" value="editAccount"/>
+    </form>
+</div>

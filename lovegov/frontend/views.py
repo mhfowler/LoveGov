@@ -242,9 +242,9 @@ def aliasDowncastEdit(request, alias=None, vals={}):
 #-----------------------------------------------------------------------------------------------------------------------
 # login, password recovery and authentication
 #-----------------------------------------------------------------------------------------------------------------------
-def login(request, to_page='web/', message="", vals={}):
-    if not vals.get('firstLoginStage'):
-        to_page = "/home/"
+def login(request, to_page='home/', message="", vals={}):
+    if vals.get('firstLoginStage'):
+        to_page = "home"
 
     # Try logging in with facebook
     if fbLogin(request,vals,refresh=True):
@@ -272,13 +272,13 @@ def welcome(request, vals={}):
     vals['email'] = request.GET.get('email')
     return renderToResponseCSRF(template='site/pages/login/login-main-register-success.html', vals=vals, request=request)
 
-def loginAuthenticate(request,user,to_page=''):
+def loginAuthenticate(request,user,to_page='home/'):
     auth.login(request, user)
     redirect_response = shortcuts.redirect('/' + to_page)
     redirect_response.set_cookie('privacy', value='PUB')
     return redirect_response
 
-def loginPOST(request, to_page='web',message="",vals={}):
+def loginPOST(request, to_page='home/',message="",vals={}):
     vals['registerform'] = RegisterForm()
     # LOGIN
     if request.POST['button'] == 'login':

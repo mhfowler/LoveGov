@@ -308,6 +308,8 @@ class Content(Privacy, LocationLevel):
             return '/petition/' + str(self.id) + '/'
         elif self.type=='N':
             return '/news/' + str(self.id) + '/'
+        elif self.type=='B':
+            return '/poll/' + str(self.id) + '/'
         elif self.type=='O':
             return '/poll/' + str(self.id) + '/'
         elif self.type =='S':
@@ -341,10 +343,41 @@ class Content(Privacy, LocationLevel):
         return self.getName()
     def getTitle(self):
         return self.title
+
     def getTitleDisplay(self):
-        return self.downcast().getTitleDisplay()
+        if self.type=='P':
+            return "Petition: " + self.get_name()
+        elif self.type=='N':
+            return self.get_name()
+        elif self.type=='B':
+            return "Poll: " + self.get_name()
+        elif self.type=='O':
+            return "Office: " + self.get_name()
+        elif self.type =='S':
+            return "Scorecard: " + self.get_name()
+        elif self.type=='Q':
+            return self.get_name()
+        elif self.type=='D':
+            return "Discussion: " + self.get_name()
+        elif self.type=='L':
+            return "Legislation: " + self.get_name()
+        elif self.type=='C':
+            return "Comment on " + self.downcast().root_content.get_name()
+        elif self.type=='R':
+            return "Response to " + self.downcast().question.get_name()
+        elif self.type=='G':
+            return "Group: " + self.get_name()
+        else:
+            return "No Title"
+
     def getFeedTitle(self):
-        return self.downcast().getFeedTitle()
+        return self.getTitleDisplay()
+
+    def getDetailTitle(self):
+        if self.type == "Q":
+            return ""
+        else:
+            return self.getFeedTitle()
 
     #-------------------------------------------------------------------------------------------------------------------
     # gets location string, if content has location
@@ -573,13 +606,15 @@ class Content(Privacy, LocationLevel):
             object = self.comment
         elif type == 'D':
             object = self.discussion
+        elif type == 'L':
+            object = self.legislation
         elif type == 'Q':
             object = self.question
         elif type == 'R':
             object = self.response
         elif type == 'I':
             object = self.userimage
-        elif type == 'O':
+        elif type == 'B':
             object = self.poll
         elif type == 'S':
             object = self.scorecard
@@ -1459,21 +1494,40 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
     # Stats recalculate
     #-------------------------------------------------------------------------------------------------------------------
     def userPetitionsRecalculate(self):
-        self.num_petitions = Created.objects.filter(user=self,content__type="P").count()
+        self.num_petitions = Petition.objects.filter(creator=self).count()
         self.save()
 
     def userNewsRecalculate(self):
-        self.num_articles = Created.objects.filter(user=self,content__type="N").count()
+        self.num_articles = News.objects.filter(creator=self).count()
         self.save()
 
     def userCommentsRecalculate(self):
-        self.num_comments = Created.objects.filter(user=self,content__type="C").count()
+        self.num_comments = Comment.objects.filter(creator=self).count()
+        self.save()
+
+    def userPostsRecalculate(self):
+        self.num_posts = Content.objects.filter(creator=self, in_feed=True).count()
+        self.save()
+
+    def userAnswersRecalculate(self):
+        responses = self.view.responses.all()
+        self.num_answers = responses.count()
+        self.save()
+
+    def userFollowRecalculate(self):
+        followme = self.getFollowMe()
+        ifollow = self.getIFollow()
+        self.num_followme = followme.count()
+        self.num_ifollow = ifollow.count()
         self.save()
 
     def userStatsRecalculate(self):
         self.userPetitionsRecalculate()
         self.userNewsRecalculate()
         self.userCommentsRecalculate()
+        self.userPostsRecalculate()
+        self.userAnswersRecalculate()
+        self.userFollowRecalculate()
 
     #-------------------------------------------------------------------------------------------------------------------
     # politician support
@@ -3574,7 +3628,7 @@ class Poll(Content):
         return '/poll/' + str(self.id) + '/'
 
     def autoSave(self, creator=None, privacy='PUB'):
-        self.type = "O"
+        self.type = "B"
         self.in_feed = True
         self.save()
         super(Poll, self).autoSave(creator=creator, privacy=privacy)
@@ -3678,6 +3732,8 @@ class Question(Content):
     def getTitleDisplay(self):
         return "Question: " + self.title
     def getFeedTitle(self):
+        return self.getTitleDisplay()
+    def getDetailTitle(self):
         return ""
 
     def getTypeIconClass(self):
@@ -3967,6 +4023,7 @@ class Group(Content):
     # group type
     group_type = models.CharField(max_length=1,choices=GROUP_TYPE_CHOICES, default='U')
     group_privacy = models.CharField(max_length=1,choices=GROUP_PRIVACY_CHOICES, default='O')   # for non-system groups, is it open or invite-only?
+
     system = models.BooleanField(default=False)                                                 # indicates users can't voluntarily join or leave
     hidden = models.BooleanField(default=False)                                                 # indicates that a group shouldn't be visible in lists [like-minded, folow groups etc]
     autogen = models.BooleanField(default=False)                                                # indicates whether we created group or not
@@ -4146,11 +4203,11 @@ class Group(Content):
         if not group_joined.confirmed and not group.hidden and not group.is_election:
             user.num_groups += 1
             user.save()
+            self.num_members += 1
+            self.save()
         group_joined.confirm()
         group_joined.ever_member = True
         self.members.add(user)
-        self.num_members += 1
-        self.save()
         from lovegov.modernpolitics.actions import followGroupAction
         followGroupAction(user, self, True, privacy)
 
@@ -4666,6 +4723,7 @@ class Committee(Group):
 
     def autoSave(self):
         self.group_type = 'C'
+        self.system = True
         super(Committee, self).autoSave()
 
     def joinMember(self, user, congress_session, role=None, privacy='PUB'):
