@@ -53,7 +53,7 @@ def recalculateAllVotes():
 
 def recalculateAllComments():
 
-    content = Content.objects.filter(type__in=CONTENT_IN_FEED)
+    content = Content.objects.filter(type__in=HAS_HOT_SCORE)
     for c in content:
         print "Calculating Comments for " + c.get_name()
         c.contentCommentsRecalculate()
@@ -145,7 +145,7 @@ def recalculateInFeed():
         count += 1
         if not count%20:
             print count
-    in_feed = Content.objects.filter(type__in=CONTENT_IN_FEED)
+    in_feed = Content.objects.filter(type__in=IN_FEED)
     for x in in_feed:
         x.in_feed = True
         x.save()
@@ -258,6 +258,16 @@ def removeDeprecatedPoliticians():
                 person.delete()
 
 
+def removeVotesOnQuestions():
+    q_ids = Question.objects.all().values_list("id", flat=True)
+    votes = Voted.objects.filter(content_id__in=q_ids)
+    count = 0
+    for x in votes:
+        x.delete()
+        count += 1
+        if not count%20:
+            print count
+            
 
 def resetGroupSystemBooleans():
     print "SETTING ALL NETWORKS TO AUTOGEN=True and SYSTEM=False"

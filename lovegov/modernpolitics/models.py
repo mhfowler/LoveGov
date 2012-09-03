@@ -416,6 +416,11 @@ class Content(Privacy, LocationLevel):
     # Recalculate status for this content.
     #-------------------------------------------------------------------------------------------------------------------
     def recalculateVotes(self):
+        votes = Voted.objects.filter(content=self)
+        upvotes = votes.filter(value=1)
+        downvotes = votes.filter(value=-1)
+        self.upvotes = upvotes
+        self.downvotes = downvotes
         self.status = self.upvotes - self.downvotes
         self.save()
 
