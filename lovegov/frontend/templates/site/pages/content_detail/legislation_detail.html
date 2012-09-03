@@ -639,7 +639,32 @@
         </div>
         <div style="clear:both;"></div>
     </div>
-    <div class="subjects-committees-related">
+    <div class="cosponsors-subjects-committees-related">
+        <div class="level1-cosponsors">
+            <div class="bill-cosponsors-title">
+                <h4>
+                    <span>Cosponsors</span>
+                </h4>
+            </div>
+        </div>
+        {% for cosponsor in cosponsors %}
+        <div class="level1-cosponsors-div">
+            <div class="cosponsors">
+                <span>
+                    <ul>
+                        <li><span class="leg-list feed_by_cosponsor"><a href='{{cosponsor.cosponsor.get_url}}'>{{ cosponsor.cosponsor.get_name }}</a></span></li>
+                    </ul>
+                </span>
+            </div>
+            <div class="cosponsors-roles">
+                <span>
+                    <ul>
+                        <li><span class="leg-list feed_by_cosponsor">{{ cosponsor.cosponsor.political_title }}</span></li>
+                    </ul>
+                </span>
+            </div>
+        </div>
+        {% endfor %}
         <div class="level1-subjects">
             <div class="bill-subjects-title">
                 <h4>
@@ -651,7 +676,7 @@
             <div class="subjects">
                 <span>
                     <ul>
-                        {% for subject in l.bill_subjects.all.reverse %}
+                        {% for subject in l.bill_subjects.all %}
                             <li><span class="leg-list feed_by_subject">{{ subject.name }}</span></li>
                         {% endfor %}
                     </ul>
@@ -670,7 +695,7 @@
                 <span>
                     <ul>
                         {% for committee in l.committees.all %}
-                            <li><span class="leg-list feed_by_committee">{{ committee.title }}</span></li>
+                            <li><span class="leg-list feed_by_committee"><a href='{{ committee.get_url }}'>{{ committee.title }}</a></span></li>
                         {% endfor %}
                     </ul>
                 </span>

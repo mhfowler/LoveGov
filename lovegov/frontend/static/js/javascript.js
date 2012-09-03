@@ -38,8 +38,6 @@ function bindOnReload() {
             showSelectors();
             loadBillSelect2();
             break;
-        case "legislation-view":
-            shortenLongText(); break;
         case "legislation_detail":
             shortenLongText(); break;
         case "home":
@@ -2258,24 +2256,6 @@ bind( '.filter_box' , 'click' , null , function(event) {
         $(this).addClass('clicked');
     }
 });
-
-bind( '.expand_link' , 'click' , null , function(event) {
-    event.preventDefault();
-    if ($(this).hasClass('clicked')) {
-        $(this).removeClass('clicked');
-        $('.level2-recent-actions-div').setStyle({
-            overflow: hidden
-        });
-    }
-    else {
-        $(this).addClass('clicked');
-        $('.level2-recent-actions-div').setStyle({
-            overflow: auto
-        });
-    }
-});
-
-
 
 function loadBillSelect2() {
     $('.session_select').select2({

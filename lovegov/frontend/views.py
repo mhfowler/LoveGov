@@ -962,15 +962,15 @@ def legislation (request, vals={}):
         introduced_dates.append(date_tuple)
     vals['introduced_dates'] = introduced_dates
 
-
-    date_comments = ["Introduced in the last 6 months", "Introduced in the last year",
-                     "Introduced in the last 2 years", "Introduced in the last 4 years"]
-    vals['date_comments'] = date_comments
+    vals['date_comments'] = ["Introduced in the last 6 months","Introduced in the last year",
+                             "Introduced in the last 2 years","Introduced in the last 4 years"]
 
     vals['sponsors'] = UserProfile.objects.distinct().filter(sponsored_legislation__isnull=False)
     vals['sponsor_parties'] = Party.objects.filter(parties__sponsored_legislation__isnull=False).distinct()
 
-    return renderToResponseCSRF(template='site/pages/legislation/legislation.html', request=request, vals=vals)
+    focus_html =  ajaxRender('site/pages/legislation/legislation.html', vals, request)
+    url = request.path
+    return homeResponse(request, focus_html, url, vals)
 
 
 
@@ -988,10 +988,16 @@ def legislationDetail(request, l_id, vals={}):
         if "ENACTED:SIGNED" in action_states:
             bill_progress = "Passed House and Senate, Signed into Law"
         if "PASSED_OVER:HOUSE" in action_states:
-            if legislation.bill_relation.count() != 0:
-                bill_progress = "Passed House and Senate"
-            elif legislation.bill_relation.count() == 0:
-                bill_progress = "Passed House"
+            if legislation.bill_type == 'hc':
+                if legislation.bill_relation.count() != 0:
+                    bill_progress = "Concurrent Resolution Passed House and Senate"
+                elif legislation.bill_relation.count() == 0:
+                    bill_progress = "Concurrent Resolution Passed House"
+            else:
+                if legislation.bill_relation.count() != 0:
+                    bill_progress = "Passed House and Senate"
+                elif legislation.bill_relation.count() == 0:
+                    bill_progress = "Passed House"
         elif "PASSED:JOINTRES" in action_states:
             if legislation.bill_relation.count() != 0:
                 bill_progress = "Joint Resolution Passed House and Senate"
@@ -1027,10 +1033,16 @@ def legislationDetail(request, l_id, vals={}):
         if "ENACTED:SIGNED" in action_states:
             bill_progress = "Passed Senate and House, Signed into Law"
         if "PASSED_OVER:SENATE" in action_states:
-            if legislation.bill_relation.count() != 0:
-                bill_progress = "Passed Senate and House"
-            elif legislation.bill_relation.count() == 0:
-                bill_progress = "Passed Senate"
+            if legislation.bill_type == 'sc':
+                if legislation.bill_relation.count() != 0:
+                    bill_progress = "Concurrent Resolution Passed House, Not Passed Senate"
+                elif legislation.bill_relation.count() == 0:
+                    bill_progress = "Concurrent Resolution Not Passed Senate"
+            else:
+                if legislation.bill_relation.count() != 0:
+                    bill_progress = "Passed Senate and House"
+                elif legislation.bill_relation.count() == 0:
+                    bill_progress = "Passed Senate"
         elif "PASSED:JOINTRES" in action_states:
             if legislation.bill_relation.count() != 0:
                 bill_progress = "Joint Resolution Passed Senate and House"
@@ -1064,7 +1076,9 @@ def legislationDetail(request, l_id, vals={}):
             bill_progress = "Not Passed Senate"
     vals['bill_progress'] = bill_progress
 
+    vals['cosponsors'] = legislation.legislation_cosponsors.all()
     vals['related'] = legislation.bill_relation.all()
+
     contentDetail(request, legislation, vals)
     html = ajaxRender('site/pages/content_detail/legislation_detail.html', vals, request)
     url = legislation.get_url
