@@ -2439,12 +2439,13 @@ def changeContentPrivacy(request, vals={}):
             error = 'The given content identifier is invalid.'
     else:
         error = 'No content identifier given.'
-    if error=='':
+    if error:
+        return HttpResponseBadRequest(error)
+    else:
         content.save()
         vals['content'] = content
-        html = ajaxRender('site/pieces/snippets/content-privacy.html', vals, request)
-    to_return = {'html':html, 'error': error}
-    print "to_return: "+ str(to_return)
+        html = ajaxRender('site/pieces/content-privacy.html', vals, request)
+    to_return = {'html':html}
     return HttpResponse(json.dumps(to_return))
 
 

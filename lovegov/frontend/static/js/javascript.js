@@ -4339,3 +4339,24 @@ function savePoliticianSettings(politician, political_status, office_title, offi
 bind(".back_to_button", "click", function(e) {
     History.back();
 });
+
+// bind change content privacy
+bind('div.change-privacy','click', function() {
+    var content_id = $(this).data('content_id');
+    var meDiv = $(this);
+    $(this).tooltip('hide');
+    action({
+        data: {
+            'action': 'changeContentPrivacy',
+            'content_id': content_id
+        },
+        success: function(data) {
+            var returned = eval('('+data+')');
+            if(returned.error) {
+                alert("Error: "+data.error);
+            } else {
+                meDiv.parent().html(returned.html);
+            }
+        }
+    });
+});
