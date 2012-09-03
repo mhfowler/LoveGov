@@ -55,6 +55,7 @@
                     <div class="summary bill_detail long_text more"><span>{{ l.bill_summary }}</span>
                     </div>
                 </div>
+{% comment %}
                 <div class="level1-bill-view-stats">
                     <div class="bill-views">
                         <h4 class="views">432</h4>
@@ -75,6 +76,7 @@
                         </div>
                     </div>
                 </div>
+{% endcomment %}
             </div>
             <div class="sponsor">
                 <div class="level1-sponsor">
@@ -650,7 +652,7 @@
                 <span>
                     <ul>
                         {% for subject in l.bill_subjects.all.reverse %}
-                            <li><span class="leg-list"><a class="feed_by_subject">{{ subject.name }}</a></span></li>
+                            <li><span class="leg-list feed_by_subject">{{ subject.name }}</span></li>
                         {% endfor %}
                     </ul>
                 </span>
@@ -668,7 +670,7 @@
                 <span>
                     <ul>
                         {% for committee in l.committees.all %}
-                            <li><span class="leg-list"><a class="feed_by_committee">{{ committee.title }}</a></span></li>
+                            <li><span class="leg-list feed_by_committee">{{ committee.title }}</span></li>
                         {% endfor %}
                     </ul>
                 </span>
@@ -686,7 +688,7 @@
                 <span>
                     <ul>
                         {% for related_bill in related %}
-                            <li><span class="leg-list"><a class="feed_by_related_bills">{{ related_bill.congress_session }} {{ related_bill.bill_number }} {{ related_bill.full_title }}</a></span></li>
+                            <li><span class="leg-list feed_by_related_bills">{{ related_bill.congress_session }} {{ related_bill.bill_number }} {{ related_bill.full_title }}</span></li>
                         {% endfor %}
                     </ul>
                 </span>
