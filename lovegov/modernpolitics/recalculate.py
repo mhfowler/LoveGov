@@ -278,3 +278,9 @@ def resetGroupSystemBooleans():
         c.system = True
         c.save()
 
+
+
+def recalculateGroupAliases():
+    for g in Group.objects.all():
+        g.makeAlias()
+        print g.alias
