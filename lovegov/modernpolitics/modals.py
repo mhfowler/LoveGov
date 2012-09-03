@@ -84,6 +84,7 @@ def getCreateModal(request,vals={}):
     viewer = vals['viewer']
     vals['all_polls'] = Poll.objects.all()
     gid = request.POST.get('gid')
+    vals['selected_group'] = request.POST.get('selected_group')
     vals['group'] = Group.lg.get_or_none(id=gid)
     return ajaxRender('site/pages/create_modal.html',vals,request)
 

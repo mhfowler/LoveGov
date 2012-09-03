@@ -1,8 +1,11 @@
 // Create button click
 bind('td.create-button', 'click', function(e) {
-    getModal('create_modal', {}, function() {
+    var gid = $(this).data('g_id');
+    getModal('create_modal', {'gid': gid, 'selected_group': gid}, function() {
         $('div.create-modal > div').hide();
         $('div.create-modal div.type-select').show();
+        var post_tos = $('select.post-to');
+        post_tos.select2();
     });
 });
 

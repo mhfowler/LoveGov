@@ -19,14 +19,14 @@
 
 {% endmacro %}
 
-{% macro post-to groups %}
+{% macro post-to groups selected_group %}
 
     <div class="form-row">
         <div class="label">Post to:</div>
         <div class="field">
             <select class="post-to" name="post_to">
             {% for group in groups %}
-                <option value="{{ group.id }}">{{ group.title }}</option>
+                <option value="{{ group.id }}" {% if selected_group == group.id|slugify %} selected {% endif %}>{{ group.title }} </option>
             {% endfor %}
             </select>
         </div>

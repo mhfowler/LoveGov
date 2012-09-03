@@ -32,7 +32,7 @@
             <div class="form">
                 {% usemacro textbox "Title:" "title" "title" "" %}
                 {% usemacro textarea "Full text:" "description" "full_text" %}
-                {% usemacro post-to viewer.getGroupSubscriptions %}
+                {% usemacro post-to viewer.getGroupSubscriptions selected_group %}
                 {% usemacro post-as %}
                 <div class="optional">
                     {% usemacro optional-label %}
@@ -52,7 +52,7 @@
             <div class="form">
                 {% usemacro textbox "Title:" "title" "title" "" %}
                 {% usemacro textarea "Full text:" "description" "full_text" %}
-                {% usemacro post-to viewer.getGroupSubscriptions %}
+                {% usemacro post-to viewer.getGroupSubscriptions selected_group %}
                 {% usemacro post-as %}
                 <div class="optional">
                     {% usemacro optional-label %}
@@ -72,7 +72,7 @@
             <div class="form">
                 {% usemacro textbox "Link:" "link" "link" "" %}
                 {% usemacro link-image %}
-                {% usemacro post-to viewer.getRealGroups %}
+                {% usemacro post-to viewer.getRealGroups selected_group %}
                 {% usemacro post-as %}
                 <div class="optional">
                     {% usemacro optional-label %}
@@ -101,7 +101,7 @@
                     {% usemacro textbox "Title:" "title" "title" "" %}
                     {% usemacro textarea "Poll description:" "description" "full_text" %}
                 </div>
-                {% usemacro post-to viewer.getGroupSubscriptions %}
+                {% usemacro post-to viewer.getGroupSubscriptions selected_group %}
                 {% usemacro post-as %}
                 <div class="questions">
                     <div class="question model">
