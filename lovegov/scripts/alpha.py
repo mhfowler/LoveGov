@@ -101,7 +101,12 @@ def scriptCreateCongressAnswers(args=None):
 
 
             # Get answer ID and value from spreadsheet
-            answer_id = sheet.cell(row,0).value
+            try:
+                answer_id = int(sheet.cell(row,0).value)
+            except:
+                print "+WW+ Invalid Answer ID on row " + str(row)
+                continue
+
             answer_value = sheet.cell(row,column+3).value
             answer_value = answer_value.encode('utf-8','ignore')
 
