@@ -356,7 +356,7 @@ class Content(Privacy, LocationLevel):
         elif self.type =='S':
             return "Scorecard: " + self.get_name()
         elif self.type=='Q':
-            return "Question: " + self.get_name()
+            return self.get_name()
         elif self.type=='D':
             return "Discussion: " + self.get_name()
         elif self.type=='L':
