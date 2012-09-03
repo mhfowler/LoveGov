@@ -467,7 +467,7 @@ def isUniqueAlias(alias):
         return False
     return True
 
-def genAliasSlug(alias, unique=True):
+def genAliasSlug(alias, unique=True, old_alias=None):
     alias = alias.replace(' ', '_')
     import unicodedata
     try:
@@ -480,7 +480,7 @@ def genAliasSlug(alias, unique=True):
     nonce = 0
     orig_alias = alias
     if unique:
-        while not isUniqueAlias(alias):
+        while (not isUniqueAlias(alias)) or alias == old_alias:
             alias = orig_alias + str(nonce)
     return alias
 

@@ -1406,7 +1406,7 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
             alias = alias.encode('utf-8','ignore')
         alias = str.lower(alias)
         from lovegov.modernpolitics.helpers import genAliasSlug
-        self.alias = genAliasSlug(alias)
+        self.alias = genAliasSlug(alias, unique=True, old_alias=self.alias)
         self.save()
         return self.alias
 
@@ -4412,7 +4412,7 @@ class Group(Content):
 
     def makeAlias(self):
         from lovegov.modernpolitics.helpers import genAliasSlug
-        self.alias = genAliasSlug(self.title)
+        self.alias = genAliasSlug(self.title, unique=True, old_alias=self.alias)
         self.save()
         return self.alias
 
