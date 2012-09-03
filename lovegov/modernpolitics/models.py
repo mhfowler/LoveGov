@@ -1569,6 +1569,8 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
     # Fills in fields based on facebook data
     #-------------------------------------------------------------------------------------------------------------------
     def refreshFB(self, fb_data):
+        from lovegov.modernpolitics.helpers import genAliasSlug
+
         self.facebook_id = fb_data['id']
         self.facebook_profile_url = fb_data['link']
         # self.gender = fb_data['gender']
@@ -1597,10 +1599,7 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
             for edu in education:
                 school = edu['school']
                 name = school['name']
-                alias = name.replace(" ","")
-                alias = alias.replace(",","")
-                alias = alias.replace(".","")
-                alias = alias.lower()
+                alias = genAliasSlug(name, unique=False)
                 school_network = Network.lg.get_or_none(alias=alias,network_type='S')
                 if not school_network:
                     school_network = Network(alias=alias,title=name,network_type='S')
@@ -1611,10 +1610,7 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
         if 'location' in fb_data:
             location = fb_data['location']
             name = location['name']
-            alias = name.replace(" ","")
-            alias = alias.replace(",","")
-            alias = alias.replace(".","")
-            alias = alias.lower()
+            alias = genAliasSlug(name, unique=False)
             location_network = Network.lg.get_or_none(alias=alias,network_type='L')
             if not location_network:
                 location_network = Network(alias=alias,title=name,network_type='L')
@@ -4789,6 +4785,11 @@ class Committee(Group):
             self.num_members -= 1
             self.save()
 
+
+    def getContent(self):
+        from lovegov.modernpolitics.feed import getLegislationFromCongressmen
+        content = getLegislationFromCongressmen(self.members.all())
+        return content
 
 
 ########################################################################################################################

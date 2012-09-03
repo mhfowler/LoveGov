@@ -13,7 +13,7 @@ function bindOnReload() {
     getFBInviteFriends();
 
     // any feeds on the page, go get themselves
-    //refreshFeeds();
+    refreshFeeds();
 
     // for all home pages
     navSectionOpenAll();
