@@ -5,6 +5,8 @@ bind("div.reply .tab-button.cancel", "click", function(event) {
 });
 
 
+var lockThreadReply = false;
+
 // Save click - append, reply, or new comment
 bind("div.reply .tab-button.save", "click", function(event) {
     var reply = $(this).parent("div.reply");
@@ -13,8 +15,12 @@ bind("div.reply .tab-button.save", "click", function(event) {
     var content_id = reply.data("reply-to");
     var depth = reply.data("depth") + 1;
     if(goodLength(text)) {
+        if(lockThreadReply) {
+            return;
+        }
         // New comment or reply
         if(reply.hasClass("reply-reply") || reply.hasClass("reply-new")) {
+            lockThreadReply = true;
             action({
                 'data': {'action':'comment', 'c_id': content_id, 'comment':text, 'depth': depth},
                 'success': function(data) {
@@ -29,15 +35,18 @@ bind("div.reply .tab-button.save", "click", function(event) {
                         $(html).hide().prependTo('div.thread').fadeIn(500);
                         new_comments.push(cid);
                     }
+                    lockThreadReply = false;
                 }
             });
         // Append to comment
         } else if(reply.hasClass("reply-append")) {
+            lockThreadReply = true;
             action({
                 'data': {'action':'appendComment', 'c_id': content_id, 'comment':text, 'depth': depth},
                 'success': function(data) {
                     reply.closest('div.comment').find('div.comment-text').html(data);
                     reply.hide();
+                    lockThreadReply = false;
                 }
             });
         }

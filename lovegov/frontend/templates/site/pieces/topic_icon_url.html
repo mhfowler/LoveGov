@@ -1,0 +1,14 @@
+{% load thumbnail %}
+{% load customtags %}
+
+{% with width|add:"x"|add:height as geometry %}
+
+    {% with full_url=topic.getIconURL|media_url:MEDIA_PREFIX %}
+        {% thumbnail full_url geometry crop="center" format="PNG" as im %}
+            {{ im.url }}
+        {% empty %}
+            {{ full_url }}
+        {% endthumbnail %}
+    {% endwith %}
+
+{% endwith %}

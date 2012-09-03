@@ -2438,12 +2438,13 @@ def changeContentPrivacy(request, vals={}):
             error = 'The given content identifier is invalid.'
     else:
         error = 'No content identifier given.'
-    if error=='':
+    if error:
+        return HttpResponseBadRequest(error)
+    else:
         content.save()
         vals['content'] = content
-        html = ajaxRender('site/pieces/snippets/content-privacy.html', vals, request)
-    to_return = {'html':html, 'error': error}
-    print "to_return: "+ str(to_return)
+        html = ajaxRender('site/pieces/content-privacy.html', vals, request)
+    to_return = {'html':html}
     return HttpResponse(json.dumps(to_return))
 
 
@@ -2594,8 +2595,11 @@ def createContent(request, vals={}):
                     posted_to=group)
                 newc.autoSave()
             for q in questions:
+                qtopic_alias = q['topic']
+                qtopic = Topic.lg.get_or_none(alias=qtopic_alias)
                 newQ = Question(question_text=q['question'], title=q['question'], source=q['source'], official=False)
                 newQ.save()
+                newQ.setMainTopic(qtopic)
                 for a in q['answers']:
                     newA = Answer(answer_text=a, value=-1)
                     newA.save()
