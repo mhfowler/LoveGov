@@ -83,14 +83,7 @@ bind("div.create-modal div.add-question", "click", function(e) {
    var newQuestion = $('div.create-modal div.question.model').clone();
     $('div.add-question').before(newQuestion);
     newQuestion.removeClass("model");
-    var format = function(topic) {
-        var originalOption = topic.element;
-        return 'hello';
-    }
-    newQuestion.find("select.topics_select_2").select2({
-        formatResult: format,
-        formatSelection: format
-    });
+    bindTooltips();
 });
 
 function getNumQuestions() {
@@ -230,7 +223,7 @@ function validField(field, name, form) {
 // extract questions and answers from the DOM
 function extractQuestions() {
     var questionsList = [];
-    var questionsDiv = $('div.create-modal div.create-section.poll div.questions');""
+    var questionsDiv = $('div.create-modal div.create-section.poll div.questions');
     questionsDiv.children("div.question:not(.model)").each(function() {
        var q = {};
        q['question'] = $(this).find('div.question-title input').val();
@@ -239,6 +232,7 @@ function extractQuestions() {
           q['answers'].push($(this).val());
        });
        q['source'] = $(this).find('div.question-source input').val();
+       q['topic'] = $(this).find('span.topic_button.chosen').data('t_alias');
         questionsList.push(q);
     });
     return questionsList;
@@ -281,14 +275,25 @@ bind("div.create-modal div.create-section.news input.link", "keypress", function
     }
 });
 
-bind("div.create-modal span.topic_button", "click", function(e) {
+bind("div.create-modal div.field span.topic_button", "click", function(e) {
     if($(this).hasClass('selected')) {
         $(this).removeClass('selected');
     } else {
         $(this).siblings("span.topic_button").removeClass("selected");
         $(this).addClass("selected");
     }
-})
+});
+
+bind("div.create-modal div.questions span.topic_button", "click", function(e) {
+   $(this).siblings('div.qt-select').fadeToggle(200);
+});
+
+bind("div.create-modal div.qt-select span.topic_button", "click", function(e) {
+    var qtselect = $(this).closest('div.qt-select');
+    qtselect.siblings('span.topic_button').replaceWith($(this).clone().addClass('chosen'));
+    qtselect.fadeOut(200);
+    bindTooltips();
+});
 
 function selectImageToggle() {
     $('#cycle-img-span').text(currentLink + " / " + image_count);

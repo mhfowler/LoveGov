@@ -78,7 +78,10 @@ def getFacebookShareContentModal(share_content,request,vals):
 
 
 def getCreateModal(request,vals={}):
-    getMainTopics(vals)
+    main_topics = Topic.objects.filter(Q(alias='general') | Q(topic_text__in=MAIN_TOPICS))
+    general_topic = Topic.lg.get(alias='general')
+    vals['main_topics'] = main_topics
+    vals['general_t'] = general_topic
     from lovegov.frontend.views_helpers import getStateTuples
     getStateTuples(vals)
     viewer = vals['viewer']

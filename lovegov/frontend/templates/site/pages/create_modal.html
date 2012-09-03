@@ -91,7 +91,7 @@
             <span class="back">< back</span>
             <div class="form">
                 <div class="form-row polltype">
-                    <div class="label">Would you like to supersize your question to a poll today?<br> </br></div>
+                    <div class="label">Is this a poll?<br> </br></div>
                     <div class="field">
                         <input type="radio" name="polltype" value="p">Yes, I want to create a <strong>themed collection</strong> of questions.<br>
                         <input type="radio" name="polltype" value="q" checked>No, I want to create a <strong>single</strong> or <strong>random assortment</strong> of questions.
@@ -111,13 +111,20 @@
                                 <span class="add-source">add source</span>
                             </span>
                             <div class="label padded">
-                                <select style="width: 100px" class="topics_select_2">
+                                <span class="topic_button tooltip-top chosen" data-t_alias="{{ general_t.alias }}" title="{{ general_t.topic_text }}">
+                                    {% include 'site/pieces/topic_icon.html' with topic=general_t width="30" height="30" %}
+                                </span>
+                                <div class="qt-select">
+                                    <span class="triangle-border"></span>
+                                    <span class="triangle"></span>
                                     {% for t in main_topics %}
 
-                                        <option value="{{ t.alias }}" data-imgurl="{% include 'site/pieces/topic_icon_url.html' with topic=t width="30" height="30" %}"></option>
+                                        <span class="topic_button tooltip-top" data-t_alias="{{ t.alias }}" title="{{ t.topic_text }}">
+                                            {% include 'site/pieces/topic_icon.html' with topic=t width="30" height="30" %}
+                                        </span>
 
                                     {% endfor %}
-                                </select>
+                                </div>
                                 Question:
                             </div>
                             <div class="field"><input type="text" placeholder="Enter a question"></div>

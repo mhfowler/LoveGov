@@ -2596,8 +2596,11 @@ def createContent(request, vals={}):
                     posted_to=group)
                 newc.autoSave()
             for q in questions:
+                qtopic_alias = q['topic']
+                qtopic = Topic.lg.get_or_none(alias=qtopic_alias)
                 newQ = Question(question_text=q['question'], title=q['question'], source=q['source'], official=False)
                 newQ.save()
+                newQ.setMainTopic(qtopic)
                 for a in q['answers']:
                     newA = Answer(answer_text=a, value=-1)
                     newA.save()
