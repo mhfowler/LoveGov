@@ -3737,7 +3737,7 @@ class Question(Content):
         pass
 
     def getTitleDisplay(self):
-        return "Question: " + self.title
+        return self.title
     def getFeedTitle(self):
         return self.getTitleDisplay()
     def getDetailTitle(self):
