@@ -275,3 +275,6 @@ def resetGroupSystemBooleans():
     c.system = True
     c.hidden = False
     c.save()
+    for c in Committee.objects.all():
+        c.system = True
+        c.save()

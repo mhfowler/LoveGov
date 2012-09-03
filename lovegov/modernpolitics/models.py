@@ -4671,6 +4671,7 @@ class Committee(Group):
 
     def autoSave(self):
         self.group_type = 'C'
+        self.system = True
         super(Committee, self).autoSave()
 
     def joinMember(self, user, congress_session, role=None, privacy='PUB'):
