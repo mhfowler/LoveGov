@@ -1476,7 +1476,7 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
 
     def userAnswersRecalculate(self):
         responses = self.view.responses.all()
-        self.num_answers = respones.count()
+        self.num_answers = responses.count()
         self.save()
 
     def userStatsRecalculate(self):
@@ -1484,7 +1484,7 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
         self.userNewsRecalculate()
         self.userCommentsRecalculate()
         self.userPostsRecalculate()
-        self.userAnswersRecalcualte()
+        self.userAnswersRecalculate()
 
     #-------------------------------------------------------------------------------------------------------------------
     # politician support
