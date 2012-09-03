@@ -495,7 +495,7 @@ def helperAlias(alias):
 
 
 #-----------------------------------------------------------------------------------------------------------------------
-# analyzes a queryset of content and prints out type nus
+# analyzes a queryset of content and prints out type nums
 #-----------------------------------------------------------------------------------------------------------------------
 def analyzeContentTypes(content):
     types = {}
@@ -505,7 +505,17 @@ def analyzeContentTypes(content):
             types[type] += 1
         else:
             types[type] = 0
+    for type in types:
+        print type + ": " + str(types[type])
 
+def analyzeGroupTypes(groups):
+    types = {}
+    for x in groups:
+        type = x.group_type
+        if type in types:
+            types[type] += 1
+        else:
+            types[type] = 0
     for type in types:
         print type + ": " + str(types[type])
 
