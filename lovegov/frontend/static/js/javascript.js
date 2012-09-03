@@ -19,8 +19,11 @@ function bindOnReload() {
     navSectionOpenAll();
     initHomePage();
 
-    // for reps page
+    // for reps paged
     loadGoogleMap();
+
+    // about page
+    teamSection();
 
     // misc
     bindNotificationsDropdownClickOutside();
@@ -55,6 +58,12 @@ function bindOnReload() {
             updateQuestionStubsDisplay();
             break;
         case 'browse':
+            break;
+        case 'settings':
+            bindSettings();
+            break;
+        case 'about':
+            bindAbout();
             break;
     }
 }
@@ -233,8 +242,8 @@ function updatePage() {
  *
  ***********************************************************************************************************************/
 bind(".header_link", 'click', null, function(event) {
-        $(".header_link").removeClass("clicked");
-        $(this).addClass("clicked");
+    $(".header_link").removeClass("clicked");
+    $(this).addClass("clicked");
 });
 
 bind(".do_ajax_link", 'click', null, function(event) {
@@ -247,12 +256,13 @@ function ajaxReload(theurl, loadimg)
     var pre_page_nonce = current_page_nonce;
     $('#search-dropdown').hide();
     $('.main_content').hide();
+    var old_url = window.location.href;
     if (theurl == "/about/") { var timeout = setTimeout(function(){$(".page_loading").show();},0); }
     $.ajax
         ({
             url:theurl,
             type: 'GET',
-            data: {'url':window.location.href},
+            data: {'url':old_url},
             success: function(data)
             {
                 if (pre_page_nonce == current_page_nonce) {
@@ -1110,53 +1120,65 @@ bind(".load_more" , "click" , null , function(event) {
  *      ~About page
  *
  **********************************************************************************************************************/
+function bindAbout() {
+    var start_page = path;
+    var section = $('.about_section[data-url="' + start_page + '"]');
+    if (section.length != 0) {
+        $(".about_section").hide();
+        section.fadeIn(250);
+    }
+}
+
 bind("div.about-div-button", "click",
     function(e) {
         $('div.about-div-button').removeClass("active");
-        $("div.about-section").hide();
-        var section = ($(this).data('show'));
-        $('div#'+section).fadeIn(250);
+        $("div.about_section").hide();
+        var section_url = $(this).data('url');
+        var to_show =  $('.about_section[data-url="' + section_url + '"]');
+        to_show.fadeIn(250);
         $(this).toggleClass('active');
-        teamSection();
+        //History.pushState( {k:1}, "LoveGov: Beta", section_url);
     });
 
 function teamSection()
 {
 
     var developerDivs = $('.who-are-we-circle-div');
-    var h3 = $('.who-are-we-circle-div-center h3');
+    if (developerDivs.length != 0) {
+        var h3 = $('.who-are-we-circle-div-center h3');
 
-    var text = $('.mission p').text();
+        var text = $('.mission p').text();
 
-    developerDivs.each(function()
-    {
-        var json = $(this).data('json');
-        $(this).animate({'left':json.x,'top':json.y});
-    });
+        developerDivs.each(function()
+        {
+            var json = $(this).data('json');
+            $(this).animate({'left':json.x,'top':json.y});
+        });
 
-    developerDivs.each(function()
-    {
-        $(this).hover
-            (
-                function()
-                {
-                    var json = $(this).data('json');
-                    $(this).addClass($(this).attr("class") + '-hover');
-                    $('.who-are-we-circle-div-center').css('background-color','white');
-                    $('.who-are-we-circle-div-center div').show();
-                    $('.who-are-we-circle-div-center div').children('h5').text(json['first_name'] + " " + json['last_name']);
-                    $('.who-are-we-circle-div-center div').children('h6').text(json['user_title']);
-                    h3.hide();
-                },
-                function()
-                {
-                    $(this).removeClass($(this).attr("class").split(' ')[1] + '-hover');
-                    $('.who-are-we-circle-div-center').css('background-color','');
-                    $('.who-are-we-circle-div-center div').hide();
-                    h3.show();
-                });
+        developerDivs.each(function()
+        {
+            $(this).hover
+                (
+                    function()
+                    {
+                        var json = $(this).data('json');
+                        $(this).addClass($(this).attr("class") + '-hover');
+                        $('.who-are-we-circle-div-center').css('background-color','white');
+                        $('.who-are-we-circle-div-center div').show();
+                        $('.who-are-we-circle-div-center div').children('h5').text(json['first_name'] + " " + json['last_name']);
+                        $('.who-are-we-circle-div-center div').children('h6').text(json['user_title']);
+                        h3.hide();
+                    },
+                    function()
+                    {
+                        $(this).removeClass($(this).attr("class").split(' ')[1] + '-hover');
+                        $('.who-are-we-circle-div-center').css('background-color','');
+                        $('.who-are-we-circle-div-center div').hide();
+                        h3.show();
+                    });
 
-    });
+        });
+    }
 }
 
 /***********************************************************************************************************************
@@ -3947,10 +3969,10 @@ bind('.news_link' , 'click' , null , function(e)
 {
     var n_id = $(this).data('n_id');
     action({
-            data: {'action': 'logLinkClick', 'n_id':n_id},
-            success: function(data) {
-            }
-        });
+        data: {'action': 'logLinkClick', 'n_id':n_id},
+        success: function(data) {
+        }
+    });
     var url = $(this).attr('href');
     window.open(url);
 });
@@ -4014,17 +4036,17 @@ bind('.invite_to_run_for_button' , 'click' , null , function(e)
  *
  ***********************************************************************************************************************/
 bind('.filter_by_state_select', 'change', null, function(e) {
-        var value = $(this).val();
-        if (value != "") {
-            $(".filter_by_city").show();
-            $("#filter_by_city").focus();
-        }
-        else {
-            $(".filter_by_city").hide();
-        }
-        var feed = $(this).parents(".feed_main");
-        feed.data('state', value);
-        refreshFeed(feed);
+    var value = $(this).val();
+    if (value != "") {
+        $(".filter_by_city").show();
+        $("#filter_by_city").focus();
+    }
+    else {
+        $(".filter_by_city").hide();
+    }
+    var feed = $(this).parents(".feed_main");
+    feed.data('state', value);
+    refreshFeed(feed);
 });
 
 bind(".filter_by_city_input", "keypress", function(e) {
@@ -4047,7 +4069,6 @@ bind(".add_to_scorecard", "click", function(e) {
     var s_id = $(this).data('s_id');
     getModal('add_to_scorecard_modal' , { 's_id': s_id }, function() {
         $(".add_to_select").select2({
-            placeholder: 'Find politicians on LoveGov to add to your scorecard.'
         });
     });
 });
@@ -4091,6 +4112,21 @@ bind(".invite_to_scorecard_button", "click", function(e) {
             alert(data);
         }
     });
+});
+
+/* remove scorecard from group */
+bind(".group_remove_scorecard", "click", function(e) {
+    var g_id = $(this).data('g_id');
+    if (confirm("Are you sure you want to remove this group's scorecard?")) {
+        action({
+            'data': {'action':'removeScorecard', 'g_id':g_id},
+            success: function(data)
+            {
+                alert("scorecard removed.");
+                $(this).remove();
+            }
+        });
+    }
 });
 
 /***********************************************************************************************************************
@@ -4142,4 +4178,176 @@ bind(".change_privacy_mode", "click", function(e) {
             }
         }
     });
+});
+
+
+/***********************************************************************************************************************
+ *
+ *      ~ account settings
+ *
+ ***********************************************************************************************************************/
+function bindSettings()
+{
+
+    var currently_selected =  $('.account_button[data-url="' + path + '"]');
+    var starting_url = '/settings/profile/';
+    if (currently_selected.length==0) {
+        currently_selected = $('.account_button[data-url="' + starting_url + '"]');
+    }
+    selectAccountButton(currently_selected);
+
+    var pencil = $('.edit_link').detach();
+
+    /* account input visual indicator */
+    $('.account_input').hover(
+        function() { $(this).parent().next().append(pencil); },
+        function() { pencil = pencil.detach(); }
+    );
+
+    /* party selection */
+    $('img.party_choice').each( function(i)
+    {
+        var checkbox = $(this).siblings('input.party_input');
+        if( checkbox.attr('checked') )
+        {
+            $(this).addClass("party-choice-selected");
+        }
+    });
+
+    $('img.party_choice').click(function()
+    {
+        var checkbox = $(this).siblings('input.party_input');
+        checkbox.attr('checked', !checkbox.prop('checked'));
+        $(this).toggleClass("party-choice-selected");
+        if (!$(this).hasClass("party-choice-selected"))
+        {
+            $(this).addClass("party-choice-deselected");
+        }
+    });
+
+    $('img.party_choice').mouseout(function()
+    {
+        $(this).removeClass("party-choice-deselected");
+    });
+}
+
+bind(".account_button", "click", null, function(event) {
+    selectAccountButton($(this));
+});
+
+function selectAccountButton(button) {
+    // visual indicator
+    var pointer = $('.account-button-pointer');
+    $('.account_button').removeClass("account-button-selected");
+    button.addClass("account-button-selected");
+    button.prepend(pointer);
+    // show account div
+    $('.account_div').hide();
+    var this_url= button.data('url');
+    $('.account_div[data-url="' + this_url + '"]').show();
+    History.pushState( {k:1}, "LoveGov: Beta", this_url);
+}
+
+/* voting address */
+bind(".save_voting_address", "click", null, function(event) {
+
+    var state = $(".location_state_select").val();
+    var city = $(".voting_city_input").val();
+    var street = $(".voting_street_address").val();
+
+    action({
+        'data': {'action':'submitAddress', 'state':state, 'city':city, 'address':street},
+        success: function(data)
+        {
+            $('.address_success_message').show();
+        }
+    });
+});
+
+
+/* politician settings */
+bind(".i_am_politician_checkbox", "click", null, function(event) {
+    if ($(this).is(':checked')) {
+        $(".i_am_politician").show();
+    }
+    else {
+        $(".i_am_politician").hide();
+    }
+});
+
+bind(".politician_choice", "click", null, function(event) {
+    if ($(this).is(':checked')) {
+        $(".politician_choice").attr("checked", false);
+        $(this).attr("checked", true);
+
+        if ($(this).hasClass("has_office")) {
+            $(".office_description").show();
+        }
+        else {
+            $(".office_description").hide();
+        }
+    }
+
+});
+
+
+bind(".save_politician_settings", "click", null, function(event) {
+
+    var politician = $(".i_am_politician_checkbox").is(':checked');
+    var political_status_chosen = $(".politician_choice:checked");
+    var office_title = $(".office_title_input").val();
+    var office_description = $(".office_description_textarea").val();
+
+    // if politician, validate other fields
+    if (politician == 1) {
+
+        var valid = true;
+
+        if (political_status_chosen.length == 0) {
+            $(".political_status_error").show();
+            valid = false;
+        }
+        else {
+            var political_status = political_status_chosen.val();
+        }
+
+
+        if (political_status_chosen.hasClass("has_office")) {
+            if (office_title == "") {
+                $(".office_title_error").show();
+                valid = false;
+            }
+
+            if (office_description == "") {
+                $(".office_description_error").show();
+                valid = false;
+            }
+        }
+
+        if (valid) {
+            savePoliticianSettings(politician, political_status, office_title, office_description);
+        }
+    }
+    else {
+        savePoliticianSettings(politician, "", "", "");
+    }
+});
+
+
+function savePoliticianSettings(politician, political_status, office_title, office_description) {
+    action({
+        'data': {'action':'savePoliticianSettings', 'politician':politician, 'political_status':political_status,
+            'office_title':office_title, 'office_description':office_description},
+        success: function(data)
+        {
+            $('.politician_success_message').show();
+            $('.politician_success_message').fadeOut(2000);
+        }
+    });
+}
+
+
+/* mis */
+bind(".back_to_button", "click", function(e) {
+    History.back();
 });

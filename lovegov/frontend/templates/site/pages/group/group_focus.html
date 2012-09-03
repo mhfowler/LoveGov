@@ -5,5 +5,5 @@
 {% endblock %}
 
 {% block home_feed %}
-    {% include 'site/pages/feed/feed.html' with feed_boxed=1 %}
+    {% include 'site/pages/feed/feed.html' with feed_boxed=1 g_id=group.id %}
 {% endblock %}

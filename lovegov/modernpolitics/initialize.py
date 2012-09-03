@@ -1866,8 +1866,8 @@ def getPoliticiansFromLocation(state, district=None):
 # Initialize politiciangroup for congress
 #-----------------------------------------------------------------------------------------------------------------------
 def getCongressGroup():
-    return Group.lg.get_or_none(alias="congress")
-    #return PoliticianGroup.lg.get_or_none(alias="congress") or initializeCongressGroup()
+    #return Group.lg.get_or_none(alias="congress")
+    return PoliticianGroup.lg.get_or_none(alias="congress") or initializeCongressGroup()
 
 def initializeCongressGroup():
     if PoliticianGroup.objects.filter(alias="congress"):

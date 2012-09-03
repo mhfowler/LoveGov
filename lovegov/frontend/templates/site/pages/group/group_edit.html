@@ -57,7 +57,7 @@
                     <tr class="break-large"></tr>
                     <tr>
                         <td class="left"><h3>title</h3></td>
-                        <td><input class="group_edit_input" type="text" value="{{ group.title }}" name="title"/></td>
+                        <td><input class="group_edit_input group-edit-input" type="text" value="{{ group.title }}" name="title"/></td>
                         <td><div class="edit-link-large group_edit_icon"></div></td>
                     </tr>
                     <tr class="break"></tr>
@@ -67,36 +67,6 @@
                         </td>
                         <td><textarea class="full-text-field group_edit_input" name="full_text">{{ group.full_text }}</textarea></td>
                         <td><div class="edit-link-large group_edit_icon"></div></td>
-                    </tr>
-                    <tr class="break-large"></tr>
-                    <tr>
-                        <td class="left">
-                            <h3>privacy</h3>
-                        </td>
-                        <td id="group_privacy_container" data-group_privacy="{{ group.group_privacy }}">
-                            <div class="create-radio group_privacy_radio">
-                                Open
-                                <input type="radio" class="custom-radio" value='O' name="group_privacy"/>
-                            </div>
-                            <div class="create-radio group_privacy_radio">
-                                Private
-                                <input type="radio" class="custom-radio" value='P' name="group_privacy"/>
-                            </div>
-                            <div class="create-radio group_privacy_radio">
-                                Hidden
-                                <input type="radio" class="custom-radio" value='S' name="group_privacy"/>
-                            </div>
-                            <div class='clear-both'></div>
-                        </td>
-                    </tr>
-                    <tr class="break"></tr>
-                    <tr>
-                        <td class="left">
-                            <h3>scale</h3>
-                        </td>
-                        <td id="group_scale_container" data-group_scale="{{ group.scale }}">
-                            {% include 'site/pages/group/select_scale.html' %}
-                        </td>
                     </tr>
                     <tr class="break-large"></tr>
                     <tr>

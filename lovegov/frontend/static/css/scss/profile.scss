@@ -20,6 +20,16 @@ div.profile-page {
       }
     }
 
+    span.election-icon {
+      @include staticImage('/images/create/election_blue.png');
+      width:60px;
+      height:60px;
+      background-size:60px 60px;
+      background-repeat:no-repeat;
+      float:left;
+      margin-left:10px;
+    }
+
     span.state {
       float:left;
       margin-left:10px;
@@ -42,11 +52,18 @@ div.profile-page {
       @include fontSize(16px);
     }
 
+    a.edit-profile-link {
+      float:left;
+      margin-left:8px;
+      margin-top:6px;
+      margin-right:10px;
+    }
+
     span.redline {
       float:left;
       margin-left:8px;
       margin-top:16px;
-      width:820px;
+      width:600px;
       border-top: 1px solid $red;
     }
 
@@ -239,8 +256,39 @@ div.profile-page {
           float:left;
           width:300px;
           margin-right:30px;
+
+          div.profile-is-running-for {
+            margin-top:10px;
+            margin-bottom:15px;
+            div.self-politician {
+              position:relative;
+              @include fontSize(18px);
+              color:$green;
+              max-height: 115px;
+              a.link-to-election {
+                float:left;
+                width:100%;
+                margin-top:5px;
+              }
+            }
+            div.profile-office {
+              margin-top:15px;
+              div.office-title {
+                width:100%;
+                @include fontSize(16px);
+                color:$text-blue;
+              }
+              div.office-description {
+                margin-top:5px;
+                color:$black;
+                font-size:12px;
+              }
+            }
+            margin-bottom:15px;
+          }
+
           div.bio-statement {
-            height:308px;
+            max-height:308px;
             display:block;
             width:100%;
             div.profile-header {
@@ -256,7 +304,7 @@ div.profile-page {
               //padding-left:10px;
               width:100%;
               margin-top:6px;
-              height:220px;
+              max-height:150px;
               div.inline-div {
                 width:100%;
               }
@@ -266,9 +314,26 @@ div.profile-page {
               }
               textarea.bio-inline
               {
-                height: 130px;
+                height: 230px;
                 padding:5px;
                 width: 100%;
+
+                border:0;
+                color:$deep-gray;
+                font-family:$title-font;
+                padding: 15px;
+                position: relative;
+                top: -15px;
+                left: -15px;
+                background-color:$awesome-blue;
+                &:focus {
+                  color:$black;
+                  background-color:$light-gray;
+                }
+                &:hover {
+                  background-color:$light-gray;
+                  cursor:pointer;
+                }
               }
             }
           }
@@ -356,12 +421,6 @@ div.profile-page {
               margin-top:15px;
             }
           }
-
-          div.profile-is-running-for {
-            margin-top:50px;
-            padding-left:15px;
-          }
-
         }
         div.profile-ghost {
           padding-top:20px;

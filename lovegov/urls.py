@@ -130,7 +130,7 @@ urlpatterns += patterns('',
     (r'^widget/access/$', lgwidget.access),                                                     # widget api access
 
     # test pages
-    (r'^test/$', viewWrapper(tests.test, requires_login=True)),                                 # test page, for whatever you want!
+    (r'^test/$', viewWrapper(tests.fbTest, requires_login=True)),                                 # test page, for whatever you want!
     (r'^test2/$', viewWrapper(tests.test2, requires_login=True)),                               # for testing logging
     (r'^test3/$', viewWrapper(tests.test3, requires_login=True)),
     (r'^test4/$', viewWrapper(tests.test4, requires_login=True)),

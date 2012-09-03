@@ -34,3 +34,37 @@ def test4(request, vals={}):
 def css(request, vals={}):
     return renderToResponseCSRF('test/css.html', vals, request)
 
+
+def fbTest(request, vals):
+
+    viewer = vals['viewer']
+
+    fb_return = fbGet(request,'me/')
+    fb_id = fb_return['id']
+    picture_url = "https://graph.facebook.com/" + fb_id + "/picture?type=large"
+    urlSavePhoto(picture_url, '/Users/maxfowler/Desktop/', 'fbtest')
+
+    return renderToResponseCSRF(template='test/fb_test.html', vals=vals, request=request)
+
+    """
+    if viewer.facebook_id:
+        fb_return = fbGet(request,'me/friends/')
+        if fb_return:
+            friends_list = fb_return['data']
+            vals['facebook_authorized'] = False
+            if friends_list:
+                vals['facebook_authorized'] = True
+                for friend in random.sample(friends_list, 4):
+                    fb_friend = FBFriend()
+                    fb_friend.name = friend['name']
+                    fb_friend.id = friend['id']
+                    fb_friend.picture_url = "https://graph.facebook.com/" + str(fb_friend.id) + "/picture?type=large"
+                    fb_friends.append(fb_friend)
+                    vals['facebook_friends'] = fb_friends
+
+    return fb_friends
+
+    vals['fb_image'] = 'what'
+    return renderToResponseCSRF(template='test/fb_test.html', vals=vals, request=request)
+    """
+

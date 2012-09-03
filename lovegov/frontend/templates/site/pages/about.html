@@ -1,53 +1,53 @@
-<div class="main-div data_start" data-start="{{ start_page }}">
+<div class="main-div data_start">
 
     <div class="nav-top-div">
         <div class="top-nav-left">
-            <div data-show="howitworks-div" class="about-div-button"><span>How it works</span></div>
-            <div data-show="whoarewe-div" class="about-div-button"><span>Team & Mission</span></div>
-            <div data-show="faq-div" class="about-div-button"><span>FAQ</span></div>
-            <div data-show="privacy-div" class="about-div-button"><span>Privacy</span></div>
-            <div data-show="contact-div" class="about-div-button"><span>Contact</span></div>
-            <div data-show="jobs-div" class="about-div-button"><span>Jobs</span></div>
-            <div data-show="video-div" class="about-div-button"><span>Video</span></div>
-            <div data-show="terms-div" class="about-div-button"><span>Terms Of Use</span></div>
+            <div data-url="/about/how_it_works/" data-show="howitworks-div" class="about-div-button"><span>How it works</span></div>
+            <div data-url="/about/mission/" data-show="whoarewe-div" class="about-div-button"><span>Team & Mission</span></div>
+            <div data-url="/about/faq/" data-show="faq-div" class="about-div-button"><span>FAQ</span></div>
+            <div data-url="/about/privacy_policy/" data-show="privacy-div" class="about-div-button"><span>Privacy</span></div>
+            <div data-url="/about/contact/" data-show="contact-div" class="about-div-button"><span>Contact</span></div>
+            <div data-url="/about/jobs/" data-show="jobs-div" class="about-div-button"><span>Jobs</span></div>
+            <div data-url="/about/video/" data-show="video-div" class="about-div-button"><span>Video</span></div>
+            <div data-url="/about/terms_of_use/" data-show="terms-div" class="about-div-button"><span>Terms Of Use</span></div>
         </div>
         <div id="about-content">
 
-            <div class="starting-section about-section">
+            <div class="starting-section about-section about_section">
 
                 Create a government that you can love.
 
             </div>
 
-            <div id="privacy-div" class="about-section">
+            <div id="privacy-div" class="about-section about_section" data-url="/about/privacy_policy/">
                 {% include 'site/pages/privacy.html' %}
             </div>
 
-            <div id="whoarewe-div" class="about-section">
+            <div id="whoarewe-div" class="about-section about_section" data-url="/about/mission/">
                 {% include 'site/pages/who-are-we.html' %}
             </div>
 
-            <div id="howitworks-div" class="about-section">
+            <div id="howitworks-div" class="about-section about_section" data-url="/about/how_it_works/">
                 {% include 'site/pages/how-it-works.html' %}
             </div>
 
-            <div id="faq-div" class="about-section">
+            <div id="faq-div" class="about-section about_section" data-url="/about/faq/">
                 {% include 'site/pages/faq.html' %}
             </div>
 
-            <div id="jobs-div" class="about-section">
+            <div id="jobs-div" class="about-section about_section" data-url="/about/jobs/">
                 {% include 'site/pages/jobs.html' %}
             </div>
 
-            <div id="contact-div" class="about-section">
+            <div id="contact-div" class="about-section about_section" data-url="/about/contact/">
                 {% include 'site/pages/contact.html' %}
             </div>
 
-            <div id="video-div" class="about-section">
+            <div id="video-div" class="about-section about_section" data-url="/about/video/">
                 {% include 'site/pages/video.html' %}
             </div>
 
-            <div id="terms-div" class="about-section">
+            <div id="terms-div" class="about-section about_section" data-url="/about/terms_of_use/">
                 {% include 'site/pages/terms.html' %}
             </div>
 
@@ -56,3 +56,5 @@
 
 
 </div>
+
+<script> rebind="about"; </script>

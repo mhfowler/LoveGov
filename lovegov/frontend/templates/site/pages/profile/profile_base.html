@@ -4,6 +4,7 @@
     <div class="top">
 
         <a href="{{ profile.get_url }}"> <span class="name"> {{ profile.get_name }} </span> </a>
+        {% if viewer.politician %} <span class="election-icon"></span> {% endif %}
         {% with state=profile.location.state %}
             <span class="state"> {{ profile.political_title }}{% if state %},{% endif %} </span>
             <span class="state"> {% if state %}{{ profile.location.state }}{% endif %}</span>
@@ -17,7 +18,10 @@
              {% endthumbnail %}
          {% endwith %}
     </span>
-        <span class="upvotes"> {{ profile.upvotes }}</span>
+        <span class="upvotes tooltip-top" title="upvotes received"> {{ profile.upvotes }}</span>
+        {% if viewer.id == profile.id %}
+            <a href="/settings/" class='edit-profile-link'> edit profile </a>
+        {% endif %}
         <span class="redline"></span>
 
     </div>
@@ -37,9 +41,9 @@
 
                         {% include 'site/pages/profile/support_button.html' with politician=profile %}
 
-                    {% if my_rep %}
-                        <div class="message-politician message_politician" data-p_id="{{ profile.id }}"> message </div>
-                    {% endif %}
+                        {% if my_rep %}
+                            <div class="message-politician message_politician" data-p_id="{{ profile.id }}"> message </div>
+                        {% endif %}
 
                     {% elif viewer.id != profile.id %}
 

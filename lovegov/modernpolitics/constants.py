@@ -19,6 +19,8 @@ import os
 
 LOCAL = settings.LOCAL
 
+TEMPDIR = settings.MEDIA_ROOT + 'temp/'
+
 ########################################## Content we cycle through ####################################################
 
 DISMISSIBLE_HEADERS = ['congress_teaser', 'find_reps', 'lovegov_poll']
@@ -658,7 +660,9 @@ ACTIONS = [
     'removeFromScorecard',
     'inviteToScorecard',
     'inviteToRunForElection',
-    'changePrivacyMode'
+    'changePrivacyMode',
+    'savePoliticianSettings',
+    'removeScorecard'
 
 ]
 

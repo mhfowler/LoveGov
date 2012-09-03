@@ -74,14 +74,13 @@ a.view-all {
 
 div.feed-main
 {
-  width: 100%;
   min-height:600px;
   width: 960px;
 
   div.feed-content.feed-boxed {
-    border-left:1px solid $light-gray;
-    border-right:1px solid $light-gray;
-    border-bottom:1px solid $light-gray;
+    //border-left:1px solid $light-gray;
+    //border-right:1px solid $light-gray;
+    //border-bottom:1px solid $light-gray;
     margin-top:30px;
   }
 
@@ -259,9 +258,9 @@ div.feed-item-wrapper {
 
   margin-bottom:0px;
   padding-bottom: 25px;
-  padding-top: 30px;
-  padding-left:15px;
-  border-top:1px solid $light-gray;
+  padding-top: 10px;
+  padding-left:50px;
+  //border-top:1px solid $light-gray;
 
   div.left-part {
     float:left;
@@ -281,7 +280,13 @@ div.feed-item-wrapper {
 
   div.right-part {
     float:left;
-    margin-left:20px;
+    //margin-left:20px;
+    margin-lefet:15px;
+    div.right-image-wrapper {
+      float: left;
+      margin-left: 140px;
+      margin-top: 20px;
+    }
 
     div.top-comment {
       margin-top: 35px;
@@ -290,6 +295,7 @@ div.feed-item-wrapper {
       border:1px solid $gray;
       padding:20px;
       @include border-radius(10px);
+      position:relative;
       &:hover {
         border-color:$black;
         cursor:pointer;
@@ -298,6 +304,17 @@ div.feed-item-wrapper {
             border-right-color:$black;
           }
         }
+      }
+
+      div.triangle-image {
+        @include staticImage("/images/icons/arrows/comments_arrow.png");
+        position:absolute;
+        top:10px;
+        left:20px;
+        width:13px;
+        height:50px;
+        background-size:13px 50px;
+        background-repeat:no-repeat;
       }
 
       $triangle-size: 32px;

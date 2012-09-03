@@ -45,7 +45,7 @@
                 {% block right_button %}
                     <table class='create-button'>
                         <tr>
-                            <td class="create-button">
+                            <td class="create-button" {% if g_id %} data-g_id="{{ g_id }}" {% endif %}>
                                 create
                             </td>
                         </tr>

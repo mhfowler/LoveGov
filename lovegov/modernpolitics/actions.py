@@ -406,15 +406,18 @@ def supportAction(viewer, politician, support, privacy):
             support_relationship.autoSave()
             if support:
                 politician.num_supporters += 1
+                politician.upvotes += 1
                 politician.save()
                 change = True
         else:
             if support and not support_relationship.confirmed:
                 politician.num_supporters += 1
+                politician.upvotes += 1
                 politician.save()
                 change = True
             if not support and support_relationship.confirmed:
                 politician.num_supporters -= 1
+                politician.upvotes -= 1
                 politician.save()
                 change = True
             support_relationship.confirmed = support
