@@ -254,6 +254,13 @@ div.group-expanded
         width: 160px;
         height: 190px;
 
+        &.no-admins {
+          height:299px;
+          div.group-info-title {
+            margin-bottom:7px;
+          }
+        }
+
         div.group-member-avatar
         {
           margin-right:10px;

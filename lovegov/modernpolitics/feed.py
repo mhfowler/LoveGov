@@ -36,21 +36,36 @@ def getFeedItems(viewer, alias, feed_ranking, feed_types, feed_start, num):
 
 
 def getContentFromAlias(alias, viewer):
-    object = aliasToObject(alias)
     content = None
-    if object:
-        content = object.getContent()
-    elif alias == 'home':
+    if alias == 'home':
         content = Content.objects.filter(in_feed=True)
     elif alias == 'friends':
         friends_ids = viewer.getIFollow().values_list("id", flat=True)
         content = Content.objects.filter(in_feed=True, creator_id__in=friends_ids)
     elif alias == 'like_minded':
         content = viewer.getLikeMindedGroup().getContent()
+    elif alias == 'my_elections':
+        elections = viewer.getElectionSubscriptions()
+        elections_ids = elections.values_list("id", flat=True)
+        content = Content.objects.filter(posted_to_id__in=elections_ids)
+    elif alias ==  'my_groups':
+        groups = viewer.getGroupSubscriptions()
+        groups_ids = groups.values_list("id", flat=True)
+        content = Content.objects.filter(posted_to_id__in=groups_ids)
+    elif alias == 'representatives':
+        representatives = viewer.getRepresentatives(location=viewer.temp_location)
+        content = getLegislationFromCongressmen(representatives)
+    elif alias == 'congress':
+        content = Legislation.objects.all()
     elif alias == 'me':
         groups_ids = viewer.getGroups().values_list("id", flat=True)
         friends_ids = viewer.getIFollow().values_list("id", flat=True)
         content = Content.objects.filter(Q(posted_to_id__in=groups_ids) | Q(creator_id__in=friends_ids))
+    else:
+        object = aliasToObject(alias)
+        if object:
+            content = object.getContent()
+
     return content
 
 
@@ -59,7 +74,6 @@ def getQuestionComparisons(viewer, to_compare, feed_ranking, question_ranking,
     question_items = []
     them_responses = to_compare.view.responses.filter(privacy="PUB")
     you_responses = viewer.view.responses.all()
-
 
     if scorecard:
         scorecard_responses = scorecard.scorecard_view.responses.all()
@@ -80,7 +94,7 @@ def getQuestionComparisons(viewer, to_compare, feed_ranking, question_ranking,
                     scorecard=scorecard, scorecard_response=scorecard_response)
                 question_items.append(q_item)
 
-    else:
+    elif viewer.id != to_compare.id:
         # filter
         if feed_topic:
             them_responses = them_responses.filter(main_topic=feed_topic)
@@ -94,6 +108,21 @@ def getQuestionComparisons(viewer, to_compare, feed_ranking, question_ranking,
                 you=viewer, your_response=your_response,
                 them=to_compare, their_response=their_response)
             question_items.append(q_item)
+
+    else:
+        # filter
+        if feed_topic:
+            you_responses = you_responses.filter(main_topic=feed_topic)
+
+        # append
+        for r in you_responses:
+            q = r.question
+            your_response = getResponseHelper(you_responses, q)
+            q_item = getQuestionItem(question=q,
+                you=viewer, your_response=your_response,
+                them=None, their_response=None)
+            question_items.append(q_item)
+
 
     # sort
     if question_ranking:
@@ -279,3 +308,16 @@ def updateHotScores():
     for c in Content.objects.filter(in_feed=True):
         c.recalculateHotScore()
 
+
+### gets legislation from representatives, all things they sponsored (or cosponsored?) ##
+def getLegislationFromCongressmen(congressmen):
+
+    #congressmen_ids = congressmen.values_list("id", flat=True)
+
+    #legislation = Legislation.objects.filter()
+    #cosponsored = LegislationCosponsor.objects.filter(cosponsor_id__in=congressmen_ids)
+
+    congressmen_ids = [x.id for x in congressmen]
+    sponsored = Legislation.objects.filter(sponsor_id__in=congressmen_ids)
+
+    return sponsored

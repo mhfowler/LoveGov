@@ -63,7 +63,7 @@ div.global-wrapper
   max-width: 1140px;
   min-width: 1024px;
   position:relative;
-  width: 100%;
+  width: 1140px;
   margin: auto;
 
   div.clear-wrapper {
@@ -104,6 +104,7 @@ div.page-loading {
 /* Prevent padding from altering defined sizes */
 * {
   @include box-sizing(border-box);
+  line-height:150%;
 }
 
 /***********************************************************************************************************************

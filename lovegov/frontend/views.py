@@ -61,6 +61,8 @@ def viewWrapper(view, requires_login=False):
         vals = {'STATIC_URL':settings.STATIC_URL}
         try: # Catch all error messages
 
+#            return shortcuts.redirect('/underconstruction/')
+
             # if ie<9 redirect to upgrade page
             if not checkBrowserCompatible(request):
                 return shortcuts.redirect("/upgrade/")
@@ -94,44 +96,44 @@ def viewWrapper(view, requires_login=False):
 
             if requires_login:
 
-                    # who is logged in?
-                    controlling_user = getControllingUser(request)
-                    vals['controlling_user'] = controlling_user
+                # who is logged in?
+                controlling_user = getControllingUser(request)
+                vals['controlling_user'] = controlling_user
 
-                    # if no ControllingUser (not logged in) return the Anonymous UserProfile, else returns associated user
-                    if controlling_user:
-                        user = controlling_user.user_profile
-                        vals['prohibited_actions'] = controlling_user.prohibited_actions
-                    else:
-                        user = getAnonUser()
-                        vals['prohibited_actions'] = ANONYMOUS_PROHIBITED_ACTIONS
+                # if no ControllingUser (not logged in) return the Anonymous UserProfile, else returns associated user
+                if controlling_user:
+                    user = controlling_user.user_profile
+                    vals['prohibited_actions'] = controlling_user.prohibited_actions
+                else:
+                    user = getAnonUser()
+                    vals['prohibited_actions'] = ANONYMOUS_PROHIBITED_ACTIONS
 
-                    # get user profile associated with controlling user
-                    vals['user'] = user
-                    vals['viewer'] = user
+                # get user profile associated with controlling user
+                vals['user'] = user
+                vals['viewer'] = user
 
-                    # first login
-                    first_login = user.first_login
-                    vals['firstLoginStage'] = first_login
+                # first login
+                first_login = user.first_login
+                vals['firstLoginStage'] = first_login
 
-                    # if not authenticated user, and not lovegov_try cookie, redirect to login page
-                    if user.isAnon() and not request.COOKIES.get('lovegov_try'):
-                        # If this action can't be performed without being authenticated
-                        if not request.POST.get('action') in UNAUTHENTICATED_ACTIONS:
-                            # Redirect to login page
-                            return shortcuts.redirect("/login" + request.path)
-                        else: # otherwise action can be done without authentication
-                            return view(request,vals=vals,*args,**kwargs)
+                # if not authenticated user, and not lovegov_try cookie, redirect to login page
+                if user.isAnon() and not request.COOKIES.get('lovegov_try'):
+                    # If this action can't be performed without being authenticated
+                    if not request.POST.get('action') in UNAUTHENTICATED_ACTIONS:
+                        # Redirect to login page
+                        return shortcuts.redirect("/login" + request.path)
+                    else: # otherwise action can be done without authentication
+                        return view(request,vals=vals,*args,**kwargs)
 
-                    # IF NOT DEVELOPER AND IN UPDATE MODE or ON DEV SITE, REDIRECT TO CONSTRUCTION PAGE
-                    if UPDATE or ("dev" in host_full):
-                        if not user.developer:
-                            normal_logger.debug('blocked: ' + user.get_name())
-                            return shortcuts.redirect('/underconstruction/')
+                # IF NOT DEVELOPER AND IN UPDATE MODE or ON DEV SITE, REDIRECT TO CONSTRUCTION PAGE
+                if UPDATE or ("dev" in host_full):
+                    if not user.developer:
+                        normal_logger.debug('blocked: ' + user.get_name())
+                        return shortcuts.redirect('/underconstruction/')
 
-                    # if user not confirmed redirect to login page
-                    if not user.confirmed:
-                        return shortcuts.redirect("/need_email_confirmation/")
+                # if user not confirmed redirect to login page
+                if not user.confirmed:
+                    return shortcuts.redirect("/need_email_confirmation/")
 
             # vals for not logged in pages
             else:
@@ -155,7 +157,7 @@ def viewWrapper(view, requires_login=False):
 # basic pages
 #-----------------------------------------------------------------------------------------------------------------------
 def redirect(request, vals={}):
-    return shortcuts.redirect('/home/')
+    return shortcuts.redirect('/underconstruction/')
 
 def underConstruction(request):
     return render_to_response('site/pages/microcopy/construction.html')
@@ -172,6 +174,9 @@ def tryLoveGov(request, to_page="home/", vals={}):
     response = shortcuts.redirect("/" + to_page)
     response.set_cookie('lovegov_try', 1)
     return response
+
+def unsubscribe(request, vals={}):
+    return HttpResponse("You have unsubscribed from LoveGov emails.")
 
 #-----------------------------------------------------------------------------------------------------------------------
 # da blog
@@ -238,7 +243,7 @@ def aliasDowncastEdit(request, alias=None, vals={}):
 #-----------------------------------------------------------------------------------------------------------------------
 def login(request, to_page='web/', message="", vals={}):
     if not vals.get('firstLoginStage'):
-        to_page = "match/representatives/"
+        to_page = "/home/"
 
     # Try logging in with facebook
     if fbLogin(request,vals,refresh=True):
@@ -448,10 +453,17 @@ def home(request, vals):
     url = request.path
     return homeResponse(request, focus_html, url, vals)
 
-def groups(request, vals):
+def myGroups(request, vals):
     viewer = vals['viewer']
     vals['group_subscriptions'] = viewer.getGroupSubscriptions()
-    focus_html =  ajaxRender('site/pages/groups/groups.html', vals, request)
+    focus_html =  ajaxRender('site/pages/groups/my_groups.html', vals, request)
+    url = request.path
+    return homeResponse(request, focus_html, url, vals)
+
+def myElections(request, vals):
+    viewer = vals['viewer']
+    vals['group_subscriptions'] = viewer.getGroupSubscriptions()
+    focus_html =  ajaxRender('site/pages/elections/my_elections.html', vals, request)
     url = request.path
     return homeResponse(request, focus_html, url, vals)
 
@@ -465,6 +477,16 @@ def representatives(request, vals):
     focus_html =  ajaxRender('site/pages/politicians/representatives.html', vals, request)
     url = request.path
     return homeResponse(request, focus_html, url, vals)
+
+def discover(request, vals):
+    u_ids = UserProfile.objects.all().values_list("id", flat=True)
+    u_id = random.choice(u_ids)
+    u = UserProfile.objects.get(id=u_id)
+    vals['rando'] = u
+    focus_html =  ajaxRender('site/pages/discover/discover.html', vals, request)
+    url = request.path
+    return homeResponse(request, focus_html, url, vals)
+
 
 #-----------------------------------------------------------------------------------------------------------------------
 # friends focus (home page)
@@ -611,6 +633,12 @@ def profile(request, alias=None, vals={}):
     comparison, web_json = user_profile.getComparisonJSON(viewer)
     vals['web_comparison'] = comparison
     vals['web_json'] = web_json
+
+    # check if user is my rep
+    if user_profile.politician:
+        reps = viewer.getRepresentatives(viewer.location)
+        if reps:
+            vals['my_rep'] = user_profile in reps
 
     # Num Follow requests and group invites
     if viewer.id == user_profile.id:

@@ -112,6 +112,14 @@ header
     position:relative;
   }
 
+  span.header-privacy {
+    width: 20px;
+    height: 20px;
+    float: right;
+    margin: 19px 7px;
+    background-size: 20px 20px;
+  }
+
   div.notices {
     float: right;
     height: 25px;
@@ -138,6 +146,7 @@ header
     {
       margin-left: 1px;
       margin-top: 1px;
+      line-height:24px;
     }
   }
   div.new-notifications {

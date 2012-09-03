@@ -113,6 +113,9 @@ div.expand-info
     cursor:pointer;
     background-color:$gray;
   }
+  p.expand-text {
+    line-height: 10px;
+  }
 }
 
 div.left-navbar {
@@ -343,14 +346,15 @@ a.section_title.clicked {
 /* dismissible header */
 div.dismissible-header {
   width:100%;
-  padding:10px;
-  @include clearfix;
-  background-color:$blue-light;
+
   div.the-content {
+    width:100%;
     float:left;
   }
   div.x-out {
-    float:right;
+    position: absolute;
+    left: 96%;
+    top:0px;
     @include fontSize(32px);
     padding:5px;
     &:hover {

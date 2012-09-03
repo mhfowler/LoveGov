@@ -13,6 +13,110 @@ from lovegov.modernpolitics.models import *
 # django
 from django.core.mail import EmailMessage
 from django.core.mail import send_mail
+from django.template import Context, loader
+
+#-----------------------------------------------------------------------------------------------------------------------
+# email backendery
+#-----------------------------------------------------------------------------------------------------------------------
+def sendHTMLEmail(subject, email_sender, email_recipients, email_html=None, template=None, dictionary=None):
+    if not email_html:
+        email_html = render_to_string(template,dictionary)
+    emailHelper(subject, email_html, email_sender, email_recipients)
+
+def emailHelper(subject, email_html, email_sender, email_recipients):
+    msg = EmailMessage(subject, email_html, email_sender, email_recipients)
+    msg.content_subtype = "html"
+    try:
+        msg.send()
+    except:
+        errors_logger.error("email error for [" + subject + "] to " + str(email_recipients))
+
+#-----------------------------------------------------------------------------------------------------------------------
+# particular emails
+#-----------------------------------------------------------------------------------------------------------------------
+
+def sendConfirmationEmail(user_profile):
+
+    subject = "Confirmation Email"
+
+    email_recipients = [user_profile.email]
+    email_sender="info@lovegov.com"
+
+    email_vals = {'email_header': subject}
+
+    context = Context(email_vals)
+    template = loader.get_template('emails/lovegov/emails/registration.html')
+    email_html = template.render(context)
+
+    sendHTMLEmail(
+        subject = subject,
+        email_html = email_html,
+        email_sender = email_sender,
+        email_recipients = email_recipients )
+
+
+
+def sendPasswordChangeEmail(controlling_user, password):
+
+    subject = "Password Change"
+
+    email_recipients = [controlling_user.email]
+    email_sender="info@lovegov.com"
+
+    email_vals = {'email_header': subject}
+
+    context = Context(email_vals)
+    template = loader.get_template('emails/lovegov/emails/password_change.html')
+    email_html = template.render(context)
+
+    sendHTMLEmail(
+        subject = subject,
+        email_html = email_html,
+        email_sender = email_sender,
+        email_recipients = email_recipients )
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 #-----------------------------------------------------------------------------------------------------------------------
 # Sends an email from an HTML template
@@ -36,29 +140,6 @@ def sendTemplateEmail(subject, template, dictionary, email_sender, email_recipie
     email_html = render_to_string(template_reference,dictionary)
     emailHelper(subject, email_html, email_sender, [email_recipient])
 
-def sendHTMLEmail(subject, email_sender, email_recipients, email_html=None, template=None, dictionary=None):
-    if not email_html:
-        email_html = render_to_string(template,dictionary)
-    emailHelper(subject, email_html, email_sender, email_recipients)
-
-def emailHelper(subject, email_html, email_sender, email_recipients):
-    msg = EmailMessage(subject, email_html, email_sender, email_recipients)
-    msg.content_subtype = "html"
-    try:
-        msg.send()
-    except:
-        errors_logger.error("email error for [" + subject + "] to " + str(email_recipients))
-
-
-#-----------------------------------------------------------------------------------------------------------------------
-# Sends confirmation email to user.
-#-----------------------------------------------------------------------------------------------------------------------
-def sendConfirmationEmail(userProfile):
-    recipient_list = [userProfile.email]
-    # send email
-    send_mail(subject='Welcome to LoveGov.', message="TODO: how to actually send nice emails.",
-        from_email='info@lovegov.com', recipient_list=recipient_list)
-
 #-----------------------------------------------------------------------------------------------------------------------
 # Sends email to registered alpha user.
 #-----------------------------------------------------------------------------------------------------------------------
@@ -70,15 +151,6 @@ def sendAlphaTesterEmail(name, email, password):
     send_mail(subject='Welcome to LoveGov.', message=message,
         from_email='info@lovegov.com', recipient_list=recipient_list)
 
-#-----------------------------------------------------------------------------------------------------------------------
-# Sends email of password change
-#-----------------------------------------------------------------------------------------------------------------------
-def sendPasswordChangeEmail(django_user, password):
-    recipient_list = [django_user.email]
-    message = "<h3>" + "Hello " + django_user.first_name + ", </h3>"
-    message += "<p>" + "password: " + password + "</p>"
-    send_mail(subject='LoveGov password change.', message=message,
-        from_email='info@lovegov.com', recipient_list=recipient_list)
 
 #-----------------------------------------------------------------------------------------------------------------------
 # Sends an email telling us someone registered.
@@ -129,11 +201,3 @@ def sendFBRegisterEmail(name, email, password):
     message += "<p>" + "password: " + password + "</p>"
     send_mail(subject='Welcome to LoveGov.', message=message,
         from_email='info@lovegov.com', recipient_list=recipient_list)
-
-#-----------------------------------------------------------------------------------------------------------------------
-# Sends email of password change
-#-----------------------------------------------------------------------------------------------------------------------
-def sendPasswordChangeEmail(django_user, password):
-    EMAIL_SENDER = 'info@lovegov.com'
-    vals = {'password':password,"firstname":django_user.first_name}
-    sendTemplateEmail("Password Change Notification","passwordChange.html",vals,EMAIL_SENDER,django_user.email)

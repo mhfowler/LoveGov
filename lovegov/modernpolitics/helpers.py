@@ -468,7 +468,10 @@ def isUniqueAlias(alias):
 def genAliasSlug(alias):
     alias = alias.replace(' ', '_')
     import unicodedata
-    alias = unicodedata.normalize('NFKD', unicode(alias)).encode('ascii','ignore')
+    try:
+        alias = unicodedata.normalize('NFKD', unicode(alias)).encode('ascii','ignore')
+    except:
+        alias = helperAlias(alias)
     alias = str(alias).lower()
     nonce = 0
     orig_alias = alias
@@ -476,6 +479,16 @@ def genAliasSlug(alias):
         nonce += 1
         alias = orig_alias + str(nonce)
     return alias
+
+def helperAlias(alias):
+
+    to_return = ""
+    for k in alias:
+        if k == '_':
+            to_return += '_'
+        elif k.isalnum():
+            to_return += k
+    return to_return
 
 
 

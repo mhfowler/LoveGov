@@ -21,6 +21,10 @@
             <div class="account-button" id="account_change_profile">
                 <span>Profile</span>
             </div>
+            <div class="account-button-separator"></div>
+            <div class="account-button" id="account_change_politician">
+                <span>Politician</span>
+            </div>
         </div>
     </div>
 
@@ -36,19 +40,19 @@
                     </tr>
                     <tr>
                         <td class="left"><h3>first name</h3></td>
-                        <td><input class="account_input" type="text" value="{{ viewer.get_first_name }}" name="first_name"/></td>
+                        <td><input class="account_input account-input" type="text" value="{{ viewer.get_first_name }}" name="first_name"/></td>
                         <td></td>
                     </tr>
                     <tr class="break"></tr>
                     <tr>
                         <td class="left"><h3>last name</h3></td>
-                        <td><input class="account_input" type="text" value="{{ viewer.get_last_name }}" name="last_name"/></td>
+                        <td><input class="account_input account-input" type="text" value="{{ viewer.get_last_name }}" name="last_name"/></td>
                         <td></td>
                     </tr>
                     <tr class="break"></tr>
                     <tr>
                         <td class="left"><h3>email</h3></td>
-                        <td><input class="account_input" type="text" value="{{ viewer.get_email }}" name="email"/></td>
+                        <td><input class="account_input account-input" type="text" value="{{ viewer.get_email }}" name="email"/></td>
                         <td></td>
                     </tr>
                     <tr class="break-small"></tr>
@@ -59,14 +63,14 @@
                                 We use your address to determine your voting district. See our <a>privacy policy</a> for details.
                             </p>
                         </td>
-                        <td><textarea class="account_input limit_input address-field" name="address">{{ viewer.get_address }}</textarea></td>
+                        <td><textarea class="account_input account-input limit_input address-field" name="address">{{ viewer.get_address }}</textarea></td>
                         <td></td>
                     </tr>
                     <tr class="break-small"></tr>
                     <tr>
                         <td class="left"><h3>age</h3><p>Numbers only please</p></td>
 
-                        <td><input class="account_input" type="text" value="{% if viewer.age %}{{ viewer.age }}{% endif %}" name="age"/></td>
+                        <td><input class="account_input account-input" type="text" value="{% if viewer.age %}{{ viewer.age }}{% endif %}" name="age"/></td>
                         <td></td>
                     </tr>
                     <tr class="break-large"></tr>
@@ -93,19 +97,19 @@
                         <td><h2>Change Password</h2></td>
                     </tr>
                     <tr>
-                        <td class="left"><h3>current password</h3></td>
+                        <td class="left"><h3 class="password-header">current password</h3></td>
                         <td><input class="account_input" type="password" value="" name="old"/></td>
                         <td></td>
                     </tr>
                     <tr class="break-large"></tr>
                     <tr>
-                        <td class="left"><h3>new password</h3></td>
+                        <td class="left"><h3 class="password-header">new password</h3></td>
                         <td><input class="account_input" type="password" value="" name="new1"/></td>
                         <td></td>
                     </tr>
                     <tr class="break"></tr>
                     <tr>
-                        <td class="left"><h3>confirm password</h3></td>
+                        <td class="left"><h3 class="password-header">confirm password</h3></td>
                         <td><input class="account_input" type="password" value="" name="new2"/></td>
                         <td></td>
                     </tr>
@@ -144,12 +148,12 @@
                     <tr class="break-large"></tr>
                     <tr>
                         <td class="left">
-                            <h3>bio</h3>
+                            <h3>about me</h3>
                             <p>
-                                Tell us about you in 150 characters.
+                                Share who you are and your political cause.
                             </p>
                         </td>
-                        <td><textarea class="account_input limit_input bio-field" name="bio">{{ viewer.bio }}</textarea></td>
+                        <td><textarea class="account_input bio-field account-input" name="bio">{{ viewer.bio }}</textarea></td>
                         <td></td>
                     </tr>
                     <tr class="break"></tr>

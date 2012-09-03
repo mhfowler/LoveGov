@@ -27,16 +27,18 @@
 
                 <div class="profile-info">
 
-                    <div class="bio-statement">
+                    <div class="bio-statement inline_editable">
                         <div class="profile-header">
                             About Me
                         </div>
-                        <div class="bio-text inline-editable inline_editable" data-model="UserProfile" data-id="{{ profile.id }}">
+                        {% if viewer.id == profile.id %}
+                            <div class="edit-link pencil-button edit_button not_editing_display"></div>
+                        {% endif %}
+                        <div class="bio-text inline-editable" data-model="UserProfile" data-id="{{ profile.id }}">
                             <div class="inline-div being_edited not_editing_display">
-                                {{ profile.bio }}
+                                {{ profile.bio|linebreaksbr }}
                             </div>
                             {% if viewer.id == profile.id %}
-                                <div class="edit-link edit_button not_editing_display"></div>
                                 <div class="doing_editing_display">
                                     <div class="inline-edit-input inline_edit">
                                         <textarea type="text" maxlength="500" class="edit_input bio-inline" name="bio">{{ profile.bio }}</textarea>
@@ -49,45 +51,19 @@
                     </div>
 
                     <div class="profile-about">
-                        <div class="profile-header">
-                            Info
-                        </div>
                         <div class="about-item">
-                            <span class="label"> role: </span> <span class="value"> {{ profile.political_title }} </span>
-                        </div>
-                        <div class="about-item">
-                            <span class="label"> age: </span>
-
-                            <div class="value">
-                                {% if profile.age %}{{ profile.age }}{% endif %}
-                            </div>
-                        </div>
-                        <div class="about-item">
-                            <span class="label"> town: </span>
-                    <span class="value">
-                        {% with loc=profile.location %}
-                            {% if loc.city %}
-                                {{ loc.city }}
-                            {% endif %}
-                            {{ loc.state }}
-                        {% endwith %}
-                    </span>
-                        </div>
-
-                        <div class="about-item">
-                            <span class="label"> parties: </span> <span class="value">
-                        {% for p in profile.parties.all %}
-                            {% with full_url=p.party_label %}
-                                <a href="{{ p.get_url }}">
-                                    {% thumbnail full_url "x20" format="PNG" as im %}
-                                        <img src="{{ im.url }}" class="party-label"/>
-                                    {% endthumbnail %}
-                                </a>
+                            {% with parties=profile.parties.all %}
+                                {% for p in parties %}
+                                    {% with full_url=p.party_label %}
+                                        <a href="{{ p.get_url }}">
+                                            {% thumbnail full_url "x20" format="PNG" as im %}
+                                                <img src="{{ im.url }}" class="party-label"/>
+                                            {% endthumbnail %}
+                                        </a>
+                                    {% endwith %}
+                                {% endfor %}
                             {% endwith %}
-                        {% endfor %}
-                    </span>
                         </div>
-
                     </div>
 
                 </div>
@@ -111,24 +87,34 @@
                 </span>
 
                 <span class="profile-politicians breakdown-box">
-                    <div class="breakdown-top">
-                        <div class="profile-header">
-                            Politicians They Support
-                        </div>
-                        <a class="link-all dummy_link"> view all </a>
-                        <div style="clear:both;"></div>
-                    </div>
-                    <div class="stuff">
-                        {% for p in profile_politicians %}
-                            <a class="profile-avatar" href="{{ p.get_url }}">
-                                {% include 'site/pieces/avatar.html' with user=p width="60" height="60" %}
-                            </a>
-                        {% empty %}
-                            <div class="empty-profile">
-                                {{ profile.first_name }} hasn't supported any politicians yet.
+                    {% if not profile.politician %}
+                        <div class="breakdown-top">
+                            <div class="profile-header">
+                                Politicians They Support
                             </div>
-                        {% endfor %}
-                    </div>
+                            <a class="link-all dummy_link"> view all </a>
+                            <div style="clear:both;"></div>
+                        </div>
+                        <div class="stuff">
+                            {% for p in profile_politicians %}
+                                <a class="profile-avatar" href="{{ p.get_url }}">
+                                    {% include 'site/pieces/avatar.html' with user=p width="60" height="60" %}
+                                </a>
+                            {% empty %}
+                                <div class="empty-profile">
+                                    {{ profile.first_name }} hasn't supported any politicians yet.
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="profile-is-running-for">
+                            <div class="running-for">
+
+                                {{ profile.first }} is running for an election.
+
+                            </div>
+                        </div>
+                    {% endif %}
                 </span>
 
                 </div>
@@ -158,7 +144,7 @@
                         Click this button
                         to send {{ profile.political_title }} {{ profile.first_name }} a message asking him
                         to join.
-                        <p class="asked-message asked_message"> We sent {{ profile.get_name }} an email, hopefully he'll
+                        <p class="asked-message asked_message"> We sent {{ profile.get_name }} an email, hopefully they'll
                             take notice. Thankyou!
                         </p>
                         <a class="ask-to-join ask_to_join" data-p_id="{{ profile.id }}"> ask to join </a>

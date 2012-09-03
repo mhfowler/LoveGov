@@ -18,7 +18,6 @@
                 <td>
                     {% if your_response %}
                         <a href="#" class="stub-button button-reanswer answer_button dummy_link"> re-answer</a>
-                        {% comment %} {% include 'site/pieces/content-privacy.html' with content=your_response %} {% endcomment %}
                     {% else %}
                         <a href="#" class="stub-button button-answer answer_button dummy_link"> answer </a>
                     {% endif %}
@@ -57,7 +56,7 @@
             {% endif %}
 
             <div class="discuss-question a-action">
-                <span class="action-icon"></span>
+                <span class="action-icon discuss-icon"></span>
                 <span class="action-text">
                     <a href="{{ question.get_url }}" class="action-text-upper "> Discuss Question </a>
                     <span class="action-text-lower"> {{ question.num_comments }} comment{{ question.num_comments|pluralize }}</span>

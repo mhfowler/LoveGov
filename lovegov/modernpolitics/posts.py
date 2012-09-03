@@ -893,6 +893,19 @@ def setPrivacy(request, vals={}):
     return response
 
 #-----------------------------------------------------------------------------------------------------------------------
+# Toggles privacy cookies and returns html for button
+#-----------------------------------------------------------------------------------------------------------------------
+def changePrivacyMode(request, vals={}):
+    old_mode = request.POST['mode']
+    if old_mode == 'PUB':
+        mode = "PRI"
+    else:
+        mode = "PUB"
+    response = HttpResponse("changed privacy modes")
+    response.set_cookie('privacy',value=mode)
+    return response
+
+#-----------------------------------------------------------------------------------------------------------------------
 # Sets privacy cookie and redirects to inputted page.
 #
 #-----------------------------------------------------------------------------------------------------------------------
@@ -1859,7 +1872,7 @@ def getLegislation(request, vals={}):
 def getGroups(request, vals={}):
     from lovegov.frontend.views_helpers import valsGroup
     viewer = vals['viewer']
-    groups = Group.objects.filter(hidden=False).order_by("-num_members")
+    groups = Group.objects.filter(hidden=False, is_election=False).order_by("-num_members")
 
     # filter by location
     state = request.POST['state']
@@ -2491,12 +2504,13 @@ def setFirstLoginStage(request, vals={}):
 # saves the posted incompatability information to the db
 #-----------------------------------------------------------------------------------------------------------------------
 def logCompatability(request, vals={}):
-    incompatible = json.loads(request.POST['incompatible'])
-    user = vals.get('viewer')
-    CompatabilityLog(incompatible=incompatible, user=user,
-        page=getSourcePath(request), ipaddress=request.META.get('REMOTE_ADDR'),
-        user_agent=request.META.get('HTTP_USER_AGENT')).autoSave()
-    return HttpResponse('compatability logged')
+    return HttpResponse("temp")
+#    incompatible = json.loads(request.POST['incompatible'])
+#    user = vals.get('viewer')
+#    CompatabilityLog(incompatible=incompatible, user=user,
+#        page=getSourcePath(request), ipaddress=request.META.get('REMOTE_ADDR'),
+#        user_agent=request.META.get('HTTP_USER_AGENT')).autoSave()
+#    return HttpResponse('compatability logged')
 
 #-----------------------------------------------------------------------------------------------------------------------
 # saves a link click on some news
@@ -2955,6 +2969,24 @@ def getModal(request,vals={}):
             return HttpResponseBadRequest( "Facebook Share modal requested without facebook share ID" )
 
         modal_html = getFacebookShareModal(fb_share_id,fb_name,request,vals)
+
+
+    ## Facebook Share Content Modal ##
+    elif modal_name == "facebook_share_content_modal":
+        c_id = request.POST.get('c_id')
+
+        if not c_id:
+            LGException( "Facebook Share Content modal requested without content ID by user ID #" + str(viewer.id) )
+            return HttpResponseBadRequest( "Facebook Share Content modal requested without facebook content ID" )
+
+        share_content = Content.lg.get_or_none(id=c_id)
+
+        if not share_content:
+            LGException( "Facebook Share Content modal requested with invalid content ID #" + str(c_id) + " by user ID #" + str(viewer.id) )
+            return HttpResponseBadRequest( "Facebook Share Content modal requested with invalid facebook content ID")
+
+        modal_html = getFacebookShareContentModal(share_content,request,vals)
+
 
     ## create modal ##
     elif modal_name == "create_modal":

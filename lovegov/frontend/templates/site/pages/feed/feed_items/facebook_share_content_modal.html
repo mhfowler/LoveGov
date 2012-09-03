@@ -1,0 +1,31 @@
+{% load thumbnail %}
+
+<div class="facebook-share-modal-container">
+
+    <div class="facebook-share-modal-header"> Share {{ share_content.title }} on Facebook </div>
+
+    <form class="facebook_share_form">
+
+        <div class='facebook-share-lower'>
+
+{#            {% if share_content.main_image %}#}
+{#                {% include "site/pieces/avatar.html" with user=share_content width="200" height="200" %}#}
+{#            {% endif %}#}
+
+            <div class='facebook-share-form'>
+
+                <div class="facebook-share-instructions"><h5>Customize your message</h5></div>
+
+                <textarea class="facebook-share-message" name="facebook_share_message">{{ default_facebook_message }}</textarea>
+
+            </div>
+
+        </div>
+
+        <div class="facebook-share-bottom">
+            <input type="submit" value="Submit" class="facebook-share-button-modal facebook_share_content_submit" data-fb_link="{{ share_content.get_url }}"/>
+        </div>
+
+    </form>
+
+</div>

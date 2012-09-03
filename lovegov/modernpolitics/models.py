@@ -1071,6 +1071,19 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
         return self.first_name
 
     #-------------------------------------------------------------------------------------------------------------------
+    # on register, autosubscribe for some groups
+    #-------------------------------------------------------------------------------------------------------------------
+    def autoSubscribe(self):
+        from lovegov.modernpolitics.initialize import getLoveGovGroup, getPresidentialElection2012
+        from lovegov.modernpolitics.actions import followGroupAction
+
+        lg = getLoveGovGroup()
+        followGroupAction(self, lg, True, "PRI")
+
+        p = getPresidentialElection2012()
+        followGroupAction(self, p, True, "PRI")
+
+    #-------------------------------------------------------------------------------------------------------------------
     # duck typing
     #-------------------------------------------------------------------------------------------------------------------
     def get_url(self):
@@ -1458,7 +1471,6 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
         # self.gender = fb_data['gender']
         self.confirmed = True
 
-
         if 'birthday' in fb_data:
             split_bday = fb_data['birthday'].split('/')
             birthday = datetime.date.min
@@ -1476,7 +1488,6 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
 
             self.dob = birthday
             self.save()
-
 
         if 'education' in fb_data:
             education = fb_data['education']
@@ -3530,9 +3541,11 @@ class Poll(Content):
     def getPollProgress(self, viewer):
         q_ids = self.questions.all().values_list('id', flat=True)
         responses = viewer.view.responses.filter(question_id__in=q_ids).exclude(most_chosen_answer_id=-1)
-        poll_progress = {'completed':responses.count(), 'total':len(q_ids)}
+        completed = responses.count()
+        total = len(q_ids)
+        finished = completed >= total
+        poll_progress = {'completed':completed, 'total':total, 'finished':finished}
         return poll_progress
-
 
 #=======================================================================================================================
 # Scorecard, a group response to a poll
@@ -4562,10 +4575,12 @@ class UserGroup(Group):
 #=======================================================================================================================
 class Election(Group):
     winner = models.ForeignKey(UserProfile, null=True, related_name="elections_won")
-    office = models.ForeignKey(Office, null=True)
     election_date = models.DateTimeField()
+
+    office = models.ForeignKey(Office, null=True)
     start_date = models.DateTimeField(auto_now_add=True)
     end_date = models.DateTimeField(auto_now_add=True)
+
     def autoSave(self, creator=None, privacy="PUB"):
         self.group_type = 'E'
         self.is_election = True
@@ -4939,7 +4954,7 @@ class OfficeHeld(UCRelationship):
         self.save()
 
     def isCurrent(self):
-        if (datetime.date.today() - self.end_date).days <= 0:
+        if datetime.date.today() > self.end_date:
             return True
         return False
 

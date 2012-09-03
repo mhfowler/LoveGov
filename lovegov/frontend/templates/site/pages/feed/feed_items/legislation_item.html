@@ -1,0 +1,11 @@
+{% extends 'site/pages/feed/feed_items/base_item.html' %}
+
+{% block item_main %}
+
+    <div class="legislation-item-wrapper">
+        <div class="legislation-item-summary feed-item-summary">
+            {{ content.bill_summary|truncatechars:200 }}
+        </div>
+    </div>
+
+{% endblock %}

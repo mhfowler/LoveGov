@@ -1,0 +1,27 @@
+{% extends 'site/pages/dismissible_headers/dismissible_header.html' %}
+
+{% block dismissible_content %}
+    <a href="{{ lgpoll.get_url }}" class="lgpoll-header">
+        <div class="lgpoll-teaser-image"></div>
+        <div class="poll-progress-wrapper">
+            <div class="progress-numbers">
+                {{ poll_progress.completed }} / {{ poll_progress.total }}
+            </div>
+            <div class="progress-header">
+                your progress
+            </div>
+        </div>
+        <div class="right-part">
+            <div class="top-text">
+                <div class="header-title">
+                    Take the LoveGov Poll
+                </div>
+            </div>
+            <div class="d-header-explanation">
+                The LoveGov poll is a great way to get a baseline for comparisons.
+                Our questions are pulled from existing legislation.
+            </div>
+        </div>
+        <div style="clear:both;"></div>
+    </a>
+{% endblock %}

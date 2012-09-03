@@ -10,7 +10,7 @@ def wsgi(request):
 def test(request, vals={}):
     user = vals['viewer']
     vals['main_topics'] = Topic.objects.filter(topic_text__in=MAIN_TOPICS)
-    return renderToResponseCSRF('test/newtest.html',vals,request)
+    return renderToResponseCSRF('test/sorl_test.html',vals,request)
 
 def test2(request, vals={}):
     if fbWallShare(request, 608803161):
