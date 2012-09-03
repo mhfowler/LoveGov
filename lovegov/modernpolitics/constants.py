@@ -744,6 +744,10 @@ ANONYMOUS_PROHIBITED_ACTIONS = [
     'createContent',
 ]
 
+###################################### CONTENT TYPES IN FEED ###########################################################
+
+CONTENT_IN_FEED = ['P', 'N', 'L', 'Q', 'D']
+
 ###################################### DATA #########################################################################
 
 STATES = [('AL', 'Alabama'), ('AK', 'Alaska'), ('AS', 'American Samoa'), ('AZ' , 'Arizona'), ('AR', 'Arkansas'),

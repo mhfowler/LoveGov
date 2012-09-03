@@ -1958,6 +1958,12 @@ def migrateResponseImportance():
         if not count%20:
             print str(count)
 
+def removeGhostsFromLoveGovGroup():
+    ghosts = UserProfile.objects.filter(ghost=True)
+    lg = getLoveGovGroup()
+    for x in ghosts:
+        lg.removeMember(x)
+        print "+II+ removing" + x.get_name()
 
 #-----------------------------------------------------------------------------------------------------------------------
 # initialize politician groups for each state

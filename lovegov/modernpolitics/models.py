@@ -1459,21 +1459,26 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
     # Stats recalculate
     #-------------------------------------------------------------------------------------------------------------------
     def userPetitionsRecalculate(self):
-        self.num_petitions = Created.objects.filter(user=self,content__type="P").count()
+        self.num_petitions = Petition.objects.filter(creator=self).count()
         self.save()
 
     def userNewsRecalculate(self):
-        self.num_articles = Created.objects.filter(user=self,content__type="N").count()
+        self.num_articles = News.objects.filter(creator=self).count()
         self.save()
 
     def userCommentsRecalculate(self):
-        self.num_comments = Created.objects.filter(user=self,content__type="C").count()
+        self.num_comments = Comment.objects.filter(creator=self).count()
+        self.save()
+
+    def userPostsRecalculate(self):
+        self.num_posts = Content.objects.filter(creator=self, in_feed=True).count()
         self.save()
 
     def userStatsRecalculate(self):
         self.userPetitionsRecalculate()
         self.userNewsRecalculate()
         self.userCommentsRecalculate()
+        self.userPostsRecalculate()
 
     #-------------------------------------------------------------------------------------------------------------------
     # politician support
