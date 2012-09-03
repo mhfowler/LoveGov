@@ -343,14 +343,41 @@ class Content(Privacy, LocationLevel):
         return self.getName()
     def getTitle(self):
         return self.title
+
     def getTitleDisplay(self):
-        return self.downcast().getTitleDisplay()
-    def getFeedTitle(self):
-        downcasted = self.downcast()
-        if downcasted != self:
-            return downcasted.getFeedTitle()
+        if self.type=='P':
+            return "Petition: " + self.get_name()
+        elif self.type=='N':
+            return self.get_name()
+        elif self.type=='B':
+            return "Poll: " + self.get_name()
+        elif self.type=='O':
+            return "Office: " + self.get_name()
+        elif self.type =='S':
+            return "Scorecard: " + self.get_name()
+        elif self.type=='Q':
+            return "Question: " + self.get_name()
+        elif self.type=='D':
+            return "Discussion: " + self.get_name()
+        elif self.type=='L':
+            return "Legislation: " + self.get_name()
+        elif self.type=='C':
+            return "Comment on " + self.downcast().root_content.get_name()
+        elif self.type=='R':
+            return "Response to " + self.downcast().question.get_name()
+        elif self.type=='G':
+            return "Group: " + self.get_name()
         else:
-            return "downcast error"
+            return "No Title"
+
+    def getFeedTitle(self):
+        return self.getTitleDisplay()
+
+    def getDetailTitle(self):
+        if self.type == "Q":
+            return ""
+        else:
+            return self.getFeedTitle()
 
     #-------------------------------------------------------------------------------------------------------------------
     # gets location string, if content has location
@@ -3705,6 +3732,8 @@ class Question(Content):
     def getTitleDisplay(self):
         return "Question: " + self.title
     def getFeedTitle(self):
+        return self.getTitleDisplay()
+    def getDetailTitle(self):
         return ""
 
     def getTypeIconClass(self):
