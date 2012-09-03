@@ -1866,8 +1866,8 @@ def getPoliticiansFromLocation(state, district=None):
 # Initialize politiciangroup for congress
 #-----------------------------------------------------------------------------------------------------------------------
 def getCongressGroup():
-    return Group.lg.get_or_none(alias="congress")
-    #return PoliticianGroup.lg.get_or_none(alias="congress") or initializeCongressGroup()
+    #return Group.lg.get_or_none(alias="congress")
+    return PoliticianGroup.lg.get_or_none(alias="congress") or initializeCongressGroup()
 
 def initializeCongressGroup():
     if PoliticianGroup.objects.filter(alias="congress"):
@@ -1878,20 +1878,20 @@ def initializeCongressGroup():
         group.summary = "all members of Congress."
         group.system = True
         group.autoSave()
-        syncCongressGroupMembers()
+        print ("initialized: Congress Group")
         return group
 
 def syncCongressGroupMembers():
     group = getCongressGroup()
     for x in group.members.all():
         group.removeMember(x)
+        print "+II+ removed " + x.get_name()
     congress = UserProfile.objects.filter(currently_in_office=True)
     for x in congress:
         group.joinMember(x)
-    print ("initialized: Congress Group")
+        print "+II+ joined " + x.get_name()
+    print ("synced: Congress Group Members")
     return group
-
-
 
 
 
@@ -1958,6 +1958,24 @@ def migrateResponseImportance():
         if not count%20:
             print str(count)
 
+def removeGhostsFromLoveGovGroup():
+    ghosts = UserProfile.objects.filter(ghost=True)
+    lg = getLoveGovGroup()
+    for x in ghosts:
+        lg.removeMember(x)
+        print "+II+ removing" + x.get_name()
+
+def setLegislationCreator():
+    for x in Legislation.objects.all():
+        x.creator = x.sponsor
+        x.save()
+        print "+II+ " + x.get_name()
+
+def makeAllComparisonsStale():
+    for u in UserProfile.objects.all():
+        u.last_answered = datetime.datetime.now()
+        u.save()
+        print "+II+ stale: " + u.get_name()
 
 #-----------------------------------------------------------------------------------------------------------------------
 # initialize politician groups for each state

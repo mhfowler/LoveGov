@@ -52,9 +52,8 @@ def recalculateAllVotes():
 
 
 def recalculateAllComments():
-    commentable = ['P','N','Q']
-    content = Content.objects.filter(type__in=commentable)
 
+    content = Content.objects.filter(type__in=CONTENT_IN_FEED)
     for c in content:
         print "Calculating Comments for " + c.get_name()
         c.contentCommentsRecalculate()
@@ -89,6 +88,7 @@ def recalculatePetitions():
         p.save()
 
 
+
 def recalculateTopics():
     mt_ids = getMainTopics().values_list('id', flat=True)
     c = Content.objects.exclude(main_topic_id__in=mt_ids)
@@ -111,6 +111,7 @@ def purgeTopics():
             t.delete()
 
 
+
 def recalculateEverything():
     print "Recalculating Stats..."
     recalculateAllUserStats()
@@ -120,6 +121,7 @@ def recalculateEverything():
     recalculateAllVotes()
     print "Recalculating Comments..."
     recalculateAllComments()
+
 
 
 def recalculateProhibitedActions():
@@ -133,27 +135,22 @@ def recalculateProhibitedActions():
         c.save()
 
 
+
 def recalculateInFeed():
     c = Content.objects.filter(in_feed=True)
+    count = 0
     for x in c:
         x.in_feed = False
         x.save()
-    p = Petition.objects.all()
-    for x in p:
+        count += 1
+        if not count%20:
+            print count
+    in_feed = Content.objects.filter(type__in=CONTENT_IN_FEED)
+    for x in in_feed:
         x.in_feed = True
         x.save()
-    n = News.objects.all()
-    for x in n:
-        x.in_feed = True
-        x.save()
-    d = Discussion.objects.all()
-    for x in d:
-        x.in_feed = True
-        x.save()
-    o = Poll.objects.all()
-    for x in o:
-        x.in_feed = True
-        x.save()
+        print "+II+ is in feed: " + x.get_name()
+
 
 
 def recalculateCreators():
@@ -176,6 +173,7 @@ def recalculateCreators():
     print "TOTAL CHANGED: ", str(changed)
 
 
+
 def recalculateNumMembers():
     for x in Group.objects.all():
         print x.get_name()
@@ -192,6 +190,7 @@ def calculateResponseAnswers():
                     response.save()
                     count += 1
                     print count
+
 
 
 def calculatePoliticianTitles():
@@ -228,6 +227,7 @@ def calculatePoliticianTitles():
                 p.save()
 
 
+
 def removeDeprecatedPoliticians():
     print "Tags:"
     print "======================"
@@ -258,6 +258,7 @@ def removeDeprecatedPoliticians():
                 person.delete()
 
 
+
 def resetGroupSystemBooleans():
     print "SETTING ALL NETWORKS TO AUTOGEN=True and SYSTEM=False"
     for n in Network.objects.all():
@@ -274,3 +275,7 @@ def resetGroupSystemBooleans():
     c.system = True
     c.hidden = False
     c.save()
+    for c in Committee.objects.all():
+        c.system = True
+        c.save()
+

@@ -1,0 +1,53 @@
+{% load thumbnail %}
+
+<div class="main-div">
+
+    <a href="{{ viewer.get_url }}"><h5>Back to your profile</h5></a>
+    <div class="account-left">
+        <h2>Account Settings</h2>
+        <div class="account-button-options">
+            <div class="account-button account_button" data-url="/settings/profile/">
+                <span>Profile</span>
+            </div>
+            <div class="account-button-separator"></div>
+            <div class="account-button account_button" data-url="/settings/basic_info/">
+                <div class="account-button-pointer">
+                    <div class="border"></div>
+                    <div class="inner"></div>
+                </div>
+                <span>Basic Information</span>
+            </div>
+            <div class="account-button-separator"></div>
+            <div class="account-button account_button" data-url="/settings/voting_address/">
+                <span>Voting Address</span>
+            </div>
+            <div class="account-button-separator"></div>
+            <div class="account-button account_button" data-url="/settings/change_password/">
+                <span>Change Password</span>
+            </div>
+
+            <div class="account-button-separator"></div>
+            <div class="account-button account_button" data-url="/settings/i_am_a_politician/">
+                <span>I'm a Politician</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="account-right">
+
+
+        {% include 'site/pages/settings/basic_info.html' %}
+
+        {% include 'site/pages/settings/voting_address.html' %}
+
+        {% include 'site/pages/settings/change_password.html' %}
+
+        {% include 'site/pages/settings/profile_settings.html' %}
+
+        {% include 'site/pages/settings/politician_settings.html' %}
+
+    </div>
+
+</div>
+
+<script> rebind="settings"; </script>

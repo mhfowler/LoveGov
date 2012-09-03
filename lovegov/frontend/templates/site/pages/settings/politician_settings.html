@@ -1,0 +1,87 @@
+<div class="account_div politician-settings-wrapper" data-url="/settings/i_am_a_politician/">
+
+    <table>
+        <tr>
+            <td></td>
+            <td><h2> Are you a politician? </h2></td>
+    </table>
+
+
+    <div class="politician-settings-options">
+
+        <div class="settings-row yes-i-am">
+
+            <span class="yes"> Yes </span>
+            <input type="checkbox" class="settings-checkbox i_am_politician_checkbox" {% if viewer.politician %} checked="checked" {% endif %}/>
+            <div style="clear:both;"></div>
+
+        </div>
+
+        {% with primary_role=viewer.primary_role %}
+
+            <div class="i-am-politician i_am_politician" {% if not viewer.politician %} style="display:none" {% endif %}>
+
+                <div class="settings-row running-for-options">
+                    <div class="running-for-option">
+                        <span> I am currently running for office </span>
+                        <input type="checkbox" class="settings-checkbox politician_choice"
+                               value="running_for" {% if viewer.politician and not primary_role.confirmed %} checked="checked" {% endif %}/>
+                    </div>
+
+                    <div class="running-for-option">
+                        <span> I am currently in office </span>
+                        <input type="checkbox" class="settings-checkbox politician_choice has_office"
+                               value="currently_elected" {% if primary_role.confirmed and primary_role.current %} checked="checked" {% endif %}/>
+                    </div>
+
+                    <div class="running-for-option">
+                        <span> I was once in office </span>
+                        <input type="checkbox" class="settings-checkbox politician_choice has_office"
+                               value="previously_elected"
+                                {% if primary_role.confirmed and not primary_role.current %} checked="checked" {% endif %}/>
+                    </div>
+                </div>
+
+                <div class="political_status_error political-status-error">
+                    You must select an option or uncheck that you are a politician.
+                </div>
+
+                <div class="settings-row office-description office_description" {% if not primary_role.confirmed %} style="display:none;" {% endif %}>
+
+                    {% with office=primary_role.office %}
+
+                        <div class="office-edit-wrapper">
+                            <div class="settings-label-wrapper">
+                                <div class="settings-label"> Office Title </div>
+                                <div class="office_title_error office-error">
+                                    You must enter a title.
+                                </div>
+                            </div>
+                            <input type="text" class="office-title-input account-input office_title_input" value="{{ office.title }}"/>
+                            <div style="clear:both;"></div>
+                        </div>
+
+
+                        <div class="office-edit-wrapper">
+                            <div class="settings-label-wrapper">
+                                <div class="settings-label"> Office Description </div>
+                                <div class="office_description_error office-error">
+                                    You must enter a description.
+                                </div>
+                            </div>
+                            <textarea type="text" class="office-description-textarea account-input office_description_textarea">{{ office.summary }}</textarea>
+                            <div style="clear:both;"></div>
+                        </div>
+
+                    {% endwith %}
+
+                </div>
+            </div>
+
+        {% endwith %}
+
+        <a class="button-red politician-save save_politician_settings"> save </a>
+        <span class="politician_success_message politician-success-message"> saved </span>
+
+    </div>
+</div>

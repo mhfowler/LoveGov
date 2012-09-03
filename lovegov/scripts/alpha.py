@@ -40,7 +40,7 @@ def scriptCreateCongressAnswers(args=None):
     print "======================"
     print "+EE+ = Error"
     print "+WW+ = Warning"
-    print "+DD+ = Duplicate"
+    print "+II+ = Information"
     print "======================"
 
     # For cells in the spreadsheet
@@ -101,7 +101,12 @@ def scriptCreateCongressAnswers(args=None):
 
 
             # Get answer ID and value from spreadsheet
-            answer_id = sheet.cell(row,0).value
+            try:
+                answer_id = int(sheet.cell(row,0).value)
+            except:
+                print "+WW+ Invalid Answer ID on row " + str(row)
+                continue
+
             answer_value = sheet.cell(row,column+3).value
             answer_value = answer_value.encode('utf-8','ignore')
 
@@ -161,6 +166,7 @@ def scriptCreateCongressAnswers(args=None):
 
                 # Answer that shit!
                 answerAction(voter,question,"PUB",answer_id)
+                print "+II+ Successful Answer for " + voter.get_name()
 
 #                # Look for that response in the database
 #                responses = voter.view.responses.filter(question=question)
@@ -187,6 +193,26 @@ def scriptCreateCongressAnswers(args=None):
     return metrics
 
 
+def scriptCheckPoliticians(args=None):
+    path = os.path.join(PROJECT_PATH, 'frontend/excel/' + args[0])
+    wb = open_workbook(path)
+    sheet = wb.sheet_by_index(0)
+
+    for column in range(2,sheet.ncols):
+        # Get politician Name
+        politician_name = sheet.cell(0,column).value.split(" ")
+
+        # Look for politician
+        politician = UserProfile.lg.get_or_none(first_name=politician_name[0],last_name=politician_name[1], politician=True)
+        name = politician_name[0] + " " + politician_name[1]
+        # If they don't exist
+        if not politician:
+            print "Could not find " + name
+
+        else:
+            print "Found " + name
+
+
 def scriptCreateResponses(args=None):
     path = os.path.join(PROJECT_PATH, 'frontend/excel/' + args[0])
     wb = open_workbook(path)
@@ -196,7 +222,7 @@ def scriptCreateResponses(args=None):
     print "======================"
     print "+EE+ = Error"
     print "+WW+ = Warning"
-    print "+DD+ = Duplicate"
+    print "+II+ = Information"
     print "======================"
 
 # For all cells in the spreadsheet
@@ -212,7 +238,7 @@ def scriptCreateResponses(args=None):
             if not politician:
                 # Create and print their name and email
                 name = politician_name[0] + " " + politician_name[1]
-                print "Creating " + name
+                print "+WW+ Creating " + name
                 email = politician_name[0] + '_' + politician_name[1] + "@lovegov.com"
                 password = 'politician'
 
@@ -222,12 +248,13 @@ def scriptCreateResponses(args=None):
                 # Set some user facts
                 politician.user_profile.confirmed = True
                 politician.user_profile.politician = True
+                politician.user_profile.ghost = True
                 politician.user_profile.save()
 
                 #image_path = os.path.join(PROJECT_PATH, 'alpha/static/images/presidentialCandidates/' + politician_name[1].lower() + ".jpg")
                 #politician.user_profile.setProfileImage(file(image_path))
 
-                print "Successfully created and confirmed " + name
+                print "+WW+ Successfully created and confirmed " + name
                 politician = politician.user_profile
 
             # Get and print answer text
@@ -273,4 +300,4 @@ def scriptCreateResponses(args=None):
 #                    response.most_chosen_num = 1
 #                    response.save()
 
-                print "Successfully answered question for " + politician_name[0]
+                print "+II+ Successfully answered question for " + politician_name[0]
