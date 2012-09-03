@@ -284,6 +284,9 @@ def recalculateGroupAliases():
     for g in Group.objects.all():
         g.makeAlias()
         print g.alias
+    lg = Group.objects.get(system=True, title="LoveGov")
+    lg.alias = "lovegov_group"
+    lg.save()
 
 ## ran sep3
 def recalculateNumResponses():
