@@ -202,13 +202,6 @@
   -o-transform:rotate($deg); /* Opera */
 }
 
-@mixin box-shadow($horizontal-offset,$vertical-offset,$optional-blur,$color)
-{
-  -moz-box-shadow: $horizontal-offset $vertical-offset $optional-blur $color;
-  -webkit-box-shadow: $horizontal-offset $vertical-offset $optional-blur $color;
-  box-shadow: $horizontal-offset $vertical-offset $optional-blur $color;
-}
-
 //@mixin trianglePointer($test)
 //{
 //  div.#{$test}

@@ -1848,16 +1848,15 @@ def getLegislation(request, vals={}):
     sponsor_body_set = json.loads(request.POST['sponsor_body_set'])
     sponsor_name_set = json.loads(request.POST['sponsor_name_set'])
     sponsor_party_set = json.loads(request.POST['sponsor_party_set'])
-    sponsor_district_set = json.loads(request.POST['sponsor_district_set'])
 
-    legislation_items = getLegislationItems(session_set=session_set, type_set=type_set, subject_set=subject_set,
+    legislation = getLegislationItems(session_set=session_set, type_set=type_set, subject_set=subject_set,
         committee_set=committee_set, introduced_set=introduced_set, sponsor_body_set=sponsor_body_set, sponsor_name_set=sponsor_name_set,
-        sponsor_party_set=sponsor_party_set, sponsor_district_set=sponsor_district_set,
-        feed_start=feed_start)
+        sponsor_party_set=sponsor_party_set,feed_start=feed_start)
 
+    legislation_items = contentToFeedItems(legislation, vals['viewer'])
     vals['legislation_items'] = legislation_items
 
-    html = ajaxRender('site/pages/legislation/feed_helper_legislation.html', vals, request)
+    html = ajaxRender('site/pages/feed/feed_helper.html', vals, request)
     return HttpResponse(json.dumps({'html':html, 'num_items':len(legislation_items)}))
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -2439,12 +2438,13 @@ def changeContentPrivacy(request, vals={}):
             error = 'The given content identifier is invalid.'
     else:
         error = 'No content identifier given.'
-    if error=='':
+    if error:
+        return HttpResponseBadRequest(error)
+    else:
         content.save()
         vals['content'] = content
-        html = ajaxRender('site/pieces/snippets/content-privacy.html', vals, request)
-    to_return = {'html':html, 'error': error}
-    print "to_return: "+ str(to_return)
+        html = ajaxRender('site/pieces/content-privacy.html', vals, request)
+    to_return = {'html':html}
     return HttpResponse(json.dumps(to_return))
 
 
@@ -2595,8 +2595,11 @@ def createContent(request, vals={}):
                     posted_to=group)
                 newc.autoSave()
             for q in questions:
+                qtopic_alias = q['topic']
+                qtopic = Topic.lg.get_or_none(alias=qtopic_alias)
                 newQ = Question(question_text=q['question'], title=q['question'], source=q['source'], official=False)
                 newQ.save()
+                newQ.setMainTopic(qtopic)
                 for a in q['answers']:
                     newA = Answer(answer_text=a, value=-1)
                     newA.save()

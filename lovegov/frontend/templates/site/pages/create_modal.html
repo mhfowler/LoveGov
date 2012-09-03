@@ -9,7 +9,7 @@
         </div>
         <div class="selection" data-selection="poll">
             <img src="{{ STATIC_URL }}/images/create/poll_plus.png">
-            <span class="label">Questions</span>
+            <span class="label">Question</span>
         </div>
         <br>
         <div class="selection" data-selection="discussion">
@@ -32,7 +32,7 @@
             <div class="form">
                 {% usemacro textbox "Title:" "title" "title" "" %}
                 {% usemacro textarea "Full text:" "description" "full_text" %}
-                {% usemacro post-to viewer.getGroupSubscriptions %}
+                {% usemacro post-to viewer.getGroupSubscriptions selected_group %}
                 {% usemacro post-as %}
                 <div class="optional">
                     {% usemacro optional-label %}
@@ -52,7 +52,7 @@
             <div class="form">
                 {% usemacro textbox "Title:" "title" "title" "" %}
                 {% usemacro textarea "Full text:" "description" "full_text" %}
-                {% usemacro post-to viewer.getGroupSubscriptions %}
+                {% usemacro post-to viewer.getGroupSubscriptions selected_group %}
                 {% usemacro post-as %}
                 <div class="optional">
                     {% usemacro optional-label %}
@@ -72,7 +72,7 @@
             <div class="form">
                 {% usemacro textbox "Link:" "link" "link" "" %}
                 {% usemacro link-image %}
-                {% usemacro post-to viewer.getRealGroups %}
+                {% usemacro post-to viewer.getRealGroups selected_group %}
                 {% usemacro post-as %}
                 <div class="optional">
                     {% usemacro optional-label %}
@@ -91,7 +91,7 @@
             <span class="back">< back</span>
             <div class="form">
                 <div class="form-row polltype">
-                    <div class="label">Create as a poll?<br> </br></div>
+                    <div class="label">Is this a poll?<br> </br></div>
                     <div class="field">
                         <input type="radio" name="polltype" value="p">Yes, I want to create a <strong>themed collection</strong> of questions.<br>
                         <input type="radio" name="polltype" value="q" checked>No, I want to create a <strong>single</strong> or <strong>random assortment</strong> of questions.
@@ -101,7 +101,7 @@
                     {% usemacro textbox "Title:" "title" "title" "" %}
                     {% usemacro textarea "Poll description:" "description" "full_text" %}
                 </div>
-                {% usemacro post-to viewer.getGroupSubscriptions %}
+                {% usemacro post-to viewer.getGroupSubscriptions selected_group %}
                 {% usemacro post-as %}
                 <div class="questions">
                     <div class="question model">
@@ -110,7 +110,23 @@
                                 <span class="remove">remove</span>
                                 <span class="add-source">add source</span>
                             </span>
-                            <div class="label padded">Question:</div>
+                            <div class="label padded">
+                                <span class="topic_button tooltip-top chosen" data-t_alias="{{ general_t.alias }}" title="{{ general_t.topic_text }}">
+                                    {% include 'site/pieces/topic_icon.html' with topic=general_t width="30" height="30" %}
+                                </span>
+                                <div class="qt-select">
+                                    <span class="triangle-border"></span>
+                                    <span class="triangle"></span>
+                                    {% for t in main_topics %}
+
+                                        <span class="topic_button tooltip-top" data-t_alias="{{ t.alias }}" title="{{ t.topic_text }}">
+                                            {% include 'site/pieces/topic_icon.html' with topic=t width="30" height="30" %}
+                                        </span>
+
+                                    {% endfor %}
+                                </div>
+                                Question:
+                            </div>
                             <div class="field"><input type="text" placeholder="Enter a question"></div>
                         </div>
                         <div class="question-answers form-row">
@@ -123,7 +139,7 @@
                         </div>
                         <div class="question-source form-row">
                             <div class="label padded">Source:</div>
-                            <div class="field"><input type="text" placeholder="Enter a reference URL for this question, e.g. to a piece of legislation"></div>
+                            <div class="field"><input type="text" placeholder="Enter a reference URL for this question, e.g. to a piece of legislation" class="optional"></div>
                         </div>
                     </div>
                     <div class="add-question" data-num-questions="0">+ add a question</div>

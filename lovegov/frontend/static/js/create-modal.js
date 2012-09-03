@@ -1,8 +1,11 @@
 // Create button click
 bind('td.create-button', 'click', function(e) {
-    getModal('create_modal', {}, function() {
+    var gid = $(this).data('g_id');
+    getModal('create_modal', {'gid': gid, 'selected_group': gid}, function() {
         $('div.create-modal > div').hide();
         $('div.create-modal div.type-select').show();
+        var post_tos = $('select.post-to');
+        post_tos.select2();
     });
 });
 
@@ -49,6 +52,11 @@ bind("div.create-modal div.selection", "click", function(e) {
     var selection = $(this).data('selection');
     $('div.create-modal div.type-select').hide();
     $('div.'+selection).fadeIn(250);
+    if(selection=='poll') {
+        if(getNumQuestions()==0) {
+            $('div.create-modal div.add-question').click();
+        }
+    }
 });
 
 
@@ -68,24 +76,24 @@ bind("div.create-modal span.post-as", "click", function(e) {
 bind("div.create-modal div.add-question", "click", function(e) {
     var num_questions = getNumQuestions();
     if(num_questions==1) {
-        // Adding another question - now it's a poll!
-        $('div.create-modal div.create-section.poll div.poll-form').fadeIn(500);
+        // Adding another question - ask if it's a poll
+        $('div.create-modal div.create-section.poll div.form-row.polltype').fadeIn(500);
     }
     $(this).data('num-questions', num_questions+1);
    var newQuestion = $('div.create-modal div.question.model').clone();
     $('div.add-question').before(newQuestion);
     newQuestion.removeClass("model");
+    bindTooltips();
 });
 
 function getNumQuestions() {
-    return $(this).data('num-questions');
+    return $("div.create-modal div.add-question").data('num-questions');
 }
 
 // Delete questions
 bind("div.create-modal div.questions span.remove", "click", function(e) {
-    var hasContent = false;
     var question = $(this).closest("div.question");
-    if (isEmptyQuestion(question)) {
+    if (!isEmptyQuestion(question)) {
         if(confirm("Remove this question?")) {
             question.remove();
        }
@@ -95,13 +103,24 @@ bind("div.create-modal div.questions span.remove", "click", function(e) {
 });
 
 function isEmptyQuestion(question) {
+    var is_empty = true;
     question.find("input,textarea").each(function(i,e) {
         if($(this).val()!='') {
-            // break loop
-            return false;
+            is_empty = false;
         }
     });
-    return true;
+    return is_empty;
+}
+
+function isFilledQuestion(question) {
+    var is_filled = true;
+    question.find("input,textarea").each(function(i,e) {
+        if(!$(this).hasClass('optional') && $(this).val()=='') {
+            // break loop
+            is_filled = false;
+        }
+    });
+    return is_filled;
 }
 
 // Show add source
@@ -151,8 +170,13 @@ bind("div.create-modal div.save", "click", function(e) {
             invalid = invalid || !validField('input.title', 'title', form);
             invalid = invalid || !validField('textarea.description', 'description', form);
         }
-        questions = extractQuestions();
-        invalid = invalid || questions.length < 1;
+        invalid = invalid || getNumQuestions() < 1;
+        $('div.create-modal div.create-section.poll div.question:not(.model)').each(function(i,e) {
+            if(!isFilledQuestion($(this))) {
+                $(this).animate({'border-color': 'red'}, 500);
+                invalid = true;
+            }
+        });
     }
 
     if(invalid) {
@@ -199,7 +223,7 @@ function validField(field, name, form) {
 // extract questions and answers from the DOM
 function extractQuestions() {
     var questionsList = [];
-    var questionsDiv = $('div.create-modal div.create-section.poll div.questions');""
+    var questionsDiv = $('div.create-modal div.create-section.poll div.questions');
     questionsDiv.children("div.question:not(.model)").each(function() {
        var q = {};
        q['question'] = $(this).find('div.question-title input').val();
@@ -208,6 +232,7 @@ function extractQuestions() {
           q['answers'].push($(this).val());
        });
        q['source'] = $(this).find('div.question-source input').val();
+       q['topic'] = $(this).find('span.topic_button.chosen').data('t_alias');
         questionsList.push(q);
     });
     return questionsList;
@@ -250,14 +275,25 @@ bind("div.create-modal div.create-section.news input.link", "keypress", function
     }
 });
 
-bind("div.create-modal span.topic_button", "click", function(e) {
+bind("div.create-modal div.field span.topic_button", "click", function(e) {
     if($(this).hasClass('selected')) {
         $(this).removeClass('selected');
     } else {
         $(this).siblings("span.topic_button").removeClass("selected");
         $(this).addClass("selected");
     }
-})
+});
+
+bind("div.create-modal div.questions span.topic_button", "click", function(e) {
+   $(this).siblings('div.qt-select').fadeToggle(200);
+});
+
+bind("div.create-modal div.qt-select span.topic_button", "click", function(e) {
+    var qtselect = $(this).closest('div.qt-select');
+    qtselect.siblings('span.topic_button').replaceWith($(this).clone().addClass('chosen'));
+    qtselect.fadeOut(200);
+    bindTooltips();
+});
 
 function selectImageToggle() {
     $('#cycle-img-span').text(currentLink + " / " + image_count);

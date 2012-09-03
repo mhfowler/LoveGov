@@ -1,5 +1,6 @@
 @import "master-variables";
 @import "compass";
+@import "master-mixins";
 
 div.create-modal {
   $create-section-width: 900px;
@@ -64,6 +65,9 @@ div.create-modal {
           &.padded {
             margin: 10px;
           }
+        }
+        &.polltype {
+          display:none;
         }
       }
       div.poll-form {
@@ -147,15 +151,14 @@ div.create-modal {
         width: 460px;
       }
       textarea {
-        height: 30px;
+        height: 60px;
         width: 500px;
-        &:focus {
-          height: 60px;
-        }
       }
       div.question-title {
         padding: 5px;
-        background-color: $orange-light;
+        background-color: $yellow-light;
+        position: relative;
+        overflow: visible;
       }
       div.question-answers {
         padding: 5px;
@@ -180,8 +183,8 @@ div.create-modal {
         }
         span.add-source {
           display: block;
-          color: $yellow-highlight;
-          &:hover { color: white; }
+          color: $orange;
+          &:hover { color: $green; }
        }
       }
     }
@@ -198,6 +201,42 @@ div.create-modal {
       }
       &:active {
         background-color: $red;
+      }
+    }
+    span.chosen.topic_button {
+      background-color: white;
+      @include border-radius(20px);
+      padding: 8px;
+      &:hover {
+        border: 1px solid $gray;
+        padding: 7px;
+      }
+    }
+    div.qt-select {
+      position: absolute;
+      top: 60px;
+      left: 10px;
+      background-color: white;
+      border: 1px solid $gray;
+      padding: 5px;
+      display: none;
+      @include box-shadow(#CCC 5px 5px 20px);
+      $triangle-size: 10px;
+      span.triangle {
+        @include triangle('up', $white, $triangle-size + -1px);
+        position: absolute;
+        top:-$triangle-size + 1px;
+        left:26px;
+      }
+      span.triangle-border {
+        @extend span.triangle;
+        @include triangle('up', $gray, $triangle-size);
+        top:-10px;
+        left:25px;
+      }
+      span.topic_button {
+        padding: 5px;
+        background-color: white;
       }
     }
   }

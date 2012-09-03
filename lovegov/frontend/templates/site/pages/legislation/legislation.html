@@ -1,8 +1,3 @@
-{% extends 'site/frame/frame.html' %}
-
-{% block content %}
-
-
 <div class="main-block">
     <div class="legislation_filter">
         <div class="filter_prompt">
@@ -68,7 +63,7 @@
         </div>
         <div class="introduced_selector">
             <select class="introduced_select" data-selector="introduced_filter">
-                <optgroup label="Bill Introduction" id="introduced-dates">
+                <optgroup label="Bill Introduction Date Range" id="introduced-dates">
                     {% for date in introduced_dates %}
                         <option class="introduced" value='{{ date.json }}'>{{ date.date }}</option>
                     {% endfor %}
@@ -103,15 +98,17 @@
                         </optgroup>
                     </select>
                 </li>
-                <li>
+{% comment %}
+                 <li>
                     <select multiple class="sponsor_select_district" data-selector="sponsor_filter">
                         <optgroup label="Sponsor district" id="bill_sponsor_district">
-                            {% for sponsor in sponsors %}
-                                <option class="sponsors" value='{{ sponsor.state }}'>{{ sponsor.state }}</option>
+                            {% for district in districts %}
+                                <option class="sponsors" value='{{ district }}'>{{ district }}</option>
                             {% endfor %}
                         </optgroup>
                     </select>
                 </li>
+{% endcomment %}
             </ul>
         </div>
     </div>
@@ -130,6 +127,3 @@
 </div>
 <!-- Javascript -->
 <script> rebind='legislation'; </script>
-
-
-{% endblock %}

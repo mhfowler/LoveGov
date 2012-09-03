@@ -1,3 +1,6 @@
 {% for l in legislation_items %}
+    {% comment %}
         {% include 'site/pages/legislation/legislation-stub.html' %}
+    {% endcomment %}
+    {% include 'site/pages/feed/feed_items/legislation_item.html' %}
 {% endfor %}

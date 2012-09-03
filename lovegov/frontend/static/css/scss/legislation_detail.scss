@@ -32,7 +32,7 @@ a {
 
 div.legislation-wrapper {
   min-height: 450px;
-  width: 900px;
+  width: 1100px;
 
   div.leg-title {
     height: 25px;
@@ -238,7 +238,7 @@ div.legislation-wrapper {
 
         div.sponsor-pic {
           display: center;
-          height: 135px;
+          height: 120px;
           width: 100px;
           margin-top: 10px;
           padding: 5px 5px 5px 5px;
@@ -747,6 +747,11 @@ div.legislation-wrapper {
                     margin-left: -20px;
                     list-style-type: none;
                     font-size: 14px;
+
+                    span.leg-list {
+                      text-decoration: none;
+                      font-color: $black;
+                    }
                   }
                 }
               }
@@ -770,9 +775,9 @@ div.legislation-wrapper {
                     list-style-type: none;
                     font-size: 14px;
 
-                    a {
+                    span.leg-list {
                       text-decoration: none;
-                      font-color: black;
+                      font-color: $black;
                     }
                   }
                 }
@@ -797,9 +802,9 @@ div.legislation-wrapper {
                     list-style-type: none;
                     font-size: 14px;
 
-                    a {
+                    span.leg-list {
                       text-decoration: none;
-                      font-color: black;
+                      font-color: $black;
                     }
                   }
                 }
@@ -811,21 +816,83 @@ div.legislation-wrapper {
     }
   }
 
-  div.subjects-committees-related {
+  div.cosponsors-subjects-committees-related {
     display: inline-block;
     margin-left: 10px;
     height: auto;
-    width: 200px;
+    width: 320px;
 
-    div.level1-subjects {
+    div.level1-cosponsors {
       margin-left: 0px;
       margin-top: 0px;
       height: 25px;
-      width: 200px;
+      width: 320px;
+
+      div.bill-cosponsors-title {
+        height: 25px;
+        width: 320px;
+
+        h4 {
+          font-size:18px;
+          text-align: left;
+          background-color: #E0E0E0;
+          color: black;
+          padding-top: 5px;
+          padding-left: 5px;
+        }
+      }
+    }
+
+    div.cosponsors {
+      float:left;
+      margin-top: 10px;
+      height: 20px;
+      width: 150px;
+      overflow: hidden;
+
+      span{
+
+        ul {
+          margin-top: -3px;
+
+          li {
+            margin-left: -20px;
+            font-size: 14px;
+          }
+        }
+      }
+    }
+
+    div.cosponsors-roles {
+      display: inline-block;
+      margin-top: 10px;
+      height: 20px;
+      width: 150px;
+      overflow: hidden;
+
+      span{
+
+        ul {
+          margin-top: -3px;
+
+          li {
+            margin-left: -20px;
+            font-size: 14px;
+          }
+        }
+      }
+    }
+
+
+    div.level1-subjects {
+      margin-left: 0px;
+      margin-top: 20px;
+      height: 25px;
+      width: 320px;
 
       div.bill-subjects-title {
         height: 25px;
-        width: 200px;
+        width: 320px;
 
         h4 {
           font-size:18px;
@@ -841,7 +908,7 @@ div.legislation-wrapper {
     div.subjects {
       margin-top: 0px;
       height: auto;
-      width: 200px;
+      width: 320px;
       overflow: hidden;
 
       span{
@@ -858,13 +925,13 @@ div.legislation-wrapper {
 
     div.level1-committees {
       margin-left: 0px;
-      margin-top: 0px;
+      margin-top: 20px;
       height: 25px;
-      width: 200px;
+      width: 320px;
 
       div.bill-committees-title {
         height: 100%;
-        width: 200px;
+        width: 320px;
 
         h4 {
           font-size: 18px;
@@ -881,12 +948,12 @@ div.legislation-wrapper {
       margin-left: 0px;
       margin-top: 0px;
       height: auto;
-      width: 200px;
+      width: 320px;
 
       div.committees {
         margin-top: 0px;
         height: auto;
-        width: 200px;
+        width: 320px;
         padding-left: -10px;
         overflow: hidden;
 
@@ -909,11 +976,11 @@ div.legislation-wrapper {
       margin-left: 0px;
       margin-top: 0px;
       height: 25px;
-      width: 200px;
+      width: 320px;
 
       div.related-bill-title {
         height: 25px;
-        width: 200px;
+        width: 320px;
 
         h4 {
           font-size:18px;
@@ -929,7 +996,7 @@ div.legislation-wrapper {
     div.related {
       margin-top: 0px;
       height: auto;
-      width: 200px;
+      width: 320px;
       overflow: hidden;
 
       span{
