@@ -6,7 +6,7 @@
 div.main-block {
   margin-top: 20px;
   height: auto;
-  width: 820px;
+  width: 100%;
   padding-left: 5px;
   padding-top: 0px;
 
@@ -15,7 +15,7 @@ div.main-block {
     margin-left: 5px;
     margin-top: 5px;
     height: auto;
-    width: 800px;
+    width: 100%;
     padding-left: 9px;
 
     div.filter_prompt {
@@ -391,7 +391,7 @@ div.main-block {
 div.filter-results {
   margin-top: 18px;
   height:auto;
-  width: 780px;
+  width: 100%;
   overflow: auto;
 
   div.results-heading {

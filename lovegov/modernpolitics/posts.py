@@ -1854,7 +1854,7 @@ def getLegislation(request, vals={}):
         sponsor_party_set=sponsor_party_set,feed_start=feed_start)
 
     legislation_items = contentToFeedItems(legislation, vals['viewer'])
-    vals['legislation_items'] = legislation_items
+    vals['feed_items'] = legislation_items
 
     html = ajaxRender('site/pages/feed/feed_helper.html', vals, request)
     return HttpResponse(json.dumps({'html':html, 'num_items':len(legislation_items)}))
