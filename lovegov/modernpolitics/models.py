@@ -308,6 +308,8 @@ class Content(Privacy, LocationLevel):
             return '/petition/' + str(self.id) + '/'
         elif self.type=='N':
             return '/news/' + str(self.id) + '/'
+        elif self.type=='B':
+            return '/poll/' + str(self.id) + '/'
         elif self.type=='O':
             return '/poll/' + str(self.id) + '/'
         elif self.type =='S':
@@ -585,7 +587,7 @@ class Content(Privacy, LocationLevel):
             object = self.response
         elif type == 'I':
             object = self.userimage
-        elif type == 'O':
+        elif type == 'B':
             object = self.poll
         elif type == 'S':
             object = self.scorecard
@@ -3591,7 +3593,7 @@ class Poll(Content):
         return '/poll/' + str(self.id) + '/'
 
     def autoSave(self, creator=None, privacy='PUB'):
-        self.type = "O"
+        self.type = "B"
         self.in_feed = True
         self.save()
         super(Poll, self).autoSave(creator=creator, privacy=privacy)

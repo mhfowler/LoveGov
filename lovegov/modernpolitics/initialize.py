@@ -1971,7 +1971,6 @@ def setLegislationCreator():
         x.save()
         print "+II+ " + x.get_name()
 
-
 def makeAllComparisonsStale():
     for u in UserProfile.objects.all():
         u.last_answered = datetime.datetime.now()
