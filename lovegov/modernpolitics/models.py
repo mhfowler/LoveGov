@@ -344,7 +344,11 @@ class Content(Privacy, LocationLevel):
     def getTitleDisplay(self):
         return self.downcast().getTitleDisplay()
     def getFeedTitle(self):
-        return self.downcast().getFeedTitle()
+        downcasted = self.downcast()
+        if downcasted != self:
+            return downcasted.getFeedTitle()
+        else:
+            return "downcast error"
 
     #-------------------------------------------------------------------------------------------------------------------
     # gets location string, if content has location
@@ -3978,6 +3982,7 @@ class Group(Content):
     # group type
     group_type = models.CharField(max_length=1,choices=GROUP_TYPE_CHOICES, default='U')
     group_privacy = models.CharField(max_length=1,choices=GROUP_PRIVACY_CHOICES, default='O')   # for non-system groups, is it open or invite-only?
+
     system = models.BooleanField(default=False)                                                 # indicates users can't voluntarily join or leave
     hidden = models.BooleanField(default=False)                                                 # indicates that a group shouldn't be visible in lists [like-minded, folow groups etc]
     autogen = models.BooleanField(default=False)                                                # indicates whether we created group or not
