@@ -1965,6 +1965,10 @@ def removeGhostsFromLoveGovGroup():
         lg.removeMember(x)
         print "+II+ removing" + x.get_name()
 
+def setLegislationCreator():
+    for x in Legislation.objects.all():
+        
+
 #-----------------------------------------------------------------------------------------------------------------------
 # initialize politician groups for each state
 #-----------------------------------------------------------------------------------------------------------------------
