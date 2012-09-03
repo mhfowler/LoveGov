@@ -577,6 +577,8 @@ class Content(Privacy, LocationLevel):
             object = self.comment
         elif type == 'D':
             object = self.discussion
+        elif type == 'L':
+            object = self.legislation
         elif type == 'Q':
             object = self.question
         elif type == 'R':
