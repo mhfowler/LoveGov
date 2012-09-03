@@ -1487,12 +1487,20 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
         self.num_answers = responses.count()
         self.save()
 
+    def userFollowRecalculate(self):
+        followme = self.getFollowMe()
+        ifollow = self.getIFollow()
+        self.num_followme = followme.count()
+        self.num_ifollow = ifollow.count()
+        self.save()
+
     def userStatsRecalculate(self):
         self.userPetitionsRecalculate()
         self.userNewsRecalculate()
         self.userCommentsRecalculate()
         self.userPostsRecalculate()
         self.userAnswersRecalculate()
+        self.userFollowRecalculate()
 
     #-------------------------------------------------------------------------------------------------------------------
     # politician support
