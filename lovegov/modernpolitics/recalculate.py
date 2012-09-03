@@ -279,8 +279,17 @@ def resetGroupSystemBooleans():
         c.save()
 
 
-
+## ran sep3
 def recalculateGroupAliases():
     for g in Group.objects.all():
         g.makeAlias()
         print g.alias
+
+## ran sep3
+def recalculateNumResponses():
+    count = 0
+    for q in Question.objects.all():
+        q.recalculateNumResponses()
+        count += 1
+        if not count%20:
+            print count

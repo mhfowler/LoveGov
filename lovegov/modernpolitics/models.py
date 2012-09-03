@@ -3779,6 +3779,10 @@ class Question(Content):
         self.questions_hot_score = score
         self.save()
 
+    def recalculateNumResponses(self):
+        responses = Response.objects.filter(question=self, total_num=1)         # only responses by real people
+        self.num_responses = responses.count()
+        self.save()
 
 
 #=======================================================================================================================
