@@ -87,6 +87,7 @@ def viewWrapper(view, requires_login=False):
             # page info
             vals['to_page'] = request.path.replace('/login', '')
             vals['page_title'] = "LoveGov: Beta"
+            vals['back_url'] = request.COOKIES.get('back_url')
 
             # privacy
             vals['anonymous_mode'] = getPrivacy(request) == "PRI"
@@ -853,17 +854,21 @@ def about(request, start="video", vals={}):
 # modify account, change password
 #-----------------------------------------------------------------------------------------------------------------------
 def account(request, section="", vals={}):
+
     user = vals['viewer']
     vals['uploadform'] = UploadFileForm()
     vals['parties'] = Party.objects.all()
     vals['user_parties'] = user.parties.all()
 
+    getStateTuples(vals)
+
     if section == "profile": vals['profile_message'] = " "
 
     if request.method == 'GET':
-        html = ajaxRender('site/pages/account.html', vals, request)
+        html = ajaxRender('site/pages/settings/settings.html', vals, request)
         url = '/settings/'
-        return framedResponse(request, html, url, vals)
+        return framedResponse(request, html, url, vals, rebind="settings")
+
     elif request.method == 'POST':
         if request.POST['box'] == 'password':
             password_form = PasswordForm(request.POST)
@@ -883,17 +888,15 @@ def account(request, section="", vals={}):
                 except IOError:
                     vals['profile_message'] = "The image upload didn't work. Try again?"
                     vals['uploadform'] = UploadFileForm(request.POST)
-
-
             vals['profile_message'] = " "
         elif request.POST['box'] == 'basic_info':
             pass
         else:
             pass
 
-        html = ajaxRender('site/pages/account.html', vals, request)
+        html = ajaxRender('site/pages/settings/settings.html', vals, request)
         url = '/settings/'
-        return framedResponse(request, html, url, vals)
+        return framedResponse(request, html, url, vals, rebind="settings")
 
 #-----------------------------------------------------------------------------------------------------------------------
 # group edit

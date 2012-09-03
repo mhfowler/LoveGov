@@ -673,6 +673,21 @@ div.edit-link
   }
 }
 
+a.pencil-button {
+  @include staticImage('/images/icons/edit-pencil.png');
+  background-size: 16px 16px;
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+  display: inline-block;
+  margin-left:2px;
+
+  &:hover
+  {
+    @include staticImage('/images/icons/edit-pencil-blue.png');
+  }
+}
+
 a.edit-link
 {
   text-transform: none;

@@ -14,7 +14,7 @@ from lovegov.modernpolitics.initialize import *
 from django.contrib import auth
 
 # python
-from urllib import urlopen
+from urllib import urlopen, urlretrieve
 from images import downloadImage
 import pprint
 
@@ -107,11 +107,12 @@ def fbLogin(request, vals={}, refresh=False):
                 user_prof.facebook_id = fb_id
                 user_prof.refreshFB(me)
                 fbMakeFriends(request, vals)
+                temp_file = saveFBProfPic(request)
+                user_prof.setProfileImage(file(temp_file))
                 user_prof.save()
 
         if refresh:                     # if not register and user.first_login=True
             user_prof.refreshFB(me)
-
 
         # login
         user = user_prof.user
@@ -210,4 +211,17 @@ def fbTest(request):
     url = "https://graph.facebook.com/me?access_token=" + access_token
     returned = urlopen(url).read()
     print returned
+
+## save fb photo of user ##
+def saveFBProfPic(request):
+    fb_return = fbGet(request,'me/')
+    fb_id = fb_return['id']
+    picture_url = "https://graph.facebook.com/" + fb_id + "/picture?type=large"
+    file_name = 'fb_temp_' + str(random.randint(0,100))
+    urlSavePhoto(picture_url, TEMPDIR, file_name)
+    return TEMPDIR + file_name + ".png"
+
+## save photo from url to disc ##
+def urlSavePhoto(url, file_save_dir, filename):
+    urlretrieve (url, os.path.join(file_save_dir, filename + '.png'))
 

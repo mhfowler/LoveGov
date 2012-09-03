@@ -147,6 +147,9 @@ div.content-detail-wrapper {
         margin-top:25px;
       }
       div.mini-feed-wrapper {
+        div.feed-main {
+          width: 100%;
+        }
         div.answers-wrapper {
           width:400px;
         }
@@ -413,6 +416,7 @@ div.scorecard-section-header {
     margin-left:20px;
     float:left;
     @include fontSize(12px);
+
   }
 }
 
@@ -537,6 +541,9 @@ div.edit-scorecard-header {
   margin-bottom:15px;
   div.edit-scorecard-title {
     @include fontSize(20px);
+    a.back-to-scorecard {
+      float:right;
+    }
   }
   div.edit-scorecard-explanation {
     margin-top:10px;
@@ -625,8 +632,12 @@ div.add-to-scorecard-wrapper {
       height:50px;
       margin-bottom:25px;
       select.add-to-select {
+        height:30px;
         width:100%;
-        height:100%;
+        font-size:8px;
+        li input {
+          height:17px;
+        }
       }
     }
 

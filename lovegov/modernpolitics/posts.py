@@ -614,20 +614,14 @@ def editAccount(request, vals={}):
     if box == 'basic_info':
         if 'first_name' in request.POST: viewer.first_name = request.POST['first_name']
         if 'last_name' in request.POST: viewer.last_name = request.POST['last_name']
+        viewer.phone_number = request.POST.get('phone_number')
         try:
             if 'age' in request.POST: viewer.age = int(request.POST['age'])
         except:
             pass
 
-        if 'address' in request.POST:
-            address = request.POST['address']
-            zip = address
-            try:
-                viewer.location = locationHelper(address, zip)
-                viewer.save()
-            except:
-                viewer.location = None
-                viewer.save()
+        viewer.save()
+        return shortcuts.redirect('/settings/basic_info/')
 
     elif box == 'profile':
         if 'image' in request.FILES:
@@ -2624,7 +2618,7 @@ def createContent(request, vals={}):
             return HttpResponseBadRequest("A required field was not included.")
     elif section=='group':
         if title and full_text:
-            newc = UserGroup(title=title, full_text=full_text, in_feed=True, in_search=True, in_calc=True)
+            newc = UserGroup(title=title, full_text=full_text, in_feed=False, in_search=True, in_calc=False)
             newc.autoSave(creator=viewer, privacy=privacy)
             try:
                 if 'content-image' in request.FILES:
@@ -2644,8 +2638,8 @@ def createContent(request, vals={}):
             return HttpResponseBadRequest("A required field was not included.")
     elif section=='scorecard':
         if title and full_text:
-            newc = Scorecard(title=title, full_text=full_text, in_feed=True, in_search=True, in_calc=True,
-                group=group, poll=poll)
+            newc = Scorecard(title=title, full_text=full_text, in_feed=False, in_search=True, in_calc=False,
+                group=group, poll=poll, posted_to=group)
             newc.autoSave(creator=viewer, privacy=privacy)
             redirect = newc.getEditURL()
         else:
@@ -2658,7 +2652,7 @@ def createContent(request, vals={}):
             except ValueError:
                 return HttpResponseBadRequest("Could not parse election date.")
             from datetime import datetime
-            newc = Election(title=title, full_text=full_text, in_feed=True, in_search=True, in_calc=True,
+            newc = Election(title=title, full_text=full_text, in_feed=False, in_search=True, in_calc=False,
                     election_date=valid_datetime)
             newc.autoSave(creator=viewer, privacy=privacy)
             if state:
@@ -2854,8 +2848,7 @@ def inviteToScorecard(request, vals):
         return HttpResponse("didnt work")
 
 #-----------------------------------------------------------------------------------------------------------------------
-# Splitter between all actions. [checks is post]
-# post: actionPOST - which actionPOST to call
+# invite to run for election
 #-----------------------------------------------------------------------------------------------------------------------
 def inviteToRunForElection(request, vals):
     viewer = vals['viewer']
@@ -2881,6 +2874,47 @@ def inviteToRunForElection(request, vals):
     else:
         LGException( "User inviting to election that is not theirs #" + str(viewer.id) )
         return HttpResponse("didnt work")
+
+#-----------------------------------------------------------------------------------------------------------------------
+# save politician settings
+#-----------------------------------------------------------------------------------------------------------------------
+def savePoliticianSettings(request, vals):
+
+    viewer = vals['viewer']
+    politician_bool = request.POST['politician'] == 'true'
+    political_status = request.POST['political_status']
+    office_title = request.POST['office_title']
+    office_description = request.POST['office_description']
+
+    if politician_bool:
+        confirmed = "elected" in political_status
+        current = "currently" in political_status
+        viewer.politician = True
+        viewer.save()
+
+        if confirmed:
+            viewer.setPrimaryOffice(office_title, office_description, confirmed, current)
+        elif viewer.primary_role:
+            viewer.primary_role.confirmed = False
+            viewer.primary_role.save()
+    else:
+        viewer.politician = False
+        viewer.save()
+
+    return HttpResponse("success")
+
+#-----------------------------------------------------------------------------------------------------------------------
+# remove scorecard from group
+#-----------------------------------------------------------------------------------------------------------------------
+def removeScorecard(request, vals):
+
+    viewer = vals['viewer']
+    g_id = request.POST['g_id']
+    group = Group.objects.get(id=g_id)
+    if group.hasAdmin(viewer):
+        group.scorecard = None
+        group.save()
+    return HttpResponse("removed")
 
 #-----------------------------------------------------------------------------------------------------------------------
 # Splitter between all actions. [checks is post]
