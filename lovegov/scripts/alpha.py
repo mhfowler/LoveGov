@@ -195,14 +195,16 @@ def scriptCheckPoliticians(args=None):
     for column in range(2,sheet.ncols):
         # Get politician Name
         politician_name = sheet.cell(0,column).value.split(" ")
-        print politician_name
 
         # Look for politician
         politician = UserProfile.lg.get_or_none(first_name=politician_name[0],last_name=politician_name[1], politician=True)
+        name = politician_name[0] + " " + politician_name[1]
         # If they don't exist
         if not politician:
-            name = politician_name[0] + " " + politician_name[1]
             print "Could not find " + name
+
+        else:
+            print "Found " + name
 
 
 def scriptCreateResponses(args=None):
@@ -240,6 +242,7 @@ def scriptCreateResponses(args=None):
                 # Set some user facts
                 politician.user_profile.confirmed = True
                 politician.user_profile.politician = True
+                politician.user_profile.ghost = True
                 politician.user_profile.save()
 
                 #image_path = os.path.join(PROJECT_PATH, 'alpha/static/images/presidentialCandidates/' + politician_name[1].lower() + ".jpg")
