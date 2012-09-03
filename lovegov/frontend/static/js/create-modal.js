@@ -49,6 +49,11 @@ bind("div.create-modal div.selection", "click", function(e) {
     var selection = $(this).data('selection');
     $('div.create-modal div.type-select').hide();
     $('div.'+selection).fadeIn(250);
+    if(selection=='poll') {
+        if(getNumQuestions()==0) {
+            $('div.create-modal div.add-question').click();
+        }
+    }
 });
 
 
@@ -68,24 +73,31 @@ bind("div.create-modal span.post-as", "click", function(e) {
 bind("div.create-modal div.add-question", "click", function(e) {
     var num_questions = getNumQuestions();
     if(num_questions==1) {
-        // Adding another question - now it's a poll!
-        $('div.create-modal div.create-section.poll div.poll-form').fadeIn(500);
+        // Adding another question - ask if it's a poll
+        $('div.create-modal div.create-section.poll div.form-row.polltype').fadeIn(500);
     }
     $(this).data('num-questions', num_questions+1);
    var newQuestion = $('div.create-modal div.question.model').clone();
     $('div.add-question').before(newQuestion);
     newQuestion.removeClass("model");
+    var format = function(topic) {
+        var originalOption = topic.element;
+        return 'hello';
+    }
+    newQuestion.find("select.topics_select_2").select2({
+        formatResult: format,
+        formatSelection: format
+    });
 });
 
 function getNumQuestions() {
-    return $(this).data('num-questions');
+    return $("div.create-modal div.add-question").data('num-questions');
 }
 
 // Delete questions
 bind("div.create-modal div.questions span.remove", "click", function(e) {
-    var hasContent = false;
     var question = $(this).closest("div.question");
-    if (isEmptyQuestion(question)) {
+    if (!isEmptyQuestion(question)) {
         if(confirm("Remove this question?")) {
             question.remove();
        }
@@ -95,13 +107,24 @@ bind("div.create-modal div.questions span.remove", "click", function(e) {
 });
 
 function isEmptyQuestion(question) {
+    var is_empty = true;
     question.find("input,textarea").each(function(i,e) {
         if($(this).val()!='') {
-            // break loop
-            return false;
+            is_empty = false;
         }
     });
-    return true;
+    return is_empty;
+}
+
+function isFilledQuestion(question) {
+    var is_filled = true;
+    question.find("input,textarea").each(function(i,e) {
+        if(!$(this).hasClass('optional') && $(this).val()=='') {
+            // break loop
+            is_filled = false;
+        }
+    });
+    return is_filled;
 }
 
 // Show add source
@@ -151,8 +174,13 @@ bind("div.create-modal div.save", "click", function(e) {
             invalid = invalid || !validField('input.title', 'title', form);
             invalid = invalid || !validField('textarea.description', 'description', form);
         }
-        questions = extractQuestions();
-        invalid = invalid || questions.length < 1;
+        invalid = invalid || getNumQuestions() < 1;
+        $('div.create-modal div.create-section.poll div.question:not(.model)').each(function(i,e) {
+            if(!isFilledQuestion($(this))) {
+                $(this).animate({'border-color': 'red'}, 500);
+                invalid = true;
+            }
+        });
     }
 
     if(invalid) {

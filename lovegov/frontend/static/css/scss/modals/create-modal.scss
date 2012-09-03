@@ -65,6 +65,9 @@ div.create-modal {
             margin: 10px;
           }
         }
+        &.polltype {
+          display:none;
+        }
       }
       div.poll-form {
         display: none;
@@ -147,11 +150,8 @@ div.create-modal {
         width: 460px;
       }
       textarea {
-        height: 30px;
+        height: 60px;
         width: 500px;
-        &:focus {
-          height: 60px;
-        }
       }
       div.question-title {
         padding: 5px;

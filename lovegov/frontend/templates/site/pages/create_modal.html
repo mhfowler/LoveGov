@@ -9,7 +9,7 @@
         </div>
         <div class="selection" data-selection="poll">
             <img src="{{ STATIC_URL }}/images/create/poll_plus.png">
-            <span class="label">Questions</span>
+            <span class="label">Question</span>
         </div>
         <br>
         <div class="selection" data-selection="discussion">
@@ -91,7 +91,7 @@
             <span class="back">< back</span>
             <div class="form">
                 <div class="form-row polltype">
-                    <div class="label">Create as a poll?<br> </br></div>
+                    <div class="label">Would you like to supersize your question to a poll today?<br> </br></div>
                     <div class="field">
                         <input type="radio" name="polltype" value="p">Yes, I want to create a <strong>themed collection</strong> of questions.<br>
                         <input type="radio" name="polltype" value="q" checked>No, I want to create a <strong>single</strong> or <strong>random assortment</strong> of questions.
@@ -110,7 +110,16 @@
                                 <span class="remove">remove</span>
                                 <span class="add-source">add source</span>
                             </span>
-                            <div class="label padded">Question:</div>
+                            <div class="label padded">
+                                <select style="width: 100px" class="topics_select_2">
+                                    {% for t in main_topics %}
+
+                                        <option value="{{ t.alias }}" data-imgurl="{% include 'site/pieces/topic_icon_url.html' with topic=t width="30" height="30" %}"></option>
+
+                                    {% endfor %}
+                                </select>
+                                Question:
+                            </div>
                             <div class="field"><input type="text" placeholder="Enter a question"></div>
                         </div>
                         <div class="question-answers form-row">
@@ -123,7 +132,7 @@
                         </div>
                         <div class="question-source form-row">
                             <div class="label padded">Source:</div>
-                            <div class="field"><input type="text" placeholder="Enter a reference URL for this question, e.g. to a piece of legislation"></div>
+                            <div class="field"><input type="text" placeholder="Enter a reference URL for this question, e.g. to a piece of legislation" class="optional"></div>
                         </div>
                     </div>
                     <div class="add-question" data-num-questions="0">+ add a question</div>
