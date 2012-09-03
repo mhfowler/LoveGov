@@ -1014,7 +1014,7 @@ def saveAnswer(request, vals={}):
     vals['compare_responses'] = responses
 
     html = ajaxRender('site/pages/qa/question_stub.html', vals, request)
-    return HttpResponse(json.dumps({'html':html}))
+    return HttpResponse(json.dumps({'html':html, 'num_responses':question.num_responses}))
 
 def saveScorecardAnswer(request, vals):
     question = Question.objects.get(id=request.POST['q_id'])
@@ -1030,7 +1030,7 @@ def saveScorecardAnswer(request, vals):
             responses = []
             vals['compare_responses'] = responses
             html = ajaxRender('site/pages/qa/question_stub.html', vals, request)
-            return HttpResponse(json.dumps({'html':html}))
+            return HttpResponse(json.dumps({'html':html, 'num_responses':question.num_responses}))
         else:
             LGException("user " + str(user.id) + " trying to answer question for scorecard which isn't on scorecard poll")
             return HttpResponse("didn't work")

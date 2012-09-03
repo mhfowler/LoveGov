@@ -267,7 +267,7 @@ def removeVotesOnQuestions():
         count += 1
         if not count%20:
             print count
-            
+
 
 def resetGroupSystemBooleans():
     print "SETTING ALL NETWORKS TO AUTOGEN=True and SYSTEM=False"

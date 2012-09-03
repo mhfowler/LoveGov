@@ -44,6 +44,9 @@ def answerAction(user, question, privacy, answer_id, weight=None, explanation=No
         view.responses.add(response)
         user.num_answers += 1
         user.save()
+        question = response.question
+        question.num_responses += 1
+        question.save()
     # else update old response
     else:
         response = my_response[0]
@@ -57,12 +60,8 @@ def answerAction(user, question, privacy, answer_id, weight=None, explanation=No
         if chosen_answer:
             response.most_chosen_num = 1
             response.total_num = 1
-        response.created_when = datetime.datetime.now()
+        response.edited_when = datetime.datetime.now()
         response.saveEdited(privacy)
-
-    # if you answered, then you liked the question
-    if chosen_answer:
-        response.question.like(user, "PRI")
 
     return response
 
