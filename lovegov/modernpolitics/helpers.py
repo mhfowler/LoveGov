@@ -481,7 +481,7 @@ def genAliasSlug(alias, unique=True):
     orig_alias = alias
     if unique:
         while not isUniqueAlias(alias):
-            nonce + alias = orig_alias + str(nonce)
+            alias = orig_alias + str(nonce)
     return alias
 
 
