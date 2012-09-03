@@ -14,7 +14,8 @@ div.search {
     min-width: 335px;
     @include clearfix;
     display: none;
-    @include box-shadow(5px 5px 5px $gray);
+    @include box-shadow(0 50px 200px 10px $orange);
+    z-index: 1;
   }
 }
 
@@ -22,12 +23,10 @@ div.autocomplete-header {
   @include titleFont;
   font-size: 18px;
   width: 90%;
-  padding: 6px;
-  margin-left: auto;
-  margin-right: auto;
+  padding: 8px 6px 6px 6px;
   color: $black;
   text-transform: uppercase;
-  text-align: center;
+
 }
 
 div.autocomplete-user

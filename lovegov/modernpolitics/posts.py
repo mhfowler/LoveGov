@@ -328,7 +328,7 @@ def searchAutoComplete(request,vals={},limit=5):
     vals['num_results'] = total_results
     vals['shown'] = results_length
     html = ajaxRender('site/frame/searchbar/autocomplete.html', vals, request)
-    return HttpResponse(json.dumps({'html':html}))
+    return HttpResponse(json.dumps({'html':html,'num_results': total_results}))
 
 #-----------------------------------------------------------------------------------------------------------------------
 # Loads members.

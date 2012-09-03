@@ -1,3 +1,5 @@
+{% if num_results > 0 %}
+
 {% load customtags %}
 <img id="autocomplete-loading-gif" src="{{ STATIC_URL }}/images/ajax-loader.gif" style="display:none"/>
 
@@ -41,3 +43,9 @@
 </div>
 {% endif %}
 </a>
+
+{% else %}
+
+Ain't no rezzies
+
+{% endif %}

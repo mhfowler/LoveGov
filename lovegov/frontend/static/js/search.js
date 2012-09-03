@@ -38,7 +38,7 @@ bind('div.search input', 'focusout', function(e) {
    }
 });
 
-bind('div.search input', 'focus', function(e) {
+bind('div.search input', 'click', function(e) {
     var dropdown = $("div.search div.search-dropdown");
     if(dropdown.html()) {
         dropdown.fadeIn(100);
