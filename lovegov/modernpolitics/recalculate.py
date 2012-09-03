@@ -261,7 +261,7 @@ def removeDeprecatedPoliticians():
             # Any person who also has that name
             if not person.primary_role and current_num > 1:
                 # Is most likely a deprecated politician
-                print "+II+ Deleting " + person.get_name() + " - Current duplicates: " + str(len(current_num))
+                print "+II+ Deleting " + person.get_name() + " - Current duplicates: " + str(current_num)
                 person.delete()
 
 
