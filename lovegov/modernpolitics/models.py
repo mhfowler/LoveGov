@@ -1474,11 +1474,17 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
         self.num_posts = Content.objects.filter(creator=self, in_feed=True).count()
         self.save()
 
+    def userAnswersRecalculate(self):
+        responses = self.view.responses.all()
+        self.num_answers = respones.count()
+        self.save()
+
     def userStatsRecalculate(self):
         self.userPetitionsRecalculate()
         self.userNewsRecalculate()
         self.userCommentsRecalculate()
         self.userPostsRecalculate()
+        self.userAnswersRecalcualte()
 
     #-------------------------------------------------------------------------------------------------------------------
     # politician support
