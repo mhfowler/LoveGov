@@ -2,6 +2,7 @@
     {% if not info.i_am_running %}
         <a class="run_for group-action" data-e_id="{{ info.election.id }}"> run for </a>
     {% else %}
-        <a class="stop_running_for running-for group-action" data-e_id="{{ info.election.id }}"> you are running for </a>
+        <a class="stop_running_for running-for group-action hover_text" data-e_id="{{ info.election.id }}"
+        data-hover_text="leave race" data-original_text="you are running for"> you are running for </a>
     {% endif %}
 {% endif %}

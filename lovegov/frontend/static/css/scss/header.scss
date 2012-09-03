@@ -118,6 +118,9 @@ header
     float: right;
     margin: 19px 7px;
     background-size: 20px 20px;
+    &:hover {
+      cursor:pointer;
+    }
   }
 
   div.notices {

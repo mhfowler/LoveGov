@@ -71,11 +71,15 @@
 
     <div class="right-part">
         {% block right_part %}
-            {% with top_comment=content.getTopComment %}
-                {% if top_comment %}
-                    {% include 'site/pages/feed/feed_items/top_comment.html' %}
-                {% endif %}
-            {% endwith %}
+            {% if content.num_comments %}
+                {% with top_comment=content.getTopComment %}
+                        {% include 'site/pages/feed/feed_items/top_comment.html' %}
+                {% endwith %}
+            {% elif content.main_image or content.link_screenshot %}
+                <div class="right-image-wrapper">
+                    {% include 'site/pieces/avatar.html' with user=content height="100" width="100" hoveroff=1 %}
+                </div>
+            {% endif %}
         {% endblock %}
     </div>
 

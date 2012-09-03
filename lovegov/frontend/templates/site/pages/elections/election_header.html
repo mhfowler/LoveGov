@@ -64,12 +64,14 @@
             </div>
 
             <div class="election-buttons group-actions">
+                {% if viewer.politician and not group.system and not viewer.running_for %}
+                    {% include 'site/pages/elections/run_for_button.html' %}
+                {% elif viewer.running_for_id == info.election.id %}
+                    {% include 'site/pages/elections/run_for_button.html' %}
+                {% endif %}
                 {% include 'site/pages/group/group_follow_button.html' with is_user_following=info.is_user_following %}
                 {% if viewer == info.election.creator %}
                     {% include 'site/pages/elections/invite_to_run_for_button.html' %}
-                {% endif %}
-                {% if viewer.politician and not group.system %}
-                    {% include 'site/pages/elections/run_for_button.html' %}
                 {% endif %}
             </div>
 

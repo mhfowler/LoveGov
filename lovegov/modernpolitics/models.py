@@ -904,6 +904,7 @@ class BasicInfo(models.Model):
     invite_message = models.CharField(max_length=10000, blank=True, default="default")
     invite_subject = models.CharField(max_length=1000, blank=True, default="default")
     bio = models.CharField(max_length=500, blank=True, null=True)
+    phone_number = models.CharField(max_length=40, blank=True, null=True)
 
     class Meta:
         abstract = True
@@ -1055,10 +1056,11 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
     # Government Stuff
     political_title = models.CharField(max_length=100, default="Citizen")
     primary_role = models.ForeignKey("OfficeHeld", null=True)
-    ghost = models.BooleanField(default=False)
+    running_for = models.ForeignKey("Election", null=True, related_name="runners")
     politician = models.BooleanField(default=False)
     elected_official = models.BooleanField(default=False)
     currently_in_office = models.BooleanField(default=False)
+    ghost = models.BooleanField(default=False)
     supporters = models.ManyToManyField('UserProfile', related_name='supportees')
     num_supporters = models.IntegerField(default=0)
     num_messages = models.IntegerField(default=0)
@@ -1235,6 +1237,32 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
         return congressmen
 
     #-------------------------------------------------------------------------------------------------------------------
+    # set primary_role to exist and hold office with inputted characteristics
+    #-------------------------------------------------------------------------------------------------------------------
+    def setPrimaryOffice(self, office_title, office_description, confirmed, current):
+
+        if self.primary_role:
+            office_held = self.primary_role
+            office = office_held.office
+            office.title = office_title
+            office.summary = office_description
+            office.save()
+        else:
+            office = Office(title=office_title, summary=office_description, user_generated=True)
+            office.autoSave()
+            office_held = OfficeHeld(office=office, user_generated=True)
+            office_held.start_date = datetime.datetime.min
+            office_held.end_date = datetime.datetime.max
+            office_held.autoSave()
+            self.primary_role = office_held
+
+        self.politician = True
+        self.save()
+        office_held.confirmed = confirmed
+        office_held.current = current
+        office_held.save()
+
+    #-------------------------------------------------------------------------------------------------------------------
     # returns the number of separate sessions a user has had.
     #-------------------------------------------------------------------------------------------------------------------
     def getNumSessions(self):
@@ -1297,6 +1325,20 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
         self.temp_location = location
         self.save()
         return location
+
+    #-------------------------------------------------------------------------------------------------------------------
+    # gets location string, address, city, state, zip
+    #-------------------------------------------------------------------------------------------------------------------
+    def getLocationFullVerbose(self):
+        to_return = ''
+        if self.location:
+            if self.location.address_string:
+                to_return += self.location.address_string
+                if self.location.state:
+                    to_return = self.location.state
+                    if self.location.city:
+                        to_return += ', ' + self.location.city
+        return to_return
 
     #-------------------------------------------------------------------------------------------------------------------
     # Gets a comparison, between inputted user and this user.
@@ -1446,6 +1488,7 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
         if not supported:
             supported = Supported(user=self, to_user=politician)
             supported.autoSave()
+            politician.upvotes += 1
             politician.num_supporters += 1
             politician.save()
         if not supported.confirmed:
@@ -1587,6 +1630,7 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
             self.num_ifollow += 1
             self.save()
             to_user.num_followme += 1
+            to_user.upvotes += 1
             to_user.save()
         else:
             if not relationship.confirmed:
@@ -2831,6 +2875,8 @@ class Notification(Privacy):
 ############ POLITICAL_ROLE ############################################################################################
 class Office(Content):
     tags = models.ManyToManyField("OfficeTag",related_name='tag_offices')
+    # user genereated
+    user_generated = models.BooleanField(default=False)
     # optimization
     governmental = models.BooleanField(default=False)
     representative = models.BooleanField(default=False)
@@ -2838,7 +2884,7 @@ class Office(Content):
 
     def autoSave(self,creator=None,privacy='PUB'):
         self.type = "O"
-        self.in_search = True
+        self.in_search = False
         super(Office,self).autoSave(creator,privacy)
 
     def setBooleans(self):
@@ -3979,6 +4025,9 @@ class Group(Content):
         else:
             return '/group/' + str(self.id) + '/'
 
+    def getSettingsURL(self):
+        return self.get_url() + 'edit/'
+
     #-------------------------------------------------------------------------------------------------------------------
     # Downcasts Group to appropriate child model.
     #-------------------------------------------------------------------------------------------------------------------
@@ -4593,13 +4642,16 @@ class Election(Group):
             action.autoSave()
             if not user.politician:
                 user.politician = True
-                user.save()
+            user.running_for = self
+            user.save()
 
     def leaveRace(self, user):
         if self.hasMember(user):
             self.removeMember(user)
             action = RunningForAction(user=user, election=self, modifier="S")
             action.autoSave()
+            user.running_for = None
+            user.save()
 
     def getCandidatesURL(self):
         return self.get_url() + '/candidates/'
@@ -4947,6 +4999,8 @@ class OfficeHeld(UCRelationship):
     current = models.BooleanField(default=False)
     election = models.BooleanField(default=False)
     congress_sessions = models.ManyToManyField(CongressSession)
+    # user generated
+    user_generated = models.BooleanField(default=False)
 
     def autoSave(self):
         self.content = self.office

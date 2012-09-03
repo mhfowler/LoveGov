@@ -158,7 +158,13 @@ div.account-right
     {
       color:$black;
     }
+
+    &.phone-input {
+      top:-63px;
+    }
   }
+
+
 
   input[type="password"]
   {
@@ -243,11 +249,11 @@ div.account-right
     @include h3;
     color:$deep-gray;
     font-family:$title-font;
-    height: 130px;
+    height: 150px;
     padding: 35px 25px;
     width: 500px;
     position: relative;
-    top: -10px;
+    top: -20px;
     left: -20px;
 
     &:focus
@@ -435,14 +441,196 @@ img.account-picture
   width: 100%;
 }
 
-.account-input:focus {
+.account-input {
   background-color:$awesome-blue;
 }
+.account-input:focus {
+  background-color:$light-gray;
+}
 .account-input:hover {
-  background-color:$awesome-blue;
+  background-color:$light-gray;
   cursor:pointer;
 }
 
+
 h3.password-header {
   margin-top:13px;
+}
+
+
+
+/* new stuff */
+div.voting-address-wrapper {
+
+
+  a.address-save {
+    float:right;
+  }
+
+  div.location-state {
+    width:200px;
+    margin-bottom:30px;
+    select.location-state-select {
+      width:200px;
+      padding-top:5px;
+    }
+  }
+
+  div.location-city {
+    margin-top:10px;
+  }
+
+  textarea.address-textarea {
+    @extend textarea;
+    @include h5;
+    color:$deep-gray;
+    font-family:$title-font;
+    height: 100px;
+    width:500px;
+    position: relative;
+    padding:25px;
+    padding-right: 30px;
+    margin-bottom: 30px;
+    top: 0px;
+    left: -22px;
+  }
+
+  div.address-success-message {
+    display:none;
+    float:left;
+  }
+}
+
+
+/* politician settings */
+div.politician-settings-wrapper {
+
+  div.politician-settings-options {
+    padding-left:50px;
+  }
+
+  div.settings-row {
+    margin-bottom:20px;
+  }
+
+  div.yes-i-am {
+    span.yes {
+      color:$text-blue;
+      float:left;
+      marign-left:20px;
+      @include fontSize(24px);
+      margin-right:15px;
+    }
+    input.settings-checkbox {
+      float:left;
+      position: relative;
+      margin-top:10px;
+    }
+  }
+
+  div.running-for-options {
+    padding-left:30px;
+    width:250px;
+    float:left;
+    div.running-for-option {
+      margin-bottom:10px;
+      input.settings-checkbox {
+        margin-top:3px;
+        float:right;
+      }
+    }
+  }
+
+  div.political-status-error {
+    float:left;
+    margin-left:30px;
+    margin-top:5px;
+    color:$red;
+    display:none;
+    width:150px;
+  }
+
+  div.office-description {
+    width:600px;
+    div.office-edit-wrapper {
+      margin-bottom:20px;
+      div.settings-label-wrapper {
+        float:left;
+        width:100%;
+        div.settings-label {
+          @include fontSize(18px);
+          color:$text-blue;
+          float:left;
+          margin-bottom:8px;
+        }
+        div.office-error {
+          float:right;
+          color:$red;
+          margin-right:100px;
+          display:none;
+        }
+      }
+      input.office-title-input {
+        float:left;
+        position:static;
+        margin-left:20px;
+        width:80%;
+      }
+      textarea.office-description-textarea {
+        float:left;
+        position:static;
+        margin-left:20px;
+        width:80%;
+        height:200px;
+        @include h3;
+        color:$deep-gray;
+        font-family:$title-font;
+        padding: 20px;
+      }
+    }
+  }
+
+  span.politician-success-message {
+    float:right;
+    margin-right:50px;
+    margin-top:15px;
+    display:none;
+    color:$black;
+  }
+
+  a.politician-save {
+    float:right;
+  }
+}
+
+
+/* group edit settings */
+textarea.full-text-field {
+  background-color:$awesome-blue;
+  padding:15px;
+  position:relative;
+  top:-15px;
+  left:-20px;
+  &:hover {
+    background-color:$light-gray;
+    cursor:pointer;
+  }
+  &:focus {
+    background-color:$light-gray;
+  }
+}
+
+input.group-edit-input {
+  background-color:$awesome-blue;
+  padding:15px;
+  position:relative;
+  top:-15px;
+  left:-15px;
+  &:hover {
+    background-color:$light-gray;
+    cursor:pointer;
+  }
+  &:focus {
+    background-color:$light-gray;
+  }
 }
