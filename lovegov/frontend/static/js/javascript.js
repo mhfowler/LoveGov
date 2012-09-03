@@ -38,8 +38,6 @@ function bindOnReload() {
             showSelectors();
             loadBillSelect2();
             break;
-        case "legislation-view":
-            shortenLongText(); break;
         case "legislation_detail":
             shortenLongText(); break;
         case "home":
@@ -1065,14 +1063,11 @@ function getFeed(container) {
         var sponsor_name_json = JSON.stringify(sponsor_name);
         var sponsor_party = $('select.sponsor_select_party').val();
         var sponsor_party_json = JSON.stringify(sponsor_party);
-        var sponsor_district = $('select.sponsor_select_district').val();
-        var sponsor_district_json = JSON.stringify(sponsor_district);
 
         data = {'action': 'getLegislation', 'feed_start':feed_start, 'session_set':session_json,
             'type_set':type_json, 'subject_set':subject_json, 'committee_set':committee_json,
             'introduced_set':introduced_json, 'sponsor_body_set':sponsor_body_json,
-            'sponsor_name_set':sponsor_name_json, 'sponsor_party_set':sponsor_party_json,
-            'sponsor_district_set':sponsor_district_json};
+            'sponsor_name_set':sponsor_name_json, 'sponsor_party_set':sponsor_party_json};
     }
     action({
             data: data,
@@ -1587,6 +1582,7 @@ bind(".r_register", 'click', null, function(event) {
         {
             form.find(".register_gif").hide();
             var returned = eval('(' + data + ')');
+
             if (returned.success) {
                 window.location.href = "/welcome/";
             }
@@ -2230,6 +2226,24 @@ bind( ".notification_user_follow" , 'click' , null , function(event)
  *
  **********************************************************************************************************************/
 
+//bind(".feed_by_subject" , "click" , null , function(event) {
+//    var subject = $(this).html();
+//    var subject_json = JSON.stringify(subject);
+//    refreshFeed();
+//});
+//
+//bind(".feed_by_committee" , "click" , null , function(event) {
+//    var committee = $(this).html();
+//    var committee_json = JSON.stringify(committee);
+//    refreshFeed();
+//});
+//
+//bind(".feed_by_related_bills" , "click" , null , function(event) {
+//    var related_bills = $(this).html();
+//    var related_bills_json = JSON.stringify(related_bills);
+//    refreshFeed();
+//});
+
 bind( '.filter_box' , 'click' , null , function(event) {
     event.preventDefault();
     if ($(this).hasClass('clicked')) {
@@ -2239,26 +2253,6 @@ bind( '.filter_box' , 'click' , null , function(event) {
         $(this).addClass('clicked');
     }
 });
-
-bind( '.expand_link' , 'click' , null , function(event) {
-    event.preventDefault();
-    if ($(this).hasClass('clicked')) {
-        $(this).removeClass('clicked');
-        $('.level2-recent-actions-div').setStyle({
-            overflow: hidden
-        });
-    }
-    else {
-        $(this).addClass('clicked');
-        $('.level2-recent-actions-div').setStyle({
-            overflow: auto
-        });
-    }
-});
-
-function billPassageOrder() {
-
-}
 
 function loadBillSelect2() {
     $('.session_select').select2({
@@ -2319,7 +2313,7 @@ function shortenLongText() {
     var moretext = "read more";
     var lesstext = "less";
     if ($('.long_text').hasClass("bill_detail")) {
-        var showChar = 300;
+        var showChar = 400;
     }
     else {
         var showChar = 150;
@@ -2873,6 +2867,7 @@ function saveAnswer(stub) {
                 new_element.animate({"height":new_height}, {"duration":200, "complete":function(){new_element.css("height", "auto");}});
                 bindOnNewElements();
             }
+            stub.find(".num_responses").html(returned.num_responses);
             var saved_message = stub.find(".saved_message");
             saved_message.show();
             saved_message.fadeOut(5000);

@@ -450,10 +450,10 @@ BILL_TYPES = {
     'h': 'House of Representatives Bill',
     'hr': 'House of Representatives Resolution',
     'sr': 'Senate Resolution',
-    'hc': 'House of Representatives Committee Bill',
-    'sc': 'Senate Committee Bill',
-    'sj': 'Senate Joint Bill',
-    'hj': 'House of Representatives Joint Bill',
+    'hc': 'House of Representatives Concurrent Resolution',
+    'sc': 'Senate Concurrent Resolution',
+    'sj': 'Senate Joint Resolution',
+    'hj': 'House of Representatives Joint Resolution',
 }
 
 # types of content that show up in the feed
@@ -746,7 +746,8 @@ ANONYMOUS_PROHIBITED_ACTIONS = [
 
 ###################################### CONTENT TYPES IN FEED ###########################################################
 
-CONTENT_IN_FEED = ['P', 'N', 'B', 'Q', 'D']
+HAS_HOT_SCORE = ['P', 'N', 'B', 'D', 'Q']
+IN_FEED = ['P', 'N', 'B', 'D', 'Q']
 
 ###################################### DATA #########################################################################
 

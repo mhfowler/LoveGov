@@ -1,12 +1,8 @@
-{% include 'site/frame/javascript-all.html' %}
-{% include 'site/frame/css-all.html' %}
-
-{% block content %}
-
-
 <div class="stub-container">
     <div class="sponsor">
-        <img src='/static/images/old/presidentialCandidates/paul.jpg' class="sponsor-img">
+        <div class="sponsor-img">
+            {% include 'site/pieces/avatar.html' with user=l.sponsor width="80" height="80" %}
+         </div>
         <div class="sponsor-info">
             <a href='{{l.sponsor.get_url}}'><h6 class="sponsor-name"> Sponsor<br>{{l.sponsor.get_name}}</h6></a>
         </div>
@@ -46,53 +42,3 @@
         </div>
     </a>
 </div>
-
-<!--
-
-<div>
-     <h5>
-            Title: {{l.full_title}}
-     <br>
-     </h5>
-    <p><h2>Bill Information</h2>
-
-    {% for title in leg_titles %}
-        <p><h3>Bill title</h3>
-        <ul>
-            <li>Title: {{title.title}}</li>
-            <li>Type: {{title.title_type}}</li>
-            <li>As: {{title.title_as}}</li>
-        </ul>
-    {% endfor %}
-
-    <p><h3>Description</h3></p>
-
-    <p>{{l.bill_summary}}
-
-    <p><h3>Misc Info</h3>
-
-    <ul>
-        <li>Last updated: {{l.bill_updated}}</li>
-        <li>Introduced: {{l.introduced_datetime}}</li>
-        <li>Sponsor: <a href='{{l.sponsor.get_url}}'>{{l.sponsor.get_name}}</a></li>
-        <li>Current state: {{l.state_text}}</li>
-        <ul>
-            <li>Status: {{l.bill_status.status_text}}</li>
-            <li>Datetime: {{l.bill_status.datetime}}</li>
-            <li>Where: {{l.bill_status.where}}</li>
-            <li>Result: {{l.bill_status.result}}</li>
-            <li>How: {{l.bill_status.how}}</li>
-            <li>Roll: {{l.bill_status.roll}}</li>
-        </ul>
-        <li>State datetime: {{l.state_datetime}}</li>
-    </ul>
-
-    <p><h3>Sponsor</h3>
-
-    <a href='{{l.sponsor.get_url}}'>{{l.sponsor.get_name}}</a>
-
-</div>
-
--->
-
-{% endblock %}

@@ -270,6 +270,7 @@ class Content(Privacy, LocationLevel):
     title = models.CharField(max_length=500)
     summary = models.TextField(max_length=500, blank=True, null=True)
     created_when = models.DateTimeField(auto_now_add=True)
+    edited_when = models.DateTimeField(auto_now_add=True, null=True)
     main_image = models.ForeignKey("UserImage", null=True, blank=True)
     active = models.BooleanField(default=True)
     calculated_view = models.ForeignKey("WorldView", null=True, blank=True)     # foreign key to worldview
@@ -416,6 +417,11 @@ class Content(Privacy, LocationLevel):
     # Recalculate status for this content.
     #-------------------------------------------------------------------------------------------------------------------
     def recalculateVotes(self):
+        votes = Voted.objects.filter(content=self)
+        upvotes = votes.filter(value=1)
+        downvotes = votes.filter(value=-1)
+        self.upvotes = upvotes
+        self.downvotes = downvotes
         self.status = self.upvotes - self.downvotes
         self.save()
 
@@ -1563,6 +1569,8 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
     # Fills in fields based on facebook data
     #-------------------------------------------------------------------------------------------------------------------
     def refreshFB(self, fb_data):
+        from lovegov.modernpolitics.helpers import genAliasSlug
+
         self.facebook_id = fb_data['id']
         self.facebook_profile_url = fb_data['link']
         # self.gender = fb_data['gender']
@@ -1591,10 +1599,7 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
             for edu in education:
                 school = edu['school']
                 name = school['name']
-                alias = name.replace(" ","")
-                alias = alias.replace(",","")
-                alias = alias.replace(".","")
-                alias = alias.lower()
+                alias = genAliasSlug(name, unique=False)
                 school_network = Network.lg.get_or_none(alias=alias,network_type='S')
                 if not school_network:
                     school_network = Network(alias=alias,title=name,network_type='S')
@@ -1605,10 +1610,7 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
         if 'location' in fb_data:
             location = fb_data['location']
             name = location['name']
-            alias = name.replace(" ","")
-            alias = alias.replace(",","")
-            alias = alias.replace(".","")
-            alias = alias.lower()
+            alias = genAliasSlug(name, unique=False)
             location_network = Network.lg.get_or_none(alias=alias,network_type='L')
             if not location_network:
                 location_network = Network(alias=alias,title=name,network_type='L')
@@ -3722,6 +3724,11 @@ class Question(Content):
     official = models.BooleanField()
     lg_weight = models.IntegerField(default=5)
     answers = models.ManyToManyField(Answer)
+
+    # scores for questions feed
+    num_responses = models.IntegerField(default=0)
+    questions_hot_score = models.IntegerField(default=0)
+
     class Admin:
         pass
     def __unicode__(self):
@@ -3763,6 +3770,15 @@ class Question(Content):
     def addAnswer(self, a):
         self.answers.add(a)
         self.save()
+
+    def recalculateQuestionHotScore(self):
+        responses = Response.objects.filter(question=self, total_num=1)         # only responses by real people
+        score = 0
+        for r in responses:
+            score += r.getQuestionHotValue()
+        self.questions_hot_score = score
+        self.save()
+
 
 
 #=======================================================================================================================
@@ -3809,6 +3825,17 @@ class Response(Content):
 
     def clearAnswerTallies(self):
         self.answer_tallies.delete()
+
+    def getQuestionHotValue(self):
+        age = datetime.datetime.now() - self.created_when
+        days_old = age.days
+        if days_old < HOT_VOTE_MAX_DAYS:
+            seconds = age.seconds
+            max_seconds = 10*24*60*60           # days * hours * minutes * seconds
+            value = max_seconds - seconds
+            return value
+        else:
+            return 0
 
 ########################################################################################################################
 ########################################################################################################################
@@ -4758,6 +4785,11 @@ class Committee(Group):
             self.num_members -= 1
             self.save()
 
+
+    def getContent(self):
+        from lovegov.modernpolitics.feed import getLegislationFromCongressmen
+        content = getLegislationFromCongressmen(self.members.all())
+        return content
 
 
 ########################################################################################################################

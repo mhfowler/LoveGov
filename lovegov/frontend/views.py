@@ -13,6 +13,8 @@ from pprint import pprint
 
 from datetime import datetime, timedelta
 
+from collections import OrderedDict
+
 #-----------------------------------------------------------------------------------------------------------------------
 # Convenience method which returns a simple nice looking message in a frame
 #-----------------------------------------------------------------------------------------------------------------------
@@ -941,8 +943,13 @@ def legislation (request, vals={}):
 
     vals['legislation_items'] = Legislation.objects.all()
     vals['sessions'] = CongressSession.objects.all().order_by("-session")
-    type_list = [x['bill_type'] for x in Legislation.objects.values('bill_type').distinct()]
-    vals['types'] = [{'abbreviation': x, 'verbose': BILL_TYPES[x]} for x in type_list]
+
+
+    type_list = []
+    for k,v in BILL_TYPES.items():
+        type_list.append({'abbreviation':k,'verbose':v})
+
+    vals['types'] = type_list
     vals['subjects'] = LegislationSubject.objects.all()
     vals['committees'] = Committee.objects.distinct().filter(legislation_committees__isnull=False)
     vals['bill_numbers'] = [x['bill_number'] for x in Legislation.objects.values('bill_number').distinct()]
@@ -957,10 +964,16 @@ def legislation (request, vals={}):
         introduced_dates.append(date_tuple)
     vals['introduced_dates'] = introduced_dates
 
+    vals['date_comments'] = ["Introduced in the last 6 months","Introduced in the last year",
+                             "Introduced in the last 2 years","Introduced in the last 4 years"]
+
     vals['sponsors'] = UserProfile.objects.distinct().filter(sponsored_legislation__isnull=False)
     vals['sponsor_parties'] = Party.objects.filter(parties__sponsored_legislation__isnull=False).distinct()
 
-    return renderToResponseCSRF(template='site/pages/legislation/legislation.html', request=request, vals=vals)
+    focus_html =  ajaxRender('site/pages/legislation/legislation.html', vals, request)
+    url = request.path
+    return homeResponse(request, focus_html, url, vals)
+
 
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -970,9 +983,104 @@ def legislationDetail(request, l_id, vals={}):
     legislation = Legislation.objects.get(id=l_id)
     vals['l'] = legislation
     vals['actions'] = legislation.legislation_actions.all().order_by("-datetime")
+    vals['action_states'] = [x.state for x in vals['actions']]
+    action_states = [x.state for x in vals['actions']]
+
+    if legislation.congress_body == "H":
+        if "ENACTED:SIGNED" in action_states:
+            bill_progress = "Passed House and Senate, Signed into Law"
+        if "PASSED_OVER:HOUSE" in action_states:
+            if legislation.bill_type == 'hc':
+                if legislation.bill_relation.count() != 0:
+                    bill_progress = "Concurrent Resolution Passed House and Senate"
+                elif legislation.bill_relation.count() == 0:
+                    bill_progress = "Concurrent Resolution Passed House"
+            else:
+                if legislation.bill_relation.count() != 0:
+                    bill_progress = "Passed House and Senate"
+                elif legislation.bill_relation.count() == 0:
+                    bill_progress = "Passed House"
+        elif "PASSED:JOINTRES" in action_states:
+            if legislation.bill_relation.count() != 0:
+                bill_progress = "Joint Resolution Passed House and Senate"
+            elif legislation.bill_relation.count() == 0:
+                bill_progress = "Joint Resolution Passed House"
+        elif "PASSED:CONCURRENTRES" in action_states:
+            if legislation.bill_relation.count() != 0:
+                bill_progress = "Concurrent Resolution Passed House and Senate"
+            elif legislation.bill_relation.count() == 0:
+                bill_progress = "Concurrent Resolution Passed House"
+        elif "PASSED:SIMPLERES" in action_states:
+            bill_progress = "Resolution Passed House"
+        elif legislation.bill_type == 'h':
+            if legislation.bill_relation.count() != 0:
+                bill_progress = "Passed Senate, Not Passed House"
+            elif legislation.bill_relation.count() == 0:
+                bill_progress = "Not Passed House"
+        elif legislation.bill_type == 'hr':
+            bill_progress = "Resolution Not Passed House"
+        elif legislation.bill_type == 'hj':
+            if legislation.bill_relation.count() != 0:
+                bill_progress = "Joint Resolution Passed Senate, Not Passed House"
+            elif legislation.bill_relation.count() == 0:
+                bill_progress = "Joint Resolution Not Passed House"
+        elif legislation.bill_type == 'hc':
+            if legislation.bill_relation.count() != 0:
+                bill_progress = "Concurrent Resolution Passed Senate, Not Passed House"
+            elif legislation.bill_relation.count() == 0:
+                bill_progress = "Concurrent Resolution Not Passed House"
+        else:
+            bill_progress = "Not Passed House"
+    elif legislation.congress_body == "S":
+        if "ENACTED:SIGNED" in action_states:
+            bill_progress = "Passed Senate and House, Signed into Law"
+        if "PASSED_OVER:SENATE" in action_states:
+            if legislation.bill_type == 'sc':
+                if legislation.bill_relation.count() != 0:
+                    bill_progress = "Concurrent Resolution Passed House, Not Passed Senate"
+                elif legislation.bill_relation.count() == 0:
+                    bill_progress = "Concurrent Resolution Not Passed Senate"
+            else:
+                if legislation.bill_relation.count() != 0:
+                    bill_progress = "Passed Senate and House"
+                elif legislation.bill_relation.count() == 0:
+                    bill_progress = "Passed Senate"
+        elif "PASSED:JOINTRES" in action_states:
+            if legislation.bill_relation.count() != 0:
+                bill_progress = "Joint Resolution Passed Senate and House"
+            elif legislation.bill_relation.count() == 0:
+                bill_progress = "Joint Resolution Passed Senate"
+        elif "PASSED:CONCURRENTRES" in action_states:
+            if legislation.bill_relation.count() != 0:
+                bill_progress = "Joint Resolution Passed Senate and House"
+            elif legislation.bill_relation.count() == 0:
+                bill_progress = "Joint Resolution Passed Senate"
+        elif "PASSED:SIMPLERES" in action_states:
+            bill_progress = "Resolution Passed Senate"
+        elif legislation.bill_type == 'h':
+            if legislation.bill_relation.count() != 0:
+                bill_progress = "Passed House, Not Passed Senate"
+            elif legislation.bill_relation.count() == 0:
+                bill_progress = "Not Passed Senate"
+        elif legislation.bill_type == 'hr':
+            bill_progress = "Resolution Not Passed Senate"
+        elif legislation.bill_type == 'hj':
+            if legislation.bill_relation.count() != 0:
+                bill_progress = "Joint Resolution Passed House, Not Passed Senate"
+            elif legislation.bill_relation.count() == 0:
+                bill_progress = "Joint Resolution Not Passed Senate"
+        elif legislation.bill_type == 'hc':
+            if legislation.bill_relation.count() != 0:
+                bill_progress = "Concurrent Resolution Passed House, Not Passed Senate"
+            elif legislation.bill_relation.count() == 0:
+                bill_progress = "Concurrent Resolution Not Passed Senate"
+        else:
+            bill_progress = "Not Passed Senate"
+    vals['bill_progress'] = bill_progress
+
+    vals['cosponsors'] = legislation.legislation_cosponsors.all()
     vals['related'] = legislation.bill_relation.all()
-    # vals['second_body'] = legislation.filter(state_text__icontains='PASSED', bill_relation_state_text_isnull=False)
-    # vals['first_body'] =
+
     contentDetail(request, legislation, vals)
     html = ajaxRender('site/pages/content_detail/legislation_detail.html', vals, request)
     url = legislation.get_url

@@ -155,8 +155,8 @@ def getQuestionItems(viewer, feed_ranking, feed_topic=None, only_unanswered=Fals
         q_ids = you_responses.exclude(most_chosen_answer=None).values_list("question_id", flat=True)
         questions = questions.exclude(id__in=q_ids)
 
-    # sort
-    questions = sortHelper(questions, feed_ranking)
+    # sort & append
+    questions = sortHelper(questions, feed_ranking, questions=True)
     for q in questions:
         your_response = getResponseHelper(you_responses, q)
         if your_response:
@@ -183,13 +183,21 @@ def getResponseHelper(responses, question):
     else:
         return None
 
-def sortHelper(content, feed_ranking):
-    if feed_ranking == 'N':
-        content = content.order_by("-created_when")
-    elif feed_ranking == 'H':
-        content = content.order_by("-hot_score")
-    elif feed_ranking == 'B':
-        content = content.order_by("-status")
+def sortHelper(content, feed_ranking, questions=False):
+    if not questions:
+        if feed_ranking == 'N':
+            content = content.order_by("-created_when")
+        elif feed_ranking == 'H':
+            content = content.order_by("-hot_score")
+        elif feed_ranking == 'B':
+            content = content.order_by("-status")
+    else:
+        if feed_ranking == 'N':
+            content = content.order_by("-created_when")
+        elif feed_ranking == 'H':
+            content = content.order_by("-questions_hot_score")
+        elif feed_ranking == 'B':
+            content = content.order_by("-num_responses")
     return content
 
 
@@ -262,7 +270,7 @@ def compareQuestionItem(q_item):
 
 
 ### gets legislation based on filter parametrs ###
-def getLegislationItems(session_set, type_set, subject_set, committee_set, introduced_set, sponsor_body_set, sponsor_name_set, sponsor_party_set, sponsor_district_set, feed_start):
+def getLegislationItems(session_set, type_set, subject_set, committee_set, introduced_set, sponsor_body_set, sponsor_name_set, sponsor_party_set, feed_start):
 
     # all legislation
     legislation_items = Legislation.objects.all()
@@ -294,9 +302,6 @@ def getLegislationItems(session_set, type_set, subject_set, committee_set, intro
     if sponsor_party_set:
         legislation_items = legislation_items.filter(
             sponsor__in=sponsor_party_set)
-    if sponsor_district_set:
-        legislation_items = legislation_items.filter(
-            sponsor__in=sponsor_district_set)
 
     # paginate
     legislation_items = legislation_items[feed_start:feed_start+10]
@@ -307,6 +312,8 @@ def getLegislationItems(session_set, type_set, subject_set, committee_set, intro
 def updateHotScores():
     for c in Content.objects.filter(in_feed=True):
         c.recalculateHotScore()
+    for q in Question.objects.all():
+        q.recalculateQuestionHotScore()
 
 
 ### gets legislation from representatives, all things they sponsored (or cosponsored?) ##
