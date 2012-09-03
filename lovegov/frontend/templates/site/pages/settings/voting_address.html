@@ -1,0 +1,71 @@
+<div class="account_div voting-address-wrapper" data-url="/settings/voting_address/">
+
+    {% with location=viewer.location %}
+        <table>
+            <tr>
+                <td></td>
+                <td><h2>Registered Voting Address</h2></td>
+
+                <p>
+                    We use your address to determine your voting district and connect you with your representatives.
+                    See our <a>privacy policy</a> for details.
+                </p>
+            </tr>
+
+            <tr>
+
+                <td class="left">
+                    <h3> street address </h3>
+                </td>
+                <td>
+                    <div class="address">
+                        <textarea class="account_input address-textarea voting_street_address account-input" name="address_string">{{ location.address_string }}</textarea>
+                    </div>
+                </td>
+
+                <td></td>
+            </tr>
+
+            <tr>
+
+                <td class="left">
+                    <h3>city</h3>
+                </td>
+                <td>
+
+                    <div class="location-city">
+                        <input class="account-input voting_city_input" type="text" name="city" value="{{ location.city }}"/>
+                    </div>
+
+                </td>
+
+            </tr>
+            <tr>
+                <td class="left">
+                    <h3>state</h3>
+                </td>
+                <td>
+
+                    <div class="location-state">
+                        <select class="location-state-select location_state_select select_2" selected="{{ location.state }}">
+                            {% if location.state %}
+                                <option value="{{ location.state }}">{{ location.state }}</option>
+                            {% endif %}
+                            {% for state in states %}
+                                <option value="{{ state.0 }}">{{ state.1 }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                </td>
+
+            </tr>
+
+        </table>
+    {% endwith %}
+
+    <div class='address-success-message address_success_message'> Your voting address has been saved. </div>
+
+    <a class="button-red address-save save_voting_address"> save </a>
+
+</div>

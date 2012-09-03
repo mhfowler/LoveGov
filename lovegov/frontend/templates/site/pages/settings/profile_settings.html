@@ -1,0 +1,79 @@
+{% load thumbnail %}
+
+<div class="account_div" data-url="/settings/profile/">
+    <form action="/action/" method="post" enctype="multipart/form-data"> {% csrf_token %}
+        <table>
+            <tr>
+                <td></td>
+                <td><h2>Profile</h2></td>
+            </tr>
+            <tr>
+                <td class="left"><h3>avatar</h3></td>
+                <td>
+                    {% include 'site/pieces/avatar.html' with user=viewer height="75" width="75" %}
+                    {{ uploadform.image }}
+                </td>
+                <td></td>
+            </tr>
+            <tr class="break-large"></tr>
+            <tr>
+                <td class="left">
+                    <h3>about me</h3>
+                    <p>
+                        Share who you are and your political cause.
+                    </p>
+                </td>
+                <td><textarea class="account_input bio-field account-input" name="bio">{{ viewer.bio }}</textarea></td>
+                <td></td>
+            </tr>
+            <tr class="break"></tr>
+            <tr>
+                <td class="left"><h3>parties</h3></td>
+                <td>
+                    {% for party in parties %}
+                        <span>
+                                {% thumbnail party.party_label "100x20" as im %}
+                                    <img class="party_choice party-choice" src="{{ im.url }}" />
+                                {% endthumbnail %}
+                            {% if party in user_parties %}
+                                <input class="party_input party-choice" type="checkbox" name="{{ party.alias }}" value="{{ party.alias }}" checked="checked">
+                            {% else %}
+                                <input class="party_input party-choice" type="checkbox" name="{{ party.alias }}" value="{{ party.alias }}">
+                            {% endif %}
+                                </span>
+                    {% endfor %}
+                </td>
+                <td></td>
+            </tr>
+            <tr class="break-small"></tr>
+            <tr>
+                <td class="left">
+                    <h3>lock profile</h3>
+                    <p>
+                        If you lock your profile, users will
+                        have to request to follow you.
+                    </p>
+                </td>
+                <td>
+                    <div class="lockprofile-td">
+                        {% if viewer.private_follow %}
+                            <input class="account_input" checked="checked" type="checkbox" name="lock"/>
+                        {% else %}
+                            <input class="account_input" type="checkbox" name="lock"/>
+                        {% endif %}
+                        <span>Check to lock profile</span>
+                    </div>
+                </td>
+                <td></td>
+            </tr>
+            <tr class="break-large"></tr>
+            <tr>
+                <td></td>
+                <td style="text-align:right"><input type="submit" class="button-red" value="save changes"/></td>
+                <td width=35></td>
+            </tr>
+        </table>
+        <input type="hidden" name="box" value="profile"/>
+        <input type="hidden" name="action" value="editAccount"/>
+    </form>
+</div>
