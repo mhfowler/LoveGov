@@ -257,6 +257,13 @@ def removeDeprecatedPoliticians():
                 print "+II+ Deleting " + person.get_name() + " - Num duplicates: " + str(len(dups))
                 person.delete()
 
+            current_num = UserProfile.objects.filter(first_name=p.first_name,last_name=p.last_name).count()
+            # Any person who also has that name
+            if not person.primary_role and current_num > 1:
+                # Is most likely a deprecated politician
+                print "+II+ Deleting " + person.get_name() + " - Current duplicates: " + str(current_num)
+                person.delete()
+
 
 
 def resetGroupSystemBooleans():

@@ -187,6 +187,26 @@ def scriptCreateCongressAnswers(args=None):
     return metrics
 
 
+def scriptCheckPoliticians(args=None):
+    path = os.path.join(PROJECT_PATH, 'frontend/excel/' + args[0])
+    wb = open_workbook(path)
+    sheet = wb.sheet_by_index(0)
+
+    for column in range(2,sheet.ncols):
+        # Get politician Name
+        politician_name = sheet.cell(0,column).value.split(" ")
+
+        # Look for politician
+        politician = UserProfile.lg.get_or_none(first_name=politician_name[0],last_name=politician_name[1], politician=True)
+        name = politician_name[0] + " " + politician_name[1]
+        # If they don't exist
+        if not politician:
+            print "Could not find " + name
+
+        else:
+            print "Found " + name
+
+
 def scriptCreateResponses(args=None):
     path = os.path.join(PROJECT_PATH, 'frontend/excel/' + args[0])
     wb = open_workbook(path)
@@ -196,7 +216,7 @@ def scriptCreateResponses(args=None):
     print "======================"
     print "+EE+ = Error"
     print "+WW+ = Warning"
-    print "+DD+ = Duplicate"
+    print "+II+ = Information"
     print "======================"
 
 # For all cells in the spreadsheet
@@ -212,7 +232,7 @@ def scriptCreateResponses(args=None):
             if not politician:
                 # Create and print their name and email
                 name = politician_name[0] + " " + politician_name[1]
-                print "Creating " + name
+                print "+WW+ Creating " + name
                 email = politician_name[0] + '_' + politician_name[1] + "@lovegov.com"
                 password = 'politician'
 
@@ -222,12 +242,13 @@ def scriptCreateResponses(args=None):
                 # Set some user facts
                 politician.user_profile.confirmed = True
                 politician.user_profile.politician = True
+                politician.user_profile.ghost = True
                 politician.user_profile.save()
 
                 #image_path = os.path.join(PROJECT_PATH, 'alpha/static/images/presidentialCandidates/' + politician_name[1].lower() + ".jpg")
                 #politician.user_profile.setProfileImage(file(image_path))
 
-                print "Successfully created and confirmed " + name
+                print "+WW+ Successfully created and confirmed " + name
                 politician = politician.user_profile
 
             # Get and print answer text
@@ -273,4 +294,4 @@ def scriptCreateResponses(args=None):
 #                    response.most_chosen_num = 1
 #                    response.save()
 
-                print "Successfully answered question for " + politician_name[0]
+                print "+II+ Successfully answered question for " + politician_name[0]
