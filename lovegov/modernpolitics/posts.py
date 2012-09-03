@@ -1866,7 +1866,7 @@ def getLegislation(request, vals={}):
 def getGroups(request, vals={}):
     from lovegov.frontend.views_helpers import valsGroup
     viewer = vals['viewer']
-    groups = Group.objects.filter(hidden=False, is_election=False).order_by("-num_members")
+    groups = Group.objects.filter(hidden=False, is_election=False).exclude(group_type="C").order_by("-num_members")
 
     # filter by location
     state = request.POST['state']

@@ -308,6 +308,8 @@ class Content(Privacy, LocationLevel):
             return '/petition/' + str(self.id) + '/'
         elif self.type=='N':
             return '/news/' + str(self.id) + '/'
+        elif self.type=='B':
+            return '/poll/' + str(self.id) + '/'
         elif self.type=='O':
             return '/poll/' + str(self.id) + '/'
         elif self.type =='S':
@@ -344,7 +346,11 @@ class Content(Privacy, LocationLevel):
     def getTitleDisplay(self):
         return self.downcast().getTitleDisplay()
     def getFeedTitle(self):
-        return self.downcast().getFeedTitle()
+        downcasted = self.downcast()
+        if downcasted != self:
+            return downcasted.getFeedTitle()
+        else:
+            return "downcast error"
 
     #-------------------------------------------------------------------------------------------------------------------
     # gets location string, if content has location
@@ -573,13 +579,15 @@ class Content(Privacy, LocationLevel):
             object = self.comment
         elif type == 'D':
             object = self.discussion
+        elif type == 'L':
+            object = self.legislation
         elif type == 'Q':
             object = self.question
         elif type == 'R':
             object = self.response
         elif type == 'I':
             object = self.userimage
-        elif type == 'O':
+        elif type == 'B':
             object = self.poll
         elif type == 'S':
             object = self.scorecard
@@ -1474,11 +1482,17 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
         self.num_posts = Content.objects.filter(creator=self, in_feed=True).count()
         self.save()
 
+    def userAnswersRecalculate(self):
+        responses = self.view.responses.all()
+        self.num_answers = responses.count()
+        self.save()
+
     def userStatsRecalculate(self):
         self.userPetitionsRecalculate()
         self.userNewsRecalculate()
         self.userCommentsRecalculate()
         self.userPostsRecalculate()
+        self.userAnswersRecalculate()
 
     #-------------------------------------------------------------------------------------------------------------------
     # politician support
@@ -3579,7 +3593,7 @@ class Poll(Content):
         return '/poll/' + str(self.id) + '/'
 
     def autoSave(self, creator=None, privacy='PUB'):
-        self.type = "O"
+        self.type = "B"
         self.in_feed = True
         self.save()
         super(Poll, self).autoSave(creator=creator, privacy=privacy)
@@ -3972,6 +3986,7 @@ class Group(Content):
     # group type
     group_type = models.CharField(max_length=1,choices=GROUP_TYPE_CHOICES, default='U')
     group_privacy = models.CharField(max_length=1,choices=GROUP_PRIVACY_CHOICES, default='O')   # for non-system groups, is it open or invite-only?
+
     system = models.BooleanField(default=False)                                                 # indicates users can't voluntarily join or leave
     hidden = models.BooleanField(default=False)                                                 # indicates that a group shouldn't be visible in lists [like-minded, folow groups etc]
     autogen = models.BooleanField(default=False)                                                # indicates whether we created group or not
@@ -4671,6 +4686,7 @@ class Committee(Group):
 
     def autoSave(self):
         self.group_type = 'C'
+        self.system = True
         super(Committee, self).autoSave()
 
     def joinMember(self, user, congress_session, role=None, privacy='PUB'):
