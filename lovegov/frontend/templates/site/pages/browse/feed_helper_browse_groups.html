@@ -4,7 +4,7 @@
             {{ x.num }}
         </div>
         {% with info=x.info group=x.group  %}
-            {% include 'site/pages/group/group_header.html' %}
+            {% include 'site/pages/group/group_header.html' with info_height="115px" %}
         {% endwith %}
     </div>
 {% endfor %}

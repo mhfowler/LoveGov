@@ -651,6 +651,18 @@ p.recovery-error
   float:left;
   width:260px;
   text-align:left;
+  margin-top:15px;
+}
+
+div.resetting-gif {
+  @include staticImage("/images/gifs/ajax-loader.gif");
+  width: 15px;
+  height: 15px;
+  background-size: 15px 13px;
+  background-repeat: no-repeat;
+  float: left;
+  margin-top: 31px;
+  display:none;
 }
 
 div.vertical-separator
@@ -804,6 +816,12 @@ table
   width:425px;
   margin-left:auto;
   margin-right:auto;
+  position:relative;
+
+  input.button-red {
+    float: right;
+    margin-top: 15px;
+  }
 }
 
 

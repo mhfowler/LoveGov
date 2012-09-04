@@ -440,10 +440,29 @@ def valsRepsHeader(vals):
 def valsDismissibleHeader(request, vals):
 
     viewer = vals['viewer']
-    header = random.choice(DISMISSIBLE_HEADERS)
+
+    if viewer.hasFirstLoginHeader():
+        header = 'first_login'
+    else:
+        header = random.choice(DISMISSIBLE_HEADERS)
+
     vals['dismissible_header'] = header
 
-    if header == 'congress_teaser':
+    if header == 'first_login':
+        vals['explore_feed_task'] = explore_feed_task = viewer.checkTask("E")
+        vals['find_reps_task'] = find_reps_task = viewer.checkTask("F")
+        vals['lovegov_poll_task'] = lovegov_poll_task = viewer.checkTask("L")
+        vals['join_groups_task'] = join_groups_task = viewer.checkTask("J")
+
+        # if user has completed all tasks except seeing their congratulatory message, then they are seeing congratulatory message
+        if explore_feed_task and find_reps_task and lovegov_poll_task and join_groups_task:
+            vals['completed_all_tasks'] = True
+            viewer.completeTask("A")
+
+        vals['lgpoll'] = getLoveGovPoll()
+
+    elif header == 'congress_teaser':
+        vals['compare_congress_task'] = viewer.checkTask("C")
         congress = Group.lg.get_or_none(alias="congress")
         #congress_members = list(UserProfile.objects.filter(primary_role__office__governmental=True))
         #congress_members = random.sample(congress_members, min(16, len(congress_members)))

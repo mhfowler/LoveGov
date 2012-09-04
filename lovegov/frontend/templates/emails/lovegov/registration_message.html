@@ -3,9 +3,9 @@
 
 {% block white_section %}
 
-    <p>Hi {{ user.first_name }},</p>
+    <p>Hi {{ user_profile.first_name }},</p>
     <p>Thanks for signing up for LoveGov. We hope this is the start of something amazing.
-    <br>Please <a href='http://www.lovegov.com/confirm/{{ user.confirmation_link }}'>verify your account</a> to complete your registration.</br>
+    <br><br>Please <a href='{{ domain }}/confirm/{{ user_profile.confirmation_link }}/' style="color:red;">verify your account</a> to complete your registration.</br>
     </p>
 
 {% endblock %}

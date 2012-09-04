@@ -181,6 +181,10 @@ div.feed-main
               height:25px;
               width:100px;
             }
+            .select2-container .select2-choice span {
+              position:relative;
+              top:3px;
+            }
           }
           div.filter-by-city {
             float:left;

@@ -22,7 +22,7 @@
             </span>
         </div>
         <div class="avatar-strip-bottom">
-            <span class="user-title"> {% if user.location.state %} {{ user.location.state }}, {% endif %}MA, {{ user.political_title }} </span>
+            <span class="user-title"> {% if user.location.state %} {{ user.location.state }}, {% endif %} {{ user.political_title }} </span>
             <span class="heart-icon"> </span>
             <span class="heart-score"> {{ user.upvotes }}</span>
         </div>

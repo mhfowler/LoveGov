@@ -11,7 +11,10 @@
 </div>
 {% endcomment %}
 
-{% if dismissible_header == 'congress_teaser' %}
+
+{% if dismissible_header == 'first_login' %}
+    {% include 'site/pages/dismissible_headers/first_login.html' %}
+{% elif dismissible_header == 'congress_teaser' and not compare_congress_task %}
     {% include 'site/pages/dismissible_headers/congress_header.html' %}
 {% elif dismissible_header == 'find_reps' %}
     {% if not viewer.temp_location %}

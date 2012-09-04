@@ -4,6 +4,129 @@
 
 @import "compass";
 
+/* first login header */
+div.first-login-header {
+
+  padding-left:30px;
+
+  div.welcome-div {
+
+    width:375px;
+    float:left;
+
+    div.welcome-message {
+      margin-top:20px;
+      @include fontSize(36px);
+      line-height:36px;
+      font-family:"Sonus-ExtraLight";
+      color:$dark-gray;
+    }
+
+    div.logo {
+      margin-top:0px;
+      @include staticImage("/images/icons/logo/big_welcome_logo.png");
+      width: 350px;
+      height: 120px;
+      background-size: 350px 120px;
+      background-repeat: no-repeat;
+    }
+
+    div.our-goal {
+      margin-top:20px;
+      width:100%;
+      @include fontSize(18px);
+    }
+  }
+
+  div.get-started {
+
+    margin-top:30px;
+    width:450px;
+    float:left;
+    margin-left:100px;
+
+    div.get-started-header {
+      @include fontSize(20px);
+      width:100%;
+      margin-bottom:15px;
+      font-weight:bold;
+      letter-spacing: 1px;
+    }
+    div.tasks-wrapper {
+      width:100%;
+      div.task-wrapper {
+        width:100%;
+        float:left;
+        margin-bottom:20px;
+        a.task-checkbox {
+          width:25px;
+          height:25px;
+          border:1px solid $gray;
+          float:left;
+          &:hover {
+            border-color:$dark-gray;
+          }
+          div.task-completed {
+            @include staticImage("/images/icons/arrows/check.png");
+            width: 30px;
+            height: 30px;
+            background-size: 30px 30px;
+            position: relative;
+            top: -10px;
+            left: 2px;
+            z-index:1;
+          }
+          &.incomplete {
+            div.task-completed {
+              display:none;
+            }
+          }
+        }
+        a.task-label {
+          float:left;
+          margin-left:15px;
+          margin-top:0px;
+          width:400px;
+          @include fontSize(20px);
+          color:$black;
+          font-family:"Sonus-ExtraLight";
+          &:hover {
+            color:black;
+          }
+        }
+      }
+    }
+  }
+
+  div.are-you {
+    width:600px;
+    float:left;
+    margin-top:30px;
+    margin-bottom:30px;
+    div.are-you-wrapper {
+      margin-bottom:5px;
+      @include fontSize(16px);
+      color:$dark-gray;
+      a.are-you-link {
+        color:$text-blue;
+        &:hover {
+          color:$blue;
+        }
+      }
+    }
+  }
+  div.completed-all {
+    float: right;
+    width: 320px;
+    margin-right: 140px;
+    text-align: left;
+    @include fontSize(14px);
+    color:$green;
+  }
+}
+
+
+
 /* dismissible header */
 div.random-dismissible-header {
   width:100%;
@@ -186,7 +309,5 @@ a.lgpoll-header {
       @include fontSize(18px);
     }
   }
-
-
-
 }
+

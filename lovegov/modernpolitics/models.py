@@ -1054,7 +1054,6 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
     registration_code = models.ForeignKey(RegisterCode,null=True)
     confirmed = models.BooleanField(default=False)
     confirmation_link = models.CharField(max_length=500)
-    first_login = models.IntegerField(default=0) # for special case for first login
     developer = models.BooleanField(default=False)  # for developmentWrapper
     user_title = models.CharField(max_length=200,null=True)
     # INFO
@@ -1108,10 +1107,38 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
     govtrack_id = models.IntegerField(default=-1)
     # anon ids
     anonymous = models.ManyToManyField(AnonID)
+    # first login experience
+    first_login = models.IntegerField(default=1)
+    first_login_tasks = models.CharField(max_length=10, default="", blank=True)
+    num_logins = models.IntegerField(default=0)
 
 
     def __unicode__(self):
         return self.first_name
+
+    #-------------------------------------------------------------------------------------------------------------------
+    # first login tasks
+    #-------------------------------------------------------------------------------------------------------------------
+    def hasFirstLoginHeader(self):
+        has_header = False
+        if self.num_logins < 5:
+            for x in FIRST_LOGIN_TASKS:
+                if not self.checkTask(x):
+                    has_header = True
+        return has_header
+
+    def completeTask(self, task):
+        completed = self.first_login_tasks
+        if not task in completed:
+            self.first_login_tasks += task
+            self.save()
+
+    def checkTask(self, task):
+        return task in self.first_login_tasks
+
+    def incrementNumLogins(self):
+        self.num_logins += 1
+        self.save()
 
     #-------------------------------------------------------------------------------------------------------------------
     # on register, autosubscribe for some groups
@@ -3596,6 +3623,9 @@ class Poll(Content):
     num_questions = models.IntegerField(default=0)
     description = models.TextField(blank=True)
 
+    def isLoveGovPoll(self):
+        return self.alias == 'lovegov_worldview_poll'
+
     def getFeedTitle(self):
         return self.getTitleDisplay() + ' (' + str(self.num_questions) + ' questions)'
 
@@ -4187,6 +4217,9 @@ class Group(Content):
     # Joins a member to the group and creates GroupJoined appropriately.
     #-------------------------------------------------------------------------------------------------------------------
     def joinMember(self, user, privacy='PUB'):
+        if self.is_election and not user.politician:
+            user.politician = True
+            user.save()
         group_joined = GroupJoined.lg.get_or_none(user=user, group=self)
         if not group_joined:
             group_joined = GroupJoined(user=user, group=self)
@@ -4676,7 +4709,6 @@ class UserGroup(Group):
 class Election(Group):
     winner = models.ForeignKey(UserProfile, null=True, related_name="elections_won")
     election_date = models.DateTimeField()
-
     office = models.ForeignKey(Office, null=True)
     start_date = models.DateTimeField(auto_now_add=True)
     end_date = models.DateTimeField(auto_now_add=True)
@@ -4688,21 +4720,21 @@ class Election(Group):
 
     def joinRace(self, user):
         if not self.hasMember(user):
-            self.joinMember(user)
             action = RunningForAction(user=user, election=self, modifier="A")
             action.autoSave()
             if not user.politician:
                 user.politician = True
             user.running_for = self
             user.save()
+            return super(Election, self).joinMember(user)
 
     def leaveRace(self, user):
         if self.hasMember(user):
-            self.removeMember(user)
             action = RunningForAction(user=user, election=self, modifier="S")
             action.autoSave()
             user.running_for = None
             user.save()
+            return super(Election, self).removeMember(user)
 
     def getCandidatesURL(self):
         return self.get_url() + '/candidates/'
@@ -5246,19 +5278,19 @@ class ResetPassword(LGModel):
     def create(username):
 
         from lovegov.modernpolitics.helpers import generateRandomPassword
+        from lovegov.modernpolitics.send_email import sendPasswordRecoveryEmail
 
         toDelete = ResetPassword.lg.get_or_none(userProfile__username=username)
         if toDelete: toDelete.delete()
 
-        userProfile = UserProfile.lg.get_or_none(username=username)
-        if userProfile:
+        user_profile = UserProfile.lg.get_or_none(username=username)
+        if user_profile:
             try:
                 reseturl = generateRandomPassword(50)
-                new = ResetPassword(userProfile=userProfile,email_code=reseturl)
+                new = ResetPassword(userProfile=user_profile,email_code=reseturl)
                 new.save()
-                vals = {'firstname':userProfile.first_name, 'url':reseturl}
-                from lovegov.modernpolitics import send_email
-                send_email.sendTemplateEmail("LoveGov Password Recovery",'passwordRecovery.html',vals,'info@lovegov.com',userProfile.username)
+                recovery_url = '/password_recovery/' + reseturl + '/'
+                sendPasswordRecoveryEmail(user_profile, recovery_url)
                 return True
             except:
                 return False
