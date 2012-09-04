@@ -445,7 +445,6 @@ def valsDismissibleHeader(request, vals):
         header = 'first_login'
     else:
         header = random.choice(DISMISSIBLE_HEADERS)
-    header = 'congress_teaser'
 
     vals['dismissible_header'] = header
 
