@@ -472,12 +472,13 @@ def genAliasSlug(alias, unique=True, old_alias=None):
     alias = alias.replace(' ', '_')
     alias = re.sub(r'\W+', '', alias)
     alias = str(alias).lower()
-    nonce = 0
+    nonce = 1
     orig_alias = alias
     if unique:
         while not isUniqueAlias(alias) and alias != old_alias:
             temp_logger.debug("unoriginal:" + alias)
             alias = orig_alias + str(nonce)
+            nonce += 1
     return alias
 
 
