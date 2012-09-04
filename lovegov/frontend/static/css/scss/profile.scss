@@ -212,6 +212,7 @@ div.profile-page {
     div.profile {
       width:100%;
       a.box-link {
+        height:27px;
         width:100%;
         background-color:$gray;
         color:$black;
@@ -400,6 +401,7 @@ div.profile-page {
           }
 
           span.profile-groups {
+            margin-bottom:20px;
             a.box-link {
               margin-top:10px;
             }
