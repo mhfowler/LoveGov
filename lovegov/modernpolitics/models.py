@@ -420,8 +420,8 @@ class Content(Privacy, LocationLevel):
         votes = Voted.objects.filter(content=self)
         upvotes = votes.filter(value=1)
         downvotes = votes.filter(value=-1)
-        self.upvotes = upvotes
-        self.downvotes = downvotes
+        self.upvotes = upvotes.count()
+        self.downvotes = downvotes.count()
         self.status = self.upvotes - self.downvotes
         self.save()
 
