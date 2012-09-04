@@ -184,7 +184,8 @@ div.group-expanded
         position:relative;
         div.topic-icon {
           position:absolute;
-          top:86%;
+          bottom: 5px;
+          left: 2px;
           z-index:1;
         }
         div.topic-bar {

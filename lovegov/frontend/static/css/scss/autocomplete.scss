@@ -14,13 +14,12 @@ div.search {
     min-width: 335px;
     @include clearfix;
     display: none;
-    @include box-shadow(0 50px 200px 10px $orange);
+    @include box-shadow(0 50px 200px 10px #ccc);
     z-index: 1;
   }
 }
 
 div.autocomplete-header {
-  @include titleFont;
   font-size: 18px;
   width: 90%;
   padding: 8px 6px 6px 6px;
@@ -43,7 +42,6 @@ div.autocomplete-user
       left: 70px;
       font-size: 20px;
       color: $deep-gray;
-      @include titleFont;
     }
   }
   &:hover {
@@ -64,7 +62,6 @@ div.autocomplete-petition, div.autocomplete-news, div.autocomplete-question, div
   }
   div.autocomplete-name {
     font-size: 14px;
-    @include titleFont;
     color: $deep-gray;
     strong {
       text-decoration: underline;
@@ -83,10 +80,14 @@ div.autocomplete-div.autocomplete-more-results
   $padding: 5px;
   padding: $padding;
   width: $autocomplete-width - 2*$padding;
-  @include titleFont;
   height: 20px;
   font-size: 18px;
   &:hover {
     background-color: $white-gray;
   }
+}
+
+div.autocomplete-noresults {
+  padding: 5px;
+  font-size: 180x;
 }

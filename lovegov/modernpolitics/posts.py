@@ -373,68 +373,6 @@ def loadHistogram(request, vals={}):
     to_return = {'html':html}
     return HttpResponse(json.dumps(to_return))
 
-#-----------------------------------------------------------------------------------------------------------------------
-# Creates a piece of content and stores it in database.
-#
-#-----------------------------------------------------------------------------------------------------------------------
-def create(request, vals={}):
-    formtype = request.POST['type']
-    viewer = vals['viewer']
-    if formtype == 'P':
-        form = CreatePetitionForm(request.POST)
-    elif formtype == 'N':
-        form = CreateNewsForm(request.POST)
-    elif formtype =='G':
-        form = CreateUserGroupForm(request.POST)
-
-    # if valid form, save to db
-    if form.is_valid():
-        # save new piece of content
-        c = form.complete(request)
-        action = CreatedAction(privacy=getPrivacy(request),content=c)
-        action.autoSave()
-        # if ajax, return page center
-        if request.is_ajax():
-            if formtype == "N":
-                viewer.num_articles += 1
-                viewer.num_posts += 1
-                viewer.save()
-                from lovegov.frontend.views import newsDetail
-                return newsDetail(request=request,n_id=c.id,vals=vals)
-            return HttpResponse( json.dumps( { 'success':True , 'url':c.getUrl() } ) )
-        else:
-            if formtype == "G":
-                c.joinMember(viewer)
-                c.admins.add(viewer)
-                try:
-                    file_content = ContentFile(request.FILES['image'].read())
-                    Image.open(file_content)
-                    c.setMainImage(file_content)
-                except IOError:
-                    print "Image Upload Error"
-            elif formtype == "P":
-                try:
-                    if 'image' in request.FILES:
-                        file_content = ContentFile(request.FILES['image'].read())
-                        Image.open(file_content)
-                        c.setMainImage(file_content)
-                except IOError:
-                    print "Image Upload Error"
-                viewer.num_petitions += 1
-                viewer.num_posts += 1
-                viewer.save()
-            return shortcuts.redirect(c.get_url())
-    else:
-        if request.is_ajax():
-            errors = dict([(k, form.error_class.as_text(v)) for k, v in form.errors.items()])
-            vals = {
-                    'success':False,
-                    'errors':errors,
-                }
-            print simplejson.dumps(vals)
-            return HttpResponse(json.dumps(vals))
-        else:
-            return shortcuts.redirect('/web/')
 
 def createMotion(request, vals={}):
 
@@ -2583,7 +2521,9 @@ def createContent(request, vals={}):
             return HttpResponseBadRequest("A required field was not included.")
     elif section=='news':
         if link:
-            newc = News(link=link)
+            newc = News(link=link, posted_to=group)
+            if full_text:
+                newc.link_summary = full_text
             ref = str(screenshot)
             if ref != 'undefined':
                 newc.saveScreenShot(ref)
@@ -2601,6 +2541,8 @@ def createContent(request, vals={}):
                 qtopic_alias = q['topic']
                 qtopic = Topic.lg.get_or_none(alias=qtopic_alias)
                 newQ = Question(question_text=q['question'], title=q['question'], source=q['source'], official=False)
+                if polltype=='q':
+                    newQ.posted_to = group
                 newQ.save()
                 newQ.setMainTopic(qtopic)
                 for a in q['answers']:
@@ -2675,7 +2617,8 @@ def createContent(request, vals={}):
 
     newc.setMainTopic(topic)
 
-    action = CreatedAction(content=newc,user=viewer,)
+    action = CreatedAction(content=newc,privacy=getPrivacy(request),user=viewer)
+    action.autoSave()
 
     if not redirect:
         redirect = newc.getUrl()
