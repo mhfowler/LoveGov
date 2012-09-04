@@ -35,7 +35,17 @@ bind('div.search input', 'keypress', function(e) {
 
 bind('div.search input', 'focusout', function(e) {
    var dropdown = $("div.search div.search-dropdown");
-   dropdown.fadeOut(100);
+    if(hideResFlag) {
+        dropdown.fadeOut(100);
+    } else {
+        hideResFlag = true;
+    }
+});
+
+var hideResFlag = true;
+
+bind('div.search div.search-dropdown', 'mousedown', function(e) {
+    hideResFlag = false;
 });
 
 bind('div.search input', 'click', function(e) {

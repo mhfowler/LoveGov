@@ -4136,7 +4136,6 @@ bind(".invite_to_scorecard_button", "click", function(e) {
         success: function(data)
         {
             $(".add_success_message").show();
-            alert(data);
         }
     });
 });
@@ -4395,7 +4394,27 @@ bind('div.change-privacy','click', function() {
                 alert("Error: "+data.error);
             } else {
                 meDiv.parent().html(returned.html);
+                bindTooltips();
             }
+        }
+    });
+});
+
+/***********************************************************************************************************************
+ *
+ *      ~ first login
+ *
+ ***********************************************************************************************************************/
+// bind change content privacy
+bind('.explore_your_feed','click', function() {
+    $(".helper_bubbles").show();
+    $(".explore_your_feed").removeClass("incomplete");
+    action({
+        data: {
+            'action': 'completeTask',
+            'task': 'E'
+        },
+        success: function(data) {
         }
     });
 });

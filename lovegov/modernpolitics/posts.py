@@ -12,6 +12,18 @@ from django.core.files.base import ContentFile
 
 
 #-----------------------------------------------------------------------------------------------------------------------
+# complete a first login task
+#-----------------------------------------------------------------------------------------------------------------------
+def completeTask(request,vals={}):
+    task = request.POST['task']
+    viewer = vals['viewer']
+    completed = viewer.first_login_tasks
+    if not task in completed:
+        viewer.first_login_tasks += task
+        viewer.save()
+    return HttpResponse("completed")
+
+#-----------------------------------------------------------------------------------------------------------------------
 # register from login page via form
 #-----------------------------------------------------------------------------------------------------------------------
 def newRegister(request,vals={}):
@@ -131,15 +143,6 @@ def newRegister(request,vals={}):
             user_profile.twitter_user_id = tat['user_id']
             user_profile.twitter_screen_name = tat['screen_name']
             user_profile.save()
-            vals['name'] = user_profile.get_name()
-            vals['email'] = user_profile.email
-            vals['password'] = password
-            vals['confirmation_link'] = user_profile.confirmation_link
-            sendTemplateEmail(subject="Welcome to LoveGov", template="twitterRegister.html", dictionary=vals, email_sender='info@lovegov.com', email_recipient=email)
-        else:
-            confirmation_link = user_profile.confirmation_link
-            vals = {'firstname':user_profile.first_name,'link':confirmation_link}
-            sendTemplateEmail("LoveGov Confirmation E-Mail","confirmLink.html",vals,"info@lovegov.com",user_profile.email)
 
         # return success, causes redirect to success page on client side
         return HttpResponse(json.dumps({"success":True, 'email':email, 'name':name}))
@@ -370,68 +373,6 @@ def loadHistogram(request, vals={}):
     to_return = {'html':html}
     return HttpResponse(json.dumps(to_return))
 
-#-----------------------------------------------------------------------------------------------------------------------
-# Creates a piece of content and stores it in database.
-#
-#-----------------------------------------------------------------------------------------------------------------------
-def create(request, vals={}):
-    formtype = request.POST['type']
-    viewer = vals['viewer']
-    if formtype == 'P':
-        form = CreatePetitionForm(request.POST)
-    elif formtype == 'N':
-        form = CreateNewsForm(request.POST)
-    elif formtype =='G':
-        form = CreateUserGroupForm(request.POST)
-
-    # if valid form, save to db
-    if form.is_valid():
-        # save new piece of content
-        c = form.complete(request)
-        action = CreatedAction(privacy=getPrivacy(request),content=c)
-        action.autoSave()
-        # if ajax, return page center
-        if request.is_ajax():
-            if formtype == "N":
-                viewer.num_articles += 1
-                viewer.num_posts += 1
-                viewer.save()
-                from lovegov.frontend.views import newsDetail
-                return newsDetail(request=request,n_id=c.id,vals=vals)
-            return HttpResponse( json.dumps( { 'success':True , 'url':c.getUrl() } ) )
-        else:
-            if formtype == "G":
-                c.joinMember(viewer)
-                c.admins.add(viewer)
-                try:
-                    file_content = ContentFile(request.FILES['image'].read())
-                    Image.open(file_content)
-                    c.setMainImage(file_content)
-                except IOError:
-                    print "Image Upload Error"
-            elif formtype == "P":
-                try:
-                    if 'image' in request.FILES:
-                        file_content = ContentFile(request.FILES['image'].read())
-                        Image.open(file_content)
-                        c.setMainImage(file_content)
-                except IOError:
-                    print "Image Upload Error"
-                viewer.num_petitions += 1
-                viewer.num_posts += 1
-                viewer.save()
-            return shortcuts.redirect(c.get_url())
-    else:
-        if request.is_ajax():
-            errors = dict([(k, form.error_class.as_text(v)) for k, v in form.errors.items()])
-            vals = {
-                    'success':False,
-                    'errors':errors,
-                }
-            print simplejson.dumps(vals)
-            return HttpResponse(json.dumps(vals))
-        else:
-            return shortcuts.redirect('/web/')
 
 def createMotion(request, vals={}):
 
@@ -2580,7 +2521,9 @@ def createContent(request, vals={}):
             return HttpResponseBadRequest("A required field was not included.")
     elif section=='news':
         if link:
-            newc = News(link=link)
+            newc = News(link=link, posted_to=group)
+            if full_text:
+                newc.link_summary = full_text
             ref = str(screenshot)
             if ref != 'undefined':
                 newc.saveScreenShot(ref)
@@ -2598,6 +2541,8 @@ def createContent(request, vals={}):
                 qtopic_alias = q['topic']
                 qtopic = Topic.lg.get_or_none(alias=qtopic_alias)
                 newQ = Question(question_text=q['question'], title=q['question'], source=q['source'], official=False)
+                if polltype=='q':
+                    newQ.posted_to = group
                 newQ.save()
                 newQ.setMainTopic(qtopic)
                 for a in q['answers']:
@@ -2672,7 +2617,8 @@ def createContent(request, vals={}):
 
     newc.setMainTopic(topic)
 
-    action = CreatedAction(content=newc,user=viewer,)
+    action = CreatedAction(content=newc,privacy=getPrivacy(request),user=viewer)
+    action.autoSave()
 
     if not redirect:
         redirect = newc.getUrl()
@@ -2837,13 +2783,18 @@ def inviteToScorecard(request, vals):
     scorecard = Scorecard.objects.get(id=s_id)
     if scorecard.getPermissionToEdit(viewer):
         invite_email = request.POST['invite_email']
-        already = UserProfile.objects.filter(email=invite_email)
-        if not already:
-            action = AddToScorecardAction(user=viewer, invite_email=invite_email, scorecard=scorecard, confirmed=True, privacy="PRI")
-            action.autoSave()
-            notification = Notification(action=action, notify_email=invite_email)
-            notification.save()
-            return HttpResponse(json.dumps({'success':True}))
+        already_user = UserProfile.objects.filter(email=invite_email)
+        if not already_user:
+            already_invited = Notification.objects.filter(notify_email=invite_email, action__action_type='AD')
+            if not already_invited or already_invited[0].action.downcast().scorecard != scorecard:       # if not invited to this scorecard
+                action = AddToScorecardAction(user=viewer, invite_email=invite_email, scorecard=scorecard, confirmed=True, privacy="PRI")
+                action.autoSave()
+                notification = Notification(action=action, notify_email=invite_email)
+                notification.save()
+                sendScorecardInviteEmail(invite_email, scorecard)
+                return HttpResponse(json.dumps({'success':True}))
+            else:
+                return HttpResponse(json.dumps({'success':False}))
         else:
             return HttpResponse(json.dumps({'success':False}))
     else:
@@ -2859,19 +2810,24 @@ def inviteToRunForElection(request, vals):
     election = Election.objects.get(id=e_id)
     if election.creator == viewer:
         invite_email = request.POST['invite_email']
-        already = UserProfile.objects.filter(email=invite_email)
-        if not already:
-            privacy = getPrivacy(request)
-            join = GroupJoined(invite_email=invite_email, group=election, privacy=privacy)
-            join.autoSave()
-            join.invite_email = invite_email
-            join.save()
-            join.invite(viewer)
-            action = GroupJoinedAction(user=viewer,privacy=privacy,group_joined=join,modifier="I")
-            action.autoSave()
-            notification = Notification(action=action, notify_email=invite_email)
-            notification.save()
-            return HttpResponse(json.dumps({'success':True}))
+        already_user = UserProfile.objects.filter(email=invite_email)
+        if not already_user:
+            already_invited = Notification.objects.filter(notify_email=invite_email, action__action_type='JO')
+            if not already_invited or already_invited[0].action.downcast().group_joined.group_id != election.id:     # if not already invited to join this group
+                privacy = getPrivacy(request)
+                join = GroupJoined(invite_email=invite_email, group=election, privacy=privacy)
+                join.autoSave()
+                join.invite_email = invite_email
+                join.save()
+                join.invite(viewer)
+                action = GroupJoinedAction(user=viewer,privacy=privacy,group_joined=join,modifier="I")
+                action.autoSave()
+                notification = Notification(action=action, notify_email=invite_email)
+                notification.save()
+                sendElectionInviteEmail(invite_email, election)
+                return HttpResponse(json.dumps({'success':True}))
+            else:
+                return HttpResponse(json.dumps({'success':False}))
         else:
             return HttpResponse(json.dumps({'success':False}))
     else:

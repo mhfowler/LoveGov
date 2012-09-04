@@ -291,7 +291,8 @@ def loginPOST(request, to_page='home/',message="",vals={}):
             user_prof = getUserProfile(control_id=user.id)
             if not user_prof: # If the controlling user has no profile, we're boned
                 error = 'Your account is currently broken.  Our developers have been notified and your account should be fixed soon.'
-            elif user_prof.confirmed: # Otherwise log this bitch in motherfuckas
+            elif user_prof.confirmed: # Otherwise log this bitch in
+                user_prof.incrementNumLogins()
                 return loginAuthenticate(request,user,to_page)
             else: # If they can't authenticate, they probably need to validate
                 error = 'Your account has not been validated yet. Check your email for a confirmation link.  It might be in your spam folder.'
@@ -387,6 +388,17 @@ def needConfirmation(request, vals={}):
 
     return renderToResponseCSRF(template='site/pages/login/login-main.html', vals=vals, request=request)
 
+
+def claimYourProfile(request, claimed_by, vals={}):
+
+    if request.method == 'GET':
+        vals['state'] = 'claimed_by'
+        vals['email'] = vals['email2'] = claimed_by
+        return renderToResponseCSRF(template='site/pages/login/login-main.html', vals=vals, request=request)
+    else:
+        return login(request, vals)
+
+
 #-----------------------------------------------------------------------------------------------------------------------
 # This is the view that generates the QAWeb
 #-----------------------------------------------------------------------------------------------------------------------
@@ -400,17 +412,18 @@ def web(request, vals={}):
     @type vals: dictionary
     @return:
     """
-    if request.method == 'GET':
-        getUserWebResponsesJSON(request,vals)
-        vals['firstLogin'] = vals['viewer'].checkFirstLogin()
-        html = ajaxRender('site/pages/qaweb/qaweb.html', vals, request)
-        url = '/web/'
-        return framedResponse(request, html, url, vals)
-    if request.method == 'POST':
-        if request.POST['action']:
-            return answer(request, vals)
-        else:
-            return shortcuts.redirect('/alpha/')
+    return shortcuts.redirect("/home/")
+#    if request.method == 'GET':
+#        getUserWebResponsesJSON(request,vals)
+#        vals['firstLogin'] = vals['viewer'].checkFirstLogin()
+#        html = ajaxRender('site/pages/qaweb/qaweb.html', vals, request)
+#        url = '/web/'
+#        return framedResponse(request, html, url, vals)
+#    if request.method == 'POST':
+#        if request.POST['action']:
+#            return answer(request, vals)
+#        else:
+#            return shortcuts.redirect('/alpha/')
 
 
 def compareWeb(request,alias=None,vals={}):
@@ -476,8 +489,12 @@ def politicians(request, vals):
     return homeResponse(request, focus_html, url, vals)
 
 def representatives(request, vals):
+
     valsRepsHeader(vals)
     vals['no_create_button'] = True
+
+    viewer = vals['viewer']
+    viewer.completeTask("F")
 
     focus_html =  ajaxRender('site/pages/politicians/representatives.html', vals, request)
     url = request.path
@@ -532,6 +549,9 @@ def questions(request, vals={}):
 # browse all
 #-----------------------------------------------------------------------------------------------------------------------
 def browseGroups(request, vals={}):
+
+    viewer = vals['viewer']
+    viewer.completeTask("J")
 
     # Render and return HTML
     getStateTuples(vals)
@@ -786,6 +806,9 @@ def pollDetail(request, p_id=-1, vals={}):
     vals['poll_progress'] = poll_progress
     getMainTopics(vals)
 
+    if poll.isLoveGovPoll():
+        viewer.completeTask("L")
+
     html = ajaxRender('site/pages/content_detail/poll_detail.html', vals, request)
     url = poll.get_url()
     return framedResponse(request, html, url, vals, rebind="poll_detail")
@@ -810,24 +833,18 @@ def discussionDetail(request, d_id=-1, vals={}):
 def histogramDetail(request, alias, vals={}):
 
     group = Group.objects.get(alias=alias)
-
+    viewer = vals['viewer']
     vals['group'] = group
     getMainTopics(vals)
+
+    if group.alias == 'congress':
+        viewer.completeTask("C")
 
     loadHistogram(20, group.id, 'full', vals=vals)
 
     html = ajaxRender('site/pages/histogram/histogram.html', vals, request)
     url = group.getHistogramURL()
     return framedResponse(request, html, url, vals)
-
-#-----------------------------------------------------------------------------------------------------------------------
-# browse all candidates of an election
-#-----------------------------------------------------------------------------------------------------------------------
-def candidates(request, alias, vals={}):
-
-    election = Election.objects.get(alias=alias)
-    vals['election'] = election
-    vals['candidates']
 
 #-----------------------------------------------------------------------------------------------------------------------
 # About Link

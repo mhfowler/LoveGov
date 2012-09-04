@@ -35,47 +35,52 @@ def emailHelper(subject, email_html, email_sender, email_recipients):
 # particular emails
 #-----------------------------------------------------------------------------------------------------------------------
 
-def sendConfirmationEmail(user_profile):
+def sendLoveGovEmailHelper(user_profile, subject, email_vals, email_template, email_sender="info@lovegov.com", to_email=None):
 
+    if not to_email:
+        to_email = user_profile.email
+
+    email_recipients = [to_email]
+
+    email_vals['email_header'] = subject
+    email_vals['user_profile'] = user_profile
+    email_vals['to_email'] = to_email
+    email_vals['domain'] = DOMAIN
+
+    context = Context(email_vals)
+    template = loader.get_template(email_template)
+    email_html = template.render(context)
+
+    sendHTMLEmail(
+        subject = subject,
+        email_html = email_html,
+        email_sender = email_sender,
+        email_recipients = email_recipients)
+
+
+def sendConfirmationEmail(user_profile, verified=False):
     subject = "Confirmation Email"
+    email_vals = {'verified':verified}
+    email_template = 'emails/lovegov/welcome.html'
+    sendLoveGovEmailHelper(user_profile, subject, email_vals, email_template)
 
-    email_recipients = [user_profile.email]
-    email_sender="info@lovegov.com"
+def sendPasswordRecoveryEmail(user_profile, recovery_url):
+    subject = "Password Recovery"
+    email_vals = {'recovery_url':recovery_url}
+    email_template = 'emails/lovegov/password_change.html'
+    sendLoveGovEmailHelper(user_profile, subject, email_vals, email_template)
 
-    email_vals = {'email_header': subject, 'user': user_profile, }
+def sendElectionInviteEmail(to_email, election):
+    subject = "You were invited to join LoveGov"
+    email_vals = {'election':election}
+    email_template = 'emails/lovegov/invite_election.html'
+    sendLoveGovEmailHelper(None, subject, email_vals, email_template, to_email=to_email)
 
-    context = Context(email_vals)
-    template = loader.get_template('emails/lovegov/emails/welcome.html')
-    email_html = template.render(context)
-
-    sendHTMLEmail(
-        subject = subject,
-        email_html = email_html,
-        email_sender = email_sender,
-        email_recipients = email_recipients )
-
-
-
-def sendPasswordChangeEmail(controlling_user, password):
-
-    subject = "Password Change"
-
-    email_recipients = [controlling_user.email]
-    email_sender="info@lovegov.com"
-
-    email_vals = {'email_header': subject}
-
-    context = Context(email_vals)
-    template = loader.get_template('emails/lovegov/emails/password_change.html')
-    email_html = template.render(context)
-
-    sendHTMLEmail(
-        subject = subject,
-        email_html = email_html,
-        email_sender = email_sender,
-        email_recipients = email_recipients )
-
-
+def sendScorecardInviteEmail(to_email, scorecard):
+    subject = "You were invited to join LoveGov"
+    email_vals = {'scorecard':scorecard}
+    email_template = 'emails/lovegov/invite_scorecard.html'
+    sendLoveGovEmailHelper(None, subject, email_vals, email_template, to_email=to_email)
 
 
 
@@ -166,15 +171,6 @@ def sendInviteEmail(email):
     recipient_list = [email]
     message = "<h3>" + "Welcome to LoveGov. </h3>"
     send_mail(subject='Welcome to LoveGov.', message=message,
-        from_email='info@lovegov.com', recipient_list=recipient_list)
-
-#-----------------------------------------------------------------------------------------------------------------------
-# Sends confirmation email to user.
-#-----------------------------------------------------------------------------------------------------------------------
-def sendConfirmationEmail(userProfile):
-    recipient_list = [userProfile.email]
-    # send email
-    send_mail(subject='Welcome to LoveGov.', message="TODO: how to actually send nice emails.",
         from_email='info@lovegov.com', recipient_list=recipient_list)
 
 #-----------------------------------------------------------------------------------------------------------------------

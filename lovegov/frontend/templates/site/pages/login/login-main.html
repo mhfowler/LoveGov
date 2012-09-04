@@ -5,7 +5,7 @@
     <div class="upper">
 
         <div id="middle-left">
-            <iframe src="http://player.vimeo.com/video/45207529?title=0&amp;byline=0&amp;portrait=0&amp;color=ffffff" width="425" height="239" frameborder="0" webkitAllowFullScreen mozallowfullscreen allowFullScreen></iframe>
+            <iframe src="http://player.vimeo.com/video/48815262" width="425" height="239" frameborder="0" webkitAllowFullScreen mozallowfullscreen allowFullScreen></iframe>
             <p style="text-align:center;">Want to learn more? <a id="what-is-lovegov" href="/try/about/" class="invert_link">Click here</a>.</p>
         </div>
 
@@ -61,6 +61,10 @@
             if (register_state == 'need-confirmation') {
                 $(".state-div").hide();
                 $("#need-confirmation-div").show();
+            }
+            if (register_state == 'claimed_by') {
+                $(".state-div").hide();
+                $("#register-div").show();
             }
 
             if (login_state == 'login_error') {

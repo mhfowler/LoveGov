@@ -4,7 +4,7 @@
 @import 'compass';
 
 div.reply {
-    @include clearfix;
+
     clear: both;
     textarea.comment-textarea {
         width: 100%;
@@ -31,6 +31,12 @@ div.reply {
         &:hover {
             padding-top: 14px;
             margin-bottom: 0;
+          @include transition(0.1s);
+        }
+        &:active {
+          padding-top: 18px;
+          margin-bottom: -4px;
+          @include transition(0.05s);
         }
             display: block;
         }

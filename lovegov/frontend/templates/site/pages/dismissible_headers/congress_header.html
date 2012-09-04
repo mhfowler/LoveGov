@@ -3,7 +3,7 @@
 {% block dismissible_content %}
 
     <div class="congress-header congress_header_link dummy_link"
-         data-url="{{ congress.getHistogramURL }}" {% if lgpoll_progress < 20 %} data-warning="1" {% else %} data-warning="0" {% endif %}>
+         data-url="{{ congress.getHistogramURL }}" {% if answer_warning %} data-warning="1" {% else %} data-warning="0" {% endif %}>
         <div class="mouse-over">
             <div class="mouse-over-text"> mouse over </div>
             <div class="mouse-over-arrow"></div>

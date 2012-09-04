@@ -348,7 +348,7 @@ div.dismissible-header {
   width:100%;
 
   div.the-content {
-    width:100%;
+    width:930px;
     float:left;
   }
   div.x-out {
@@ -361,6 +361,23 @@ div.dismissible-header {
       background-color:$black;
       color:white;
       cursor:pointer;
+    }
+  }
+
+  div.x-img {
+    @include staticImage("/images/dismissible_headers/ex_dark.png");
+    position: absolute;
+    left: 96%;
+    top:0px;
+    width: 15px;
+    height:15px;
+    background-size:15px 15px;
+    background-repeat:no-repeat;
+    padding:15px;
+    background-position:15px 15px;
+    &:hover {
+      cursor:pointer;
+      @include staticImage("/images/dismissible_headers/ex.png");
     }
   }
 }
