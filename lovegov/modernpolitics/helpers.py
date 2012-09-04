@@ -476,10 +476,9 @@ def genAliasSlug(alias, unique=True, old_alias=None):
     orig_alias = alias
     if unique:
         while not isUniqueAlias(alias) and alias != old_alias:
+            temp_logger.debug("unoriginal:" + alias)
             alias = orig_alias + str(nonce)
     return alias
-
-
 
 
 
