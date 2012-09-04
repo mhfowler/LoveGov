@@ -470,8 +470,8 @@ def isUniqueAlias(alias):
 def genAliasSlug(alias, unique=True, old_alias=None):
     import re
     alias = alias.replace(' ', '_')
-    alias = str(alias).lower()
     alias = re.sub(r'\W+', '', alias)
+    alias = str(alias).lower()
     nonce = 0
     orig_alias = alias
     if unique:
