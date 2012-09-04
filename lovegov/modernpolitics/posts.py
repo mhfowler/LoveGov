@@ -1847,11 +1847,11 @@ def getLegislation(request, vals={}):
     introduced_set = json.loads(request.POST['introduced_set'])
     sponsor_body_set = json.loads(request.POST['sponsor_body_set'])
     sponsor_name_set = json.loads(request.POST['sponsor_name_set'])
-    sponsor_party_set = json.loads(request.POST['sponsor_party_set'])
+    sponsor_party = json.loads(request.POST['sponsor_party'])
 
     legislation = getLegislationItems(session_set=session_set, type_set=type_set, subject_set=subject_set,
         committee_set=committee_set, introduced_set=introduced_set, sponsor_body_set=sponsor_body_set, sponsor_name_set=sponsor_name_set,
-        sponsor_party_set=sponsor_party_set,feed_start=feed_start)
+        sponsor_party=sponsor_party,feed_start=feed_start)
 
     legislation_items = contentToFeedItems(legislation, vals['viewer'])
     vals['feed_items'] = legislation_items

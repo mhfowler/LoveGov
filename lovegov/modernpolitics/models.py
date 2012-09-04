@@ -3277,11 +3277,26 @@ class Legislation(Content):
     # Returns a list of UserProfile objects that are cosponsors
     # in order to return a list of all LegislationCosponsor relationships, use the query "self.legislation_cosponsors"
     def getCosponsors(self):
+        if self.legislation_cosponsors.all().count == 0:
+            return 'No Cosponsors for this Bill'
         return map( lambda x : x.cosponsor, self.legislation_cosponsors.all() )
+
+    def getCommittees(self):
+        if self.legislation_committees.all().count == 0:
+            return 'No Committees for this Bill'
+        return self.legislation_committees.all()
+
+    def getSubjects(self):
+        a = self.subject_bills.all()
+        if a.count == 0:
+            return 'No Committees for this Bill'
+        else:
+            for x in a:
+                return x.name
+
 
     def getActions(self):
         return self.legislation_actions.all()
-
 
     def autoSave(self,creator=None,privacy='PUB'):
         self.type = 'L'
