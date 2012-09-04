@@ -281,9 +281,11 @@ def resetGroupSystemBooleans():
 
 ## ran sep3
 def recalculateGroupAliases():
-    for g in Group.objects.all():
+    count = 0
+    for g in Group.objects.all().reverse():
         g.makeAlias()
-        print g.alias
+        print g.alias + " " + str(count)
+        count += 1
     lg = Group.objects.get(system=True, title="LoveGov")
     lg.alias = "lovegov_group"
     lg.save()
