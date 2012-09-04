@@ -47,7 +47,7 @@
             <select multiple class="subject_select" data-selector="subject_filter">
                 <optgroup label="Bill Subjects" id="bill_subjects">
                     {% for subject in subjects %}
-                        <option class="bill-subjects" value='{{ subject.id }}'>{{ subject.name }}</option>
+                        <option class="bill-subjects line-spaced" value='{{ subject.id }}'>{{ subject.name }}</option>
                     {% endfor %}
                 </optgroup>
             </select>
@@ -56,16 +56,16 @@
             <select multiple class="committee_select" data-selector="committee_filter">
                 <optgroup label="Committees" id="bill-committees">
                     {% for committee in committees %}
-                        <option class="committees" value='{{ committee.id }}'>{{ committee.title }}</option>
+                        <option class="committees line-spaced" value='{{ committee.id }}'>{{ committee.title }}</option>
                     {% endfor %}
                 </optgroup>
             </select>
         </div>
         <div class="introduced_selector">
             <select class="introduced_select" data-selector="introduced_filter">
-                <optgroup label="Bill Introduction Date Range" id="introduced-dates">
+                <optgroup label="Get Bills by Date" id="introduced-dates">
                     {% for date in introduced_dates %}
-                        <option class="introduced" value='{{ date.json }}'>{{ date.date }}</option>
+                        <option class="introduced" value='{{ date.json }}'>Introduced After {{ date.date.month }}/{{ date.date.day }}/{{ date.date.year }}</option>
                     {% endfor %}
                 </optgroup>
             </select>

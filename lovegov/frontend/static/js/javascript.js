@@ -2313,7 +2313,7 @@ function shortenLongText() {
     var moretext = "read more";
     var lesstext = "less";
     if ($('.long_text').hasClass("bill_detail")) {
-        var showChar = 400;
+        var showChar = 600;
     }
     else {
         var showChar = 150;

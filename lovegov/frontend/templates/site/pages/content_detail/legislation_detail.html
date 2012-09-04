@@ -86,16 +86,17 @@
                         </h4>
                     </div>
                 </div>
-                <div class="sponsor-pic">
-                <span>
-                    {{ l.sponsor.getProfileImage }}
-                </span>
-                </div>
                 <div class="sponsor-caption">
-                    <h6><span><a href='{{l.sponsor.get_url}}'><h6 class="sponsor-name">{{l.sponsor.get_name}}</h6></a>
-                    {{ l.sponsor.getPartiesString }}<br>{{ l.sponsor.political_title }}<br></span></h6>
+                    <h6><span>
+                        {% with creator=content.getCreatorDisplay %}
+                            <a href='{{creator.get_url}}' class="created-avatar">
+                            {% include 'site/pieces/avatar.html' with user=creator height="100" width="100" %}
+                        {% endwith %}
+                        <h6 class="sponsor-name">{{l.sponsor.get_name}}</h6></a>
+                    {{l.sponsor.getPartiesString}}<br>{{l.sponsor.getPoliticalTitle}}<br></span></h6>
                 </div>
             </div>
+{% comment %}
             <div class="progress">
                 <div class="level1-progress">
                     <div class="bill-progress-title">
@@ -104,7 +105,7 @@
                         </h4>
                     </div>
                 </div>
-{% comment %}
+
                     {% ifequal bill_progress "Passed House and Senate" %}
                     <div class="level1-progress-div">
                         <br>
@@ -119,6 +120,7 @@
                     </div>
                     {% endifequal %}
 {% endcomment %}
+{% comment %}
                     {% ifequal bill_progress "Passed House and Senate, Signed into Law" %}
                         <div class="level1-progress-div">
                             <br>
@@ -478,6 +480,7 @@
                         </div>
                     {% endifequal %}
             </div>
+    {% endcomment %}
         </div>
     {%comment%}
             <div class="bill-stats">
@@ -701,6 +704,7 @@
                 </span>
             </div>
         </div>
+{% comment %}
         <div class="level1-related">
             <div class="related-bill-title">
                 <h4>
@@ -719,6 +723,7 @@
                 </span>
             </div>
         </div>
+{% endcomment %}
     </div>
 </div>
 <script> rebind="legislation_detail"; </script>

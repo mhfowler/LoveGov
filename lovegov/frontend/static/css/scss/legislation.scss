@@ -3,6 +3,10 @@
 @import 'master-mixins';
 
 
+option.line-spaced {
+  line-height: 120%;
+}
+
 div.main-block {
   margin-top: 20px;
   height: auto;
@@ -160,8 +164,8 @@ div.main-block {
   }
 
   div.legislation_selector {
-    float: right;
-    margin-left: 0px;
+    margin-left: auto;
+    margin-right: auto;
     margin-top: 30px;
     height: auto;
     width: 600px;
@@ -171,7 +175,6 @@ div.main-block {
       margin-top: 0px;
       height: auto;
       width: 350px;
-      padding-left: 0px;
       z-index:0;
 
       select.session_select {

@@ -1333,6 +1333,17 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
         return to_return
 
     #-------------------------------------------------------------------------------------------------------------------
+    # gets string represetning political role of user
+    #-------------------------------------------------------------------------------------------------------------------
+    def getPoliticalTitle(self):
+        if not self.political_title:
+            to_return = "None"
+        else:
+            to_return = self.political_title
+        return to_return
+
+
+    #-------------------------------------------------------------------------------------------------------------------
     # Gets users location object
     #-------------------------------------------------------------------------------------------------------------------
     def getLocation(self):

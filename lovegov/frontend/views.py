@@ -944,7 +944,6 @@ def legislation (request, vals={}):
     vals['legislation_items'] = Legislation.objects.all()
     vals['sessions'] = CongressSession.objects.all().order_by("-session")
 
-
     type_list = []
     for k,v in BILL_TYPES.items():
         type_list.append({'abbreviation':k,'verbose':v})
@@ -955,7 +954,7 @@ def legislation (request, vals={}):
     vals['bill_numbers'] = [x['bill_number'] for x in Legislation.objects.values('bill_number').distinct()]
 
     now = datetime.now()
-    time_range = [183,366,732,1464]
+    time_range = [1464,732,366,183]
     introduced_dates = []
     for x in time_range:
         date = now - timedelta(days=x)
@@ -963,9 +962,6 @@ def legislation (request, vals={}):
         date_tuple = {'json':json_date, 'date':date}
         introduced_dates.append(date_tuple)
     vals['introduced_dates'] = introduced_dates
-
-    vals['date_comments'] = ["Introduced in the last 6 months","Introduced in the last year",
-                             "Introduced in the last 2 years","Introduced in the last 4 years"]
 
     vals['sponsors'] = UserProfile.objects.distinct().filter(sponsored_legislation__isnull=False)
     vals['sponsor_parties'] = Party.objects.filter(parties__sponsored_legislation__isnull=False).distinct()
