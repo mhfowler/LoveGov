@@ -476,7 +476,6 @@ def politicians(request, vals):
     return homeResponse(request, focus_html, url, vals)
 
 def representatives(request, vals):
-
     valsRepsHeader(vals)
     vals['no_create_button'] = True
 
