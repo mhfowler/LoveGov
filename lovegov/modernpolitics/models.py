@@ -4625,10 +4625,11 @@ class CalculatedGroup(Group):
         found = []
         processed_num = 0
         for x in to_process:
-            comparison = x.getComparison(viewer)
-            if comparison.result > LIKE_MINDED_RESULT_THRESHOLD and comparison.num_q > LIKE_MINDED_NUMQ_THRESHOLD:
-                self.members.add(x)
-                found.append(x)
+            if x.num_answers > LIKE_MINDED_RESULT_THRESHOLD:
+                comparison = x.getComparison(viewer)
+                if comparison.result > LIKE_MINDED_RESULT_THRESHOLD and comparison.num_q > LIKE_MINDED_NUMQ_THRESHOLD:
+                    self.members.add(x)
+                    found.append(x)
             self.processed.add(x)
             processed_num += 1
         return found, processed_num
