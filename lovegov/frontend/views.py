@@ -476,7 +476,10 @@ def politicians(request, vals):
     return homeResponse(request, focus_html, url, vals)
 
 def representatives(request, vals):
+
     valsRepsHeader(vals)
+    vals['no_create_button'] = True
+
     focus_html =  ajaxRender('site/pages/politicians/representatives.html', vals, request)
     url = request.path
     return homeResponse(request, focus_html, url, vals)
@@ -503,6 +506,10 @@ def friends(request, vals):
     for f in friends:
         f.comparison = f.getComparison(viewer)
     friends.sort(key=lambda x:x.comparison.result,reverse=True)
+
+    # visual stuff for feed
+    vals['no_create_button'] = True
+
     focus_html =  ajaxRender('site/pages/friends/friends.html', vals, request)
     url = request.path
     return homeResponse(request, focus_html, url, vals)
@@ -567,6 +574,11 @@ def groupPage(request, g_alias, vals={}):
     # fill dictionary with group stuff
     vals['info'] = valsGroup(viewer, group, {})
 
+    # visual stuff for feed
+    if g_alias == 'congress':
+        vals['no_create_button'] = True
+        vals['no_feed_filter'] = True
+
     # Render and return HTML
     focus_html =  ajaxRender('site/pages/group/group_focus.html', vals, request)
     url = group.get_url()
@@ -598,6 +610,9 @@ def likeMinded(request, vals={}):
         vals['members'] = members
         vals['num_processed'] = like_minded.processed.count()
     vals['like_minded'] = like_minded
+
+    # visuall stuff for feed
+    vals['no_create_button'] = True
 
     # render and return html
     focus_html =  ajaxRender('site/pages/groups/like_minded.html', vals, request)

@@ -28,11 +28,13 @@
                 <div class="feed-buttons-container">
 
                     {% block filter_buttons %}
-                        <div class='buttons-container-text'>Filter by:</div>
-                        <div class="sort-button feed_button type_button" data-type="N" >News</div>
-                        <div class="sort-button feed_button type_button" data-type="O">Poll</div>
-                        <div class="sort-button feed_button type_button" data-type="P">Petition</div>
-                        <div class="sort-button feed_button type_button last-button" data-type="D">Discussion</div>
+                        {% if not no_filters %}
+                            <div class='buttons-container-text'>Filter by:</div>
+                            <div class="sort-button feed_button type_button" data-type="N" >News</div>
+                            <div class="sort-button feed_button type_button" data-type="O">Poll</div>
+                            <div class="sort-button feed_button type_button" data-type="P">Petition</div>
+                            <div class="sort-button feed_button type_button last-button" data-type="D">Discussion</div>
+                        {% endif %}
                     {% endblock %}
 
                 </div>
@@ -43,13 +45,15 @@
 
             <td>
                 {% block right_button %}
-                    <table class='create-button'>
-                        <tr>
-                            <td class="create-button" {% if g_id %} data-g_id="{{ g_id }}" {% endif %}>
-                                create
-                            </td>
-                        </tr>
-                    </table>
+                    {% if not no_create_button %}
+                        <table class='create-button'>
+                            <tr>
+                                <td class="create-button" {% if g_id %} data-g_id="{{ g_id }}" {% endif %}>
+                                    create
+                                </td>
+                            </tr>
+                        </table>
+                    {% endif %}
                 {% endblock %}
             </td>
 
