@@ -26,7 +26,7 @@
     </div>
     <div class="legislation_selector">
         <div class="session_selector">
-            <select multiple class="session_select clicked" data-selector="session_filter">
+            <select multiple class="session_select" data-selector="session_filter">
                 <optgroup label="Congress Sessions" id="bill_sessions">
                     {% for session_number in sessions %}
                         <option class="bill-sessions" value='{{ session_number.session }}'>{{ session_number.session }}</option>
@@ -35,7 +35,7 @@
             </select>
         </div>
         <div class="type_selector">
-            <select multiple class="type_select clicked">
+            <select multiple class="type_select">
                 <optgroup label="Bill Types" id="bill_types">
                     {% for type in types %}
                         <option class="bill-types" value='{{ type.abbreviation }}'>{{ type.verbose }}</option>
@@ -44,7 +44,7 @@
             </select>
         </div>
         <div class="subject_selector">
-            <select multiple class="subject_select clicked" data-selector="subject_filter">
+            <select multiple class="subject_select" data-selector="subject_filter">
                 <optgroup label="Bill Subjects" id="bill_subjects">
                     {% for subject in subjects %}
                         <option class="bill-subjects line-spaced" value='{{ subject.id }}'>{{ subject.name }}</option>
@@ -53,7 +53,7 @@
             </select>
         </div>
         <div class="committee_selector">
-            <select multiple class="committee_select clicked" data-selector="committee_filter">
+            <select multiple class="committee_select" data-selector="committee_filter">
                 <optgroup label="Committees" id="bill-committees">
                     {% for committee in committees %}
                         <option class="committees line-spaced" value='{{ committee.id }}'>{{ committee.title }}</option>
@@ -62,7 +62,7 @@
             </select>
         </div>
         <div class="introduced_selector">
-            <select class="introduced_select clicked" data-selector="introduced_filter">
+            <select class="introduced_select" data-selector="introduced_filter">
                 <optgroup label="Get Bills by Date" id="introduced-dates">
                     {% for date in introduced_dates %}
                         <option class="introduced" value='{{ date.json }}'>Introduced After {{ date.date.month }}/{{ date.date.day }}/{{ date.date.year }}</option>
@@ -73,7 +73,7 @@
         <div class="sponsor_selector">
             <ul>
                 <li>
-                    <select multiple class="sponsor_select_body clicked" data-selector="sponsor_filter">
+                    <select multiple class="sponsor_select_body" data-selector="sponsor_filter">
                         <optgroup label="Sponsor body" id="bill_sponsor_body">
                                 <option class="sponsors" value='S'>US Senate</option>
                                 <option class="sponsors" value='H'>US House of Representatives</option>
@@ -81,7 +81,7 @@
                     </select>
                 </li>
                 <li>
-                    <select multiple class="sponsor_select_name clicked" data-selector="sponsor_filter">
+                    <select multiple class="sponsor_select_name" data-selector="sponsor_filter">
                         <optgroup label="Sponsor name" id="bill_sponsor_name">
                             {% for sponsor in sponsors %}
                                 <option class="sponsors" value='{{ sponsor.id }}'>{{ sponsor.get_name }}</option>
@@ -90,7 +90,7 @@
                     </select>
                 </li>
                 <li>
-                    <select class="sponsor_select_party clicked" data-selector="sponsor_filter">
+                    <select class="sponsor_select_party" data-selector="sponsor_filter">
                         <optgroup label="Sponsor party" id="bill_sponsor_party">
                             {% for sponsor_party in sponsor_parties %}
                                 <option class="sponsors" value='{{ sponsor_party.id }}'>{{ sponsor_party.title }}</option>

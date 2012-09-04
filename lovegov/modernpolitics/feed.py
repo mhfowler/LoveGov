@@ -276,7 +276,7 @@ def getLegislationItems(session_set, type_set, subject_set, committee_set, intro
     legislation_items = Legislation.objects.all()
 
     # filter
-    if session_set.count != 0:
+    if session_set:
         legislation_items = legislation_items.filter(
             congress_session__in=session_set)
     if type_set:

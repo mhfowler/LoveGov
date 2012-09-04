@@ -13,7 +13,7 @@ function bindOnReload() {
     getFBInviteFriends();
 
     // any feeds on the page, go get themselves
-    //refreshFeeds();
+    refreshFeeds();
 
     // for all home pages
     navSectionOpenAll();
@@ -1049,39 +1049,70 @@ function getFeed(container) {
         data['city'] = city;
     }
     else if (feed == 'getLegislation') {
-        var session = $("." + $('select.session_select').data('selector')).val();
-            if ($(this).hasClass('clicked')) {
-            var session_json = JSON.stringify(session);
+        var session = $('.session_select').val();
+            var session_json;
+            if ($("." + $('.session_select').data('selector')).hasClass('clicked')) {
+                session_json = JSON.stringify(session);
             }
-        var type = $("." + $('select.type_select').data('selector')).val();
-            if ($(this).hasClass('clicked')) {
-            var type_json = JSON.stringify(type);
+            else {
+                session_json = JSON.stringify([]);
             }
-        var subject = $("." + $('select.subject_select').data('selector')).val();
-            if ($(this).hasClass('clicked')) {
-            var subject_json = JSON.stringify(subject);
+        var type = $('.type_select').val();
+            var type_json;
+            if ($("." + $('.type_select').data('selector')).hasClass('clicked')) {
+                type_json = JSON.stringify(type);
             }
-        var committee = $("." + $('select.committee_select').data('selector')).val();
-            if ($(this).hasClass('clicked')) {
-            var committee_json = JSON.stringify(committee);
+            else {
+                type_json = JSON.stringify([]);
             }
-        var introduced = $("." + $('select.introduced_select').data('selector')).val();
-            if ($(this).hasClass('clicked')) {
-            var introduced_json = JSON.stringify(introduced);
+        var subject = $('.subject_select').val();
+            var subject_json;
+            if ($("." + $('.subject_select').data('selector')).hasClass('clicked')) {
+                subject_json = JSON.stringify(subject);
             }
-        var sponsor_body = $("." + $('select.sponsor_select_body').data('selector')).val();
-            if ($(this).hasClass('clicked')) {
-            var sponsor_body_json = JSON.stringify(sponsor_body);
+            else {
+                subject_json = JSON.stringify([]);
             }
-        var sponsor_name = $("." + $('select.sponsor_select_name').data('selector')).val();
-            if ($(this).hasClass('clicked')) {
-            var sponsor_name_json = JSON.stringify(sponsor_body);
+        var committee = $('.committee_select').val();
+            var committee_json;
+            if ($("." + $('.committee_select').data('selector')).hasClass('clicked')) {
+                committee_json = JSON.stringify(committee);
             }
-        var sponsor_party = $("." + $('select.sponsor_select_party').data('selector')).val();
-            if ($(this).hasClass('clicked')) {
-            var sponsor_party_json = JSON.stringify(sponsor_party);
+            else {
+                committee_json = JSON.stringify([]);
             }
-
+        var introduced = $('.introduced_select').val();
+            var introduced_json;
+            if ($("." + $('.introduced_select').data('selector')).hasClass('clicked')) {
+                introduced_json = JSON.stringify(introduced);
+            }
+            else {
+                introduced_json = JSON.stringify([]);
+            }
+        var sponsor_body = $('.sponsor_select_body').val();
+            var sponsor_body_json;
+            if ($("." + $('.sponsor_select_body').data('selector')).hasClass('clicked')) {
+                sponsor_body_json = JSON.stringify(sponsor_body);
+            }
+            else {
+                sponsor_body_json = JSON.stringify([]);
+            }
+        var sponsor_name = $('.sponsor_select_name').val();
+            var sponsor_name_json;
+            if ($("." + $('.sponsor_select_name').data('selector')).hasClass('clicked')) {
+                sponsor_name_json = JSON.stringify(sponsor_name);
+            }
+            else {
+                sponsor_name_json = JSON.stringify([]);
+            }
+        var sponsor_party = $('.sponsor_select_party').val();
+            var sponsor_party_json;
+            if ($("." + $('.sponsor_select_party').data('selector')).hasClass('clicked')) {
+                sponsor_party_json = JSON.stringify(sponsor_party);
+            }
+            else {
+                sponsor_party_json = JSON.stringify([]);
+            }
         data = {'action': 'getLegislation', 'feed_start':feed_start, 'session_set':session_json,
             'type_set':type_json, 'subject_set':subject_json, 'committee_set':committee_json,
             'introduced_set':introduced_json, 'sponsor_body_set':sponsor_body_json,
