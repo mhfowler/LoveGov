@@ -445,6 +445,7 @@ def valsDismissibleHeader(request, vals):
         header = 'first_login'
     else:
         header = random.choice(DISMISSIBLE_HEADERS)
+    header = 'congress_teaser'
 
     vals['dismissible_header'] = header
 
@@ -472,6 +473,11 @@ def valsDismissibleHeader(request, vals):
             congress_members = UserProfile.objects.all()[:16]
         vals['congress'] = congress
         vals['congress_members'] = congress_members
+
+        # warning or not?
+        lgpoll = getLoveGovPoll()
+        poll_progress = lgpoll.getPollProgress(viewer)
+        vals['answer_warning'] = poll_progress['completed'] < 15
 
     elif header == 'find_reps':
         pass

@@ -58,9 +58,9 @@ def sendLoveGovEmailHelper(user_profile, subject, email_vals, email_template, em
         email_recipients = email_recipients)
 
 
-def sendConfirmationEmail(user_profile):
+def sendConfirmationEmail(user_profile, verified=False):
     subject = "Confirmation Email"
-    email_vals = {}
+    email_vals = {'verified':verified}
     email_template = 'emails/lovegov/welcome.html'
     sendLoveGovEmailHelper(user_profile, subject, email_vals, email_template)
 

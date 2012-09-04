@@ -170,8 +170,8 @@ div.congress-header {
   }
   div.congress-teaser {
     float:left;
-    margin-left:40px;
-    width:390px;
+    margin-left:30px;
+    width:360px;
     div.congress-pic-wrapper {
       float:left;
       margin-right:10px;
@@ -180,9 +180,9 @@ div.congress-header {
   }
   div.congress-explanation {
     float:left;
-    margin-left:0px;
+    margin-left:20px;
     margin-top:20px;
-    width:420px;
+    width:410px;
     a.congress-explanation-header {
       @include fontSize(24px);
       color:$text-blue;
@@ -199,7 +199,7 @@ div.congress-header {
 /* answer questions warning modal */
 div.warning-popup {
   padding:15px;
-  width:300px;
+  width:400px;
   @include fontSize(18px);
 }
 
@@ -264,7 +264,7 @@ a.lgpoll-header {
   float:left;
   color:$black;
   padding:5px 15px 15px 15px;
-  width:970px;
+  width:930px;
   &:hover {
     background-color:$light-gray;
   }
