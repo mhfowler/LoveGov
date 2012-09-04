@@ -13,7 +13,7 @@ function bindOnReload() {
     getFBInviteFriends();
 
     // any feeds on the page, go get themselves
-    //refreshFeeds();
+    refreshFeeds();
 
     // for all home pages
     navSectionOpenAll();
@@ -199,6 +199,7 @@ function action(dict) {
             }
         }
     };
+    var timeout = dict['timeout'];
     var complete_fun = dict['complete'];
     data['url'] = window.location.href;
     $.ajax({
@@ -207,7 +208,8 @@ function action(dict) {
         data: data,
         success: success_fun,
         error: error_fun,
-        complete: complete_fun
+        complete: complete_fun,
+        timeout: timeout
     });
 }
 
@@ -2867,6 +2869,7 @@ function saveAnswer(stub) {
                 new_element.animate({"height":new_height}, {"duration":200, "complete":function(){new_element.css("height", "auto");}});
                 bindOnNewElements();
             }
+            stub.find(".num_responses").html(returned.num_responses);
             var saved_message = stub.find(".saved_message");
             saved_message.show();
             saved_message.fadeOut(5000);

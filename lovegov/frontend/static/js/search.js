@@ -27,26 +27,27 @@ function whenTypingStops(handler) {
 bind('div.search input', 'keypress', function(e) {
    var length = $(this).val().length;
    if(length > 2) {
-        whenTypingStops(function(e) { search($(this).val()); });
+        whenTypingStops(function(e) {
+            search(searchVal());
+        });
    }
 });
 
 bind('div.search input', 'focusout', function(e) {
    var dropdown = $("div.search div.search-dropdown");
-   if(e.target!=dropdown) {
-       dropdown.fadeOut(100);
-   }
+   dropdown.fadeOut(100);
 });
 
-bind('div.search input', 'focus', function(e) {
+bind('div.search input', 'click', function(e) {
+    if(!$(this).hasClass('long')) $(this).addClass('long');
     var dropdown = $("div.search div.search-dropdown");
     if(dropdown.html()) {
         dropdown.fadeIn(100);
     }
 });
 
-bind('div.search', 'click', function(e) {
-   $('div.search input').focus();
+bind('div.search img.mag-glass', 'click', function(e) {
+   search(searchVal());
 });
 
 // returns the value of the input from selector
@@ -58,8 +59,13 @@ function searchVal(selector) {
     return selector.val();
 }
 
+
+var searchLock = false;
 // Does the actual search
 function search(str) {
+    if(searchLock) return;
+    searchLock = true;
+    $('<img src="/static/images/ajax-spinner.gif" class="loading-gif">').insertBefore('div.search img.mag-glass');
     action({
         data: {'action':'searchAutoComplete','string':str},
         success: function(data)
@@ -68,6 +74,11 @@ function search(str) {
             var dropdown = $("div.search div.search-dropdown");
             dropdown.html(obj.html);
             dropdown.fadeIn(100);
+        },
+        timeout: 10000,
+        complete: function() {
+            $('div.search img.loading-gif').remove();
+            searchLock = false;
         }
     });
 }

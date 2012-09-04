@@ -160,6 +160,7 @@ bind('div.load-more-comments', 'click', function(e) {
                         $(returned.html).hide().appendTo('div.thread').fadeIn(500);
                         $('div.thread').data('num-showing', next_start + top_count);
                     }
+                    bindTooltips();
                 }
             });
         }

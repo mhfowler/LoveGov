@@ -87,8 +87,10 @@ header
       font-family: Sonus-ExtraLight;
       &:focus {
         border-color: $deep-gray;
+      }
+      &.long {
+        @include transition(0.2s);
         width: 270px;
-        @include transition(0.25s);
       }
     }
     img.mag-glass {
@@ -96,6 +98,11 @@ header
       top: 5px;
       right: 5px;
       cursor: pointer;
+    }
+    img.loading-gif {
+      position: absolute;
+      top: 2px;
+      right: 25px;
     }
   }
 

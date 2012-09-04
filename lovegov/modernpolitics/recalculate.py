@@ -53,7 +53,7 @@ def recalculateAllVotes():
 
 def recalculateAllComments():
 
-    content = Content.objects.filter(type__in=CONTENT_IN_FEED)
+    content = Content.objects.filter(type__in=HAS_HOT_SCORE)
     for c in content:
         print "Calculating Comments for " + c.get_name()
         c.contentCommentsRecalculate()
@@ -145,7 +145,7 @@ def recalculateInFeed():
         count += 1
         if not count%20:
             print count
-    in_feed = Content.objects.filter(type__in=CONTENT_IN_FEED)
+    in_feed = Content.objects.filter(type__in=IN_FEED)
     for x in in_feed:
         x.in_feed = True
         x.save()
@@ -258,7 +258,6 @@ def removeDeprecatedPoliticians():
                 person.delete()
 
 
-
 def resetGroupSystemBooleans():
     print "SETTING ALL NETWORKS TO AUTOGEN=True and SYSTEM=False"
     for n in Network.objects.all():
@@ -279,3 +278,23 @@ def resetGroupSystemBooleans():
         c.system = True
         c.save()
 
+
+## ran sep3
+def recalculateGroupAliases():
+    count = 0
+    for g in Group.objects.all().reverse():
+        g.makeAlias()
+        print g.alias + " " + str(count)
+        count += 1
+    lg = Group.objects.get(system=True, title="LoveGov")
+    lg.alias = "lovegov_group"
+    lg.save()
+
+## ran sep3
+def recalculateNumResponses():
+    count = 0
+    for q in Question.objects.all():
+        q.recalculateNumResponses()
+        count += 1
+        if not count%20:
+            print count

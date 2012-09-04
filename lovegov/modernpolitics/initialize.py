@@ -1977,6 +1977,16 @@ def makeAllComparisonsStale():
         u.save()
         print "+II+ stale: " + u.get_name()
 
+def removeVotesOnQuestions():
+    q_ids = Question.objects.all().values_list("id", flat=True)
+    votes = Voted.objects.filter(content_id__in=q_ids)
+    count = 0
+    for x in votes:
+        x.delete()
+        count += 1
+        if not count%20:
+            print count
+
 #-----------------------------------------------------------------------------------------------------------------------
 # initialize politician groups for each state
 #-----------------------------------------------------------------------------------------------------------------------

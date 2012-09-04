@@ -132,7 +132,7 @@
                     </div>
                     <div class="stuff">
                         {% for g in profile_groups %}
-                            <a href="{{ g.get_url }}" class="box-link{% if forloop.first %} first-box{% endif %}"> {{ g.get_name }} </a>
+                            <a href="{{ g.get_url }}" class="box-link{% if forloop.first %} first-box{% endif %}"> {{ g.get_name|truncatechars:45 }} </a>
                         {% empty %}
                         {% endfor %}
                     </div>

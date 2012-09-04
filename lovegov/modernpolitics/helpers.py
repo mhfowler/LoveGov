@@ -54,6 +54,8 @@ def aliasToObject(alias):
         return None
     else:
         to_return = Group.lg.get_or_none(alias=alias)
+        if to_return:
+            to_return = to_return.downcast()
     if not to_return:
         to_return = UserProfile.lg.get_or_none(alias=alias)
     return to_return
@@ -465,32 +467,19 @@ def isUniqueAlias(alias):
         return False
     return True
 
-def genAliasSlug(alias):
+def genAliasSlug(alias, unique=True, old_alias=None):
+    import re
     alias = alias.replace(' ', '_')
-    import unicodedata
-    try:
-        alias = unicodedata.normalize('NFKD', unicode(alias)).encode('ascii','ignore')
-    except:
-        alias = helperAlias(alias)
+    alias = re.sub(r'\W+', '', alias)
     alias = str(alias).lower()
-    nonce = 0
+    nonce = 1
     orig_alias = alias
-    while not isUniqueAlias(alias):
-        nonce += 1
-        alias = orig_alias + str(nonce)
+    if unique:
+        while not isUniqueAlias(alias) and alias != old_alias:
+            temp_logger.debug("unoriginal:" + alias)
+            alias = orig_alias + str(nonce)
+            nonce += 1
     return alias
-
-def helperAlias(alias):
-
-    to_return = ""
-    for k in alias:
-        if k == '_':
-            to_return += '_'
-        elif k.isalnum():
-            to_return += k
-    return to_return
-
-
 
 
 
