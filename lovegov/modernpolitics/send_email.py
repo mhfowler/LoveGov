@@ -42,10 +42,10 @@ def sendConfirmationEmail(user_profile):
     email_recipients = [user_profile.email]
     email_sender="info@lovegov.com"
 
-    email_vals = {'email_header': subject}
+    email_vals = {'email_header': subject, 'user': user_profile, }
 
     context = Context(email_vals)
-    template = loader.get_template('emails/lovegov/emails/registration.html')
+    template = loader.get_template('emails/lovegov/emails/welcome.html')
     email_html = template.render(context)
 
     sendHTMLEmail(
@@ -74,10 +74,6 @@ def sendPasswordChangeEmail(controlling_user, password):
         email_html = email_html,
         email_sender = email_sender,
         email_recipients = email_recipients )
-
-
-
-
 
 
 
