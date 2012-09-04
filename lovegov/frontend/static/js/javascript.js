@@ -4348,6 +4348,7 @@ bind('div.change-privacy','click', function() {
                 alert("Error: "+data.error);
             } else {
                 meDiv.parent().html(returned.html);
+                bindTooltips();
             }
         }
     });

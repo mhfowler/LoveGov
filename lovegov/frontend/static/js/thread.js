@@ -36,6 +36,7 @@ bind("div.reply .tab-button.save", "click", function(event) {
                         new_comments.push(cid);
                     }
                     lockThreadReply = false;
+                    bindTooltips();
                 }
             });
         // Append to comment

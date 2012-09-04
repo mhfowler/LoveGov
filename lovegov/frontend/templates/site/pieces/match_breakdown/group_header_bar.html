@@ -2,9 +2,6 @@
 {% load customtags %}
 
 <div class="group-header-topic-bar {% if forloop.first %} first {% endif %}" data-t_alias="{{ topic.alias }}" data-result="{{ t.result }}" data-num_q="{{ t.num_q }}">
-    <div class="topic-icon">
-        {% include 'site/pieces/topic_icon.html' with width="20" height="20" %}
-    </div>
     <div class="topic-bar" style="border-color:{{ t.dark_color }}">
         <div class="colored_area tooltip-top" style="background-color:{{ t.dark_color }}; height:{{t.result}}%; top:{{ t.empty }}%" data-title="{{ t.result }}%">
             {% comment %}
@@ -13,5 +10,8 @@
             </p>
             {% endcomment %}
         </div>
+    </div>
+    <div class="topic-icon">
+        {% include 'site/pieces/topic_icon.html' with width="20" height="20" %}
     </div>
 </div>
