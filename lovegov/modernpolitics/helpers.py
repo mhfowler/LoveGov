@@ -467,24 +467,19 @@ def isUniqueAlias(alias):
         return False
     return True
 
-def genAliasSlug(alias, unique=True):
-    alias = alias.replace(' ', '_')
-    import unicodedata
-    try:
-        alias = unicodedata.normalize('NFKD', unicode(alias)).encode('ascii','ignore')
-    except:
-        alias = alias
-    alias = str(alias).lower()
+def genAliasSlug(alias, unique=True, old_alias=None):
     import re
+    alias = alias.replace(' ', '_')
     alias = re.sub(r'\W+', '', alias)
-    nonce = 0
+    alias = str(alias).lower()
+    nonce = 1
     orig_alias = alias
     if unique:
-        while not isUniqueAlias(alias):
+        while not isUniqueAlias(alias) and alias != old_alias:
+            temp_logger.debug("unoriginal:" + alias)
             alias = orig_alias + str(nonce)
+            nonce += 1
     return alias
-
-
 
 
 

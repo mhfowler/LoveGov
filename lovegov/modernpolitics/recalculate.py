@@ -278,3 +278,23 @@ def resetGroupSystemBooleans():
         c.system = True
         c.save()
 
+
+## ran sep3
+def recalculateGroupAliases():
+    count = 0
+    for g in Group.objects.all().reverse():
+        g.makeAlias()
+        print g.alias + " " + str(count)
+        count += 1
+    lg = Group.objects.get(system=True, title="LoveGov")
+    lg.alias = "lovegov_group"
+    lg.save()
+
+## ran sep3
+def recalculateNumResponses():
+    count = 0
+    for q in Question.objects.all():
+        q.recalculateNumResponses()
+        count += 1
+        if not count%20:
+            print count

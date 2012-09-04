@@ -420,8 +420,8 @@ class Content(Privacy, LocationLevel):
         votes = Voted.objects.filter(content=self)
         upvotes = votes.filter(value=1)
         downvotes = votes.filter(value=-1)
-        self.upvotes = upvotes
-        self.downvotes = downvotes
+        self.upvotes = upvotes.count()
+        self.downvotes = downvotes.count()
         self.status = self.upvotes - self.downvotes
         self.save()
 
@@ -1406,7 +1406,7 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
             alias = alias.encode('utf-8','ignore')
         alias = str.lower(alias)
         from lovegov.modernpolitics.helpers import genAliasSlug
-        self.alias = genAliasSlug(alias)
+        self.alias = genAliasSlug(alias, unique=True, old_alias=self.alias)
         self.save()
         return self.alias
 
@@ -1520,7 +1520,7 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
         self.num_answers = responses.count()
         self.save()
 
-    def userFollowRecalculate(self):
+    def userFollowNumRecalculate(self):
         followme = self.getFollowMe()
         ifollow = self.getIFollow()
         self.num_followme = followme.count()
@@ -2977,11 +2977,6 @@ class Petition(Content):
     goal = models.IntegerField(default=10)
     p_level = models.IntegerField(default=1)
 
-    def getTitleDisplay(self):
-        return "Petition: " + self.title
-    def getFeedTitle(self):
-        return self.getTitleDisplay()
-
     def getTypeIconClass(self):
         return "petition-image"
 
@@ -3081,11 +3076,6 @@ class News(Content):
     link_screenshot = models.ImageField(upload_to='screenshots/')
     link_clicks = models.IntegerField(default=0)
 
-    def getTitleDisplay(self):
-        return "News: " + self.title
-    def getFeedTitle(self):
-        return self.title
-
     def getTypeIconClass(self):
         return "news-image"
 
@@ -3126,12 +3116,6 @@ class Discussion(Content):
         self.in_feed = True
         self.type = "D"
         super(Discussion, self).autoSave(creator=creator, privacy=privacy)
-
-    def getTitleDisplay(self):
-        return "Discussion: " + self.title
-
-    def getFeedTitle(self):
-        return self.getTitleDisplay()
 
     def getTypeIconClass(self):
         return "discussion-image"
@@ -3278,12 +3262,6 @@ class Legislation(Content):
             return self.full_title
         else:
             return 'No Legislation Title Available'
-
-    def getTitleDisplay(self):
-        return "Legislation: " + self.getTitle()
-
-    def getFeedTitle(self):
-        return self.getTitleDisplay()
 
     # Returns a list of UserProfile objects that are cosponsors
     # in order to return a list of all LegislationCosponsor relationships, use the query "self.legislation_cosponsors"
@@ -3618,8 +3596,6 @@ class Poll(Content):
     num_questions = models.IntegerField(default=0)
     description = models.TextField(blank=True)
 
-    def getTitleDisplay(self):
-        return "Poll: " + self.title
     def getFeedTitle(self):
         return self.getTitleDisplay() + ' (' + str(self.num_questions) + ' questions)'
 
@@ -3674,11 +3650,6 @@ class Scorecard(Content):
             self.group.save()
         super(Scorecard, self).autoSave(creator=creator, privacy=privacy)
 
-
-    def getTitleDisplay(self):
-        return "Scorecard: " + self.title
-    def getFeedTitle(self):
-        return self.getTitleDisplay()
 
     def getEditURL(self):
         return self.get_url() + 'edit/'
@@ -3736,10 +3707,6 @@ class Question(Content):
     def toJSON(self):
         pass
 
-    def getTitleDisplay(self):
-        return "Question: " + self.title
-    def getFeedTitle(self):
-        return self.getTitleDisplay()
     def getDetailTitle(self):
         return ""
 
@@ -3779,6 +3746,10 @@ class Question(Content):
         self.questions_hot_score = score
         self.save()
 
+    def recalculateNumResponses(self):
+        responses = Response.objects.filter(question=self, total_num=1)         # only responses by real people
+        self.num_responses = responses.count()
+        self.save()
 
 
 #=======================================================================================================================
@@ -4064,11 +4035,6 @@ class Group(Content):
     participation_threshold = models.IntegerField(default=30)   # % of group which must upvote on motion to pass
     agreement_threshold = models.IntegerField(default=50)       # % of group which most agree with motion to pass
     motion_expiration = models.IntegerField(default=7)          # number of days before motion expires and vote close
-
-    def getTitleDisplay(self):
-        return "Group: " + self.title
-    def getFeedTitle(self):
-        return self.getTitleDisplay()
 
     #-------------------------------------------------------------------------------------------------------------------
     # gets content posted to group, for feed
@@ -4408,7 +4374,7 @@ class Group(Content):
 
     def makeAlias(self):
         from lovegov.modernpolitics.helpers import genAliasSlug
-        self.alias = genAliasSlug(self.title)
+        self.alias = genAliasSlug(self.title, unique=True, old_alias=self.alias)
         self.save()
         return self.alias
 
@@ -4659,10 +4625,11 @@ class CalculatedGroup(Group):
         found = []
         processed_num = 0
         for x in to_process:
-            comparison = x.getComparison(viewer)
-            if comparison.result > LIKE_MINDED_RESULT_THRESHOLD and comparison.num_q > LIKE_MINDED_NUMQ_THRESHOLD:
-                self.members.add(x)
-                found.append(x)
+            if x.num_answers > LIKE_MINDED_RESULT_THRESHOLD:
+                comparison = x.getComparison(viewer)
+                if comparison.result > LIKE_MINDED_RESULT_THRESHOLD and comparison.num_q > LIKE_MINDED_NUMQ_THRESHOLD:
+                    self.members.add(x)
+                    found.append(x)
             self.processed.add(x)
             processed_num += 1
         return found, processed_num

@@ -1,7 +1,7 @@
 <!-- pass it section_url and section_title or x (which is an object which has both of these fields -->
 {% load customtags %}
 <div class="home_link_wrapper">
-    <a class="home_link left_link dummy_link navbar-link navbar_link" href="{% if x %}{{ x.get_url }}{% else %}{{ section_url }}{% endif %}" data-sequence="{{ sequence|increment }}">
+    <a class="{% if not outside_link %} home_link {% else %} do_ajax_link {% endif %} left_link dummy_link navbar-link navbar_link" href="{% if x %}{{ x.get_url }}{% else %}{{ section_url }}{% endif %}" data-sequence="{{ sequence|increment }}">
         <span class="item-title"> {% if x %} {{ x.get_name }} {% else %} {{ section_title }} {% endif %}</span>
         <span class="item-new num_new_content"> {% if x.num_new %}{% if x.num_news > 10 %} 10+ {% else %}{{ x.num_new }} {% endif %}{% endif %}</span>
         <div style="clear:both;"></div>
