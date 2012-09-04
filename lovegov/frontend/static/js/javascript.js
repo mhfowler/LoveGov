@@ -199,6 +199,7 @@ function action(dict) {
             }
         }
     };
+    var timeout = dict['timeout'];
     var complete_fun = dict['complete'];
     data['url'] = window.location.href;
     $.ajax({
@@ -207,7 +208,8 @@ function action(dict) {
         data: data,
         success: success_fun,
         error: error_fun,
-        complete: complete_fun
+        complete: complete_fun,
+        timeout: timeout
     });
 }
 
