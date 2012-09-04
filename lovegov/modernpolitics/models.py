@@ -1520,7 +1520,7 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
         self.num_answers = responses.count()
         self.save()
 
-    def userFollowRecalculate(self):
+    def userFollowNumRecalculate(self):
         followme = self.getFollowMe()
         ifollow = self.getIFollow()
         self.num_followme = followme.count()
