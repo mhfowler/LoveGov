@@ -393,17 +393,6 @@ class Content(Privacy, LocationLevel):
         return to_return
 
     #-------------------------------------------------------------------------------------------------------------------
-    # calculates contents hot_score and saves it
-    #-------------------------------------------------------------------------------------------------------------------
-    def recalculateHotScore(self):
-        votes = Voted.objects.filter(content=self, value=1)
-        score = 0
-        for v in votes:
-            score += v.getHotValue()
-        self.hot_score = score
-        self.save()
-
-    #-------------------------------------------------------------------------------------------------------------------
     # returns group that this content was orginally posted to
     #-------------------------------------------------------------------------------------------------------------------
     def getPostedTo(self):
@@ -416,7 +405,7 @@ class Content(Privacy, LocationLevel):
     #-------------------------------------------------------------------------------------------------------------------
     # Recalculate status for this content.
     #-------------------------------------------------------------------------------------------------------------------
-    def recalculateVotes(self):
+    def calculateVotes(self):
         votes = Voted.objects.filter(content=self)
         upvotes = votes.filter(value=1)
         downvotes = votes.filter(value=-1)
@@ -424,25 +413,35 @@ class Content(Privacy, LocationLevel):
         self.downvotes = downvotes.count()
         self.status = self.upvotes - self.downvotes
         self.save()
+        return self.status
 
-    def contentCommentsRecalculate(self):
+    def calculateNumComments(self):
         direct_comments = Comment.objects.filter(on_content=self, active=True)
         num_comments = 0
-
         if direct_comments:
             for comment in direct_comments:
-
                 self.commenters.add(comment.getCreator())
-
-                num_children_comments = comment.contentCommentsRecalculate()
-
+                num_children_comments = comment.calculateNumComments()
                 num_comments += num_children_comments + 1
 
         self.num_comments = num_comments
         self.save()
-
         return num_comments
 
+
+    def calculateHotScore(self):
+        votes = Voted.objects.filter(content=self, value=1)
+        score = 0
+        for v in votes:
+            score += v.getHotValue()
+        self.hot_score = score
+        self.save()
+        return score
+
+    def calculateAllStats(self):
+        self.calculateVotes()
+        self.calculateNumComments()
+        self.calculateHotScore()
 
     #-------------------------------------------------------------------------------------------------------------------
     # Gets main topic of content.
@@ -1591,6 +1590,14 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
         self.save()
         return self.num_ifollow
 
+    def calculateFollowersAndFollowing(self):
+        following = self.getIFollow()
+        followers = self.getFollowMe()
+        for follow in following:
+            self.follow(follow)
+        for follower in followers:
+            follower.follow(self)
+
     def calculateUpVotes(self):
         num_supporters = self.calculateNumSupporters()
         num_likes = self.calculateNumLikes()
@@ -1608,7 +1615,7 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
         likes = Voted.objects.filter(content_id__in=my_content_ids, value=1).exclude(user=self)
         return likes.count()
 
-    def calculateNumStats(self):
+    def calculateAllStats(self):
         self.calculateNumPetitions()
         self.calculateNumNews()
         self.calculateNumComments()
@@ -2032,16 +2039,6 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
             followers = followers[:num]
         return followers
 
-    #-------------------------------------------------------------------------------------------------------------------
-    # Refreshes the users follow groups
-    #-------------------------------------------------------------------------------------------------------------------
-    def userFollowRecalculate(self):
-        following = self.getIFollow()
-        followers = self.getFollowMe()
-        for follow in following:
-            self.follow(follow)
-        for follower in followers:
-            follower.follow(self)
 
     #-------------------------------------------------------------------------------------------------------------------
     # Returns query set of all UserFollow who are (confirmed) following this user and are fb friends with this user.
