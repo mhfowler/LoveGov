@@ -1573,7 +1573,7 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
         groups = self.getRealGroups()
         self.num_groups = groups.count()
         self.save()
-        return self.num_group
+        return self.num_groups
 
     def calculateNumAnswers(self):
         self.num_answers = self.view.responses.all().count()
