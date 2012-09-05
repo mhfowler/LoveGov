@@ -1,0 +1,9 @@
+<div class="committee_selector">
+    <select multiple class="committee_select" data-selector="committee_filter">
+        <optgroup label="Committees" id="bill-committees">
+            {% for committee in committees %}
+                <option class="committees line-spaced" value='{{ committee.id }}'>{{ committee.title }}</option>
+            {% endfor %}
+        </optgroup>
+    </select>
+</div>

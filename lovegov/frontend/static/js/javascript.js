@@ -2334,7 +2334,7 @@ function loadBillSelect2() {
 }
 
 function showSelectors() {
-    $('.legislation_selector').children().hide();
+    $('.legislation_selector_wrapper').children().hide();
 }
 
 function showLegSelectors() {
