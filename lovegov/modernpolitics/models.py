@@ -733,9 +733,11 @@ class Content(Privacy, LocationLevel):
         self.upvotes += 1
         self.status += STATUS_VOTE
         self.save()
+
         creator = self.getCreator()
-        creator.upvotes += 1
-        creator.save()
+        if user != creator:
+            creator.upvotes += 1
+            creator.save()
 
         # make the action and notify
         action = VotedAction(user=user,content=self,value=my_vote.value, privacy=privacy)
@@ -756,8 +758,9 @@ class Content(Privacy, LocationLevel):
                 if my_vote.value == 1:
                     self.upvotes -= 1
                     self.status -= STATUS_VOTE
-                    self.creator.upvotes -= 1
-                    self.creator.save()
+                    if user != self.creator:
+                        self.creator.upvotes -= 1
+                        self.creator.save()
         else:  # create new vote
             my_vote = Voted(value=-1, content=self, user=user, privacy=privacy)
             my_vote.autoSave()
@@ -1566,6 +1569,22 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
         self.num_ifollow = ifollow.count()
         self.save()
 
+    def userUpVotesRecalculate(self):
+
+        supporters = self.getSupporters()
+        num_supporters = supporters.count()
+
+        my_content_ids = Content.objects.filter(creator=self).values_list("id", flat=True)
+        likes = Voted.objects.filter(content_id__in=my_content_ids, value=1).exclude(user=self)
+        num_likes = likes.count()
+
+        answers = self.view.responses.all()
+        num_answers = answers.count()
+
+        self.upvotes = num_supporters + num_likes + num_answers
+        self.save()
+        return self.upvotes
+
     def userStatsRecalculate(self):
         self.userPetitionsRecalculate()
         self.userNewsRecalculate()
@@ -1573,12 +1592,13 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
         self.userPostsRecalculate()
         self.userAnswersRecalculate()
         self.userFollowRecalculate()
+        self.userUpVotesRecalculate()
 
     #-------------------------------------------------------------------------------------------------------------------
     # politician support
     #-------------------------------------------------------------------------------------------------------------------
     def getSupporters(self):
-        support = Supported.objects.filter(user=self, confirmed=True)
+        support = Supported.objects.filter(to_user=self, confirmed=True)
         supporter_ids = support.values_list('to_user', flat=True)
         return UserProfile.objects.filter(id__in=supporter_ids)
 

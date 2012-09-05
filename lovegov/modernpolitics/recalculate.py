@@ -298,3 +298,9 @@ def recalculateNumResponses():
         count += 1
         if not count%20:
             print count
+
+## ran sep 4
+def recalculateUserUpVotes():
+    for u in UserProfile.objects.all():
+        score = u.userUpVotesRecalculate()
+        print "+II+ calculated " + u.get_name() + ": " + str(score)

@@ -43,6 +43,7 @@ def answerAction(user, question, privacy, answer_id, weight=None, explanation=No
         response.autoSave(creator=user, privacy=privacy)
         view.responses.add(response)
         user.num_answers += 1
+        user.upvotes += 1
         user.save()
         question = response.question
         question.num_responses += 1
