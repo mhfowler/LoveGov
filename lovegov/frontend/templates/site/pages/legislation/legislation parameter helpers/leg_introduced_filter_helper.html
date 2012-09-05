@@ -1,0 +1,9 @@
+<div class="introduced_selector">
+    <select class="introduced_select" data-selector="introduced_filter">
+        <optgroup label="Get Bills by Date" id="introduced-dates">
+            {% for date in introduced_dates %}
+                <option class="introduced" value='{{ date.json }}'>Introduced After {{ date.date.month }}/{{ date.date.day }}/{{ date.date.year }}</option>
+            {% endfor %}
+        </optgroup>
+    </select>
+</div>

@@ -1,0 +1,9 @@
+<div class="type_selector">
+    <select multiple class="type_select">
+        <optgroup label="Bill Types" id="bill_types">
+            {% for type in types %}
+                <option class="bill-types" value='{{ type.abbreviation }}'>{{ type.verbose }}</option>
+            {% endfor %}
+        </optgroup>
+    </select>
+</div>
