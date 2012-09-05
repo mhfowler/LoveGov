@@ -1762,6 +1762,8 @@ def getGroups(request, vals={}):
         groups = groups.filter(location__state=state, location__city=city)
     elif state and state != 'all':
         groups = groups.filter(location__state=state)
+    else:
+        groups.exclude(group_type="S")
 
     feed_start = int(request.POST['feed_start'])
     groups = groups[feed_start:feed_start+5]
