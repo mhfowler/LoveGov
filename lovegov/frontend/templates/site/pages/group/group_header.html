@@ -149,7 +149,7 @@
                 {% endif %}
 
                 <div class="group-members {% if not info.group_admins %} no-admins {% endif %}">
-                    <div class="group-info-title">Members</div>
+                    <a href="{{ group.getHistogramURL }}"><div class="group-info-title">Members</div></a>
                     {% for member in info.group_members %}
                         <div class="group-member-avatar">
                             <a href="{{ member.get_url }}">{% include 'site/pieces/avatar.html' with user=member width="30" height="30" %}</a>
