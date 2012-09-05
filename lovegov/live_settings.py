@@ -1,5 +1,5 @@
 
-from lovegov.dev_settings import *
+from dev_settings import *
 import base_settings
 
 ############################### DIFFERENCE BETWEEN LIVE AND DEV ########################################################
