@@ -3152,6 +3152,7 @@ function loadHistogram(histogram_wrapper) {
             alias = wrapper.data('t_alias');
             topic_text = wrapper.data('t_text');
         }
+        histogram_metadata.topic_text = topic_text;
         histogram_wrapper.find(".histogram-topic").text(topic_text);
         histogram_metadata.topic_alias = alias;
         saveHistogramMetadata(histogram_wrapper, histogram_metadata);
@@ -3186,6 +3187,7 @@ function selectHistogramBar(histogram_wrapper, bar) {
         histogram_metadata.current_bucket = bar.data('bucket');
         saveHistogramMetadata(histogram_wrapper, histogram_metadata);
         bar.addClass("clicked");
+        setHistogramExplanation(histogram_wrapper);
     }
     refreshHistogramMembers(histogram_wrapper);
 }
@@ -3471,6 +3473,10 @@ function setHistogramExplanation(histogram_wrapper) {
         var inc = 100 / histogram_metadata.resolution;
         var higher = lower + inc;
         var message = String(lower) + '-' + String(higher) + "% similar to you";
+        var topic_text = histogram_metadata.topic_text;
+        if (topic_text != "All Topics") {
+            message += " over " + topic_text + " questions";
+        }
     }
     else {
         var message = "";
