@@ -1,0 +1,12 @@
+<p class="asked-message asked_message">
+
+    {% if not you_asked_to_join %}
+        <a class="ask-to-join ask_to_join" data-p_id="{{ profile.id }}"> ask to join </a>
+    {% endif %}
+
+    <span class="asked-counter">
+    {% if you_asked_to_join %} You and {% endif %}<span class="num_asked"> {{ num_asked }} </span>
+        {% if you_asked_to_join %} other {% endif %} people have asked {{ politician.first_name }} to join
+    </span>
+
+</p>
