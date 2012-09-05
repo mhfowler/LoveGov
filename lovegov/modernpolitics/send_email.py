@@ -91,7 +91,7 @@ def sendTeamEmail(subject, email_html):
     sendHTMLEmail(
         subject = subject,
         email_html = email_html,
-        email_sender = email_sender,
+        email_sender = "info@lovegov.com",
         email_recipients = email_recipients)
 
 
