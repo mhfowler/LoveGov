@@ -510,6 +510,15 @@ def analyzeGroupTypes(groups):
 
 
 
+def logIterate(sequence, function):
+    count = 0
+    for x in sequence:
+        function(x)
+        count += 1
+        if not count%20:
+            print count
+
+
 
 
 
