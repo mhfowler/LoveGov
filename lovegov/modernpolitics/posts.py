@@ -1763,7 +1763,7 @@ def getGroups(request, vals={}):
     elif state and state != 'all':
         groups = groups.filter(location__state=state)
     else:
-        groups.exclude(group_type="S")
+        groups = groups.exclude(group_type="S")
 
     feed_start = int(request.POST['feed_start'])
     groups = groups[feed_start:feed_start+5]
