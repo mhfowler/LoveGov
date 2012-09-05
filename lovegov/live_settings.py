@@ -21,7 +21,7 @@ DATABASES = {
 }
 
 STATIC_ROOT = '/static/live/'
-MEDIA_ROOT = '/media/dlive/'
+MEDIA_ROOT = '/media/live/'
 LOG_ROOT = "/log/live/"
 LOGGING = base_settings.setLogging(LOG_ROOT)
 
