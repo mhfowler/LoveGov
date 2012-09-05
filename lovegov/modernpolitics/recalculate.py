@@ -1,72 +1,60 @@
 from lovegov.modernpolitics.initialize import *
 
-def updatePartyImages():
-    initializeParties()
-    for type in PARTY_TYPE:
-        print 'Updating ' + type[1] + ' party'
-        party = Party.lg.get_or_none(party_type=type[0])
 
-        ref = 'frontend/static/images/party_labels/' + type[1] + '.png'
-        full_ref = os.path.join(PROJECT_PATH, ref)
-        file = open(full_ref)
-        party.party_label.save(photoKey(".png"), File(file))
+### recalculate prohibited actions ###
+def recalculateProhibitedActions():
+    for c in ControllingUser.objects.all():
+        p = c.getUserProfile()
+        if p:
+            if p.alias=="anonymous":
+                c.prohibited_actions = ANONYMOUS_PROHIBITED_ACTIONS
+            else:
+                c.prohibited_actions = DEFAULT_PROHIBITED_ACTIONS
+        c.save()
 
+### recalculate creators ###
+def recalculateCreators():
+    c = Content.objects.all()
+    anon = getAnonUser()
+    print "total: ", str(c.count())
+    count = 0
+    changed = 0
+    for x in c:
+        if not count % 20:
+            print str(count)
+        creator = x.getCreator()
+        if creator:
+            u = UserProfile.lg.get_or_none(id=creator.id)
+        else:
+            u = None
+        if not u:
+            print "CHANGING CREATOR for ", x.get_name()
+            x.creator = anon
+            x.save()
+            changed += 1
+        count += 1
+    print "TOTAL CHANGED: ", str(changed)
 
-def updatePoliticianImages():
+## recalculate group stats ##
+def recalculateNumMembers():
+    for x in Group.objects.all():
+        print x.get_name()
+        x.countMembers()
 
-    romney = Politician.objects.get(first_name="Mitt",last_name="Romney")
-    im_ref = os.path.join(PROJECT_PATH, 'frontend/static/images/presidentialCandidates/romney.jpeg')
-    im = open(im_ref)
-    romney.setProfileImage(im)
-
-    elizabeth = Politician.objects.get(first_name="Elizabeth", last_name="Warren")
-    im_ref = os.path.join(PROJECT_PATH, 'frontend/static/images/presidentialCandidates/warren.jpeg')
-    im = open(im_ref)
-    elizabeth.setProfileImage(im)
-
-    cicilline = ElectedOfficial.objects.get(first_name="David", last_name="Cicilline")
-    im_ref = os.path.join(PROJECT_PATH, 'frontend/static/images/presidentialCandidates/cicilline.jpeg')
-    im = open(im_ref)
-    cicilline.setProfileImage(im)
-
-
-def recalculateAllUserStats():
-    users = UserProfile.objects.all()
-    for user in users:
-        print "Calculating Stats For " + user.get_name()
-        user.calculateNumStats()
-
-
-def recalculateAllFollowGroups():
-    users = UserProfile.objects.filter(ghost=False)
-    for user in users:
-        print "Calculating Follow Groups For " + user.get_name()
-        user.userFollowRecalculate()
-
-
-def recalculateAllVotes():
-    content = Content.objects.all()
-    for c in content:
-        print "Calculating Votes For " + c.get_name()
-        c.recalculateVotes()
-
-
-def recalculateAllComments():
-
-    content = Content.objects.filter(type__in=HAS_HOT_SCORE)
-    for c in content:
-        print "Calculating Comments for " + c.get_name()
-        c.contentCommentsRecalculate()
+def recalculateGroupAliases():
+    count = 0
+    for g in Group.objects.all().reverse():
+        g.makeAlias()
+        print g.alias + " " + str(count)
+        count += 1
+    lg = Group.lg.get_or_none(system=True, title="LoveGov")
+    if not lg:
+        lg = getLoveGovGroup()
+    lg.alias = "lovegov_group"
+    lg.save()
 
 
-def createAllFollowGroups():
-    users = UserProfile.objects.all()
-    for user in users:
-        print "Creating for " + user.get_name()
-        user.createFollowMeGroup()
-        user.createIFollowGroup()
-
-
+##### RECALCULTE CONTENT STATS #####
 def recalculatePetitions():
     for p in Petition.objects.all():
         print p.title
@@ -87,7 +75,111 @@ def recalculatePetitions():
         p.goal = PETITION_LEVELS[level]
         p.save()
 
+def recalculateQuestions():
+    count = 0
+    for q in Question.objects.all():
+        q.recalculateNumResponses()
+        count += 1
+        if not count%20:
+            print count
 
+def recalculateInFeed():
+    c = Content.objects.filter(in_feed=True)
+    count = 0
+    for x in c:
+        x.in_feed = False
+        x.save()
+        count += 1
+        if not count%20:
+            print count
+    in_feed = Content.objects.filter(type__in=FEED_CONTENT_TYPES)
+    for x in in_feed:
+        x.in_feed = True
+        x.save()
+        print "+II+ is in feed: " + x.get_name()
+
+def recalculateAllContentStats():
+    c = Content.objects.filter(in_feed=True)
+    for x in c:
+        print "+II+ calculating stats: " + x.get_name()
+        x.calculateAllStats()
+
+## user stats ##
+def recalculateAllUserStats():
+    users = UserProfile.objects.all()
+    for user in users:
+        print "Calculating Stats For " + user.get_name()
+        user.calculateAllStats()
+
+### recalculate everything ####
+def recalculateEverything():
+    recalculateProhibitedActions()
+    recalculateCreators()
+    recalculateNumMembers()
+    recalculateGroupAliases()
+    recalculateInFeed()
+    recalculatePetitions()
+    recalculateQuestions()
+    recalculateAllContentStats()
+    recalculateAllUserStats()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#### FOLLOW GROUPS #####
+def recalculateAllFollowGroups():
+    users = UserProfile.objects.filter(ghost=False)
+    for user in users:
+        print "Calculating Follow Groups For " + user.get_name()
+        user.calculateFollowersAndFollowing()
+
+def createAllFollowGroups():
+    users = UserProfile.objects.all()
+    for user in users:
+        print "Creating for " + user.get_name()
+        user.createFollowMeGroup()
+        user.createIFollowGroup()
+
+
+########################################################################################################################
+
+
+### recalculate specific or deprecated ###
+
+def recalculateAllVotes():
+    content = Content.objects.all()
+    for c in content:
+        print "Calculating Votes For " + c.get_name()
+        c.calculateVotes()
+
+def recalculateAllComments():
+    content = Content.objects.filter(type__in=HAS_HOT_SCORE)
+    for c in content:
+        print "Calculating Comments for " + c.get_name()
+        c.calculateNumComments()
+
+## ran sep 4
+def recalculateUserUpVotes():
+    for u in UserProfile.objects.all():
+        score = u.calculateUpVotes()
+        print "+II+ calculated " + u.get_name() + ": " + str(score)
 
 def recalculateTopics():
     mt_ids = getMainTopics().values_list('id', flat=True)
@@ -98,6 +190,7 @@ def recalculateTopics():
         if (count%20==0):
             print count
         count += 1
+
 
 
 # set parent topics to none and delete all topics which are not main topics
@@ -112,74 +205,9 @@ def purgeTopics():
 
 
 
-def recalculateEverything():
-    print "Recalculating Stats..."
-    recalculateAllUserStats()
-    print "Recalculating Follow Groups..."
-    recalculateAllFollowGroups()
-    print "Recalculating Votes..."
-    recalculateAllVotes()
-    print "Recalculating Comments..."
-    recalculateAllComments()
 
 
-
-def recalculateProhibitedActions():
-    for c in ControllingUser.objects.all():
-        p = c.getUserProfile()
-        if p:
-            if p.alias=="anonymous":
-                c.prohibited_actions = ANONYMOUS_PROHIBITED_ACTIONS
-            else:
-                c.prohibited_actions = DEFAULT_PROHIBITED_ACTIONS
-        c.save()
-
-
-
-def recalculateInFeed():
-    c = Content.objects.filter(in_feed=True)
-    count = 0
-    for x in c:
-        x.in_feed = False
-        x.save()
-        count += 1
-        if not count%20:
-            print count
-    in_feed = Content.objects.filter(type__in=IN_FEED)
-    for x in in_feed:
-        x.in_feed = True
-        x.save()
-        print "+II+ is in feed: " + x.get_name()
-
-
-
-def recalculateCreators():
-    c = Content.objects.all()
-    anon = getAnonUser()
-    print "total: ", str(c.count())
-    count = 0
-    changed = 0
-    for x in c:
-        if not count % 20:
-            print str(count)
-        creator = x.getCreator()
-        u = UserProfile.lg.get_or_none(id=creator.id)
-        if not u:
-            print "CHANGING CREATOR for ", x.get_name()
-            x.creator = anon
-            x.save()
-            changed += 1
-        count += 1
-    print "TOTAL CHANGED: ", str(changed)
-
-
-
-def recalculateNumMembers():
-    for x in Group.objects.all():
-        print x.get_name()
-        x.countMembers()
-
-
+#### POLITCIIAN STUFF ####
 def calculateResponseAnswers():
     count = 0
     for response in Response.objects.all():
@@ -225,7 +253,6 @@ def calculatePoliticianTitles():
 
                 p.political_title = title
                 p.save()
-
 
 
 def removeDeprecatedPoliticians():
@@ -278,29 +305,31 @@ def resetGroupSystemBooleans():
         c.system = True
         c.save()
 
+def updatePartyImages():
+    initializeParties()
+    for type in PARTY_TYPE:
+        print 'Updating ' + type[1] + ' party'
+        party = Party.lg.get_or_none(party_type=type[0])
 
-## ran sep3
-def recalculateGroupAliases():
-    count = 0
-    for g in Group.objects.all().reverse():
-        g.makeAlias()
-        print g.alias + " " + str(count)
-        count += 1
-    lg = Group.objects.get(system=True, title="LoveGov")
-    lg.alias = "lovegov_group"
-    lg.save()
+        ref = 'frontend/static/images/party_labels/' + type[1] + '.png'
+        full_ref = os.path.join(PROJECT_PATH, ref)
+        file = open(full_ref)
+        party.party_label.save(photoKey(".png"), File(file))
 
-## ran sep3
-def recalculateNumResponses():
-    count = 0
-    for q in Question.objects.all():
-        q.recalculateNumResponses()
-        count += 1
-        if not count%20:
-            print count
 
-## ran sep 4
-def recalculateUserUpVotes():
-    for u in UserProfile.objects.all():
-        score = u.calculateUpVotes()
-        print "+II+ calculated " + u.get_name() + ": " + str(score)
+def updatePoliticianImages():
+
+    romney = Politician.objects.get(first_name="Mitt",last_name="Romney")
+    im_ref = os.path.join(PROJECT_PATH, 'frontend/static/images/presidentialCandidates/romney.jpeg')
+    im = open(im_ref)
+    romney.setProfileImage(im)
+
+    elizabeth = Politician.objects.get(first_name="Elizabeth", last_name="Warren")
+    im_ref = os.path.join(PROJECT_PATH, 'frontend/static/images/presidentialCandidates/warren.jpeg')
+    im = open(im_ref)
+    elizabeth.setProfileImage(im)
+
+    cicilline = ElectedOfficial.objects.get(first_name="David", last_name="Cicilline")
+    im_ref = os.path.join(PROJECT_PATH, 'frontend/static/images/presidentialCandidates/cicilline.jpeg')
+    im = open(im_ref)
+    cicilline.setProfileImage(im)

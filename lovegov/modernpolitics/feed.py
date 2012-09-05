@@ -312,7 +312,7 @@ def getLegislationItems(session_set, type_set, subject_set, committee_set, intro
 ### update hot scores for all content ###
 def updateHotScores():
     for c in Content.objects.filter(in_feed=True):
-        c.recalculateHotScore()
+        c.calculateHotScore()
     for q in Question.objects.all():
         q.recalculateQuestionHotScore()
 
