@@ -1,6 +1,12 @@
 from lovegov.modernpolitics.initialize import *
 
 
+### recalculate user aliases ###
+def recalculateUserAliases():
+    for u in UserProfile.objects.all():
+        alias = u.makeAlias()
+        print alias
+
 ### recalculate prohibited actions ###
 def recalculateProhibitedActions():
     for c in ControllingUser.objects.all():
