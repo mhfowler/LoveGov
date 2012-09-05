@@ -2485,9 +2485,12 @@ def createContent(request, vals={}):
                 newc.summary = link_summary
             if title:
                 newc.title = title
-            ref = str(screenshot)
-            if ref != 'undefined':
-                newc.saveScreenShot(ref)
+            else:
+                newc.title = link
+            if screenshot:
+                ref = str(screenshot)
+                if ref != 'undefined':
+                    newc.saveScreenShot(ref)
             newc.autoSave(creator=viewer, privacy=privacy)
         else:
             return HttpResponseBadRequest("A required field was not included.")
