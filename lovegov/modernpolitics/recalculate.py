@@ -140,20 +140,34 @@ def cleanWorldViews():
     num_q = q.count()
     print "num Q:" + str(num_q)
 
+    deleted = 0
     u = UserProfile.objects.filter(num_answers__gt=num_q)
     print str(u.count()) + " users with TOO MANY answers"
     for x in u:
         print x.get_name()
-        responses = {}
-        for r in x.view.responses.all():
+        responses_count = {}
+        responses = x.view.responses.all()
+        for r in responses:
             q_id = r.question.id
-            if not q_id in responses:
-                responses[q_id] = 1
+            if not q_id in responses_count:
+                responses_count[q_id] = 1
             else:
-                responses[q_id] += 1
-        for k,v in responses.items():
+                responses_count[q_id] += 1
+        for k,v in responses_count.items():
             if v > 1:
-                print str(v) + " duplicate responses for " + Question.objects.get(id=k).title
+                dup_responses = responses.filter(question_id=k)
+                non_answer = dup_responses.filter(most_chosen_answer=None)
+                if non_answer:
+                    print "there were non answers for " + x.get_name()
+                    for h in non_answer:
+                        h.delete()
+                else:
+                    for to_delete in dup_responses[1:]:
+                        deleted += 1
+                        to_delete.delete()
+
+    print "responses deleted: " + str(deleted)
+
 
 
 
