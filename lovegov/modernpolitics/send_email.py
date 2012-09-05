@@ -86,6 +86,34 @@ def sendScorecardInviteEmail(to_email, scorecard):
 
 
 
+def sendTeamEmail(subject, email_html):
+    email_recipients = ["max_fowler@brown.edu"]
+    sendHTMLEmail(
+        subject = subject,
+        email_html = email_html,
+        email_sender = email_sender,
+        email_recipients = email_recipients)
+
+
+def sendTeamMessagedRepEmail(messaged):
+
+    vals = {}
+    vals['user'] = messaged.user
+    vals['message'] = messaged.message
+    vals['politician'] = messaged.politician
+    vals['phone_number'] = messaged.phone_number
+
+    context = Context(vals)
+    template = loader.get_template('emails/team/message_rep.html')
+    email_html = template.render(context)
+
+    sendTeamEmail('Someone Messaged Their Rep [to_do]', email_html)
+
+
+
+
+
+
 
 
 

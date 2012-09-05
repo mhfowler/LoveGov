@@ -2675,6 +2675,8 @@ def messagePolitician(request, vals={}):
     messaged = MessagedAction(user=viewer, message=message, politician=politician, phone_number=phone_number)
     messaged.autoSave()
 
+    sendTeamMessagedRepEmail(messaged)
+
     return HttpResponse("success")
 
 #-----------------------------------------------------------------------------------------------------------------------
