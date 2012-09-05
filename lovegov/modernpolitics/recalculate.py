@@ -34,7 +34,7 @@ def recalculateAllUserStats():
     users = UserProfile.objects.all()
     for user in users:
         print "Calculating Stats For " + user.get_name()
-        user.userStatsRecalculate()
+        user.calculateNumStats()
 
 
 def recalculateAllFollowGroups():
@@ -302,5 +302,5 @@ def recalculateNumResponses():
 ## ran sep 4
 def recalculateUserUpVotes():
     for u in UserProfile.objects.all():
-        score = u.userUpVotesRecalculate()
+        score = u.calculateUpVotes()
         print "+II+ calculated " + u.get_name() + ": " + str(score)

@@ -1541,58 +1541,85 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
     #-------------------------------------------------------------------------------------------------------------------
     # Stats recalculate
     #-------------------------------------------------------------------------------------------------------------------
-    def userPetitionsRecalculate(self):
+    def calculateNumPetitions(self):
         self.num_petitions = Petition.objects.filter(creator=self).count()
         self.save()
+        return self.num_petitions
 
-    def userNewsRecalculate(self):
+    def calculateNumNews(self):
         self.num_articles = News.objects.filter(creator=self).count()
         self.save()
+        return self.num_articles
 
-    def userCommentsRecalculate(self):
+    def calculateNumComments(self):
         self.num_comments = Comment.objects.filter(creator=self).count()
         self.save()
+        return self.num_comments
 
-    def userPostsRecalculate(self):
+    def calculateNumDiscussions(self):
+        num_discussions = Discussion.objects.filter(creator=self).count()
+        return num_discussions
+
+    def calculateNumDiscussions(self):
+        num_polls = Poll.objects.filter(creator=self).count()
+        return num_polls
+
+    def calculateNumPosts(self):
         self.num_posts = Content.objects.filter(creator=self, in_feed=True).count()
         self.save()
+        return self.num_posts
 
-    def userAnswersRecalculate(self):
-        responses = self.view.responses.all()
-        self.num_answers = responses.count()
+    def calculateNumAnswers(self):
+        self.num_answers = self.view.responses.all().count()
         self.save()
+        return self.num_answers
 
-    def userFollowNumRecalculate(self):
+    def calculateFollowNums(self):
+        self.calculateNumFollowers()
+        self.calculateNumFollowing()
+        return self.num_ifollow, self.num_followme
+
+    def calculateNumFollowers(self):
         followme = self.getFollowMe()
-        ifollow = self.getIFollow()
         self.num_followme = followme.count()
+        self.save()
+        return self.num_followme
+
+    def calculateNumFollowing(self):
+        ifollow = self.getIFollow()
         self.num_ifollow = ifollow.count()
         self.save()
+        return self.num_ifollow
 
-    def userUpVotesRecalculate(self):
-
-        supporters = self.getSupporters()
-        num_supporters = supporters.count()
-
-        my_content_ids = Content.objects.filter(creator=self).values_list("id", flat=True)
-        likes = Voted.objects.filter(content_id__in=my_content_ids, value=1).exclude(user=self)
-        num_likes = likes.count()
-
-        answers = self.view.responses.all()
-        num_answers = answers.count()
-
+    def calculateUpVotes(self):
+        num_supporters = self.calculateNumSupporters()
+        num_likes = self.calculateNumLikes()
+        num_answers = self.calculateNumAnswers()
         self.upvotes = num_supporters + num_likes + num_answers
         self.save()
         return self.upvotes
 
-    def userStatsRecalculate(self):
-        self.userPetitionsRecalculate()
-        self.userNewsRecalculate()
-        self.userCommentsRecalculate()
-        self.userPostsRecalculate()
-        self.userAnswersRecalculate()
-        self.userFollowRecalculate()
-        self.userUpVotesRecalculate()
+    def calculateNumSupporters(self):
+        supporters = self.getSupporters()
+        return supporters.count()
+
+    def calculateNumLikes(self):
+        my_content_ids = self.getMyPosts().values_list("id", flat=True)
+        likes = Voted.objects.filter(content_id__in=my_content_ids, value=1).exclude(user=self)
+        return likes.count()
+
+    def calculateNumStats(self):
+        self.calculateNumPetitions()
+        self.calculateNumNews()
+        self.calculateNumComments()
+        self.calculateNumFollowers()
+        self.calculateNumFollowing()
+        self.calculateNumPosts()
+        self.calculateNumAnswers()
+        self.calculateUpVotes()
+
+    def getMyPosts(self):
+        return Content.objects.filter(creator=self, type__in=REAL_CONTENT_TYPES)
 
     #-------------------------------------------------------------------------------------------------------------------
     # politician support
