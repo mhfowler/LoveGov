@@ -522,7 +522,7 @@ def friends(request, vals):
         f.comparison = f.getComparison(viewer)
         if f.comparison.num_q > 10:
             top_friends.append(f)
-    friends.sort(key=lambda x:x.comparison.result,reverse=True)
+    top_friends.sort(key=lambda x:x.comparison.result,reverse=True)
     vals['friends'] = friends[:9]
 
     # visual stuff for feed
