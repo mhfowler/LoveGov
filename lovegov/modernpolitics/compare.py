@@ -293,33 +293,12 @@ def aggregateHelper(question, users, aggregate=None):
 #-----------------------------------------------------------------------------------------------------------------------
 def updateLoveGovResponses():
     updateGroupView(getLoveGovGroup())
-    aggs = getLoveGovGroup().group_view.responses
-    user = getLoveGovUser()
-    for x in aggs.all():
-        question = x.question
-        my_response = user.getView().responses.filter(question=question)
-        num_chose = x.aggregateresponse.responses.filter(answer_val=x.answer_val)[0].tally
-        explanation = "This was the answer was chosen by " + str(num_chose)
-        explanation += " users, making it the most common responses on LoveGov for this question. This calculation is "\
-        "updated every hour on the hour, so you're voice will be accounted for soon if it hasn't been already."
-        # save new response
-        if not my_response:
-            response = UserResponse(responder=user,
-                question=question,
-                answer_val= x.answer_val,
-                explanation=explanation)
-            response.autoSave(creator=user, privacy='PUB')
-        # else update old response
-        else:
-            response = my_response[0]
-            user_response = response.userresponse
-            user_response.answer_val= x.answer_val
-            user_response.explanation = explanation
-            user_response.save()
-    user.last_answered = datetime.datetime.now()
-    user.save()
-
-
+    aggs = getLoveGovGroup().group_view.responses.all()
+    lg = getLoveGovUser()
+    for x in aggs:
+        lg.view.responses.add(x)
+    lg.last_answered = datetime.datetime.now()
+    lg.save()
 
 ########################################################################################################################
 ########################################################################################################################

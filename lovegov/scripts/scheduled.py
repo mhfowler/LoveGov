@@ -40,17 +40,10 @@ def runScript(operation, tag, args=[]):
 # Update script.
 #-----------------------------------------------------------------------------------------------------------------------
 def scriptUpdate(tag, args=[]):
-    tags = ['rank', 'allcomparisons', 'usercomparisons', 'groupviews',
-            'calcviews', 'contentlinks', 'userfeeds', 'groupfeeds',
-            'lovegovfeeds', 'groupbyname', 'lovegovresponses',
-            'alpha', 'sitefeeds', 'topicfeeds', 'betafeeds', 'congress']
+    tags = ['groupviews', 'lovegovresponses','congress','hot_scores']
     if tag == 'all':
         for t in tags:
             scriptUpdate(t)
-    if tag == 'sitefeeds':
-        print "*** UPDATING SITE FEEDS ***"
-        scheduled_logger.debug("** updating site feeds **")
-        updateSiteFeeds()
     elif tag == 'lovegovresponses':
         print "*** UPDATING LOVEGOV GROUP AND USER RESPONSES ***"
         scheduled_logger.debug("** updating lovegovrespones **")
@@ -61,21 +54,9 @@ def scriptUpdate(tag, args=[]):
     elif tag == 'groupviews':
         print "*** UPDATING AGGREGATE GROUP VIEWS ***"
         updateGroupViews()
-    elif tag == 'calcviews':
-        print "*** UPDATING CALCULATED CONTENT VIEWS ***"
-        updateCalcViews()
-    elif tag == 'groupfeeds':
-        print "*** UPDATING GROUP FEEDS ***"
-        updateAllGroupFeeds()
-    elif tag == 'groupbyname':
-        print "*** UPDATING GROUPBYNAME FEED ***"
-        name = ""
-        length = len(args)
-        for index, x in enumerate(args):
-            if index < (length-1):
-                name += x + " "
-            else: name += x
-        updateGroupByName(name=name)
+    elif tag == 'hot_scores':
+        print "*** UPDATING HOT SCORES ***"
+        updateHotScores()
     # prints valid tags
     elif tag == 'help':
         print "***** UPDATE HELP *****"
@@ -91,82 +72,19 @@ def scriptUpdate(tag, args=[]):
 # Print script.
 #-----------------------------------------------------------------------------------------------------------------------
 def scriptPrint(tag, args=[]):
-    tags = ['scripts', 'emails']
-    if tag == 'all':
-        for t in tags:
-            scriptPrint(t)
-    elif tag == 'scripts':
-        print "***** PRINTING SCRIPTS *****"
-        for x in Script.objects.all():
-            to_print = '"' + x.command + '"' + ' by ' + x.user + ' at ' + str(x.when)
-            print to_print
-    elif tag == 'emails':
-        print "***** PRINTING EMAILS *****"
-        for x in EmailList.objects.all():
-            print x.email + " at " + str(x.when)
-    # prints valid tags
-    elif tag == 'help':
-        print "***** PRINT HELP *****"
-        to_print = 'acceptable tags: help, all, '
-        for t in tags:
-            to_print = to_print + t + ', '
-        print to_print
-    # else invalid tag
-    else:
-        print "invalid command: '" + tag + "' is not an accepted tag."
+    print "why!"
 
 #-----------------------------------------------------------------------------------------------------------------------
 # Initialize script.
 #-----------------------------------------------------------------------------------------------------------------------
 def scriptInitialize(tag, args=[]):
-    tags = ['lovegov', 'testdata', 'topics']
-    if tag == 'all':
-        for t in tags:
-            scriptInitialize(t)
-    elif tag == 'lovegov':
-        print "*** INITIALIZING USER LOVEGOV ***"
-        initializeLoveGovUser()             # user of the site who represents the whole site
-    elif tag == 'testdata':
-        print "*** INITIALIZING TEST DATA ***"
-        initializeDB()
-    elif tag == 'topics':
-        print "*** INITIALIZING TOPICS IN QAWEB ***"
-        initializeTopics(using="qaweb")
-    elif tag == 'localinit':
-        print "*** INITIALIZING TESTDATA LOCALLY ***"
-        initializeTopics()
-        initializeDB()
-    # prints valid tags
-    elif tag == 'help':
-        print "***** INITIALIZE HELP *****"
-        to_print = 'acceptable tags: help, all, '
-        for t in tags:
-            to_print = to_print + t + ', '
-        print to_print
-    # else invalid tag
-    else:
-        print "invalid command: '" + tag + "' is not an accepted tag."
+    print "init!"
 
 #-----------------------------------------------------------------------------------------------------------------------
 # Script for adding stuff to db.
 #-----------------------------------------------------------------------------------------------------------------------
 def scriptAdd(tag, args=[]):
-    tags = ['email']
-    if tag == 'email':
-        print "*** ADDING EMAIL ***"
-        if arg:
-            addValidEmail(args[0])
-        else: print("no email supplied")
-    elif tag == 'help':
-        print "***** ADD HELP *****"
-        to_print = 'acceptable tags: help, '
-        for t in tags:
-            to_print = to_print + t + ', '
-        print to_print
-        # else invalid tag
-    else:
-        print "invalid command: '" + tag + "' is not an accepted tag."
-
+    print "add!"
 
 ########################################################################################################################
 #   Start of actual script.
