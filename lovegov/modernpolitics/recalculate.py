@@ -132,7 +132,28 @@ def recalculateEverything():
 
 
 
+#################################   CLEAN   #####################################################
 
+def cleanWorldViews():
+
+    q = Question.objects.all()
+    num_q = q.count()
+    print "num Q:" + str(num_q)
+
+    u = UserProfile.objects.filter(num_answers__gt=num_q)
+    print str(u.count()) + " users with TOO MANY answers"
+    for x in u:
+        print x.get_name()
+        responses = {}
+        for r in x.view.responses.all():
+            q_id = r.question.id
+            if not q_id in responses:
+                responses[q_id] = 1
+            else:
+                responses[q_id] += 1
+        for k,v in responses.items():
+            if v > 1:
+                print str(v) + " duplicate responses for " + Question.objects.get(id=k).title
 
 
 

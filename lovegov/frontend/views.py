@@ -515,13 +515,12 @@ def discover(request, vals):
 #-----------------------------------------------------------------------------------------------------------------------
 def friends(request, vals):
     viewer = vals['viewer']
-    friends = list(viewer.getIFollow())
+    friends = list(viewer.getIFollow().filter(num_answers__gte=10))
     vals['i_follow'] = viewer.i_follow
-    friends = random.sample(friends, min(9, len(friends)))
-    vals['friends'] = friends
     for f in friends:
         f.comparison = f.getComparison(viewer)
     friends.sort(key=lambda x:x.comparison.result,reverse=True)
+    vals['friends'] = friends[:9]
 
     # visual stuff for feed
     vals['no_create_button'] = True
