@@ -4636,9 +4636,9 @@ class StateGroup(Group):
         location.save()
         self.location = location
         self.save()
+        return self
 
 class TownGroup(Group):
-    pass
     def autoCreate(self, city, state):
         city_state = city + ", " + state
         self.title = city_state + " Group"
@@ -4651,6 +4651,7 @@ class TownGroup(Group):
         location.save()
         self.location = location
         self.save()
+        return self
 
 #=======================================================================================================================
 # Politician group, is a sytem group for organizing politicians
