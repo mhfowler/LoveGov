@@ -33,6 +33,11 @@ bind( '.filter_box' , 'click' , null , function(event) {
     }
 });
 
+function updateFeed() {
+    alert('uppity');
+    $('div.feed-button').click();
+}
+
 function loadBillSelect2() {
     function formatSession(session) {
         return session.text+'th congress';
@@ -41,9 +46,11 @@ function loadBillSelect2() {
         placeholder: "Search for bill sessions",
         formatResult: formatSession,
         formatSelection: formatSession,
+        change: updateFeed
     });
     $('.type_select').select2({
-        placeholder: "Search for bill types"
+        placeholder: "Search for bill types",
+        change: updateFeed
     });
     $('.subject_select').select2({
         placeholder: "Search for bill subjects",
@@ -66,25 +73,32 @@ function loadBillSelect2() {
         quietMillis: 200,
         dataType: 'json',
         multiple: true,
+        change: updateFeed
 
     });
     $('.committee_select').select2({
-        placeholder: "Search for bill committees"
+        placeholder: "Search for bill committees",
+        change: updateFeed
     });
     $('.introduced_select').select2({
-        placeholder: "Search by date period"
+        placeholder: "Search by date period",
+        change: updateFeed
     });
     $('.sponsor_select_body').select2({
-        placeholder: "Search for bill sponsor body"
+        placeholder: "Search for bill sponsor body",
+        change: updateFeed
     });
     $('.sponsor_select_name').select2({
-        placeholder: "Search for bill sponsor name"
+        placeholder: "Search for bill sponsor name",
+        change: updateFeed
     });
     $('.sponsor_select_party').select2({
-        placeholder: "Search for bill sponsor party"
+        placeholder: "Search for bill sponsor party",
+        change: updateFeed
     });
     $('.sponsor_select_district').select2({
-        placeholder: "Search for bill sponsor district"
+        placeholder: "Search for bill sponsor district",
+        change: updateFeed
     });
 }
 
