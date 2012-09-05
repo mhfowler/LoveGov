@@ -8,8 +8,8 @@
 
     <div class="connect-buttons">
 
-        <a href="{{ fb_link }}" class="sign-in-fb"> </a>
-        <a href="/twitter/redirect/" class="sign-in-twitter"> </a>
+        <a href="{{ fb_link }}" class="sign-in-fb log_in_button"> </a>
+        <a href="/twitter/redirect/" class="sign-in-twitter log_in_button"> </a>
         <div style="clear:both;"></div>
 
     </div>
@@ -28,6 +28,7 @@
         <input type="hidden" name="button" value="login" />
 
         <div class="dialogue-bottom">
+            <div class="signing_in_gif heart-gif"></div>
             <input class="login-button" id="submit-login" type="submit" value="log in"/>
             <a class="account-actions forgot-link" id="forgot-password" href="/password_recovery/">forgot password?</a>
             <span class="login-error">{{ error }}</span>

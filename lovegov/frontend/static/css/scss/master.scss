@@ -101,6 +101,16 @@ div.page-loading {
   display:none;
 }
 
+
+div.heart-gif {
+  @include staticImage("/images/gifs/ajax-loader.gif");
+  width: 15px;
+  height: 15px;
+  background-size: 15px 13px;
+  background-repeat: no-repeat;
+}
+
+
 /* Prevent padding from altering defined sizes */
 * {
   @include box-sizing(border-box);

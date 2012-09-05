@@ -306,19 +306,19 @@ div.no-login-modal
 
           a.sign-in-fb {
             @include staticImage($rel-path:'/images/login/FB_login.png');
-            background-size:contain;
-            background-repeat:no-repeat;
-            float:left;
-            width:150px;
-            height:40px;
+            background-repeat: no-repeat;
+            float: left;
+            width: 145px;
+            height: 35px;
+            background-size: 145px 30px;
           }
           a.sign-in-twitter {
             @include staticImage($rel-path:'/images/login/Twitter_login.png');
-            background-size:contain;
-            background-repeat:no-repeat;
-            float:right;
-            width:150px;
-            height:40px;
+            background-repeat: no-repeat;
+            float: right;
+            width: 145px;
+            height: 35px;
+            background-size: 145px 30px;
           }
           a.sign-in-fb:hover {
             @include staticImage($rel-path:'/images/login/FB_login_hover.png');
@@ -358,6 +358,13 @@ div.no-login-modal
           display:block;
           width:100%;
           margin-top:10px;
+
+          div.heart-gif {
+            float:left;
+            margin-left:5px;
+            margin-top:20px;
+            display:none;
+          }
 
           span.login-error {
             @include fontSize(14px);

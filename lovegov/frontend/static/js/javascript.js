@@ -1639,6 +1639,9 @@ bind(".r_register", 'click', null, function(event) {
     });
 });
 
+bind(".log_in_button", 'click', null, function(event) {
+    $(".signing_in_gif").show();
+});
 
 /***********************************************************************************************************************
  *
