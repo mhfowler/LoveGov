@@ -1651,16 +1651,9 @@ def getFeed(request, vals):
 
     html = ajaxRender('site/pages/feed/feed_helper.html', vals, request)
 
-    # if no items, return a random picture of a politician
-    num_items = len(feed_items)
-    if not num_items:
-        p = random.choice(UserProfile.objects.filter(politician=True))
-        vals['politician'] = p
-        everything_loaded = ajaxRender('site/pages/microcopy/everything_loaded.html', vals, request)
-    else:
-        everything_loaded = ""
+    everything_loaded = everythingLoadedHelper(request, vals, feed_items)
 
-    to_return = {'html':html, 'num_items':num_items, 'everything_loaded':everything_loaded}
+    to_return = {'html':html, 'num_items':len(feed_items), 'everything_loaded':everything_loaded}
     return HttpResponse(json.dumps(to_return))
 
 # generates a list of (content, vote) tuples for each piece of content in list
@@ -1715,7 +1708,10 @@ def getQuestions(request, vals):
     vals['default_display'] = request.POST.get('default_display')
 
     html = ajaxRender('site/pages/qa/feed_helper_questions.html', vals, request)
-    return HttpResponse(json.dumps({'html':html, 'num_items':len(question_items)}))
+
+    everything_loaded = everythingLoadedHelper(request, vals, question_items)
+
+    return HttpResponse(json.dumps({'html':html, 'num_items':len(question_items), 'everything_loaded':everything_loaded}))
 
 def getLegislation(request, vals={}):
     feed_start = int(request.POST['feed_start'])
@@ -1736,7 +1732,20 @@ def getLegislation(request, vals={}):
     vals['feed_items'] = legislation_items
 
     html = ajaxRender('site/pages/feed/feed_helper.html', vals, request)
-    return HttpResponse(json.dumps({'html':html, 'num_items':len(legislation_items)}))
+
+    everything_loaded = everythingLoadedHelper(request, vals, legislation_items)
+
+    return HttpResponse(json.dumps({'html':html, 'num_items':len(legislation_items), 'everything_loaded':everything_loaded}))
+
+def everythingLoadedHelper(request, vals, feed_items):
+    num_items = len(feed_items)
+    if not num_items:
+        p = random.choice(UserProfile.objects.filter(politician=True))
+        vals['politician'] = p
+        everything_loaded = ajaxRender('site/pages/microcopy/everything_loaded.html', vals, request)
+    else:
+        everything_loaded = ""
+    return everything_loaded
 
 #-----------------------------------------------------------------------------------------------------------------------
 # get groups

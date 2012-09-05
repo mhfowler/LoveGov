@@ -443,7 +443,7 @@ div.profile-page {
             }
           }
           div.are-you-a-politician {
-            margin-top:35px;
+            margin-top: 43px;
             @include fontSize(14px);
             position:relative;
             input.claim-profile {
@@ -457,6 +457,7 @@ div.profile-page {
             }
             a.claim-profile-button {
               @extend .claim-button;
+              margin-top:26px;
             }
             p.claimed-message {
               @include fontSize(12px);
@@ -469,12 +470,12 @@ div.profile-page {
             }
           }
           div.are-you-concerned {
-            margin-top:55px;
+            margin-top: 100px;
             position:relative;
             @include fontSize(14px);
             p.asked-message {
               position:relative;
-              top:-20px;
+              top:20px;
               span.asked-counter {
                 float:right;
                 font-size: 14px;

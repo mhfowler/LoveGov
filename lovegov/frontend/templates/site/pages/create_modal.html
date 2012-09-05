@@ -29,6 +29,10 @@
             <input type="hidden" name="sectionType" value="discussion">
             <header><img src="{{ STATIC_URL }}/images/create/discussion_blue.png"> Create a Discussion</header>
             <span class="back">< back</span>
+            <p class="create-explanation">
+                Use discussions to debate an issue, post meeting notes, monitor a campaign, or start
+                 a conversation about anything else.
+            </p>
             <div class="form">
                 {% usemacro textbox "Title:" "title" "title" "" %}
                 {% usemacro textarea "Full text:" "description" "full_text" %}
@@ -49,6 +53,9 @@
             <input type="hidden" name="sectionType" value="petition">
             <header><img src="{{ STATIC_URL }}/images/create/petition_blue.png"> Create a Petition</header>
             <span class="back">< back</span>
+            <p class="create-explanation">
+                Create a petition to rally people behind your cause.
+            </p>
             <div class="form">
                 {% usemacro textbox "Title:" "title" "title" "" %}
                 {% usemacro textarea "Full text:" "description" "full_text" %}
@@ -69,6 +76,9 @@
             <input type="hidden" name="sectionType" value="news">
             <header><img src="{{ STATIC_URL }}/images/create/news_blue.png"> Submit News</header>
             <span class="back">< back</span>
+            <p class="create-explanation">
+                Share an article with a relevant group.
+            </p>
             <div class="form">
                 {% usemacro textbox "Link:" "link" "link" "" %}
                 {% usemacro link-image %}
@@ -89,6 +99,9 @@
             <input type="hidden" name="sectionType" value="poll">
             <header><img src="{{ STATIC_URL }}/images/create/poll_blue.png"> Create a Question</header>
             <span class="back">< back</span>
+            <p class="create-explanation">
+                Have a question you'd like to ask? Make a single question or a group of questions in a poll.
+            </p>
             <div class="form">
                 <div class="form-row polltype">
                     <div class="label">Is this a poll?<br> </br></div>

@@ -617,6 +617,10 @@ div.questions-header {
       @include fontSize(20px);
       margin-bottom:5px;
     }
+    div.sidebar-header {
+      width: 640px;
+      font-size:14px;
+    }
     div.questions-explanation {
       width:550px;
       @include fontSize(14px);
@@ -625,6 +629,7 @@ div.questions-header {
   div.questions-links {
     float:right;
     width:300px;
+    margin-top: 15px;
       a.question-link {
           display:block;
           padding:8px;

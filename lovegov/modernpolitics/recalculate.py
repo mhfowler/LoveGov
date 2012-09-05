@@ -242,6 +242,85 @@ def purgeTopics():
 
 
 
+
+#### set text for content #####
+
+def setLoveGovPollText():
+
+    text = "We wrote these questions based on recent legislation. " \
+           "Take the LoveGov poll to see how you match up with your Congressmen and other users."
+
+    lgpoll = getLoveGovPoll()
+    lgpoll.summary = text
+    lgpoll.save()
+
+
+def setStateGroupText(state_group):
+
+    text = "This is the central place for everything relevant to " + STATES_DICT[state_group.location.state] + "." \
+           "Use this group to find out what is going on and generate awareness for your cause: " \
+           "share the important news/legislation, have discussions, and poll your state on the key issues. "
+
+    state_group.description = text
+    state_group.summary = text
+    state_group.save()
+
+
+def setCityGroupText(city_group):
+
+    text = "This is an auto-generated group for people from " + city_group.getLocationVerbose() + "." \
+           "Use this group to stay up to date, share news, have discussions" \
+           " and poll the community to find out where everyone stands. " \
+           "If you have something specific you are working on, this is the place to generate awareness."
+
+    city_group.description = text
+    city_group.summary = text
+    city_group.save()
+
+
+def setEducationText(network):
+
+    text = "This is an auto-generated group for students and alumni from _____. " \
+           "Students, groups, and alumni should use this to coordinate your efforts," \
+           "generate awareness for your initiatives, and recruit more members. " \
+           "Share important news, have discussions, and create & answer polls so you can find out where people stand."
+
+    network.description = text
+    network.summary = text
+    network.save()
+
+
+def setNetworkText(network):
+
+    text = "This is an auto-generated group. " \
+           "Share important news, have discussions, and create & answer polls so you can find out where people stand."
+
+    network.description = text
+    network.summary = text
+    network.save()
+
+
+def recalculateAutoGenDescriptions():
+
+    for n in Network.objects.all():
+        setNetworkText(n)
+        print n.get_name()
+
+    for c in TownGroup.objects.all():
+        setCityGroupText(c)
+        print c.get_name()
+
+    for s in StateGroup.objects.all():
+        setStateGroupText(x)
+        print s.get_name()
+
+    setLoveGovPollText()
+
+
+
+
+
+
 #### POLITCIIAN STUFF ####
 def calculateResponseAnswers():
     count = 0

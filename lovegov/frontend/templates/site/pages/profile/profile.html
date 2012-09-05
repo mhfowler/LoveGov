@@ -169,15 +169,12 @@
 
             <div class="profile-ghost">
                 <div class="ghost-header">
-                    This politician hasn't realized that they need to use LoveGov to communicate with their
-                    constituents. Until they do, we have filled in their
-                    responses based on how they voted on legislation related to the questions
-                    in our official LoveGov poll.
+                    {{ profile.get_name }} hasn't claimed their profile on LoveGov yet.
+                    Until they do, we've answered the LoveGov poll for them based on their voting record.
                 </div>
 
                 <div class="are-you-a-politician">
-                    Are you {{ profile.get_name }}? If so, enter your email address here and we will get
-                    in contact with you to verify you and let you claim your profile.
+                    Are you {{ profile.get_name }}? Enter your email address to claim your profile.
                     <a class="claim-profile-button claim_profile_button dummy_link" data-p_id="{{ profile.id }}"> claim </a>
                     <input type="text" class="claim-profile claim_profile_email" placeholder="email"/>
                     <p class="claimed-message claimed_message"> Thankyou! We'll email you and hope to see you on
@@ -186,10 +183,7 @@
                 </div>
 
                 <div class="are-you-concerned">
-                    Are you a concerned citizen that would like to see {{ profile.get_name }} on LoveGov?
-                    Click this button
-                    to send {{ profile.political_title }} {{ profile.first_name }} a message asking him
-                    to join.
+                    Would you like to see {{ profile.get_name }} on LoveGov? Send them a message asking them to join.
 
                     {% include 'site/pages/profile/asked_to_join_snippet.html' with politician=profile %}
 

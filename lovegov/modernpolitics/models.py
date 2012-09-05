@@ -1698,6 +1698,7 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
             self.save()
 
         if 'education' in fb_data:
+            from lovegov.modernpolitics.recalculate import setEducationText
             education = fb_data['education']
             for edu in education:
                 school = edu['school']
@@ -1709,6 +1710,7 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
                     school_network.autoSave()
                 school_network.joinMember(self)
                 self.networks.add(school_network)
+                setEducationText(school_network)
 
         if 'location' in fb_data:
             location = fb_data['location']
@@ -4617,10 +4619,12 @@ class Network(Group):
 
     # autosave any network
     def autoSave(self, creator=None, privacy="PUB"):
+        from lovegov.modernpolitics.recalculate import setNetworkText
         self.group_type = 'N'
         self.autogen = True
         self.group_privacy = "O"
         super(Network, self).autoSave()
+        setNetworkText(self)
 
 #=======================================================================================================================
 # Location group, is created for specific locations (from submitted addresses)
@@ -4640,6 +4644,8 @@ class StateGroup(Group):
         location.save()
         self.location = location
         self.save()
+        from lovegov.modernpolitics.recalculate import setStateGroupText
+        setStateGroupText(self)
         return self
 
 class TownGroup(Group):
@@ -4655,6 +4661,8 @@ class TownGroup(Group):
         location.save()
         self.location = location
         self.save()
+        from lovegov.modernpolitics.recalculate import setCityGroupText
+        setCityGroupText(self)
         return self
 
 #=======================================================================================================================
