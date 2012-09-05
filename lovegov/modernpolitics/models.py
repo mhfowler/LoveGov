@@ -438,6 +438,7 @@ class Content(Privacy, LocationLevel):
         self.save()
         return score
 
+
     def calculateAllStats(self):
         self.calculateVotes()
         self.calculateNumComments()

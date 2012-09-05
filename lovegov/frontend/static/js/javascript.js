@@ -261,7 +261,7 @@ function ajaxReload(theurl, loadimg)
         ({
             url:theurl,
             type: 'GET',
-            data: {'url':old_url, 'has_sidebar':0},
+            data: {'url':old_url},
             success: function(data)
             {
                 if (pre_page_nonce == current_page_nonce) {
