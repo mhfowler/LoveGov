@@ -12,3 +12,4 @@ sudo chmod -R 770 /static/dev
 sudo chgrp -R access /static/dev
 # rewsgi
 sudo touch /srv/dev/lovegov/apache/dev.wsgi
+cd -
