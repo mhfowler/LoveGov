@@ -78,6 +78,7 @@ bind("div.create-modal div.add-question", "click", function(e) {
     if(num_questions==1) {
         // Adding another question - ask if it's a poll
         $('div.create-modal div.create-section.poll div.form-row.polltype').fadeIn(500);
+        $('div.create-modal div.create-section.poll input:radio[value="p"]').click();
     }
     $(this).data('num-questions', num_questions+1);
    var newQuestion = $('div.create-modal div.question.model').clone();
@@ -271,7 +272,7 @@ function getLinkInfo(link, input) {
             input.parent().children('img.loading-gif').remove();
         },
         error: function(e) {
-            alert("Something went wrong fetching the link.");
+            alert("We were unable to fetch a description of the link.");
         }
     });
 }

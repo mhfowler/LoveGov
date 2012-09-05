@@ -2447,6 +2447,7 @@ def createContent(request, vals={}):
     else:
         privacy = 'PUB'
     redirect = ''
+    createAction = True
     if section=='discussion':
         if title and full_text:
             newc = Discussion(user_post=full_text, title=title, in_feed=True, in_search=True, in_calc=True,
@@ -2480,9 +2481,16 @@ def createContent(request, vals={}):
             newc = News(link=link, posted_to=group)
             if full_text:
                 newc.link_summary = full_text
-            ref = str(screenshot)
-            if ref != 'undefined':
-                newc.saveScreenShot(ref)
+            if link_summary:
+                newc.summary = link_summary
+            if title:
+                newc.title = title
+            else:
+                newc.title = link
+            if screenshot:
+                ref = str(screenshot)
+                if ref != 'undefined':
+                    newc.saveScreenShot(ref)
             newc.autoSave(creator=viewer, privacy=privacy)
         else:
             return HttpResponseBadRequest("A required field was not included.")
@@ -2499,18 +2507,23 @@ def createContent(request, vals={}):
                 newQ = Question(question_text=q['question'], title=q['question'], source=q['source'], official=False)
                 if polltype=='q':
                     newQ.posted_to = group
-                newQ.save()
+                newQ.autoSave()
                 newQ.setMainTopic(qtopic)
                 for a in q['answers']:
                     newA = Answer(answer_text=a, value=-1)
                     newA.save()
                     newQ.addAnswer(newA)
-                newQ.save()
                 if polltype=='p':
                     newc.addQuestion(newQ)
+                else:
+                    action = CreatedAction(content=newQ,privacy=getPrivacy(request),user=viewer)
+                    action.autoSave()
             if polltype=='q':
+                # new content is last question
                 newc = newQ
-            newc.autoSave(creator=viewer, privacy=privacy)
+                createAction = False
+            else:
+                newc.autoSave(creator=viewer, privacy=privacy)
             try:
                 if 'content-image' in request.FILES:
                     file_content = ContentFile(request.FILES['content-image'].read())
@@ -2573,8 +2586,9 @@ def createContent(request, vals={}):
 
     newc.setMainTopic(topic)
 
-    action = CreatedAction(content=newc,privacy=getPrivacy(request),user=viewer)
-    action.autoSave()
+    if createAction:
+        action = CreatedAction(content=newc,privacy=getPrivacy(request),user=viewer)
+        action.autoSave()
 
     if not redirect:
         redirect = newc.getUrl()
