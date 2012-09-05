@@ -251,6 +251,7 @@ def setLoveGovPollText():
 
     lgpoll = getLoveGovPoll()
     lgpoll.summary = text
+    lgpoll.description = text
     lgpoll.save()
 
 
@@ -263,7 +264,7 @@ def setStateGroupText(state_group):
            "Use this group to find out what is going on and generate awareness for your cause: " \
            "share the important news/legislation, have discussions, and poll your state on the key issues. "
 
-    state_group.description = text
+    state_group.full_text = text
     state_group.summary = text
     state_group.save()
 
@@ -275,7 +276,7 @@ def setCityGroupText(city_group):
            " and poll the community to find out where everyone stands. " \
            "If you have something specific you are working on, this is the place to generate awareness."
 
-    city_group.description = text
+    city_group.full_text = text
     city_group.summary = text
     city_group.save()
 
@@ -287,7 +288,7 @@ def setEducationText(network):
            "generate awareness for your initiatives, and recruit more members. " \
            "Share important news, have discussions, and create & answer polls so you can find out where people stand."
 
-    network.description = text
+    network.full_text = text
     network.summary = text
     network.save()
 
@@ -297,7 +298,7 @@ def setNetworkText(network):
     text = "This is an auto-generated group. " \
            "Share important news, have discussions, and create & answer polls so you can find out where people stand."
 
-    network.description = text
+    network.full_text = text
     network.summary = text
     network.save()
 
