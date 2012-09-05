@@ -523,7 +523,7 @@ def friends(request, vals):
         if f.comparison.num_q > 10:
             top_friends.append(f)
     top_friends.sort(key=lambda x:x.comparison.result,reverse=True)
-    vals['friends'] = friends[:9]
+    vals['friends'] = top_friends[:9]
 
     # visual stuff for feed
     vals['no_create_button'] = True
