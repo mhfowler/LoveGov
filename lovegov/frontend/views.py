@@ -45,7 +45,7 @@ def framedResponse(request, html, url, vals={}, rebind="home"):
 
 def homeResponse(request, focus_html, url, vals):
     vals['home_link'] = True
-    if request.is_ajax() and request.method == 'POST':
+    if request.is_ajax() and request.GET.get('has_sidebar'):
             to_return = {'focus_html':focus_html, 'url':url, 'title':vals['page_title']}
             return HttpResponse(json.dumps(to_return))
     else:

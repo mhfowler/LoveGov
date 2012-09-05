@@ -261,7 +261,7 @@ function ajaxReload(theurl, loadimg)
         ({
             url:theurl,
             type: 'GET',
-            data: {'url':old_url},
+            data: {'url':old_url, 'has_sidebar':0},
             success: function(data)
             {
                 if (pre_page_nonce == current_page_nonce) {
@@ -414,8 +414,8 @@ function homeReload(theurl) {
         $.ajax
             ({
                 url:theurl,
-                type: 'POST',
-                data: {'url':window.location.href},
+                type: 'GET',
+                data: {'url':window.location.href, 'has_sidebar':1},
                 success: function(data)
                 {
                     if (pre_page_nonce == current_page_nonce) {
