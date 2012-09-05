@@ -278,8 +278,9 @@ def aggregateHelper(question, users, aggregate=None, debug=False):
         answers[choice.id] = tuple
     most_chosen_num = 0
     most_chosen_answer_id = -1
+    count = 0
     for p in users:
-        if debug: print p.get_name()
+        if debug and not count%20: print count
         response = p.view.responses.filter(question=question)
         if response:
             index = response[0].most_chosen_answer_id
@@ -290,6 +291,7 @@ def aggregateHelper(question, users, aggregate=None, debug=False):
                 if tuple.tally >= most_chosen_num:
                     most_chosen_num = tuple.tally
                     most_chosen_answer_id = index
+        count += 1
     # save tuples
     for a_id,answer_tally in answers.items():
         answer_tally.save()
