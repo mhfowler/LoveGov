@@ -244,7 +244,6 @@ def purgeTopics():
 
 
 #### set text for content #####
-
 def setLoveGovPollText():
 
     text = "We wrote these questions based on recent legislation. " \
@@ -257,7 +256,9 @@ def setLoveGovPollText():
 
 def setStateGroupText(state_group):
 
-    text = "This is the central place for everything relevant to " + STATES_DICT[state_group.location.state] + "." \
+    state_name = STATES_DICT.get(state_group.location.state)
+
+    text = "This is the central place for everything relevant to " + state_name + "." \
            "Use this group to find out what is going on and generate awareness for your cause: " \
            "share the important news/legislation, have discussions, and poll your state on the key issues. "
 
