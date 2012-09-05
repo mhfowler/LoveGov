@@ -985,7 +985,6 @@ def legislation (request, vals={}):
         type_list.append({'abbreviation':k,'verbose':v})
 
     vals['types'] = type_list
-    vals['subjects'] = LegislationSubject.objects.all()
     vals['committees'] = Committee.objects.distinct().filter(legislation_committees__isnull=False)
     vals['bill_numbers'] = [x['bill_number'] for x in Legislation.objects.values('bill_number').distinct()]
 

@@ -73,7 +73,7 @@ function searchVal(selector) {
 var searchLock = false;
 // Does the actual search
 function search(str) {
-    if(searchLock) return;
+    if(searchLock || str=='') return;
     searchLock = true;
     $('<img src="/static/images/ajax-spinner.gif" class="loading-gif">').insertBefore('div.search img.mag-glass');
     action({

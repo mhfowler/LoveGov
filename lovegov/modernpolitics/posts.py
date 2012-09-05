@@ -1654,49 +1654,6 @@ def ajaxThread(request, vals={}):
     return HttpResponse(json.dumps(to_return))
 
 #-----------------------------------------------------------------------------------------------------------------------
-# gets feed using inputted post parameters
-#-----------------------------------------------------------------------------------------------------------------------
-def ajaxGetFeed(request, vals={}):
-
-    feed_ranking = request.POST['feed_ranking']
-    feed_topics = json.loads(request.POST['feed_topics'])
-    feed_types = json.loads(request.POST['feed_types'])
-    feed_levels = json.loads(request.POST['feed_levels'])
-    feed_groups = json.loads(request.POST['feed_groups'])
-    feed_submissions_only = bool(int(request.POST['feed_submissions_only']))
-    feed_display = request.POST['feed_display']
-
-    feed_start = int(request.POST['feed_start'])
-    feed_end = int(request.POST['feed_end'])
-
-    filter = {
-        'topics': feed_topics,
-        'types': feed_types,
-        'levels': feed_levels,
-        'groups': feed_groups,
-        'ranking': feed_ranking,
-        'submissions_only': feed_submissions_only
-    }
-
-    content = getFeed(filter, start=feed_start, stop=feed_end)
-    items = contentToFeedItems(content, vals['viewer'])
-    vals['items']=items
-    vals['display']=feed_display
-
-    if feed_display == 'L':
-        html = ajaxRender('site/pages/feed/linear_helper.html', vals, request)
-        to_return = {'html':html, 'num':len(content)}
-    else:
-        cards = []
-        for x in items:
-            vals['item'] = x[0].downcast()
-            vals['my_vote'] = x[1]
-            card =  ajaxRender('site/pages/feed/pinterest.html', vals, request)
-            cards.append(card)
-        to_return = {'cards':json.dumps(cards), 'num':len(content)}
-    return HttpResponse(json.dumps(to_return))
-
-#-----------------------------------------------------------------------------------------------------------------------
 # get feed
 #-----------------------------------------------------------------------------------------------------------------------
 def getFeed(request, vals):
@@ -1726,6 +1683,7 @@ def getFeed(request, vals):
     to_return = {'html':html, 'num_items':num_items, 'everything_loaded':everything_loaded}
     return HttpResponse(json.dumps(to_return))
 
+# generates a list of (content, vote) tuples for each piece of content in list
 def contentToFeedItems(content, user):
     list = []
     user_votes = Voted.objects.filter(user=user)
@@ -1933,6 +1891,13 @@ def getFilter(request, vals={}):
     to_return = filter.getDict()
 
     return HttpResponse(json.dumps(to_return))
+
+def getBillSubjects(request, vals={}):
+    term = request.REQUEST.get('term', '')
+    subjects = [{'id': x.id, 'text': x.name} for x in LegislationSubject.objects.filter(name__icontains=term)[:5]]
+    to_return = {'subjects': subjects}
+    return HttpResponse(json.dumps(to_return))
+
 
 #-----------------------------------------------------------------------------------------------------------------------
 # gets notifications
