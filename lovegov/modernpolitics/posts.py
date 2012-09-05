@@ -2500,7 +2500,7 @@ def createContent(request, vals={}):
             if polltype=='p':
                 newc = Poll(description=full_text, summary=full_text, title=title, in_feed=True, in_search=True, in_calc=True,
                     posted_to=group)
-                newc.autoSave()
+                newc.autoSave(creator=viewer, privacy=privacy)
             for q in questions:
                 qtopic_alias = q['topic']
                 qtopic = Topic.lg.get_or_none(alias=qtopic_alias)
@@ -2523,7 +2523,7 @@ def createContent(request, vals={}):
                 newc = newQ
                 createAction = False
             else:
-                newc.autoSave(creator=viewer, privacy=privacy)
+                newc.save()
             try:
                 if 'content-image' in request.FILES:
                     file_content = ContentFile(request.FILES['content-image'].read())
