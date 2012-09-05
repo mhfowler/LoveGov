@@ -1732,7 +1732,7 @@ def initializePresidentialCandidates2012():
 # initialize state groups
 #-----------------------------------------------------------------------------------------------------------------------
 def initializeStateGroups():
-    for x in STATES:
+    for x in STATES_AND_PSEUDO_STATES:
         state = x[0]
         already = StateGroup.lg.get_or_none(location__state=state)
         if not already:
