@@ -25,16 +25,19 @@
             </tr>
             <tr class="break"></tr>
 
+            {% comment %}
             <tr>
                 <td class="left"><h3>dob</h3><p>in any format</p></td>
 
                 <td><input class="account_input account-input" type="text" value="{% if viewer.dob %}{{ viewer.dob }}{% endif %}" name="age"/></td>
                 <td></td>
             </tr>
+            {% endcomment %}
+
             <tr class="break"></tr>
             <tr>
                 <td class="left"><h3>phone-number</h3><p>for providing contact info to verify you in case you message a representative. We won't call you
-                or share your phone number with anyone else.</p></td>
+                    or share your phone number with anyone else.</p></td>
 
                 <td><input class="account_input account-input phone-input" type="text" value="{% if viewer.phone_number %}{{ viewer.phone_number }}{% endif %}" name="phone_number"/></td>
                 <td></td>

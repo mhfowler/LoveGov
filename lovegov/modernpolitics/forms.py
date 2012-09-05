@@ -245,7 +245,7 @@ class PasswordForm(forms.Form):
                 if new1 == new2:
                     user.set_password(new1)
                     user.save()
-                    sendPasswordChangeEmail(user, new1)
+                    #sendPasswordChangeEmail(user, new1)
                     return True
                 else:
                     error_msg = u"The two new passwords you entered were not the same."
