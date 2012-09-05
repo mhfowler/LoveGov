@@ -2421,6 +2421,7 @@ def createContent(request, vals={}):
     title = request.POST.get('title')
     full_text = request.POST.get('full_text')
     post_to = request.POST.get('post_to')
+    link_summary = request.POST.get('link_summary')
     group = None
     if post_to:
         group = Group.lg.get_or_none(id=post_to)
@@ -2483,7 +2484,7 @@ def createContent(request, vals={}):
                 newc.link_summary = full_text
             if link_summary:
                 newc.summary = link_summary
-            if title:
+            if title and title!='undefined':
                 newc.title = title
             else:
                 newc.title = link
