@@ -1565,7 +1565,7 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
         return num_polls
 
     def calculateNumPosts(self):
-        self.num_posts = Content.objects.filter(creator=self, in_feed=True).count()
+        self.num_posts = Content.objects.filter(creator=self, type__in=POST_CONTENT_TYPES).count()
         self.save()
         return self.num_posts
 

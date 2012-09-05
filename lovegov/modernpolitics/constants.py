@@ -469,8 +469,9 @@ BILL_TYPES = {
 }
 
 # types of content that show up in the feed
-FEED_CONTENT_TYPES = ['P','N','L']
-REAL_CONTENT_TYPES = ['P', 'B', 'D', 'N', 'L', 'Q', 'C']
+POST_CONTENT_TYPES = ['N', 'B', 'D', 'P', 'Q']
+FEED_CONTENT_TYPES = ['N', 'B', 'D', 'P', 'Q', 'L']
+REAL_CONTENT_TYPES = ['N', 'B', 'D', 'P', 'Q', 'L', 'C']
 
 # Facebook Stuff
 FACEBOOK_SCOPE = 'email,user_education_history,user_location,user_birthday'
