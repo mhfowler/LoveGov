@@ -45,7 +45,7 @@ def updateGroupViews(debug=False, fast=True):
 #            print g.title
 #            updateGroupView(g)
 
-    groups = Group.objects.filter(hidden=False).exclude(alias="congress")
+    groups = Group.objects.filter(hidden=False).exclude(alias="congress").exclude(group_type="C")
     for g in groups:
         print g.title
         updateGroupView(g)
