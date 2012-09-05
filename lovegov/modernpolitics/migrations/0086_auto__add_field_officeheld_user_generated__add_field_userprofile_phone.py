@@ -23,42 +23,9 @@ class Migration(SchemaMigration):
                       self.gf('django.db.models.fields.related.ForeignKey')(related_name='runners', null=True, to=orm['modernpolitics.Election']),
                       keep_default=False)
 
-        # Adding field 'UserProfile.num_asked'
-        db.add_column('modernpolitics_userprofile', 'num_asked',
-                      self.gf('django.db.models.fields.IntegerField')(default=0),
-                      keep_default=False)
-
-        # Adding field 'UserProfile.first_login_tasks'
-        db.add_column('modernpolitics_userprofile', 'first_login_tasks',
-                      self.gf('django.db.models.fields.CharField')(default='', max_length=10, blank=True),
-                      keep_default=False)
-
-        # Adding field 'UserProfile.num_logins'
-        db.add_column('modernpolitics_userprofile', 'num_logins',
-                      self.gf('django.db.models.fields.IntegerField')(default=0),
-                      keep_default=False)
-
-        # Adding field 'Question.num_responses'
-        db.add_column('modernpolitics_question', 'num_responses',
-                      self.gf('django.db.models.fields.IntegerField')(default=0),
-                      keep_default=False)
-
-        # Adding field 'Question.questions_hot_score'
-        db.add_column('modernpolitics_question', 'questions_hot_score',
-                      self.gf('django.db.models.fields.IntegerField')(default=0),
-                      keep_default=False)
-
-
-        # Changing field 'PhysicalAddress.state'
-        db.alter_column('modernpolitics_physicaladdress', 'state', self.gf('django.db.models.fields.CharField')(max_length=15, null=True))
         # Adding field 'Office.user_generated'
         db.add_column('modernpolitics_office', 'user_generated',
                       self.gf('django.db.models.fields.BooleanField')(default=False),
-                      keep_default=False)
-
-        # Adding field 'Content.edited_when'
-        db.add_column('modernpolitics_content', 'edited_when',
-                      self.gf('django.db.models.fields.DateTimeField')(auto_now_add=True, null=True, blank=True),
                       keep_default=False)
 
 
@@ -72,29 +39,8 @@ class Migration(SchemaMigration):
         # Deleting field 'UserProfile.running_for'
         db.delete_column('modernpolitics_userprofile', 'running_for_id')
 
-        # Deleting field 'UserProfile.num_asked'
-        db.delete_column('modernpolitics_userprofile', 'num_asked')
-
-        # Deleting field 'UserProfile.first_login_tasks'
-        db.delete_column('modernpolitics_userprofile', 'first_login_tasks')
-
-        # Deleting field 'UserProfile.num_logins'
-        db.delete_column('modernpolitics_userprofile', 'num_logins')
-
-        # Deleting field 'Question.num_responses'
-        db.delete_column('modernpolitics_question', 'num_responses')
-
-        # Deleting field 'Question.questions_hot_score'
-        db.delete_column('modernpolitics_question', 'questions_hot_score')
-
-
-        # Changing field 'PhysicalAddress.state'
-        db.alter_column('modernpolitics_physicaladdress', 'state', self.gf('django.db.models.fields.CharField')(max_length=2, null=True))
         # Deleting field 'Office.user_generated'
         db.delete_column('modernpolitics_office', 'user_generated')
-
-        # Deleting field 'Content.edited_when'
-        db.delete_column('modernpolitics_content', 'edited_when')
 
 
     models = {
@@ -279,7 +225,6 @@ class Migration(SchemaMigration):
             'created_when': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'}),
             'creator': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['modernpolitics.UserProfile']", 'null': 'True'}),
             'downvotes': ('django.db.models.fields.IntegerField', [], {'default': '0'}),
-            'edited_when': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'null': 'True', 'blank': 'True'}),
             'hot_score': ('django.db.models.fields.IntegerField', [], {'default': '0'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'in_calc': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
@@ -658,7 +603,7 @@ class Migration(SchemaMigration):
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'latitude': ('django.db.models.fields.DecimalField', [], {'null': 'True', 'max_digits': '30', 'decimal_places': '15'}),
             'longitude': ('django.db.models.fields.DecimalField', [], {'null': 'True', 'max_digits': '30', 'decimal_places': '15'}),
-            'state': ('django.db.models.fields.CharField', [], {'max_length': '15', 'null': 'True'}),
+            'state': ('django.db.models.fields.CharField', [], {'max_length': '2', 'null': 'True'}),
             'zip': ('django.db.models.fields.CharField', [], {'max_length': '20', 'null': 'True'})
         },
         'modernpolitics.pinnedaction': {
@@ -684,11 +629,9 @@ class Migration(SchemaMigration):
             'answers': ('django.db.models.fields.related.ManyToManyField', [], {'to': "orm['modernpolitics.Answer']", 'symmetrical': 'False'}),
             'content_ptr': ('django.db.models.fields.related.OneToOneField', [], {'to': "orm['modernpolitics.Content']", 'unique': 'True', 'primary_key': 'True'}),
             'lg_weight': ('django.db.models.fields.IntegerField', [], {'default': '5'}),
-            'num_responses': ('django.db.models.fields.IntegerField', [], {'default': '0'}),
             'official': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'question_text': ('django.db.models.fields.TextField', [], {'max_length': '500'}),
             'question_type': ('django.db.models.fields.CharField', [], {'default': "'D'", 'max_length': '2'}),
-            'questions_hot_score': ('django.db.models.fields.IntegerField', [], {'default': '0'}),
             'relevant_info': ('django.db.models.fields.TextField', [], {'max_length': '1000', 'null': 'True', 'blank': 'True'}),
             'source': ('django.db.models.fields.TextField', [], {'max_length': '500', 'null': 'True', 'blank': 'True'})
         },
@@ -931,8 +874,7 @@ class Migration(SchemaMigration):
             'facebook_name': ('django.db.models.fields.CharField', [], {'max_length': '255', 'blank': 'True'}),
             'facebook_profile_url': ('django.db.models.fields.TextField', [], {'blank': 'True'}),
             'fb_image': ('django.db.models.fields.files.ImageField', [], {'max_length': '255', 'null': 'True', 'blank': 'True'}),
-            'first_login': ('django.db.models.fields.IntegerField', [], {'default': '1'}),
-            'first_login_tasks': ('django.db.models.fields.CharField', [], {'default': "''", 'max_length': '10', 'blank': 'True'}),
+            'first_login': ('django.db.models.fields.IntegerField', [], {'default': '0'}),
             'first_name': ('django.db.models.fields.CharField', [], {'max_length': '200'}),
             'follow_me': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'follow_me'", 'null': 'True', 'to': "orm['modernpolitics.Group']"}),
             'gender': ('django.db.models.fields.CharField', [], {'max_length': '1', 'null': 'True', 'blank': 'True'}),
@@ -954,11 +896,9 @@ class Migration(SchemaMigration):
             'nick_name': ('django.db.models.fields.CharField', [], {'max_length': '100', 'null': 'True', 'blank': 'True'}),
             'num_answers': ('django.db.models.fields.IntegerField', [], {'default': '0'}),
             'num_articles': ('django.db.models.fields.IntegerField', [], {'default': '0'}),
-            'num_asked': ('django.db.models.fields.IntegerField', [], {'default': '0'}),
             'num_followme': ('django.db.models.fields.IntegerField', [], {'default': '0'}),
             'num_groups': ('django.db.models.fields.IntegerField', [], {'default': '0'}),
             'num_ifollow': ('django.db.models.fields.IntegerField', [], {'default': '0'}),
-            'num_logins': ('django.db.models.fields.IntegerField', [], {'default': '0'}),
             'num_messages': ('django.db.models.fields.IntegerField', [], {'default': '0'}),
             'num_petitions': ('django.db.models.fields.IntegerField', [], {'default': '0'}),
             'num_posts': ('django.db.models.fields.IntegerField', [], {'default': '0'}),
