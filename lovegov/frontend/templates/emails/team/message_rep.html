@@ -1,0 +1,18 @@
+{% extends 'emails/frame.html' %}
+
+{% block content %}
+
+    <p>
+        {{ user.get_name }} [{{ user.id }}] sent a message to {{ politician.get_name }}[{{ politician.id }}]
+    </p>
+    <br><br>
+    <p>
+        message:
+    </p>
+    <br><br>
+    <p>
+        {{ message }}
+    </p>
+
+
+{% endblock %}
