@@ -792,7 +792,7 @@ CANADIAN_PROVINCES = [ ('AB', 'Alberta'), ('BC', 'British Columbia'), ('MB', 'Ma
     ('PE', 'Prince Edward Island'), ('QC', 'Quebec'), ('SK', 'Saskatchewan'), ('YT', 'Yukon')]
 
 STATES_DICT = {}
-for x in STATES:
+for x in STATES_AND_PSEUDO_STATES:
     STATES_DICT[x[0]]=x[1]
 
 CURRENT_CONGRESS_SESSION = 112
