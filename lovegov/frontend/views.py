@@ -515,10 +515,13 @@ def discover(request, vals):
 #-----------------------------------------------------------------------------------------------------------------------
 def friends(request, vals):
     viewer = vals['viewer']
-    friends = list(viewer.getIFollow().filter(num_answers__gte=10))
+    friends = viewer.getIFollow().filter(num_answers__gte=10)
     vals['i_follow'] = viewer.i_follow
+    top_friends = []
     for f in friends:
         f.comparison = f.getComparison(viewer)
+        if f.comparison.num_q > 10:
+            top_friends.append(f)
     friends.sort(key=lambda x:x.comparison.result,reverse=True)
     vals['friends'] = friends[:9]
 
