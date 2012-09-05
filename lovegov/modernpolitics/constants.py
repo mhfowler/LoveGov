@@ -677,7 +677,8 @@ ACTIONS = [
     'changePrivacyMode',
     'savePoliticianSettings',
     'removeScorecard',
-    'completeTask'
+    'completeTask',
+    'getBillSubjects',
 
 ]
 
