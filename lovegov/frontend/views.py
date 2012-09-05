@@ -129,7 +129,7 @@ def viewWrapper(view, requires_login=False):
                         return view(request,vals=vals,*args,**kwargs)
 
                 # IF NOT DEVELOPER AND IN UPDATE MODE or ON DEV SITE, REDIRECT TO CONSTRUCTION PAGE
-                if UPDATE or ("dev" in host_full):
+                if UPDATE:
                     if not user.developer:
                         normal_logger.debug('blocked: ' + user.get_name())
                         return shortcuts.redirect('/underconstruction/')
