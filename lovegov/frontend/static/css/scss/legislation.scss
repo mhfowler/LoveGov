@@ -30,117 +30,8 @@ div.main-block {
       margin-right: 5px;
     }
 
-    div.session_filter {
-      display: inline-block;
-      width: 90px;
-      margin-bottom: 9px;
-      padding-top: 5px;
-      margin-right: 5px;
-      text-align: center;
-      border-bottom: 5px solid $gray;
-
-      &:hover {
-        background-color: $gray;
-        color: $white;
-        font-weight: bold;
-      }
-
-      &.clicked {
-        background-color: $gray;
-        color: $white;
-        font-weight: bold;
-      }
-    }
-
-    div.type_filter {
-      display: inline-block;
-      width: 90px;
-      margin-bottom: 9px;
-      padding-top: 5px;
-      margin-right: 5px;
-      text-align: center;
-      border-bottom: 5px solid $gray;
-
-      &:hover {
-        background-color: $gray;
-        color: $white;
-        font-weight: bold;
-      }
-
-      &.clicked {
-        background-color: $gray;
-        color: $white;
-        font-weight: bold;
-      }
-    }
-
-    div.subject_filter {
-      display: inline-block;
-      width: 90px;
-      margin-bottom: 9px;
-      padding-top: 5px;
-      margin-right: 5px;
-      text-align: center;
-      border-bottom: 5px solid $gray;
-
-      &:hover {
-        background-color: $gray;
-        color: $white;
-        font-weight: bold;
-      }
-
-      &.clicked {
-        background-color: $gray;
-        color: $white;
-        font-weight: bold;
-      }
-    }
-
-    div.committee_filter {
-      display: inline-block;
-      width: 90px;
-      margin-bottom: 9px;
-      padding-top: 5px;
-      margin-right: 5px;
-      text-align: center;
-      border-bottom: 5px solid $gray;
-
-      &:hover {
-        background-color: $gray;
-        color: $white;
-        font-weight: bold;
-      }
-
-      &.clicked {
-        background-color: $gray;
-        color: $white;
-        font-weight: bold;
-      }
-    }
-
-    div.introduced_filter {
-      display: inline-block;
-      width: 90px;
-      margin-bottom: 9px;
-      padding-top: 5px;
-      margin-right: 5px;
-      text-align: center;
-      border-bottom: 5px solid $gray;
-
-      &:hover {
-        background-color: $gray;
-        color: $white;
-        font-weight: bold;
-      }
-
-      &.clicked {
-        background-color: $gray;
-        color: $white;
-        font-weight: bold;
-      }
-    }
-
-    div.sponsor_filter {
+    div.filter_box {
+      cursor: pointer;
       display: inline-block;
       width: 90px;
       margin-bottom: 9px;
@@ -169,6 +60,10 @@ div.main-block {
     margin-top: 30px;
     height: auto;
     width: 600px;
+
+    ul {
+      padding: 0;
+    }
 
     div.session_selector {
       margin-left: 0px;

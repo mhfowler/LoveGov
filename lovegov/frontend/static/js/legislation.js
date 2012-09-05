@@ -34,8 +34,13 @@ bind( '.filter_box' , 'click' , null , function(event) {
 });
 
 function loadBillSelect2() {
+    function formatSession(session) {
+        return session.text+'th congress';
+    }
     $('.session_select').select2({
-        placeholder: "Search for bill sessions"
+        placeholder: "Search for bill sessions",
+        formatResult: formatSession,
+        formatSelection: formatSession,
     });
     $('.type_select').select2({
         placeholder: "Search for bill types"
@@ -94,15 +99,15 @@ function showLegSelectors() {
             $(this).removeClass('unchecked');
             $(this).addClass('checked');
             var selector = $("." + $(this).data('selector'));
-            selector.siblings().hide('fast');
+            //selector.siblings().hide('fast');
             selector.show('fast');
         }
         else {
             $(this).removeClass('checked');
             $(this).addClass('unchecked');
             var selector = $("." + $(this).data('selector'));
-            selector.siblings().hide('fast');
-            selector.show('fast');
+            //selector.siblings().hide('fast');
+            selector.hide('fast');
         }
     });
 }

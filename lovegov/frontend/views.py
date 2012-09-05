@@ -981,15 +981,15 @@ def groupEdit(request, g_alias=None, section="", vals={}):
 def legislation (request, vals={}):
 
     vals['legislation_items'] = Legislation.objects.all()
-    vals['sessions'] = CongressSession.objects.all().order_by("-session")
+    vals['sessions'] = LEGISLATION_SESSIONS
 
     type_list = []
     for k,v in BILL_TYPES.items():
         type_list.append({'abbreviation':k,'verbose':v})
 
     vals['types'] = type_list
-    vals['committees'] = Committee.objects.distinct().filter(legislation_committees__isnull=False)
-    vals['bill_numbers'] = [x['bill_number'] for x in Legislation.objects.values('bill_number').distinct()]
+    vals['committees'] = LEGISLATION_COMMITTEES
+    vals['bill_numbers'] = LEGISLATION_BILLNUMBERS
 
     now = datetime.now()
     time_range = [1464,732,366,183]
@@ -1001,8 +1001,8 @@ def legislation (request, vals={}):
         introduced_dates.append(date_tuple)
     vals['introduced_dates'] = introduced_dates
 
-    vals['sponsors'] = UserProfile.objects.distinct().filter(sponsored_legislation__isnull=False)
-    vals['sponsor_parties'] = Party.objects.filter(parties__sponsored_legislation__isnull=False).distinct()
+    vals['sponsors'] = LEGISLATION_SPONSORS
+    vals['sponsor_parties'] = LEGISLATION_PARTIES
 
     focus_html =  ajaxRender('site/pages/legislation/legislation.html', vals, request)
     url = request.path
