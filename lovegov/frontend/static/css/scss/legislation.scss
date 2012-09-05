@@ -22,6 +22,7 @@ div.main-block {
     width: 100%;
     padding-left: 9px;
 
+
     div.filter_prompt {
       float: left;
       width: 150px;
@@ -60,6 +61,10 @@ div.main-block {
     margin-top: 30px;
     height: auto;
     width: 600px;
+
+    div.select2-container-multi .select2-choices .select2-search-field input {
+      height:16px;
+    }
 
     ul {
       padding: 0;
