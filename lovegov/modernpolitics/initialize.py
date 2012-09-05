@@ -87,10 +87,10 @@ def resetTopics():
 # lovegov's views will be an aggregate of the views of all memebers of the site.
 #-----------------------------------------------------------------------------------------------------------------------
 def initializeLoveGovUser():
-    if UserProfile.objects.filter(alias="lovegov"):
+    if UserProfile.objects.filter(alias="lovegov") or ControllingUser.objects.filter(username="lovegov"):
         print("...lovegov user already initialized.")
     else:
-        lovegov = ControllingUser.objects.create_user('lovegov', 'lovegov', 'free')
+        lovegov = ControllingUser.objects.create_user('lovegov', 'lovegov', 'freeby')
         lovegov.first_name = 'Love'
         lovegov.last_name = 'Gov'
         user_profile = superUserHelper(lovegov)

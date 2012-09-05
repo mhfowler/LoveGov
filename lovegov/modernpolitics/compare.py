@@ -53,9 +53,9 @@ def updateGroupViews(debug=False, fast=True):
 #-----------------------------------------------------------------------------------------------------------------------
 # Updates aggregate-response for congress.
 #-----------------------------------------------------------------------------------------------------------------------
-def updateCongressView():
+def updateCongressView(debug=False):
     congress = getCongressNetwork()
-    updateGroupView(congress)
+    updateGroupView(congress, debug=debug)
 
 #-----------------------------------------------------------------------------------------------------------------------
 # Updates content-response for all content.
@@ -197,13 +197,13 @@ def updateComparison(comparison):
 #-----------------------------------------------------------------------------------------------------------------------
 # Takes in a group and saves/updates AggregateResponse appropriately.
 #-----------------------------------------------------------------------------------------------------------------------
-def updateGroupView(group):
+def updateGroupView(group, debug=False):
     users = group.members.all()
     group.last_answered = datetime.datetime.now()
     group.save()
     worldview = group.group_view
     if worldview:
-        aggregateView(users, worldview)
+        aggregateView(users, worldview, debug=debug)
     else:
         wv = WorldView()
         wv.save()
@@ -211,14 +211,15 @@ def updateGroupView(group):
         group.save()
         updateGroupView(group)
 
-def aggregateView(users, view):
+def aggregateView(users, view, debug=False):
     for r in view.responses.all():
         q = r.question
         aggregateHelper(question=q, users=users, aggregate=r)
     old_ids = view.responses.all().values_list("question", flat=True)
     new_questions = Question.objects.filter(official=True).exclude(id__in=old_ids)
     for q in new_questions:
-        agg = aggregateHelper(question=q, users=users)
+        if debug: print "PROCESSING " + q.get_name()
+        agg = aggregateHelper(question=q, users=users, debug=debug)
         if agg:
             if agg.total_num:
                 view.responses.add(agg)
@@ -246,7 +247,7 @@ def updateContentView(content):
 # Takes in a question and a set of users, and an AggregateResponse and calculates
 # tuples, answer_avg and answer_val for that agg, then saves and returns agg.
 #-----------------------------------------------------------------------------------------------------------------------
-def aggregateHelper(question, users, aggregate=None):
+def aggregateHelper(question, users, aggregate=None, debug=False):
 
     # speed it up by skipping if there is no answers and its new agg
     if not aggregate:
@@ -277,6 +278,7 @@ def aggregateHelper(question, users, aggregate=None):
     most_chosen_num = 0
     most_chosen_answer_id = -1
     for p in users:
+        if debug: print p.get_name()
         response = p.view.responses.filter(question=question)
         if response:
             index = response[0].most_chosen_answer_id
@@ -303,8 +305,8 @@ def aggregateHelper(question, users, aggregate=None):
 # Updates aggregate responses for lovegov group, and sets lovegov user responses to most highly chosen answer of all
 # answers.
 #-----------------------------------------------------------------------------------------------------------------------
-def updateLoveGovResponses():
-    updateGroupView(getLoveGovGroup())
+def updateLoveGovResponses(debug=False):
+    updateGroupView(getLoveGovGroup(), debug=debug)
     aggs = getLoveGovGroup().group_view.responses.all()
     lg = getLoveGovUser()
     for x in aggs:
