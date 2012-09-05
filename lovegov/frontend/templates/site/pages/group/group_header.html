@@ -75,9 +75,7 @@
             <div class="group-column group-left-column">
 
                 <div class="group-image">
-                    {% thumbnail group.getImageURL "140x100" crop="center" as im %}
-                        <img src="{{ im.url }}" />
-                    {% endthumbnail %}
+                    {% include 'site/pieces/avatar.html' with user=group width="140" height="100" hoveroff=1 %}
                 </div>
 
                 <div class="group-match">

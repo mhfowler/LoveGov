@@ -1,0 +1,11 @@
+{% extends 'emails/frame.html' %}
+
+{% block content %}
+
+    <p>
+        {{ viewer.get_name }} [{{ viewer.id }}] claimed the profile {{ politician.get_name }}[{{ politician.id }}]
+        with the email {{ claim_email }}
+    </p>
+    <br><br>
+
+{% endblock %}

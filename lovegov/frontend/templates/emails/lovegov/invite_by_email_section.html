@@ -1,0 +1,25 @@
+{% extends 'emails/lovegov/white_section.html' %}
+
+{% block white_section %}
+
+    <p> Hi There, </p>
+
+    <p>
+        {{ inviter.get_name }} has invited you to join LoveGov.
+        Join to match yourself to politicians, track elections, and stay informed about what’s going on in politics.
+        If you don’t know who {{ inviter.get_name }} is, we’re sorry!
+    </p>
+
+    <div class="claim-wrapper" style="width:100%;text-align:center;margin-top:30px;">
+
+        {% include 'emails/lovegov/email_link_button.html' with button_url="/home/" button_text="Sign Up" %}
+
+        <span> or </span>
+
+        {% include 'emails/lovegov/email_link_button.html' with button_url="/about/" button_text="Learn More" %}
+
+    </div>
+
+    {% include 'emails/lovegov/what_is_lovegov.html' %}
+
+{% endblock %}

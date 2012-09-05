@@ -1,0 +1,13 @@
+{% extends 'emails/frame.html' %}
+
+{% block content %}
+
+    <p>
+        {{ name }} sent us feedback! from page {{ page }}
+    </p>
+    <br><br>
+    <p>
+        "{{ feedback }}"
+    </p>
+
+{% endblock %}

@@ -484,7 +484,7 @@ DEFAULT_IMAGE = os.path.join(PROJECT_PATH, 'frontend/static/images/profile_defau
 DEFAULT_PROFILE_IMAGE_URL = settings.STATIC_URL + '/images/profile_default.jpg'
 DEFAULT_NEWS_IMAGE_URL = settings.STATIC_URL + '/images/icons/content-big/news.png'
 DEFAULT_PETITION_IMAGE_URL = settings.STATIC_URL + '/images/icons/content-big/petition.png'
-DEFAULT_GROUP_IMAGE_URL = settings.STATIC_URL + '/images/icons/content-big/group.png'
+DEFAULT_GROUP_IMAGE_URL = settings.STATIC_URL + '/images/icons/content-type/group.png'
 DEFAULT_DISCUSSION_IMAGE_URL = settings.STATIC_URL + '/images/icons/content-big/discussion.png'
 
 STATIC_PATH = '/media/'
