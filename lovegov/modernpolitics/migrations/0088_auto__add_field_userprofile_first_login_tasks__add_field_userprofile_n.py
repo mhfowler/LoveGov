@@ -8,18 +8,23 @@ from django.db import models
 class Migration(SchemaMigration):
 
     def forwards(self, orm):
-        # Adding M2M table for field election_subscriptions on 'UserProfile'
-        db.create_table('modernpolitics_userprofile_election_subscriptions', (
-            ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
-            ('userprofile', models.ForeignKey(orm['modernpolitics.userprofile'], null=False)),
-            ('election', models.ForeignKey(orm['modernpolitics.election'], null=False))
-        ))
-        db.create_unique('modernpolitics_userprofile_election_subscriptions', ['userprofile_id', 'election_id'])
+        # Adding field 'UserProfile.first_login_tasks'
+        db.add_column('modernpolitics_userprofile', 'first_login_tasks',
+                      self.gf('django.db.models.fields.CharField')(default='', max_length=10, blank=True),
+                      keep_default=False)
+
+        # Adding field 'UserProfile.num_logins'
+        db.add_column('modernpolitics_userprofile', 'num_logins',
+                      self.gf('django.db.models.fields.IntegerField')(default=0),
+                      keep_default=False)
 
 
     def backwards(self, orm):
-        # Removing M2M table for field election_subscriptions on 'UserProfile'
-        db.delete_table('modernpolitics_userprofile_election_subscriptions')
+        # Deleting field 'UserProfile.first_login_tasks'
+        db.delete_column('modernpolitics_userprofile', 'first_login_tasks')
+
+        # Deleting field 'UserProfile.num_logins'
+        db.delete_column('modernpolitics_userprofile', 'num_logins')
 
 
     models = {
@@ -62,11 +67,19 @@ class Migration(SchemaMigration):
         'modernpolitics.action': {
             'Meta': {'object_name': 'Action'},
             'action_type': ('django.db.models.fields.CharField', [], {'max_length': '2'}),
-            'creator': ('django.db.models.fields.related.ForeignKey', [], {'default': '1', 'to': "orm['modernpolitics.UserProfile']"}),
+            'creator': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['modernpolitics.UserProfile']", 'null': 'True'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'privacy': ('django.db.models.fields.CharField', [], {'default': "'PUB'", 'max_length': '3'}),
             'user': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'actions'", 'to': "orm['modernpolitics.UserProfile']"}),
             'when': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'})
+        },
+        'modernpolitics.addtoscorecardaction': {
+            'Meta': {'object_name': 'AddToScorecardAction', '_ormbases': ['modernpolitics.Action']},
+            'action_ptr': ('django.db.models.fields.related.OneToOneField', [], {'to': "orm['modernpolitics.Action']", 'unique': 'True', 'primary_key': 'True'}),
+            'confirmed': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
+            'invite_email': ('django.db.models.fields.EmailField', [], {'max_length': '75', 'null': 'True'}),
+            'politician': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['modernpolitics.UserProfile']", 'null': 'True'}),
+            'scorecard': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'added_actions'", 'to': "orm['modernpolitics.Scorecard']"})
         },
         'modernpolitics.anonid': {
             'Meta': {'object_name': 'AnonID'},
@@ -194,8 +207,9 @@ class Migration(SchemaMigration):
             'commenters': ('django.db.models.fields.related.ManyToManyField', [], {'related_name': "'commented_on_content'", 'symmetrical': 'False', 'to': "orm['modernpolitics.UserProfile']"}),
             'content_privacy': ('django.db.models.fields.CharField', [], {'default': "'O'", 'max_length': '1'}),
             'created_when': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'}),
-            'creator': ('django.db.models.fields.related.ForeignKey', [], {'default': '1', 'to': "orm['modernpolitics.UserProfile']"}),
+            'creator': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['modernpolitics.UserProfile']", 'null': 'True'}),
             'downvotes': ('django.db.models.fields.IntegerField', [], {'default': '0'}),
+            'edited_when': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'null': 'True', 'blank': 'True'}),
             'hot_score': ('django.db.models.fields.IntegerField', [], {'default': '0'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'in_calc': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
@@ -262,12 +276,10 @@ class Migration(SchemaMigration):
         },
         'modernpolitics.election': {
             'Meta': {'object_name': 'Election', '_ormbases': ['modernpolitics.Group']},
-            'election_date': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'}),
+            'election_date': ('django.db.models.fields.DateTimeField', [], {}),
             'end_date': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'}),
             'group_ptr': ('django.db.models.fields.related.OneToOneField', [], {'to': "orm['modernpolitics.Group']", 'unique': 'True', 'primary_key': 'True'}),
-            'invite_only': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'office': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['modernpolitics.Office']", 'null': 'True'}),
-            'running': ('django.db.models.fields.related.ManyToManyField', [], {'related_name': "'running_for'", 'symmetrical': 'False', 'to': "orm['modernpolitics.UserProfile']"}),
             'start_date': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'}),
             'winner': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'elections_won'", 'null': 'True', 'to': "orm['modernpolitics.UserProfile']"})
         },
@@ -303,11 +315,13 @@ class Migration(SchemaMigration):
             'government_type': ('django.db.models.fields.CharField', [], {'default': "'traditional'", 'max_length': '30'}),
             'group_content': ('django.db.models.fields.related.ManyToManyField', [], {'related_name': "'in_groups'", 'symmetrical': 'False', 'to': "orm['modernpolitics.Content']"}),
             'group_privacy': ('django.db.models.fields.CharField', [], {'default': "'O'", 'max_length': '1'}),
-            'group_type': ('django.db.models.fields.CharField', [], {'default': "'S'", 'max_length': '1'}),
+            'group_type': ('django.db.models.fields.CharField', [], {'default': "'U'", 'max_length': '1'}),
             'group_view': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['modernpolitics.WorldView']"}),
             'hidden': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
+            'is_election': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'members': ('django.db.models.fields.related.ManyToManyField', [], {'related_name': "'member_of'", 'symmetrical': 'False', 'to': "orm['modernpolitics.UserProfile']"}),
             'motion_expiration': ('django.db.models.fields.IntegerField', [], {'default': '7'}),
+            'num_followers': ('django.db.models.fields.IntegerField', [], {'default': '0'}),
             'num_group_content': ('django.db.models.fields.IntegerField', [], {'default': '0'}),
             'num_members': ('django.db.models.fields.IntegerField', [], {'default': '0'}),
             'participation_threshold': ('django.db.models.fields.IntegerField', [], {'default': '30'}),
@@ -327,6 +341,7 @@ class Migration(SchemaMigration):
             'confirmed': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'declined': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'group': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['modernpolitics.Group']"}),
+            'invite_email': ('django.db.models.fields.EmailField', [], {'max_length': '75', 'null': 'True'}),
             'invited': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'inviter': ('django.db.models.fields.IntegerField', [], {'default': '-1'}),
             'rejected': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
@@ -345,6 +360,13 @@ class Migration(SchemaMigration):
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'seen': ('django.db.models.fields.IntegerField', [], {'default': '0'})
         },
+        'modernpolitics.invitedtoregister': {
+            'Meta': {'object_name': 'InvitedToRegister'},
+            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'invite_email': ('django.db.models.fields.EmailField', [], {'max_length': '75'}),
+            'inviter': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['modernpolitics.UserProfile']"}),
+            'notification': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['modernpolitics.Notification']"})
+        },
         'modernpolitics.involved': {
             'Meta': {'object_name': 'Involved'},
             'content': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['modernpolitics.Content']"}),
@@ -362,6 +384,7 @@ class Migration(SchemaMigration):
             'bill_type': ('django.db.models.fields.CharField', [], {'max_length': '2'}),
             'bill_updated': ('django.db.models.fields.DateTimeField', [], {'null': 'True'}),
             'committees': ('django.db.models.fields.related.ManyToManyField', [], {'symmetrical': 'False', 'related_name': "'legislation_committees'", 'null': 'True', 'to': "orm['modernpolitics.Committee']"}),
+            'congress_body': ('django.db.models.fields.CharField', [], {'default': "'H'", 'max_length': '1'}),
             'congress_session': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['modernpolitics.CongressSession']"}),
             'content_ptr': ('django.db.models.fields.related.OneToOneField', [], {'to': "orm['modernpolitics.Content']", 'unique': 'True', 'primary_key': 'True'}),
             'full_title': ('django.db.models.fields.CharField', [], {'max_length': '5000', 'null': 'True'}),
@@ -493,9 +516,10 @@ class Migration(SchemaMigration):
             'Meta': {'object_name': 'Notification'},
             'action': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'notifications'", 'to': "orm['modernpolitics.Action']"}),
             'agg_actions': ('django.db.models.fields.related.ManyToManyField', [], {'related_name': "'agg_notifications'", 'symmetrical': 'False', 'to': "orm['modernpolitics.Action']"}),
-            'creator': ('django.db.models.fields.related.ForeignKey', [], {'default': '1', 'to': "orm['modernpolitics.UserProfile']"}),
+            'creator': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['modernpolitics.UserProfile']", 'null': 'True'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'notify_user': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'notifications'", 'to': "orm['modernpolitics.UserProfile']"}),
+            'notify_email': ('django.db.models.fields.EmailField', [], {'max_length': '75', 'null': 'True'}),
+            'notify_user': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'notifications'", 'null': 'True', 'to': "orm['modernpolitics.UserProfile']"}),
             'privacy': ('django.db.models.fields.CharField', [], {'default': "'PUB'", 'max_length': '3'}),
             'viewed': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'when': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'})
@@ -506,7 +530,8 @@ class Migration(SchemaMigration):
             'governmental': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'representative': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'senator': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
-            'tags': ('django.db.models.fields.related.ManyToManyField', [], {'related_name': "'tag_offices'", 'symmetrical': 'False', 'to': "orm['modernpolitics.OfficeTag']"})
+            'tags': ('django.db.models.fields.related.ManyToManyField', [], {'related_name': "'tag_offices'", 'symmetrical': 'False', 'to': "orm['modernpolitics.OfficeTag']"}),
+            'user_generated': ('django.db.models.fields.BooleanField', [], {'default': 'False'})
         },
         'modernpolitics.officeheld': {
             'Meta': {'object_name': 'OfficeHeld', '_ormbases': ['modernpolitics.UCRelationship']},
@@ -517,7 +542,8 @@ class Migration(SchemaMigration):
             'end_date': ('django.db.models.fields.DateField', [], {}),
             'office': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'office_terms'", 'to': "orm['modernpolitics.Office']"}),
             'start_date': ('django.db.models.fields.DateField', [], {}),
-            'ucrelationship_ptr': ('django.db.models.fields.related.OneToOneField', [], {'to': "orm['modernpolitics.UCRelationship']", 'unique': 'True', 'primary_key': 'True'})
+            'ucrelationship_ptr': ('django.db.models.fields.related.OneToOneField', [], {'to': "orm['modernpolitics.UCRelationship']", 'unique': 'True', 'primary_key': 'True'}),
+            'user_generated': ('django.db.models.fields.BooleanField', [], {'default': 'False'})
         },
         'modernpolitics.officetag': {
             'Meta': {'object_name': 'OfficeTag'},
@@ -588,9 +614,11 @@ class Migration(SchemaMigration):
             'answers': ('django.db.models.fields.related.ManyToManyField', [], {'to': "orm['modernpolitics.Answer']", 'symmetrical': 'False'}),
             'content_ptr': ('django.db.models.fields.related.OneToOneField', [], {'to': "orm['modernpolitics.Content']", 'unique': 'True', 'primary_key': 'True'}),
             'lg_weight': ('django.db.models.fields.IntegerField', [], {'default': '5'}),
+            'num_responses': ('django.db.models.fields.IntegerField', [], {'default': '0'}),
             'official': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'question_text': ('django.db.models.fields.TextField', [], {'max_length': '500'}),
             'question_type': ('django.db.models.fields.CharField', [], {'default': "'D'", 'max_length': '2'}),
+            'questions_hot_score': ('django.db.models.fields.IntegerField', [], {'default': '0'}),
             'relevant_info': ('django.db.models.fields.TextField', [], {'max_length': '1000', 'null': 'True', 'blank': 'True'}),
             'source': ('django.db.models.fields.TextField', [], {'max_length': '500', 'null': 'True', 'blank': 'True'})
         },
@@ -605,11 +633,12 @@ class Migration(SchemaMigration):
         'modernpolitics.relationship': {
             'Meta': {'object_name': 'Relationship'},
             'created_when': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'}),
-            'creator': ('django.db.models.fields.related.ForeignKey', [], {'default': '1', 'to': "orm['modernpolitics.UserProfile']"}),
+            'creator': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['modernpolitics.UserProfile']", 'null': 'True'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'invite_email': ('django.db.models.fields.EmailField', [], {'max_length': '75', 'null': 'True'}),
             'privacy': ('django.db.models.fields.CharField', [], {'default': "'PUB'", 'max_length': '3'}),
             'relationship_type': ('django.db.models.fields.CharField', [], {'max_length': '2'}),
-            'user': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'relationships'", 'to': "orm['modernpolitics.UserProfile']"})
+            'user': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'relationships'", 'null': 'True', 'to': "orm['modernpolitics.UserProfile']"})
         },
         'modernpolitics.resetpassword': {
             'Meta': {'object_name': 'ResetPassword'},
@@ -716,7 +745,7 @@ class Migration(SchemaMigration):
         },
         'modernpolitics.topicview': {
             'Meta': {'object_name': 'TopicView'},
-            'creator': ('django.db.models.fields.related.ForeignKey', [], {'default': '1', 'to': "orm['modernpolitics.UserProfile']"}),
+            'creator': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['modernpolitics.UserProfile']", 'null': 'True'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'privacy': ('django.db.models.fields.CharField', [], {'default': "'PUB'", 'max_length': '3'}),
             'topic': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['modernpolitics.Topic']"}),
@@ -759,6 +788,7 @@ class Migration(SchemaMigration):
             'confirmed': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'declined': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'fb': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
+            'invite_email': ('django.db.models.fields.EmailField', [], {'max_length': '75', 'null': 'True'}),
             'invited': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'inviter': ('django.db.models.fields.IntegerField', [], {'default': '-1'}),
             'rejected': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
@@ -824,7 +854,6 @@ class Migration(SchemaMigration):
             'dob': ('django.db.models.fields.DateField', [], {'null': 'True'}),
             'downvotes': ('django.db.models.fields.IntegerField', [], {'default': '0'}),
             'elected_official': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
-            'election_subscriptions': ('django.db.models.fields.related.ManyToManyField', [], {'related_name': "'users_tracking'", 'symmetrical': 'False', 'to': "orm['modernpolitics.Election']"}),
             'email': ('django.db.models.fields.EmailField', [], {'max_length': '75'}),
             'email_notification_setting': ('lovegov.modernpolitics.custom_fields.ListField', [], {}),
             'ethnicity': ('django.db.models.fields.CharField', [], {'max_length': '30', 'null': 'True', 'blank': 'True'}),
@@ -832,7 +861,8 @@ class Migration(SchemaMigration):
             'facebook_name': ('django.db.models.fields.CharField', [], {'max_length': '255', 'blank': 'True'}),
             'facebook_profile_url': ('django.db.models.fields.TextField', [], {'blank': 'True'}),
             'fb_image': ('django.db.models.fields.files.ImageField', [], {'max_length': '255', 'null': 'True', 'blank': 'True'}),
-            'first_login': ('django.db.models.fields.IntegerField', [], {'default': '0'}),
+            'first_login': ('django.db.models.fields.IntegerField', [], {'default': '1'}),
+            'first_login_tasks': ('django.db.models.fields.CharField', [], {'default': "''", 'max_length': '10', 'blank': 'True'}),
             'first_name': ('django.db.models.fields.CharField', [], {'max_length': '200'}),
             'follow_me': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'follow_me'", 'null': 'True', 'to': "orm['modernpolitics.Group']"}),
             'gender': ('django.db.models.fields.CharField', [], {'max_length': '1', 'null': 'True', 'blank': 'True'}),
@@ -857,6 +887,7 @@ class Migration(SchemaMigration):
             'num_followme': ('django.db.models.fields.IntegerField', [], {'default': '0'}),
             'num_groups': ('django.db.models.fields.IntegerField', [], {'default': '0'}),
             'num_ifollow': ('django.db.models.fields.IntegerField', [], {'default': '0'}),
+            'num_logins': ('django.db.models.fields.IntegerField', [], {'default': '0'}),
             'num_messages': ('django.db.models.fields.IntegerField', [], {'default': '0'}),
             'num_petitions': ('django.db.models.fields.IntegerField', [], {'default': '0'}),
             'num_posts': ('django.db.models.fields.IntegerField', [], {'default': '0'}),
@@ -865,6 +896,7 @@ class Migration(SchemaMigration):
             'old_locations': ('django.db.models.fields.related.ManyToManyField', [], {'related_name': "'old_users'", 'symmetrical': 'False', 'to': "orm['modernpolitics.PhysicalAddress']"}),
             'parties': ('django.db.models.fields.related.ManyToManyField', [], {'related_name': "'parties'", 'symmetrical': 'False', 'to': "orm['modernpolitics.Party']"}),
             'party': ('django.db.models.fields.CharField', [], {'max_length': '100', 'null': 'True', 'blank': 'True'}),
+            'phone_number': ('django.db.models.fields.CharField', [], {'max_length': '40', 'null': 'True', 'blank': 'True'}),
             'political_role': ('django.db.models.fields.CharField', [], {'max_length': '1', 'null': 'True', 'blank': 'True'}),
             'political_statement': ('django.db.models.fields.TextField', [], {'null': 'True'}),
             'political_title': ('django.db.models.fields.CharField', [], {'default': "'Citizen'", 'max_length': '100'}),
@@ -875,6 +907,7 @@ class Migration(SchemaMigration):
             'raw_data': ('django.db.models.fields.TextField', [], {'blank': 'True'}),
             'registration_code': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['modernpolitics.RegisterCode']", 'null': 'True'}),
             'religion': ('django.db.models.fields.CharField', [], {'max_length': '200', 'null': 'True', 'blank': 'True'}),
+            'running_for': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'runners'", 'null': 'True', 'to': "orm['modernpolitics.Election']"}),
             'state': ('django.db.models.fields.CharField', [], {'max_length': '2', 'null': 'True', 'blank': 'True'}),
             'supporters': ('django.db.models.fields.related.ManyToManyField', [], {'related_name': "'supportees'", 'symmetrical': 'False', 'to': "orm['modernpolitics.UserProfile']"}),
             'temp_location': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'temp_users'", 'null': 'True', 'to': "orm['modernpolitics.PhysicalAddress']"}),

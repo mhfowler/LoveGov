@@ -1,9 +1,4 @@
 <div class="subject_selector">
-    <select multiple class="subject_select" data-selector="subject_filter">
-        <optgroup label="Bill Subjects" id="bill_subjects">
-            {% for subject in subjects %}
-                <option class="bill-subjects line-spaced" value='{{ subject.id }}'>{{ subject.name }}</option>
-            {% endfor %}
-        </optgroup>
-    </select>
+    <h3>Subject</h3>
+    <input type="hidden" class="subject_select" data-selector="subject_filter" width='300px'>
 </div>

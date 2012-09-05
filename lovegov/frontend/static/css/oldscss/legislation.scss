@@ -23,32 +23,14 @@ div.main-block {
     margin-top: 10px;
     padding-left: 9px;
 
+    div.filter_box {
+      margin-bottom: 9px;
+      cursor: pointer;
+    }
+
     div.filter_prompt {
       margin-bottom: 13px;
     }
-
-     div.session_filter {
-      margin-bottom: 9px;
-    }
-
-    div.type_filter {
-      margin-bottom: 9px;
-    }
-
-    div.subject_filter {
-      margin-bottom: 9px;
-    }
-
-    div.committee_filter {
-      margin-bottom: 9px;
-    }
-
-    div.introduced_filter {
-      margin-bottom: 9px;
-    }
-
-    div.sponsor_filter {
-      margin-bottom: 9px;
 
     div.myrepsvotes_filter {
       display:block;
