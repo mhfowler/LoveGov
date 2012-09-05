@@ -2632,12 +2632,20 @@ def askToJoin(request, vals={}):
 
     viewer = vals['viewer']
     politician = UserProfile.objects.get(ghost=True, id=request.POST['p_id'])
-
+    num_asked = politician.num_asked
     already = AskedAction.lg.get_or_none(user=viewer, politician=politician)
     if not already:
         asked = AskedAction(user=viewer, politician=politician)
         asked.autoSave()
-    return HttpResponse("asked to join")
+        politician.num_asked += 1
+        politician.save()
+
+    vals['politician'] = politician
+    vals['num_asked'] = num_asked
+    vals['you_asked_to_join'] = True
+
+    html =  ajaxRender('site/pages/profile/asked_to_join_snippet.html', vals, request)
+    return HttpResponse(json.dumps({'html':html}))
 
 #-----------------------------------------------------------------------------------------------------------------------
 # stores that this person wanted to claim a politician profile

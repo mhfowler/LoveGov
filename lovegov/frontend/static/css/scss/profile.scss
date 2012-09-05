@@ -472,21 +472,23 @@ div.profile-page {
             margin-top:55px;
             position:relative;
             @include fontSize(14px);
-            a.ask-to-join {
-              @extend .claim-button;
-              background-color:$red;
-              &:hover {
-                background-color:red;
-              }
-            }
             p.asked-message {
-              @include fontSize(12px);
-              position: absolute;
-              left: 282px;
-              top: 31px;
-              width: 261px;
-              color:$dark-gray;
-              display:none;
+              position:relative;
+              top:-20px;
+              span.asked-counter {
+                float:right;
+                font-size: 14px;
+                margin-right: 25px;
+                margin-top: 17px;
+                color:$dark-gray;
+              }
+              a.ask-to-join {
+                @extend .claim-button;
+                background-color:$red;
+                &:hover {
+                  background-color:red;
+                }
+              }
             }
           }
         }

@@ -676,6 +676,11 @@ def profile(request, alias=None, vals={}):
         reps = viewer.getRepresentatives(viewer.location)
         if reps:
             vals['my_rep'] = user_profile in reps
+        vals['you_asked_to_join'] =  you_asked_to_join = AskedAction.objects.filter(user=viewer, politician=user_profile)
+        if you_asked_to_join:
+            vals['num_asked'] = user_profile.num_asked - 1
+        else:
+            vals['num_asked'] = user_profile.num_asked
 
     # Num Follow requests and group invites
     if viewer.id == user_profile.id:

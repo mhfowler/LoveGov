@@ -1104,6 +1104,7 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
     supporters = models.ManyToManyField('UserProfile', related_name='supportees')
     num_supporters = models.IntegerField(default=0)
     num_messages = models.IntegerField(default=0)
+    num_asked = models.IntegerField(default=0)
     govtrack_id = models.IntegerField(default=-1)
     # anon ids
     anonymous = models.ManyToManyField(AnonID)

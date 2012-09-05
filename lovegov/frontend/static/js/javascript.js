@@ -3898,7 +3898,8 @@ bind('.ask_to_join' , 'click' , null , function(e)
     action({
             data: {'action': 'askToJoin', 'p_id':p_id},
             success: function(data) {
-                $(".asked_message").fadeIn();
+                var returned = eval('(' + data + ')');
+                $(".asked_message").replaceWith(returned.html);
             }}
     );
 });
