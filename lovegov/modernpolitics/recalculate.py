@@ -270,6 +270,18 @@ def setCongressText():
     congress.summary = text
     congress.save()
 
+def setLoveGovUserText():
+
+    text = "LoveGov is a robot, and its " \
+           "views are the aggregate of all of the people of LoveGov. For every question " \
+           "its response is the most commonly chosen response to that question. " \
+           "LoveGov updates its responses every hour, so if your views have not been " \
+           "taken into account yet, they will be soon. "
+
+    lg = getLoveGovUser()
+    lg.bio = text
+    lg.save()
+
 
 def setStateGroupText(state_group):
 
