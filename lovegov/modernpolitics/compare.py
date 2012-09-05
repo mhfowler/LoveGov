@@ -219,10 +219,11 @@ def aggregateView(users, view):
     new_questions = Question.objects.filter(official=True).exclude(id__in=old_ids)
     for q in new_questions:
         agg = aggregateHelper(question=q, users=users)
-        if agg.total_num:
-            view.responses.add(agg)
-        else:
-            agg.delete()
+        if agg:
+            if agg.total_num:
+                view.responses.add(agg)
+            else:
+                agg.delete()
 
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -246,6 +247,17 @@ def updateContentView(content):
 # tuples, answer_avg and answer_val for that agg, then saves and returns agg.
 #-----------------------------------------------------------------------------------------------------------------------
 def aggregateHelper(question, users, aggregate=None):
+
+    # speed it up by skipping if there is no answers and its new agg
+    if not aggregate:
+        skip = True
+        for p in users:
+            if p.view.responses.filter(question=question):
+                skip=False
+                break
+        if skip:
+            return None
+
     if not aggregate:
         aggregate = Response(question=question)
         aggregate.autoSave()
