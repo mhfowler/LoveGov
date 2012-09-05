@@ -18,7 +18,7 @@ from bs4 import BeautifulSoup
 #----------------------------------------------------------------------------------------------------------------------
 #
 #-----------------------------------------------------------------------------------------------------------------------
-def answerAction(user, question, privacy, answer_id, weight=None, explanation=None):
+def answerAction(user, question, privacy, answer_id, weight=-1, explanation=None):
     chosen_answer = Answer.lg.get_or_none(id=answer_id)
     if not chosen_answer:
         chosen_answer = None
@@ -29,7 +29,7 @@ def answerAction(user, question, privacy, answer_id, weight=None, explanation=No
     my_response = view.responses.filter(question=question)
 
     if not my_response:
-        if not weight:
+        if weight == -1:
             weight = 50
         if not explanation:
             explanation = ""
@@ -40,6 +40,9 @@ def answerAction(user, question, privacy, answer_id, weight=None, explanation=No
         if chosen_answer:
             response.most_chosen_num = 1
             response.total_num = 1
+        else:
+            response.most_chosen_num = 0
+            response.total_num = 0
         response.autoSave(creator=user, privacy=privacy)
         view.responses.add(response)
         user.num_answers += 1
@@ -51,7 +54,7 @@ def answerAction(user, question, privacy, answer_id, weight=None, explanation=No
     # else update old response
     else:
         response = my_response[0]
-        if not weight:
+        if weight == -1:
             weight = response.weight
         if not explanation:
             explanation = response.explanation
@@ -61,6 +64,9 @@ def answerAction(user, question, privacy, answer_id, weight=None, explanation=No
         if chosen_answer:
             response.most_chosen_num = 1
             response.total_num = 1
+        else:
+            response.most_chosen_num = 0
+            response.total_num = 0
         response.edited_when = datetime.datetime.now()
         response.saveEdited(privacy)
 

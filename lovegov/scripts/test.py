@@ -3,7 +3,7 @@ __author__ = 'maxfowler'
 from lovegov.frontend.views import *
 
 
-m = getUser("Maximus Fowler")
+g = Group.objects.get(title__contains="Whales")
 
-sendConfirmationEmail(m)
+updateGroupView(g)
 

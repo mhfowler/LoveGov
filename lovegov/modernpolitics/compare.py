@@ -30,20 +30,25 @@ def updateGroupViews(debug=False, fast=True):
 
     scheduled_logger.debug("UPDATE GROUP VIEWS")
 
-    if fast:
-        groups = UserGroup.objects.all()
-        for g in groups:
-            print g.title
-            updateGroupView(g)
-        networks = Network.objects.exclude(alias="congress")
-        for g in networks:
-            print g.title
-            updateGroupView(g)
-    else:
-        groups = Group.objects.exclude(alias="congress")
-        for g in groups:
-            print g.title
-            updateGroupView(g)
+#    if fast:
+#        groups = UserGroup.objects.all()
+#        for g in groups:
+#            print g.title
+#            updateGroupView(g)
+#        networks = Network.objects.exclude(alias="congress")
+#        for g in networks:
+#            print g.title
+#            updateGroupView(g)
+#    else:
+#        groups = Group.objects.filter(hidden=False).exclude(alias="congress")
+#        for g in groups:
+#            print g.title
+#            updateGroupView(g)
+
+    groups = Group.objects.filter(hidden=False).exclude(alias="congress")
+    for g in groups:
+        print g.title
+        updateGroupView(g)
 
 #-----------------------------------------------------------------------------------------------------------------------
 # Updates aggregate-response for congress.
@@ -194,6 +199,8 @@ def updateComparison(comparison):
 #-----------------------------------------------------------------------------------------------------------------------
 def updateGroupView(group):
     users = group.members.all()
+    group.last_answered = datetime.datetime.now()
+    group.save()
     worldview = group.group_view
     if worldview:
         aggregateView(users, worldview)
@@ -212,7 +219,10 @@ def aggregateView(users, view):
     new_questions = Question.objects.filter(official=True).exclude(id__in=old_ids)
     for q in new_questions:
         agg = aggregateHelper(question=q, users=users)
-        view.responses.add(agg)
+        if agg.total_num:
+            view.responses.add(agg)
+        else:
+            agg.delete()
 
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -340,7 +350,8 @@ class ComparisonBucket:
         self.weight_questions += weight
         self.num_questions += 1
         if similar:
-            self.weight_similar += weight
+            weight_similar =  int(weight*(similar/100.0))
+            self.weight_similar += weight_similar
             self.num_similar += 1
 
     def getSimilarityPercent(self):
@@ -432,7 +443,7 @@ def fastCompare(viewA,viewB,topics=None):
         # If the question IDs match, compare their answers and save it!
         if rA.question_id == rB.question_id:
             if rA.most_chosen_answer_id and rB.most_chosen_answer_id:
-                similar = (rA.most_chosen_answer_id == rB.most_chosen_answer_id)
+                similar = rB.getPercent(rA.most_chosen_answer_id)
                 weight = rA.weight
                 comparison.getTotalBucket().update(similar, weight)
                 # And also do something with topic buckets...

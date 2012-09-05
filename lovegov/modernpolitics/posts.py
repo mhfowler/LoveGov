@@ -1575,14 +1575,6 @@ def feedback(request,vals={}):
     return HttpResponse("+")
 
 #-----------------------------------------------------------------------------------------------------------------------
-# Updates the aggregate view in the db for a particular group of users.
-#-----------------------------------------------------------------------------------------------------------------------
-def updateGroupView(request,vals={}):
-    group = Group.objects.get(id=request.POST['g_id'])
-    updateGroupView(group)
-    return HttpResponse("updated")
-
-#-----------------------------------------------------------------------------------------------------------------------
 # Compares the session's user with the provided alias and returns JSON dump of comparison data.
 # args: request, user
 # POST: alias

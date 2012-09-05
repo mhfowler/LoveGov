@@ -361,7 +361,10 @@ class Content(Privacy, LocationLevel):
         elif self.type=='D':
             return "Discussion: " + self.get_name()
         elif self.type=='L':
-            return "Legislation: " + self.get_name()
+            name = self.get_name()
+            if not name:
+                name = "No Title Available"
+            return "Legislation: " + name
         elif self.type=='C':
             return "Comment on " + self.downcast().root_content.get_name()
         elif self.type=='R':
@@ -4061,7 +4064,8 @@ class ViewComparison(LGModel):
     def checkStale(self, dateA=None, dateB=None):
         if dateA and dateB:
             newest = max(dateA, dateB)
-            return self.when < newest
+            comparison_when = self.when
+            return comparison_when < newest
         else:
             return True
 

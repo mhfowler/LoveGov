@@ -697,6 +697,8 @@ def profile(request, alias=None, vals={}):
     url = user_profile.get_url()
     return framedResponse(request, html, url, vals, rebind="profile")
 
+
+
 def worldview(request, alias, vals={}):
 
     viewer = vals['viewer']
