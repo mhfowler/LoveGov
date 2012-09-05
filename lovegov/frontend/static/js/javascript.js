@@ -13,6 +13,7 @@ function bindOnReload() {
     getFBInviteFriends();
 
     // any feeds on the page, go get themselves
+    initFeedParameters();
     refreshFeeds();
 
     // for all home pages
@@ -317,13 +318,13 @@ function comparisonWebs() {
 function initHomePage() {
     var navlink = getNavLink(path);
     selectNavLink(navlink);
-    initFeedParameters();
 }
 
 /* sets feed parameters pased on js variables */
 function initFeedParameters() {
     selectRank(feed_rank);
     selectQuestionRank(question_rank);
+    selectFeedTopic();
     $.each(feed_types, function(i, e) {
         selectType(e);
     });
@@ -910,6 +911,15 @@ bind(".topic_button" , "click" , null , function(event) {
         feed_topic=null;
     }
 });
+
+
+function selectFeedTopic() {
+    $(".topic_button").removeClass("clicked");
+    var button = $('.topic_button[data-t_alias="' + feed_topic + '"]');
+    if (button.length!=0) {
+        button.addClass("clicked");
+    }
+}
 
 /* filter buttons */
 bind(".question_button" , "click" , null , function(event) {
@@ -2764,7 +2774,16 @@ function saveAnswer(stub) {
         // if only unanswered animate hide question
         var only_unanswered = container.data('only_unanswered');
         if (only_unanswered && a_id!=-1) {
-            stub.animate({"height":"0px"}, {"duration": 300, "complete":function(){stub.hide()}});
+            stub.animate({"height":"0px"}, {
+                "duration": 300,
+                "complete":function(){
+                    stub.hide();
+                    var stubs = container.find(".question_stub:visible");
+                    if (stubs.length==0) {
+                        refreshFeed(container);
+                    }
+                }
+            });
             expandChooseInterface(stub.next('.question_stub'));
         }
     }
