@@ -178,7 +178,7 @@ def tryLoveGov(request, to_page="home/", vals={}):
     response.set_cookie('lovegov_try', 1)
     return response
 
-def unsubscribe(request, vals={}):
+def unsubscribe(request, email, vals={}):
     return HttpResponse("You have unsubscribed from LoveGov emails.")
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -684,6 +684,7 @@ def profile(request, alias=None, vals={}):
         else:
             vals['num_asked'] = user_profile.num_asked
 
+    vals['my_rep'] = True
     # Num Follow requests and group invites
     if viewer.id == user_profile.id:
         vals['num_follow_requests'] = user_profile.getNumFollowRequests()

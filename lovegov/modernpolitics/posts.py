@@ -428,14 +428,8 @@ def createMotion(request, vals={}):
 #-----------------------------------------------------------------------------------------------------------------------
 def invite(request, vals={}):
     email = request.POST['email']
-    user_name = vals['viewer'].get_name()
-    description = "invited by: " + user_name
-    if not ValidEmail.objects.filter(email=email).exists():
-        valid = ValidEmail(email=email, description=description)
-        valid.save()
-    subject = user_name + " has invited you to join them on LoveGov"
-    dictionary = {'user_name':user_name}
-    sendTemplateEmail(subject,'userInvite.html', dictionary,"team@lovegov.com",email)
+    inviter = vals['viewer']
+    sendInviteByEmail(inviter, email)
     return HttpResponse("+")
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -1571,19 +1565,13 @@ def answerWeb(request, vals={}):
 # Saves user feedback to db.
 #-----------------------------------------------------------------------------------------------------------------------
 def feedback(request,vals={}):
-    def sendFeedbackEmail(text,user):
-        vals = {'text':text,'name':name}
-        for team_member in TEAM_EMAILS:
-            sendTemplateEmail("LoveGov Feedback",'feedback.html',vals,"team@lovegov.com",team_member)
-        return
     user = vals['viewer']
     page = request.POST['path']
     text = request.POST['text']
     name = request.POST['name']
     feedback = Feedback(user=user,page=page,feedback=text)
     feedback.save()
-    thread.start_new_thread(sendFeedbackEmail,(text,name,))
-    temp_logger.debug("feedback sent.")
+    sendTeamFeedbackEmail(feedback, name)
     return HttpResponse("+")
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -2659,6 +2647,7 @@ def claimProfile(request, vals={}):
     if email:
         claim = ClaimProfile(user=viewer, politician=politician, email=email)
         claim.autoSave()
+        sendTeamClaimedProfileEmail(claim)
 
     return HttpResponse("asked to claim profile")
 
@@ -2671,6 +2660,9 @@ def messagePolitician(request, vals={}):
     message = request.POST['message']
     politician = UserProfile.objects.get(politician=True, id=request.POST['p_id'])
     phone_number = request.POST['phone_number']
+
+    viewer.phone_number = phone_number
+    viewer.save()
 
     messaged = MessagedAction(user=viewer, message=message, politician=politician, phone_number=phone_number)
     messaged.autoSave()

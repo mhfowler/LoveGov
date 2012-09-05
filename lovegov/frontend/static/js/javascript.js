@@ -1249,15 +1249,12 @@ bind('#feedback-submit', 'click', function(event)
     var text = $('#feedback-text').val();
     var name = $('#feedback-name').val();
     action({
-
-
         data: {'action':'feedback','text':text,'path':path,'name':name},
         success: function(data)
         {
             $('#feedback-name').val("");
             $('#feedback-text').val("");
-            $('#feedback-response').css('display','block');
-            $('#feedback-response').fadeOut(3000);
+            $('#feedback-response').show();
         },
         error: function(jqXHR, textStatus, errorThrown)
         {
@@ -1655,14 +1652,13 @@ bind(".message_politician", 'click', null, function(event) {
 });
 
 bind(".send_message", 'click', null, function(event) {
+    $(".no_phonenumber").hide();
     var wrapper = $(this).parents(".message_politician_wrapper");
     var p_id = wrapper.data("p_id");
     var message = wrapper.find(".message_textarea").val();
     var phone_number = wrapper.find(".phonenumber_input").val();
-    if (phone_number = "") {
-        alert("You need to enter your phone number to send a politician a message. " +
-            "Currently the only way to reach a politician by email is via a webform which " +
-            "requires a phonenumber. The current system sucks, LoveGov will replace it soon.")
+    if (phone_number == "") {
+       $(".no_phonenumber").show();
     }
     else {
         action({

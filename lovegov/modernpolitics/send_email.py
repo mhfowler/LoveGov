@@ -82,6 +82,11 @@ def sendScorecardInviteEmail(to_email, scorecard):
     email_template = 'emails/lovegov/invite_scorecard.html'
     sendLoveGovEmailHelper(None, subject, email_vals, email_template, to_email=to_email)
 
+def sendInviteByEmail(inviter, to_email):
+    subject = "You were invited to join LoveGov"
+    email_vals = {'inviter':inviter}
+    email_template = 'emails/lovegov/invite_by_email.html'
+    sendLoveGovEmailHelper(None, subject, email_vals, email_template, to_email=to_email)
 
 
 
@@ -110,10 +115,26 @@ def sendTeamMessagedRepEmail(messaged):
     sendTeamEmail('Someone Messaged Their Rep [to_do]', email_html)
 
 
+def sendTeamFeedbackEmail(feedback, name):
+
+    vals = {'feedback':feedback.feedback, 'name':name, 'page':feedback.page}
+
+    context = Context(vals)
+    template = loader.get_template('emails/team/feedback.html')
+    email_html = template.render(context)
+
+    sendTeamEmail('Someone Sent Us Feedback [feedback]', email_html)
 
 
+def sendTeamClaimedProfileEmail(claimed):
 
+    vals = {'viewer':claimed.user, 'politician':claimed.politician, 'claim_email':claimed.email}
 
+    context = Context(vals)
+    template = loader.get_template('emails/team/claimed.html')
+    email_html = template.render(context)
+
+    sendTeamEmail('Someone Claimed Their Profile [to_do]', email_html)
 
 
 

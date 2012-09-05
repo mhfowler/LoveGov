@@ -88,9 +88,9 @@ div.feed-main
 
 
   div.feed-content.feed-boxed {
-    border-left:1px solid $light-gray;
-    border-right:1px solid $light-gray;
-    border-bottom:1px solid $light-gray;
+    //border-left:1px solid $light-gray;
+    //border-right:1px solid $light-gray;
+    //border-bottom:1px solid $light-gray;
     margin-top:30px;
   }
 
@@ -281,7 +281,7 @@ div.feed-item-wrapper {
   padding-bottom: 25px;
   padding-top: 10px;
   padding-left:50px;
-  border-top:1px solid $light-gray;
+  //border-top:1px solid $light-gray;
 
   div.left-part {
     float:left;
@@ -318,11 +318,11 @@ div.feed-item-wrapper {
       @include border-radius(10px);
       position:relative;
       &:hover {
-        border-color:$black;
+        border-color:$dark-gray;
         cursor:pointer;
         span.triangle-wrapper {
           span.triangle-border {
-            border-right-color:$black;
+            border-right-color:$dark-gray;
           }
         }
       }
@@ -341,8 +341,8 @@ div.feed-item-wrapper {
       $triangle-size: 32px;
       span.triangle-wrapper {
         position:relative;
-        left: 1px;
-        top: 27px;
+        left: 0px;
+        top: 36px;
         span.triangle {
           @include triangle('left', $white, $triangle-size + -1px);
           position: absolute;

@@ -20,12 +20,15 @@
 
         <div class="enter-your-phonenumber">
             <span class="please-enter"> Please enter your phone number </span>
-            <input class="phonenumber-input phonenumber_input" type="text"/>
+            <input class="phonenumber-input phonenumber_input" type="text" {% if viewer.phone_number %}value="{{ viewer.phone_number }}"{% endif %}>
             <div style="clear:both;"></div>
         </div>
         <div class="why-phonenumber">
             why? Currently the only way to reach a politician by email is through a web form which requires you
             to enter your phonenumber.
+        </div>
+        <div class="no-phonenumber no_phonenumber">
+            Unfortunately we need your phone number. Don't worry we won't call you.
         </div>
 
         <div style="clear:both;"></div>

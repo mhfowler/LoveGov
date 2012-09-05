@@ -655,4 +655,8 @@ div.message-politician-wrapper {
     width:400px;
     color:$dark-gray;
   }
+  div.no-phonenumber {
+    color:$red;
+    display:none;
+  }
 }
