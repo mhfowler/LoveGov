@@ -3850,7 +3850,6 @@ class Question(Content):
 
     def addAnswer(self, a):
         self.answers.add(a)
-        self.save()
 
     def recalculateQuestionHotScore(self):
         responses = Response.objects.filter(question=self, total_num=1)         # only responses by real people

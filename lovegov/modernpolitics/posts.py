@@ -2508,22 +2508,23 @@ def createContent(request, vals={}):
                 newQ = Question(question_text=q['question'], title=q['question'], source=q['source'], official=False)
                 if polltype=='q':
                     newQ.posted_to = group
-                newQ.save()
+                newQ.autoSave()
                 newQ.setMainTopic(qtopic)
                 for a in q['answers']:
                     newA = Answer(answer_text=a, value=-1)
                     newA.save()
                     newQ.addAnswer(newA)
-                newQ.save()
                 if polltype=='p':
                     newc.addQuestion(newQ)
                 else:
                     action = CreatedAction(content=newQ,privacy=getPrivacy(request),user=viewer)
                     action.autoSave()
             if polltype=='q':
+                # new content is last question
                 newc = newQ
                 createAction = False
-            newc.autoSave(creator=viewer, privacy=privacy)
+            else:
+                newc.autoSave(creator=viewer, privacy=privacy)
             try:
                 if 'content-image' in request.FILES:
                     file_content = ContentFile(request.FILES['content-image'].read())
