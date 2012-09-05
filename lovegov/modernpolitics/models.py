@@ -4766,6 +4766,8 @@ class Party(Group):
         self.system = False
         self.group_privacy = 'O'
         super(Party, self).autoSave()
+        from lovegov.modernpolitics.recalculate import setPartyText
+        setPartyText(self)
 
     def joinMember(self, user, privacy='PUB'):
         user.parties.add(self)

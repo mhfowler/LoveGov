@@ -260,6 +260,16 @@ def setLoveGovPollText():
     lgpoll.description = text
     lgpoll.save()
 
+def setCongressText():
+
+    text = "Follow this group to keep track of legislation and other happenings" \
+           "by your federal representatives and senators."
+
+    congress = getCongressGroup()
+    congress.full_text = text
+    congress.summary = text
+    congress.save()
+
 
 def setStateGroupText(state_group):
 
@@ -309,7 +319,19 @@ def setNetworkText(network):
     network.save()
 
 
+def setPartyText(party):
+
+    text = "This is a group auto-generated for a mainstream political party." \
+           "Join to show your true colors, or just follow to stay informed."
+
+    party.full_text = text
+    party.summary = text
+    party.save()
+
+
 def recalculateAutoGenDescriptions():
+
+    setCongressText()
 
     for n in Network.objects.all():
         setNetworkText(n)
@@ -322,6 +344,10 @@ def recalculateAutoGenDescriptions():
     for s in StateGroup.objects.all():
         setStateGroupText(s)
         print s.get_name()
+
+    for p in Party.objects.all():
+        setPartyText(p)
+        print p.get_name()
 
     setLoveGovPollText()
 
