@@ -117,6 +117,7 @@ def recalculateEverything():
     recalculateCreators()
     recalculateNumMembers()
     recalculateGroupAliases()
+
     recalculateInFeed()
     recalculatePetitions()
     recalculateQuestions()
