@@ -233,7 +233,13 @@ div.like-minded-header {
             background-size: 15px 13px;
             background-repeat: no-repeat;
             display:none;
+            margin-left:40px;
             float:left;
+          }
+          div.computing-result {
+            float:left;
+            margin-left:40px;
+            display:none;
           }
         }
         div.total-processed-count {

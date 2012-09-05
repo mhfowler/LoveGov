@@ -3782,6 +3782,7 @@ bind('.ask_to_join' , 'click' , null , function(e)
  ***********************************************************************************************************************/
 bind('.find_like_minded' , 'click' , null , function(e)
 {
+    $(".computing_result").show();
     $(".button_result").hide();
     findNewLikeMinded();
 });
@@ -3793,6 +3794,7 @@ function findNewLikeMinded() {
             data: {'action': 'findLikeMinded'},
             success: function(data) {
                 var returned = eval('(' + data + ')');
+                $(".computing_result").hide();
                 $(".find_loading").hide();
                 var num_new = returned.num_new_members;
                 // display num new members
