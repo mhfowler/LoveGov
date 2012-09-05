@@ -438,6 +438,7 @@ class Content(Privacy, LocationLevel):
         self.save()
         return score
 
+
     def calculateAllStats(self):
         self.calculateVotes()
         self.calculateNumComments()
@@ -1567,6 +1568,12 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
         self.num_posts = Content.objects.filter(creator=self, type__in=POST_CONTENT_TYPES).count()
         self.save()
         return self.num_posts
+
+    def calculateNumGroups(self):
+        groups = self.getRealGroups()
+        self.num_groups = groups.count()
+        self.save()
+        return self.num_groups
 
     def calculateNumAnswers(self):
         self.num_answers = self.view.responses.all().count()
@@ -4210,22 +4217,13 @@ class Group(Content):
     #-------------------------------------------------------------------------------------------------------------------
     def getComparisonHistogram(self, user, bucket_list, start=0, num=-1, topic_alias=None):
 
-        def getBucket(result, buckets_list):            # takes in a number and returns closest >= bucket
-            i = 0
-            current=buckets_list[0]
-            num_buckets = len(buckets_list)
-            while current < result and i < num_buckets:
-                current = buckets_list[i]
-                i += 1
-
-            if result > current:
-                to_return = num_buckets-1
-            elif i>0:
-                to_return = i-1
-            else:
-                to_return = 0
-
-            return buckets_list[to_return]
+        def getBucket(result, buckets_list):            # takes in a number and returns closest <= bucket
+            # iterate through buckets from largest to smallest
+            # each bucket in buckets_list is an integer which is lowest result allowed in bucket (inclusive)
+            # if result is >= bucket threshold, thats the bucket for the result, and return that bucket number
+            for bucket in reversed(buckets_list):
+                if result >= bucket:
+                    return bucket
 
         # ACTUAL METHOD
         buckets = {}                              # initialize empty histogram dictionary
@@ -4638,9 +4636,9 @@ class StateGroup(Group):
         location.save()
         self.location = location
         self.save()
+        return self
 
 class TownGroup(Group):
-    pass
     def autoCreate(self, city, state):
         city_state = city + ", " + state
         self.title = city_state + " Group"
@@ -4653,6 +4651,7 @@ class TownGroup(Group):
         location.save()
         self.location = location
         self.save()
+        return self
 
 #=======================================================================================================================
 # Politician group, is a sytem group for organizing politicians

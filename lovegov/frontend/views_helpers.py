@@ -91,6 +91,7 @@ def loadHistogram(resolution, g_id, which, increment=1, vals={}):
                           'which':which,
                           'increment':increment,
                           'topic_alias':'all',
+                          'topic_text': 'All Topics',
                           'bucket_uids': bucket_uids,
                           'current_bucket': -1 ,
                           'maximum': maximum}

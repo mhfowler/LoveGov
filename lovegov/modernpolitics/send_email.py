@@ -82,10 +82,59 @@ def sendScorecardInviteEmail(to_email, scorecard):
     email_template = 'emails/lovegov/invite_scorecard.html'
     sendLoveGovEmailHelper(None, subject, email_vals, email_template, to_email=to_email)
 
+def sendInviteByEmail(inviter, to_email):
+    subject = "You were invited to join LoveGov"
+    email_vals = {'inviter':inviter}
+    email_template = 'emails/lovegov/invite_by_email.html'
+    sendLoveGovEmailHelper(None, subject, email_vals, email_template, to_email=to_email)
 
 
 
 
+def sendTeamEmail(subject, email_html):
+    email_recipients = ["max_fowler@brown.edu"]
+    sendHTMLEmail(
+        subject = subject,
+        email_html = email_html,
+        email_sender = "info@lovegov.com",
+        email_recipients = email_recipients)
+
+
+def sendTeamMessagedRepEmail(messaged):
+
+    vals = {}
+    vals['user'] = messaged.user
+    vals['message'] = messaged.message
+    vals['politician'] = messaged.politician
+    vals['phone_number'] = messaged.phone_number
+
+    context = Context(vals)
+    template = loader.get_template('emails/team/message_rep.html')
+    email_html = template.render(context)
+
+    sendTeamEmail('Someone Messaged Their Rep [to_do]', email_html)
+
+
+def sendTeamFeedbackEmail(feedback, name):
+
+    vals = {'feedback':feedback.feedback, 'name':name, 'page':feedback.page}
+
+    context = Context(vals)
+    template = loader.get_template('emails/team/feedback.html')
+    email_html = template.render(context)
+
+    sendTeamEmail('Someone Sent Us Feedback [feedback]', email_html)
+
+
+def sendTeamClaimedProfileEmail(claimed):
+
+    vals = {'viewer':claimed.user, 'politician':claimed.politician, 'claim_email':claimed.email}
+
+    context = Context(vals)
+    template = loader.get_template('emails/team/claimed.html')
+    email_html = template.render(context)
+
+    sendTeamEmail('Someone Claimed Their Profile [to_do]', email_html)
 
 
 

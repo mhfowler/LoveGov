@@ -470,7 +470,7 @@ BILL_TYPES = {
 
 # types of content that show up in the feed
 POST_CONTENT_TYPES = ['N', 'B', 'D', 'P', 'Q']
-FEED_CONTENT_TYPES = ['N', 'B', 'D', 'P', 'Q', 'L']
+FEED_CONTENT_TYPES = ['N', 'B', 'D', 'P', 'Q']
 REAL_CONTENT_TYPES = ['N', 'B', 'D', 'P', 'Q', 'L', 'C']
 
 # Facebook Stuff

@@ -117,6 +117,7 @@ def recalculateEverything():
     recalculateCreators()
     recalculateNumMembers()
     recalculateGroupAliases()
+
     recalculateInFeed()
     recalculatePetitions()
     recalculateQuestions()
@@ -131,6 +132,41 @@ def recalculateEverything():
 
 
 
+#################################   CLEAN   #####################################################
+
+def cleanWorldViews():
+
+    q = Question.objects.all()
+    num_q = q.count()
+    print "num Q:" + str(num_q)
+
+    deleted = 0
+    u = UserProfile.objects.filter(num_answers__gt=num_q)
+    print str(u.count()) + " users with TOO MANY answers"
+    for x in u:
+        print x.get_name()
+        responses_count = {}
+        responses = x.view.responses.all()
+        for r in responses:
+            q_id = r.question.id
+            if not q_id in responses_count:
+                responses_count[q_id] = 1
+            else:
+                responses_count[q_id] += 1
+        for k,v in responses_count.items():
+            if v > 1:
+                dup_responses = responses.filter(question_id=k)
+                non_answer = dup_responses.filter(most_chosen_answer=None)
+                if non_answer:
+                    print "there were non answers for " + x.get_name()
+                    for h in non_answer:
+                        h.delete()
+                else:
+                    for to_delete in dup_responses[1:]:
+                        deleted += 1
+                        to_delete.delete()
+
+    print "responses deleted: " + str(deleted)
 
 
 
@@ -192,7 +228,6 @@ def recalculateTopics():
         count += 1
 
 
-
 # set parent topics to none and delete all topics which are not main topics
 def purgeTopics():
     for t in Topic.objects.all():
@@ -243,13 +278,13 @@ def calculatePoliticianTitles():
                     title = "Representative"
 
             if title:
-                loc = ''
-                loc += recent_office.location.state
-                if recent_office.location.district != -1:
-                    loc += "-" + str(recent_office.location.district)
-
-                if loc:
-                    title += " [" + loc + "]"
+#                loc = ''
+#                loc += recent_office.location.state
+#                if recent_office.location.district != -1:
+#                    loc += "-" + str(recent_office.location.district)
+#
+#                if loc:
+#                    title += " [" + loc + "]"
 
                 p.political_title = title
                 p.save()

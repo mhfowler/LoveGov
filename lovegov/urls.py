@@ -62,7 +62,7 @@ urlpatterns += patterns('',
     (r'^continue/$', views.continueAtOwnRisk),
     (r'^try/$', viewWrapper(views.tryLoveGov)),
     (r'^try/(\S+)/$', viewWrapper(views.tryLoveGov)),
-    (r'^unsubscribe/$', views.unsubscribe),
+    (r'^unsubscribe/(\S+)/$', views.unsubscribe),
     (r'^underconstruction/$', views.underConstruction),
 
     # home pages

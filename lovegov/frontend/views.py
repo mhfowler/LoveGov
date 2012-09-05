@@ -178,7 +178,7 @@ def tryLoveGov(request, to_page="home/", vals={}):
     response.set_cookie('lovegov_try', 1)
     return response
 
-def unsubscribe(request, vals={}):
+def unsubscribe(request, email, vals={}):
     return HttpResponse("You have unsubscribed from LoveGov emails.")
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -515,13 +515,15 @@ def discover(request, vals):
 #-----------------------------------------------------------------------------------------------------------------------
 def friends(request, vals):
     viewer = vals['viewer']
-    friends = list(viewer.getIFollow())
+    friends = viewer.getIFollow().filter(num_answers__gte=10)
     vals['i_follow'] = viewer.i_follow
-    friends = random.sample(friends, min(9, len(friends)))
-    vals['friends'] = friends
+    top_friends = []
     for f in friends:
         f.comparison = f.getComparison(viewer)
-    friends.sort(key=lambda x:x.comparison.result,reverse=True)
+        if f.comparison.num_q > 10:
+            top_friends.append(f)
+    top_friends.sort(key=lambda x:x.comparison.result,reverse=True)
+    vals['friends'] = top_friends[:9]
 
     # visual stuff for feed
     vals['no_create_button'] = True
@@ -682,6 +684,7 @@ def profile(request, alias=None, vals={}):
         else:
             vals['num_asked'] = user_profile.num_asked
 
+    vals['my_rep'] = True
     # Num Follow requests and group invites
     if viewer.id == user_profile.id:
         vals['num_follow_requests'] = user_profile.getNumFollowRequests()

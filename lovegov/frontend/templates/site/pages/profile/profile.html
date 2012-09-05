@@ -113,6 +113,10 @@
                                         {% endthumbnail %}
                                     </a>
                                 {% endwith %}
+                            {% empty %}
+                                <p>
+                                    {{ profile.first_name }} isn't a member of any parties.
+                                </p>
                             {% endfor %}
                         {% endwith %}
                     </div>

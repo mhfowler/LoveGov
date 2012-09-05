@@ -261,7 +261,7 @@ function ajaxReload(theurl, loadimg)
         ({
             url:theurl,
             type: 'GET',
-            data: {'url':old_url, 'has_sidebar':0},
+            data: {'url':old_url},
             success: function(data)
             {
                 if (pre_page_nonce == current_page_nonce) {
@@ -1249,15 +1249,12 @@ bind('#feedback-submit', 'click', function(event)
     var text = $('#feedback-text').val();
     var name = $('#feedback-name').val();
     action({
-
-
         data: {'action':'feedback','text':text,'path':path,'name':name},
         success: function(data)
         {
             $('#feedback-name').val("");
             $('#feedback-text').val("");
-            $('#feedback-response').css('display','block');
-            $('#feedback-response').fadeOut(3000);
+            $('#feedback-response').show();
         },
         error: function(jqXHR, textStatus, errorThrown)
         {
@@ -1655,14 +1652,13 @@ bind(".message_politician", 'click', null, function(event) {
 });
 
 bind(".send_message", 'click', null, function(event) {
+    $(".no_phonenumber").hide();
     var wrapper = $(this).parents(".message_politician_wrapper");
     var p_id = wrapper.data("p_id");
     var message = wrapper.find(".message_textarea").val();
     var phone_number = wrapper.find(".phonenumber_input").val();
-    if (phone_number = "") {
-        alert("You need to enter your phone number to send a politician a message. " +
-            "Currently the only way to reach a politician by email is via a webform which " +
-            "requires a phonenumber. The current system sucks, LoveGov will replace it soon.")
+    if (phone_number == "") {
+       $(".no_phonenumber").show();
     }
     else {
         action({
@@ -3020,6 +3016,7 @@ function loadHistogram(histogram_wrapper) {
             alias = wrapper.data('t_alias');
             topic_text = wrapper.data('t_text');
         }
+        histogram_metadata.topic_text = topic_text;
         histogram_wrapper.find(".histogram-topic").text(topic_text);
         histogram_metadata.topic_alias = alias;
         saveHistogramMetadata(histogram_wrapper, histogram_metadata);
@@ -3054,6 +3051,7 @@ function selectHistogramBar(histogram_wrapper, bar) {
         histogram_metadata.current_bucket = bar.data('bucket');
         saveHistogramMetadata(histogram_wrapper, histogram_metadata);
         bar.addClass("clicked");
+        setHistogramExplanation(histogram_wrapper);
     }
     refreshHistogramMembers(histogram_wrapper);
 }
@@ -3339,6 +3337,10 @@ function setHistogramExplanation(histogram_wrapper) {
         var inc = 100 / histogram_metadata.resolution;
         var higher = lower + inc;
         var message = String(lower) + '-' + String(higher) + "% similar to you";
+        var topic_text = histogram_metadata.topic_text;
+        if (topic_text != "All Topics") {
+            message += " over " + topic_text + " questions";
+        }
     }
     else {
         var message = "";
