@@ -1406,6 +1406,9 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
         self.save()
 
     def setNewTempLocation(self, location):
+        if not self.location:
+            self.setNewLocation(location)
+            self.joinLocationGroups()
         if self.temp_location:
             self.old_locations.add(self.temp_location)
         self.temp_location = location
@@ -3850,7 +3853,6 @@ class Question(Content):
 
     def addAnswer(self, a):
         self.answers.add(a)
-        self.save()
 
     def recalculateQuestionHotScore(self):
         responses = Response.objects.filter(question=self, total_num=1)         # only responses by real people

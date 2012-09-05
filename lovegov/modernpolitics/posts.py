@@ -2420,7 +2420,6 @@ def createContent(request, vals={}):
     section = request.POST.get('sectionType')
     title = request.POST.get('title')
     full_text = request.POST.get('full_text')
-    link_summary = request.POST.get('link_summary')
     post_to = request.POST.get('post_to')
     group = None
     if post_to:
@@ -2481,10 +2480,6 @@ def createContent(request, vals={}):
             newc = News(link=link, posted_to=group)
             if full_text:
                 newc.link_summary = full_text
-            if link_summary:
-                newc.summary = link_summary
-            if title:
-                newc.title = title
             ref = str(screenshot)
             if ref != 'undefined':
                 newc.saveScreenShot(ref)

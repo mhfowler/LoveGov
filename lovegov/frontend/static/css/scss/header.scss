@@ -16,10 +16,11 @@ header
   padding-top:5px;
   div.header-logo
   {
-    @include staticImage('/images/icons/logo/beta-subtle.png');
+    @include staticImage('/images/icons/logo/logo.png');
     float:left;
     @include clearfix;
-    background-size: 144px;
+    background-size: 150px;
+    background-position-y: 9px;
     background-repeat: no-repeat;
     width: 144px;
     height: 54px;

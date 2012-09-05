@@ -159,10 +159,6 @@ def getQuestionItems(viewer, feed_ranking, feed_topic=None, only_unanswered=Fals
     questions = sortHelper(questions, feed_ranking, questions=True)
     for q in questions:
         your_response = getResponseHelper(you_responses, q)
-        if your_response:
-            responses = [your_response]
-        else:
-            responses= []
         q_item = getQuestionItem(question=q,
             you=viewer, your_response=your_response,
             them=None, their_response=None)
