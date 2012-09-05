@@ -2448,6 +2448,7 @@ def createContent(request, vals={}):
     else:
         privacy = 'PUB'
     redirect = ''
+    createAction = True
     if section=='discussion':
         if title and full_text:
             newc = Discussion(user_post=full_text, title=title, in_feed=True, in_search=True, in_calc=True,
@@ -2516,8 +2517,12 @@ def createContent(request, vals={}):
                 newQ.save()
                 if polltype=='p':
                     newc.addQuestion(newQ)
+                else:
+                    action = CreatedAction(content=newQ,privacy=getPrivacy(request),user=viewer)
+                    action.autoSave()
             if polltype=='q':
                 newc = newQ
+                createAction = False
             newc.autoSave(creator=viewer, privacy=privacy)
             try:
                 if 'content-image' in request.FILES:
@@ -2581,8 +2586,9 @@ def createContent(request, vals={}):
 
     newc.setMainTopic(topic)
 
-    action = CreatedAction(content=newc,privacy=getPrivacy(request),user=viewer)
-    action.autoSave()
+    if createAction:
+        action = CreatedAction(content=newc,privacy=getPrivacy(request),user=viewer)
+        action.autoSave()
 
     if not redirect:
         redirect = newc.getUrl()

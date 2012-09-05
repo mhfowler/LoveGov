@@ -271,7 +271,7 @@ function getLinkInfo(link, input) {
             input.parent().children('img.loading-gif').remove();
         },
         error: function(e) {
-            alert("Something went wrong fetching the link.");
+            alert("We were unable to fetch a description of the link.");
         }
     });
 }
