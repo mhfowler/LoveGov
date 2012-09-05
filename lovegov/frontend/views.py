@@ -916,7 +916,7 @@ def account(request, section="", vals={}):
         if request.POST['box'] == 'password':
             password_form = PasswordForm(request.POST)
             if password_form.process(request):
-                message = "You successfully changed your password. We sent you an email for your records."
+                message = "You successfully changed your password."
             else:
                 message = "Failure.  Either the two new passwords you entered were not the same, "\
                           "or you entered your old password incorrectly."
