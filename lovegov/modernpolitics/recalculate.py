@@ -256,7 +256,9 @@ def setLoveGovPollText():
 
 def setStateGroupText(state_group):
 
-    state_name = STATES_DICT.get(state_group.location.state)
+    key = state_group.location.state
+    print key
+    state_name = STATES_DICT.get(key)
 
     text = "This is the central place for everything relevant to " + state_name + "." \
            "Use this group to find out what is going on and generate awareness for your cause: " \
