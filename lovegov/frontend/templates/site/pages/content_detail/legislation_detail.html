@@ -1,4 +1,4 @@
-{% extends 'site/pages/content_detail/leg_content_detail.html' %}
+{% extends 'site/pages/content_detail/content_detail.html' %}
 
 {% block content_detail_sidebar %}
 {% endblock %}
@@ -86,16 +86,17 @@
                         </h4>
                     </div>
                 </div>
-                <div class="sponsor-pic">
-                <span>
-                    {{ l.sponsor.getProfileImage }}
-                </span>
-                </div>
                 <div class="sponsor-caption">
-                    <h6><span><a href='{{l.sponsor.get_url}}'><h6 class="sponsor-name">{{l.sponsor.get_name}}</h6></a>
-                    {{ l.sponsor.getPartiesString }}<br>{{ l.sponsor.political_title }}<br></span></h6>
+                    <h6><span>
+                        {% with creator=content.getCreatorDisplay %}
+                            <a href='{{creator.get_url}}' class="created-avatar">
+                            {% include 'site/pieces/avatar.html' with user=creator height="100" width="100" %}
+                        {% endwith %}
+                        <h6 class="sponsor-name">{{l.sponsor.get_name}}</h6></a>
+                    {{l.sponsor.getPartiesString}}<br>{{l.sponsor.getPoliticalTitle}}<br></span></h6>
                 </div>
             </div>
+{% comment %}
             <div class="progress">
                 <div class="level1-progress">
                     <div class="bill-progress-title">
@@ -104,7 +105,7 @@
                         </h4>
                     </div>
                 </div>
-{% comment %}
+
                     {% ifequal bill_progress "Passed House and Senate" %}
                     <div class="level1-progress-div">
                         <br>
@@ -119,6 +120,7 @@
                     </div>
                     {% endifequal %}
 {% endcomment %}
+{% comment %}
                     {% ifequal bill_progress "Passed House and Senate, Signed into Law" %}
                         <div class="level1-progress-div">
                             <br>
@@ -478,6 +480,7 @@
                         </div>
                     {% endifequal %}
             </div>
+    {% endcomment %}
         </div>
     {%comment%}
             <div class="bill-stats">
@@ -603,37 +606,43 @@
                             </h4>
                         </div>
                     </div>
-                    {% for action in actions %}
-                    <div class="level2-recent-actions-div">
-                        <div class="recent-actions">
-
+                    {% ifnotequal actions.count 0 %}
+                        {% for action in actions %}
+                        <div class="level2-recent-actions-div">
+                            <div class="recent-actions">
                                 <span>
                                     <ul>
                                         <li><span class="leg-list">{{ action.text }}</span></li>
                                     </ul>
                                 </span>
-
-                        </div>
-                        <div class="recent-action-dates">
-
+                            </div>
+                            <div class="recent-action-dates">
                                 <span>
                                     <ul>
                                         <li><span class="leg-list">{{ action.datetime.date }}</span></li>
                                     </ul>
                                 </span>
-
-                        </div>
-                        <div class="recent-action-results">
-
+                            </div>
+                            <div class="recent-action-results">
                                 <span>
                                     <ul>
                                         <li><span class="leg-list">{{ action.state }}</span></li>
                                     </ul>
                                 </span>
-
+                            </div>
                         </div>
-                    </div>
-                    {% endfor %}
+                        {% endfor %}
+                    {% else %}
+                        <div class="level2-recent-actions-div">
+                            <div class="recent-actions" style="width:100%">
+                                <span>
+                                    <ul>
+                                        <li><span class="leg-list">No Actions for this Legislation Item</span></li>
+                                    </ul>
+                                </span>
+                            </div>
+                        </div>
+                    {% endifnotequal %}
                 </div>
             </div>
         </div>
@@ -647,24 +656,37 @@
                 </h4>
             </div>
         </div>
-        {% for cosponsor in cosponsors %}
-        <div class="level1-cosponsors-div">
-            <div class="cosponsors">
-                <span>
-                    <ul>
-                        <li><span class="leg-list feed_by_cosponsor"><a href='{{cosponsor.cosponsor.get_url}}'>{{ cosponsor.cosponsor.get_name }}</a></span></li>
-                    </ul>
-                </span>
+        {% ifnotequal l.legislation_cosponsors.all.count 0 %}
+            {% for cosponsor in cosponsors %}
+            <div class="level1-cosponsors-div">
+                <div class="cosponsors">
+                    <span>
+                        <ul>
+                            <li><span class="leg-list feed_by_cosponsor"><a href='{{cosponsor.cosponsor.get_url}}'>{{ cosponsor.cosponsor.get_name }}</a></span></li>
+                        </ul>
+                    </span>
+                </div>
+                <div class="cosponsors-roles">
+                    <span>
+                        <ul>
+                            <li><span class="leg-list feed_by_cosponsor">{{ cosponsor.cosponsor.political_title }}</span></li>
+                        </ul>
+                    </span>
+                </div>
             </div>
-            <div class="cosponsors-roles">
-                <span>
-                    <ul>
-                        <li><span class="leg-list feed_by_cosponsor">{{ cosponsor.cosponsor.political_title }}</span></li>
-                    </ul>
-                </span>
+            {% endfor %}
+        {% else %}
+            <div class="level1-cosponsors-div">
+                <div class="cosponsors" style="width:100%">
+                    <span>
+                        <ul>
+                            <li><span class="leg-list feed_by_cosponsor">No Cosponsors for this Legislation Item</span></li>
+                        </ul>
+                    </span>
+                </div>
             </div>
-        </div>
-        {% endfor %}
+        {% endifnotequal %}
+
         <div class="level1-subjects">
             <div class="bill-subjects-title">
                 <h4>
@@ -676,9 +698,13 @@
             <div class="subjects">
                 <span>
                     <ul>
-                        {% for subject in l.bill_subjects.all %}
-                            <li><span class="leg-list feed_by_subject">{{ subject.name }}</span></li>
-                        {% endfor %}
+                        {% ifnotequal l.bill_subjects.all.count 0 %}
+                            {% for subject in l.bill_subjects.all %}
+                                <li><span class="leg-list feed_by_subject">{{ subject.name }}</span></li>
+                            {% endfor %}
+                        {% else %}
+                                <li><span class="leg-list feed_by_subject">No Subjects for this Legislation Item</span></li>
+                        {% endifnotequal %}
                     </ul>
                 </span>
             </div>
@@ -694,13 +720,18 @@
             <div class="committees">
                 <span>
                     <ul>
-                        {% for committee in l.committees.all %}
-                            <li><span class="leg-list feed_by_committee"><a href='{{ committee.get_url }}'>{{ committee.title }}</a></span></li>
-                        {% endfor %}
+                        {% ifnotequal l.committees.all.count 0 %}
+                            {% for committee in l.committees.all %}
+                                <li><span class="leg-list feed_by_committee"><a href='{{ committee.get_url }}'>{{ committee.title }}</a></span></li>
+                            {% endfor %}
+                        {% else %}
+                            <li><span class="leg-list feed_by_committee">No Committees for this Legislation Item</span></li>
+                        {% endifnotequal %}
                     </ul>
                 </span>
             </div>
         </div>
+{% comment %}
         <div class="level1-related">
             <div class="related-bill-title">
                 <h4>
@@ -719,6 +750,7 @@
                 </span>
             </div>
         </div>
+{% endcomment %}
     </div>
 </div>
 <script> rebind="legislation_detail"; </script>

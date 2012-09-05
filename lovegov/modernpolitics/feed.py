@@ -270,7 +270,7 @@ def compareQuestionItem(q_item):
 
 
 ### gets legislation based on filter parametrs ###
-def getLegislationItems(session_set, type_set, subject_set, committee_set, introduced_set, sponsor_body_set, sponsor_name_set, sponsor_party_set, feed_start):
+def getLegislationItems(session_set, type_set, subject_set, committee_set, introduced_set, sponsor_body_set, sponsor_name_set, sponsor_party, feed_start):
 
     # all legislation
     legislation_items = Legislation.objects.all()
@@ -299,9 +299,10 @@ def getLegislationItems(session_set, type_set, subject_set, committee_set, intro
     if sponsor_name_set:
         legislation_items = legislation_items.filter(
             sponsor__in=sponsor_name_set)
-    if sponsor_party_set:
-        legislation_items = legislation_items.filter(
-            sponsor__in=sponsor_party_set)
+    if sponsor_party:
+        users = UserProfile.objects.filter(parties=sponsor_party, politician=True)
+        users_ids = users.values_list("id", flat=True)
+        legislation_items = legislation_items.filter(sponsor_id__in=users_ids)
 
     # paginate
     legislation_items = legislation_items[feed_start:feed_start+10]

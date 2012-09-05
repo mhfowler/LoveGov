@@ -82,9 +82,11 @@
 
                 <div class="group-match">
 
-                    <div class="match-number has_hover_comparison" data-href="{{ group.get_url }}" data-display_name="{{ group.get_name }}">
-                        {{ info.group_comparison.result }}
-                    </div>
+                    {% with result=info.group_comparison.result %}
+                        <div class="match-number has_hover_comparison {% if result == 100  %} hundred-match {% endif %}" data-href="{{ group.get_url }}" data-display_name="{{ group.get_name }}">
+                            {{ result }}
+                        </div>
+                    {% endwith %}
 
                     <div class="match-title">match</div>
 

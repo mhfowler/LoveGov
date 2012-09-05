@@ -106,6 +106,7 @@ def twitterLogin(request, to_page="/web/", vals={}):
             user = user_prof.user
             user.backend = 'django.contrib.auth.backends.ModelBackend'
             auth.login(request, user)
+            user_prof.incrementNumLogins()
             return shortcuts.redirect(to_page)
         else:
             return False

@@ -62,6 +62,10 @@
                 $(".state-div").hide();
                 $("#need-confirmation-div").show();
             }
+            if (register_state == 'claimed_by') {
+                $(".state-div").hide();
+                $("#register-div").show();
+            }
 
             if (login_state == 'login_error') {
                 $(".sign_in_dialogue").show();

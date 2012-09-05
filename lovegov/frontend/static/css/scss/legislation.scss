@@ -3,10 +3,14 @@
 @import 'master-mixins';
 
 
+option.line-spaced {
+  line-height: 120%;
+}
+
 div.main-block {
   margin-top: 20px;
   height: auto;
-  width: 820px;
+  width: 100%;
   padding-left: 5px;
   padding-top: 0px;
 
@@ -15,7 +19,7 @@ div.main-block {
     margin-left: 5px;
     margin-top: 5px;
     height: auto;
-    width: 800px;
+    width: 100%;
     padding-left: 9px;
 
     div.filter_prompt {
@@ -160,8 +164,8 @@ div.main-block {
   }
 
   div.legislation_selector {
-    float: right;
-    margin-left: 0px;
+    margin-left: auto;
+    margin-right: auto;
     margin-top: 30px;
     height: auto;
     width: 600px;
@@ -171,7 +175,6 @@ div.main-block {
       margin-top: 0px;
       height: auto;
       width: 350px;
-      padding-left: 0px;
       z-index:0;
 
       select.session_select {
@@ -391,7 +394,7 @@ div.main-block {
 div.filter-results {
   margin-top: 18px;
   height:auto;
-  width: 780px;
+  width: 100%;
   overflow: auto;
 
   div.results-heading {

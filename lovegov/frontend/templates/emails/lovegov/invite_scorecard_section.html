@@ -1,0 +1,26 @@
+{% extends 'emails/lovegov/white_section.html' %}
+
+{% block white_section %}
+
+    {% with group=scorecard.group %}
+        <p>
+            The group {{ group.get_name }} has invited you to complete their scorecard on Lovegov.
+            On LoveGov you will be able to reach out to constituents and follow politics and your constituents all in one place.
+        </p>
+
+        <div class="claim-wrapper" style="width:100%;text-align:center;margin-top:30px;">
+
+            {% with "/claim_your_profile/"|add:"x"|add:"/" as button_url %}
+                {% include 'emails/lovegov/email_link_button.html' with button_url=election.get_url button_text="Claim profile" %}
+            {% endwith %}
+
+            <span> or </span>
+
+            {% include 'emails/lovegov/email_link_button.html' with button_url=scorecard.get_url button_text="View scorecard page" %}
+
+        </div>
+
+        {% include 'emails/lovegov/what_is_lovegov.html' %}
+    {% endwith %}
+
+{% endblock %}

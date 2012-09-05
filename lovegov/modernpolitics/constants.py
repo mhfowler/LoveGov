@@ -19,6 +19,18 @@ import os
 
 LOCAL = settings.LOCAL
 
+########################################## FIRST LOGIN  ################################################################
+
+FIRST_LOGIN_TASKS=['E', # explore feed
+                   'F', # find reps
+                   'L', # lovegov poll
+                   'J', # join groups to customize your feed
+                   'A', # you saw your congratulatory message
+                    ]
+
+########################################################################################################################
+
+DOMAIN = 'http://dev.lovegov.com'
 TEMPDIR = settings.MEDIA_ROOT + 'temp/'
 
 ########################################## Content we cycle through ####################################################
@@ -662,7 +674,8 @@ ACTIONS = [
     'inviteToRunForElection',
     'changePrivacyMode',
     'savePoliticianSettings',
-    'removeScorecard'
+    'removeScorecard',
+    'completeTask'
 
 ]
 

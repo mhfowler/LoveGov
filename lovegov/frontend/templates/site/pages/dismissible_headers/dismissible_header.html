@@ -1,12 +1,17 @@
 <div class="dismissible-header dismissible_header" {% if dismissible_hide %} style="display:none"{% endif %}>
     <div class="the-content">
         {% block dismissible_content %}
-                this is dismissible
+            this is dismissible
         {% endblock %}
         <div style="clear:both;"></div>
     </div>
     <div style="clear:both;"></div>
+
+    {% comment %}
     <div class="x-out dismissible_x">
             X
     </div>
+    {% endcomment %}
+
+    <div class="x-img dismissible_x"></div>
 </div>

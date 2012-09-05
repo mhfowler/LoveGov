@@ -1,0 +1,79 @@
+{% extends 'site/pages/dismissible_headers/dismissible_header.html' %}
+
+{% block dismissible_content %}
+
+    <div class="first-login-header">
+
+         <div class="welcome-div">
+
+             <div class="welcome-message">
+                 thanks for joining
+             </div>
+
+             <div class="logo"></div>
+
+             <div class="our-goal">
+                 Our goal is to provide good tools to make it easier to participate in democracy.
+                 We hope you make us your political home on the internet.
+                 Find out more about us <a href="/about/mission/"> here </a>.
+             </div>
+
+         </div>
+
+        <div class="get-started">
+
+            <div class="get-started-header">
+                GET STARTED!
+            </div>
+
+            <div class="tasks-wrapper">
+
+                <div class="task-wrapper">
+                    <a class="task-checkbox explore_your_feed {% if not explore_feed_task %} incomplete {% endif %}"> <div class="task-completed"></div> </a>
+                    <a class="task-label explore_your_feed"> Explore your feed (click me) </a>
+                </div>
+
+                <div class="task-wrapper">
+                    <a href="/representatives/" class="task-checkbox"> {% if find_reps_task %} <div class="task-completed"></div> {% endif %}</a>
+                    <a href="/representatives/" class="task-label"> Find your representatives </a>
+                </div>
+
+                <div class="task-wrapper">
+                    <a href="{{ lgpoll.get_url }}" class="task-checkbox"> {% if lovegov_poll_task %} <div class="task-completed"></div> {% endif %} </a>
+                    <a href="{{ lgpoll.get_url }}" class="task-label"> Take LoveGov poll to match yourself to politicians, groups, and friends </a>
+                </div>
+
+                <div class="task-wrapper">
+                    <a href="/groups/" class="task-checkbox"> {% if join_groups_task %} <div class="task-completed"></div> {% endif %} </a>
+                    <a href="/groups/" class="task-label"> Join groups to customize your feed </a>
+                </div>
+
+            </div>
+
+        </div>
+
+        {% if completed_all_tasks %}
+            <div class="completed-all">
+                Congratulations, you finished all of our getting started ideas. The next time you come to this page,
+                this list won't be here, and LoveGov will be yours to conquer.
+            </div>
+        {% endif %}
+
+
+        <div class="are-you">
+            <div class="are-you-wrapper">
+                Are you an interest group leader? <a href="#" class="are-you-link"> Use our tools to further your cause. </a>
+            </div>
+
+            <div class="are-you-wrapper">
+                Are you a politician? <a href="#" class="are-you-link"> Find out how to connect with constituents and supporters.</a>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="expand-info collapse_introduction">
+        <p class="expand-text"> collapse introduction </p>
+    </div>
+
+{% endblock %}

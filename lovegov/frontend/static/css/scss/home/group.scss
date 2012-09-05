@@ -132,6 +132,11 @@ div.group-expanded
         font-weight: bold;
         height: 64px;
         text-align: center;
+        &.hundred-match {
+          font-size: 42px;
+          position: relative;
+          top: 14px;
+        }
       }
 
       div.match-title

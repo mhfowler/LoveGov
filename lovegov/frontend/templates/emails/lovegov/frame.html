@@ -26,6 +26,7 @@
             float:left;
             font-size:28px;
             margin-bottom:20px;
+            width:400px;
             color:black;"
                     >
                 {{ email_header }}
@@ -47,8 +48,8 @@
     font-size:12px;
     padding:5px;
     font-size:10px;">
-        <div class="footer-left" style="float:left;margin-left:5px"">
-        Click here to <a href="{{ domain }}/unsubscribe/" style="color:red;"> unsubscribe </a>
+        <div class="footer-left" style="float:left;margin-left:5px">
+        Click here to <a href="{{ domain }}/unsubscribe/{{ to_email }}/" style="color:red;"> unsubscribe </a>
     </div>
         <div class="footer-right" style="float:right;width:300px;margin-right:15px;font-size:10px;">
             <div class="links" style="color:red; float:right; width:300px;text-align:right;">

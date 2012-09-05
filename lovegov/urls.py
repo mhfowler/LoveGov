@@ -44,6 +44,7 @@ urlpatterns += patterns('',
     (r'^password_recovery/$', viewWrapper(views.passwordRecovery)),
     (r'^confirm/(?P<confirm_link>\S+)/$', viewWrapper(views.confirm)),
     (r'^need_email_confirmation/$', viewWrapper(views.needConfirmation)),
+    (r'^claim_your_profile/(?P<claimed_by>\S+)/$', viewWrapper(views.claimYourProfile)),
     (r'^welcome/$', viewWrapper(views.welcome)),
 
     # fb authentication
@@ -153,7 +154,6 @@ urlpatterns += patterns('',
     (r'(?P<alias>\w+)/edit/$', views.aliasDowncastEdit),
     (r'^(?P<alias>\w+)/worldview/$', viewWrapper(views.worldview, requires_login=True)),                 # view breakdown of person
     (r'^(?P<alias>\w+)/histogram/$', viewWrapper(views.histogramDetail, requires_login=True)),           # histogram detail of group
-    (r'(?P<alias>\w+)/candidates/$', viewWrapper(views.candidates, requires_login=True)),                # see
 
     # REDIRECT
     (r'(?P<alias>\w+)/$', views.aliasDowncast),
