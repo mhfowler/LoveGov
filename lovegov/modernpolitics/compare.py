@@ -209,12 +209,13 @@ def updateGroupView(group, debug=False):
         wv.save()
         group.group_view = wv
         group.save()
-        updateGroupView(group)
+        updateGroupView(group, debug=debug)
 
 def aggregateView(users, view, debug=False):
     for r in view.responses.all():
         q = r.question
-        aggregateHelper(question=q, users=users, aggregate=r)
+        if debug: print "PROCESSING " + q.get_name()
+        aggregateHelper(question=q, users=users, aggregate=r, debug=debug)
     old_ids = view.responses.all().values_list("question", flat=True)
     new_questions = Question.objects.filter(official=True).exclude(id__in=old_ids)
     for q in new_questions:
