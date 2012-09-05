@@ -140,7 +140,7 @@ class PhysicalAddress(LGModel):
     zip = models.CharField(max_length=20, null=True)
     longitude = models.DecimalField(max_digits=30, decimal_places=15, null=True)
     latitude = models.DecimalField(max_digits=30, decimal_places=15, null=True)
-    state = models.CharField(max_length=2, null=True)
+    state = models.CharField(max_length=15, null=True)
     city = models.CharField(max_length=500, null=True)
     district = models.IntegerField(null=True)
 

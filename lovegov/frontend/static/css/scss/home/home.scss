@@ -127,6 +127,15 @@ div.left-navbar {
   width:150px;
   overflow:hidden;
 
+  div.navbar_helper_bubble {
+    position:absolute;
+    top:127px;
+    width:150px;
+    div.helper-bubble-arrow-wrapper.up div.helper-bubble-arrow {
+      margin-left:13px;
+    }
+  }
+
   p.asterisk-pointer {
     color:$black;
     position:absolute;

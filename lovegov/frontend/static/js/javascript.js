@@ -4405,9 +4405,8 @@ bind('div.change-privacy','click', function() {
  *      ~ first login
  *
  ***********************************************************************************************************************/
-// bind change content privacy
 bind('.explore_your_feed','click', function() {
-    $(".helper_bubbles").show();
+    $(".helper_bubble").fadeIn(200);
     $(".explore_your_feed").removeClass("incomplete");
     action({
         data: {
@@ -4417,4 +4416,8 @@ bind('.explore_your_feed','click', function() {
         success: function(data) {
         }
     });
+});
+
+bind('.x_helper_bubble','click', function() {
+    $(this).parents(".helper_bubble").hide();
 });

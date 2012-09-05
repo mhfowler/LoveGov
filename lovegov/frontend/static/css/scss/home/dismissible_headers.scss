@@ -4,6 +4,52 @@
 
 @import "compass";
 
+/* helper bubbles */
+div.helper-bubble {
+  z-index:1;
+  padding: 5px 10px 5px 10px;
+  position:relative;
+  display:none;
+  div.x-helper-bubble {
+    float:right;
+    display:block;
+    @include fontSize(24px);
+    line-height:20px;
+    &:hover {
+      color:$black;
+      cursor:pointer;
+    }
+  }
+  background-color:$text-blue;
+  color:white;
+  @include border-radius(7px);
+  div.helper-text {
+    width:100%;
+    float:left;
+  }
+  div.helper-bubble-arrow-wrapper.down {
+    top: 97%;
+    width:100%;
+    text-align:center;
+    position: absolute;
+    div.helper-bubble-arrow {
+        @include triangle('down', $text-blue, 15px);
+        margin-left:35%;
+    }
+  }
+  div.helper-bubble-arrow-wrapper.up {
+    top: -15px;
+    width:100%;
+    text-align:center;
+    position: absolute;
+    div.helper-bubble-arrow {
+      @include triangle('up', $text-blue, 15px);
+      margin-left:35%;
+    }
+  }
+}
+
+
 /* first login header */
 div.first-login-header {
 

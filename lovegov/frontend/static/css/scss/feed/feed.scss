@@ -76,6 +76,15 @@ div.feed-main
 {
   min-height:600px;
   width: 960px;
+  position:relative;
+
+  div.feed_item_helper_bubble {
+    width:200px;
+    position:absolute;
+    left:100px;
+    top:-70px;
+  }
+
 
   div.feed-content.feed-boxed {
     border-left:1px solid $light-gray;
@@ -212,6 +221,13 @@ div.feed-main
     table.create-button
     {
       float: right;
+      position:relative;
+    }
+
+    div.create_helper_bubble {
+      position:absolute;
+      width:200px;
+      top:63px;
     }
   }
 

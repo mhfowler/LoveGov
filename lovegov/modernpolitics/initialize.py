@@ -1736,11 +1736,12 @@ def initializeStateGroups():
         state = x[0]
         already = StateGroup.lg.get_or_none(location__state=state)
         if not already:
-            print "initializing " + state + " state group."
+            print "initializing: " + state + " state group."
             StateGroup().autoCreate(state)
         else:
             print "..." + state + " state group already initialized."
     for u in UserProfile.objects.all():
+        print "+II+ joining " + u.get_name()
         u.joinLocationGroups()
 
 

@@ -1,5 +1,5 @@
 <div class="feed-main feed_main"
-        data-feed_start="0"
+     data-feed_start="0"
         {% if not special_feed %} data-feed="getFeed" {% else %} data-feed="{{ special_feed }}" {% endif %}
         {% if not default_display %} data-default_display="none" {% else %} data-default_display="{{ default_display}}" {% endif %}
         {% if only_unanswered %} data-only_unanswered="true" {% else %} data-only_unanswered="false" {% endif %}
@@ -8,6 +8,10 @@
         {% if save_scorecard_answer %} data-save_scorecard_answer="1" {% endif %}
         {% if to_compare %} data-to_compare_id="{{ to_compare.id }}" {% endif %}
         >
+
+    <!-- helper bubble -->
+    {% include 'site/pages/helper_bubbles/feed_item_helper_bubble.html' with which_bubble="feed_item_helper_bubble" arrow_direction="down" %}
+
 
     <table class="feed-top-bar">
         <tr>
@@ -53,6 +57,10 @@
                                 </td>
                             </tr>
                         </table>
+
+                        <!-- helper bubble -->
+                        {% include 'site/pages/helper_bubbles/create_helper_bubble.html' with which_bubble="create_helper_bubble" arrow_direction="up" %}
+
                     {% endif %}
                 {% endblock %}
             </td>
