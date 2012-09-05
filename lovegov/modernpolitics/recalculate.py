@@ -257,7 +257,6 @@ def setLoveGovPollText():
 def setStateGroupText(state_group):
 
     key = state_group.location.state
-    print key
     state_name = STATES_DICT.get(key)
 
     text = "This is the central place for everything relevant to " + state_name + "." \
@@ -314,7 +313,7 @@ def recalculateAutoGenDescriptions():
         print c.get_name()
 
     for s in StateGroup.objects.all():
-        setStateGroupText(x)
+        setStateGroupText(s)
         print s.get_name()
 
     setLoveGovPollText()
