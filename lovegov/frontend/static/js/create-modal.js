@@ -78,7 +78,7 @@ bind("div.create-modal div.add-question", "click", function(e) {
     if(num_questions==1) {
         // Adding another question - ask if it's a poll
         $('div.create-modal div.create-section.poll div.form-row.polltype').fadeIn(500);
-        switchToPoll();
+        $('div.create-modal div.create-section.poll input:radio[value="p"]').click();
     }
     $(this).data('num-questions', num_questions+1);
    var newQuestion = $('div.create-modal div.question.model').clone();
