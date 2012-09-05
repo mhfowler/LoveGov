@@ -200,6 +200,10 @@ bind("div.create-modal div.save", "click", function(e) {
     if(section.hasClass('news')) {
         var screenshot = $('.news_link_selected').attr("src");
         form.append('<input type="hidden" name="screenshot" value="'+screenshot+'">');
+        var title = $('#news-input-title').val();
+        form.append('<input type="hidden" name="title" value="'+title+'">');
+        var link_summary = $('#news-link-generation-description').text();
+        form.append('<input type="hidden" name="link_summary" value="'+link_summary+'">');
     }
 
     if(section.hasClass("poll")) {
@@ -257,12 +261,17 @@ function getLinkInfo(link, input) {
         success: function(data)
         {
             var obj = eval('(' + data + ')');
-            $("div.create-modal div.create-section.news div.link-image div.field").html(obj.html);
+            var link_image = $("div.create-modal div.create-section.news div.link-image");
+            link_image.fadeIn(200);
+            link_image.children("div.field").html(obj.html);
             image_count = $('.news_link_image_container').children().length;
         },
         complete: function() {
             // remove loading spinner
             input.parent().children('img.loading-gif').remove();
+        },
+        error: function(e) {
+            alert("Something went wrong fetching the link.");
         }
     });
 }
