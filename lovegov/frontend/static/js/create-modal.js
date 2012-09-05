@@ -128,10 +128,14 @@ bind("div.create-modal div.questions span.add-source", "click", function(e) {
    $(this).closest("div.question").children("div.question-source").toggle();
 });
 
+var createSaveLock = false;
+
 // "Save" button clicked
 bind("div.create-modal div.save", "click", function(e) {
     var section = $(this).closest('div.create-section');
     var form = section.children("form");
+
+    if (createSaveLock) return;
 
     var invalid = false;
     var questions;
@@ -184,7 +188,8 @@ bind("div.create-modal div.save", "click", function(e) {
         return false;
     }
 
-
+    $(this).css({'background-color': '#ccc', 'cursor': 'default'});
+    createSaveLock = true;
 
     var post_as = section.find("span.post-as.selected").data("poster");
     form.append('<input type="hidden" name="post_as" value="'+post_as+'">');
