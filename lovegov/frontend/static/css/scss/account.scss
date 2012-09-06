@@ -479,6 +479,9 @@ div.voting-address-wrapper {
   div.location-city {
     margin-top:10px;
   }
+  div.location-zip {
+    margin-top:20px;
+  }
 
   textarea.address-textarea {
     @extend textarea;
