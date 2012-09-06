@@ -383,8 +383,10 @@ def valsPetition(viewer, petition, vals):
 # fill dictionary for fb friends invite sidebar
 #-----------------------------------------------------------------------------------------------------------------------
 def valsFBFriends(request, vals):
+
     class FBFriend:
         pass
+
     viewer = vals['viewer']
     fb_friends = []
     if viewer.facebook_id:
@@ -395,12 +397,14 @@ def valsFBFriends(request, vals):
             if friends_list:
                 vals['facebook_authorized'] = True
                 for friend in random.sample(friends_list, 4):
-                    fb_friend = FBFriend()
-                    fb_friend.name = friend['name']
-                    fb_friend.id = friend['id']
-                    fb_friend.picture_url = "https://graph.facebook.com/" + str(fb_friend.id) + "/picture?type=large"
-                    fb_friends.append(fb_friend)
-                    vals['facebook_friends'] = fb_friends
+                    fb_id = friend['id']
+                    if not UserProfile.lg.get_or_none(facebook_id=fb_id):
+                        fb_friend = FBFriend()
+                        fb_friend.name = friend['name']
+                        fb_friend.id = friend['id']
+                        fb_friend.picture_url = "https://graph.facebook.com/" + str(fb_friend.id) + "/picture?type=large"
+                        fb_friends.append(fb_friend)
+                vals['facebook_friends'] = fb_friends
     return fb_friends
 
 #-----------------------------------------------------------------------------------------------------------------------
