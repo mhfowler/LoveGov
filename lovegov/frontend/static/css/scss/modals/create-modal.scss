@@ -284,4 +284,11 @@ div.create-modal {
       margin: 0 9px;
     }
   }
+  div.news_link_no_image {
+    width: 200px;
+    height: 200px;
+    text-align: center;
+    background-color: $light-gray;
+    @include valignable;
+  }
 }

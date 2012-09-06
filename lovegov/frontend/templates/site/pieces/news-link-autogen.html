@@ -6,6 +6,8 @@
             {% thumbnail image.path "250" crop="center" as img %}
                 <img class="news_link_image {% if forloop.first %}news_link_selected{% endif %}" src="{{ img.url }}" style="display:{% if not forloop.first %}none{% endif %}"/>
             {% endthumbnail %}
+        {% empty %}
+            <div class="news_link_no_image">No image found</div>
         {% endfor %}
     </div>
 </div>
@@ -13,10 +15,12 @@
     <input id="news-input-title" type="hidden" name="title" value="{{ title|safe }}">
     <h5 class="text-blue">{{ title|safe }}</h5>
     <div id="news-link-generation-description">{{ description|safe }}</div>
+    {% if imglink %}
     <div style="margin-left:auto;margin-right:auto;">
         <span style="font-weight:bold;margin-right:10px">select thumbnail: </span>
         <button id="cycle-img-left" style="width:40px;margin-right:5px">&lt;</button>
         <span id="cycle-img-span" style="margin-right:5px;font-size:10px">1 / {{ imglink|length }}</span>
         <button id="cycle-img-right" style="width:40px;margin-right:5px">&gt;</button>
     </div>
+    {% endif %}
 </div>
