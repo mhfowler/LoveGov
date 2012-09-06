@@ -839,14 +839,14 @@ for x in STATES_AND_PSEUDO_STATES:
 
 CURRENT_CONGRESS_SESSION = 112
 
-if not LOCAL:
+try:
     from modernpolitics.models import Party, UserProfile, Legislation, Committee, CongressSession
     LEGISLATION_PARTIES = Party.objects.filter(parties__sponsored_legislation__isnull=False).distinct()
     LEGISLATION_SPONSORS = UserProfile.objects.distinct().filter(sponsored_legislation__isnull=False)
     LEGISLATION_BILLNUMBERS = [x['bill_number'] for x in Legislation.objects.values('bill_number').distinct()]
     LEGISLATION_COMMITTEES = Committee.objects.distinct().filter(legislation_committees__isnull=False)
     LEGISLATION_SESSIONS = CongressSession.objects.all().order_by("-session")
-else:
+except:
     LEGISLATION_PARTIES = []
     LEGISLATION_SPONSORS = []
     LEGISLATION_BILLNUMBERS =  []
