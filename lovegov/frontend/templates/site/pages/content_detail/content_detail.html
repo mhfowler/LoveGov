@@ -28,10 +28,12 @@
                 <div class="gray-triangle"></div>
                 <div class="back-container"> back to feed </div>
             </a>
-            <a href="{{ content.posted_to.get_url }}" class="back-to-button">
-                <div class="gray-triangle"></div>
-                <div class="back-container"> back to group </div>
-            </a>
+            {% with posted_to=content.posted_to %}
+                <a {% if posted_to  %} href="{{ content.posted_to.get_url }}" {% else %} href="/lovegov_group/" {% endif %}class="back-to-button">
+                    <div class="gray-triangle"></div>
+                    <div class="back-container"> back to group </div>
+                </a>
+            {% endwith %}
         </div>
 
     </div>

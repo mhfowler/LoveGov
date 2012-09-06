@@ -30,7 +30,7 @@ FIRST_LOGIN_TASKS=['E', # explore feed
 
 ########################################################################################################################
 
-DOMAIN = 'http://dev.lovegov.com'
+DOMAIN = 'http://lovegov.com'
 TEMPDIR = settings.MEDIA_ROOT + 'temp/'
 
 ########################################## Content we cycle through ####################################################

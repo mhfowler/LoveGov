@@ -30,25 +30,10 @@ def updateGroupViews(debug=False, fast=True):
 
     scheduled_logger.debug("UPDATE GROUP VIEWS")
 
-#    if fast:
-#        groups = UserGroup.objects.all()
-#        for g in groups:
-#            print g.title
-#            updateGroupView(g)
-#        networks = Network.objects.exclude(alias="congress")
-#        for g in networks:
-#            print g.title
-#            updateGroupView(g)
-#    else:
-#        groups = Group.objects.filter(hidden=False).exclude(alias="congress")
-#        for g in groups:
-#            print g.title
-#            updateGroupView(g)
-
-    groups = Group.objects.filter(hidden=False).exclude(alias="congress").exclude(group_type="C")
+    groups = Group.objects.filter(hidden=False).exclude(group_type="C").exclude(alias="congress").exclude(alias="lovegov_group")
     for g in groups:
         print g.title
-        updateGroupView(g)
+        updateGroupView(g, debug=debug)
 
 #-----------------------------------------------------------------------------------------------------------------------
 # Updates aggregate-response for congress.

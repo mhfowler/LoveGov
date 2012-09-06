@@ -270,6 +270,18 @@ def setCongressText():
     congress.summary = text
     congress.save()
 
+def setLoveGovUserText():
+
+    text = "LoveGov is a robot, and its " \
+           "views are the aggregate of all of the people of LoveGov. For every question " \
+           "its response is the most commonly chosen response to that question. " \
+           "LoveGov updates its responses every hour, so if your views have not been " \
+           "taken into account yet, they will be soon. "
+
+    lg = getLoveGovUser()
+    lg.bio = text
+    lg.save()
+
 
 def setStateGroupText(state_group):
 
@@ -466,17 +478,17 @@ def updatePartyImages():
 
 def updatePoliticianImages():
 
-    romney = Politician.objects.get(first_name="Mitt",last_name="Romney")
+    romney = UserProfile.objects.get(first_name="Mitt",last_name="Romney", politician=True)
     im_ref = os.path.join(PROJECT_PATH, 'frontend/static/images/presidentialCandidates/romney.jpeg')
     im = open(im_ref)
     romney.setProfileImage(im)
 
-    elizabeth = Politician.objects.get(first_name="Elizabeth", last_name="Warren")
+    elizabeth = UserProfile.objects.get(first_name="Elizabeth", last_name="Warren", politician=True)
     im_ref = os.path.join(PROJECT_PATH, 'frontend/static/images/presidentialCandidates/warren.jpeg')
     im = open(im_ref)
     elizabeth.setProfileImage(im)
 
-    cicilline = ElectedOfficial.objects.get(first_name="David", last_name="Cicilline")
+    cicilline = UserProfile.objects.get(first_name="David", last_name="Cicilline", politician=True)
     im_ref = os.path.join(PROJECT_PATH, 'frontend/static/images/presidentialCandidates/cicilline.jpeg')
     im = open(im_ref)
     cicilline.setProfileImage(im)
