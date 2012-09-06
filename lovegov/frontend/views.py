@@ -246,9 +246,7 @@ def login(request, to_page='home/', message="", vals={}):
         to_page = "home"
 
     # Try logging in with facebook
-    if fbLogin(request,vals,refresh=True):
-        # to_page = to_page.replace("/login", "")
-        # print ("to_page: " + to_page)
+    if fbLogin(request,vals,refresh=False):
         return shortcuts.redirect('/' + to_page)
 
     # Try logging in with twitter
