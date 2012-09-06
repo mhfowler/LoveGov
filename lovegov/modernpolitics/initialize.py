@@ -1728,6 +1728,18 @@ def initializePresidentialCandidates2012():
     election.joinRace(mitt)
     election.joinRace(ron)
 
+def initializeVicePresidentialCandidates2012():
+    print "initializing vice presidential candidates!"
+    election = getPresidentialElection2012()
+    if LOCAL:
+        paul = getUser("Katy Perry")
+        biden = getUser("Katy Perry")
+    else:
+        paul = UserProfile.objects.get(alias="paul_ryan")
+        biden = UserProfile.objects.get(alias="joseph_biden")
+    election.joinRace(paul)
+    election.joinRace(biden)
+
 #-----------------------------------------------------------------------------------------------------------------------
 # initialize state groups
 #-----------------------------------------------------------------------------------------------------------------------

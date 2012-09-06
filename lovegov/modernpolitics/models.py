@@ -1730,16 +1730,16 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
                 self.networks.add(school_network)
                 setEducationText(school_network)
 
-        if 'location' in fb_data:
-            location = fb_data['location']
-            name = location['name']
-            alias = genAliasSlug(name, unique=False)
-            location_network = Network.lg.get_or_none(alias=alias,network_type='L')
-            if not location_network:
-                location_network = Network(alias=alias,title=name,network_type='L')
-                location_network.autoSave()
-            location_network.joinMember(self)
-            self.networks.add(location_network)
+#        if 'location' in fb_data:
+#            location = fb_data['location']
+#            name = location['name']
+#            alias = genAliasSlug(name, unique=False)
+#            location_network = Network.lg.get_or_none(alias=alias,network_type='L')
+#            if not location_network:
+#                location_network = Network(alias=alias,title=name,network_type='L')
+#                location_network.autoSave()
+#            location_network.joinMember(self)
+#            self.networks.add(location_network)
 
 
         self.setUsername(fb_data['email'])
@@ -4321,11 +4321,12 @@ class Group(Content):
         if not group_joined.confirmed and not group.hidden and not group.is_election:
             user.num_groups += 1
             user.save()
-            self.num_members += 1
-            self.save()
         group_joined.confirm()
         group_joined.ever_member = True
-        self.members.add(user)
+        if not user in self.members.all():
+            self.num_members += 1
+            self.save()
+            self.members.add(user)
         from lovegov.modernpolitics.actions import followGroupAction
         followGroupAction(user, self, True, privacy)
 

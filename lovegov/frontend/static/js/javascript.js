@@ -4175,9 +4175,9 @@ bind(".save_voting_address", "click", null, function(event) {
     var state = $(".location_state_select").val();
     var city = $(".voting_city_input").val();
     var street = $(".voting_street_address").val();
-
+    var zip = $(".voting_zip_input").val();
     action({
-        'data': {'action':'submitAddress', 'state':state, 'city':city, 'address':street},
+        'data': {'action':'submitAddress', 'state':state, 'city':city, 'address':street, 'zip':zip},
         success: function(data)
         {
             $('.address_success_message').show();

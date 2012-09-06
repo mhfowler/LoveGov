@@ -40,6 +40,7 @@
                 </td>
 
             </tr>
+
             <tr>
                 <td class="left">
                     <h3>state</h3>
@@ -52,13 +53,27 @@
                                 <option value="{{ location.state }}">{{ location.state }}</option>
                             {% endif %}
                             {% for state in states %}
-                                <option value="{{ state.0 }}">{{ state.1 }}</option>
+                                <option value="{{ state.0 }}">{{ state.0 }}</option>
                             {% endfor %}
                         </select>
                     </div>
 
                 </td>
 
+            </tr>
+
+            <tr>
+
+                <td class="left">
+                    <h3> zip </h3>
+                </td>
+                <td>
+                    <div class="location-zip">
+                        <input class="account-input voting_zip_input" type="text" name="zip" value="{{ location.zip }}"/>
+                    </div>
+                </td>
+
+                <td></td>
             </tr>
 
         </table>
