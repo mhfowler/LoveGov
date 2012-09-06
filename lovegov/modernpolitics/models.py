@@ -154,6 +154,14 @@ class PhysicalAddress(LGModel):
         self.district = None
         self.save()
 
+    def getVerbose(self):
+        to_return = ''
+        if self.state:
+            to_return = self.state
+            if self.city:
+                to_return += ', ' + self.city
+        return to_return
+
 #=======================================================================================================================
 # Abstract tuple for representing what location and scale content is applicable to.
 #=======================================================================================================================
@@ -387,13 +395,10 @@ class Content(Privacy, LocationLevel):
     # gets location string, if content has location
     #-------------------------------------------------------------------------------------------------------------------
     def getLocationVerbose(self):
-        to_return = ''
         if self.location:
-            if self.location.state:
-                to_return = self.location.state
-                if self.location.city:
-                    to_return += ', ' + self.location.city
-        return to_return
+            return self.location.getVerbose()
+        else:
+            return ''
 
     #-------------------------------------------------------------------------------------------------------------------
     # returns group that this content was orginally posted to
@@ -1122,6 +1127,15 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
 
     def __unicode__(self):
         return self.first_name
+
+    #-------------------------------------------------------------------------------------------------------------------
+    # string representation of location
+    #-------------------------------------------------------------------------------------------------------------------
+    def getLocationVerbose(self):
+        if self.location:
+            return self.location.getVerbose()
+        else:
+            return ''
 
     #-------------------------------------------------------------------------------------------------------------------
     # first login tasks
