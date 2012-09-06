@@ -564,16 +564,24 @@ def editAccount(request, vals={}):
             viewer.private_follow = False
         viewer.save()
 
-        all_parties = list( Party.objects.all() )
+        # get parties user should belong to
+        new_party_types = []
+        for party_type, party_name in PARTY_TYPE:
+            if str(party_name)+"_party" in request.POST:
+                new_party_types.append(party_type)
 
-        for party_type in PARTY_TYPE:
-            if str(party_type[1])+"_party" in request.POST:
-                party = Party.lg.get_or_none( party_type=party_type[0] )
-                party.joinMember(viewer)
-                all_parties.remove(party)
+        # remove user from parties which they are in but shouldn't be in
+        user_parties = viewer.parties.all()
+        for x in user_parties:
+            if not x.party_type in new_party_types:
+                x.removeMember(viewer)
+                viewer.parties.remove(x)
 
-        for party in all_parties:
-            party.removeMember(viewer)
+        # add user to parties which they are not in, but should be in
+        for x in new_party_types:
+            party = Party.objects.get(party_type=x)
+            party.joinMember(viewer)
+            viewer.parties.add(party)
 
         viewer.bio = request.POST['bio']
         viewer.save()
