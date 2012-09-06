@@ -1238,9 +1238,9 @@ def search(request, term='', vals={}):
     vals['news'] = news
     vals['groups'] = groups
     vals['term'] = term
-    html = ajaxRender('site/pages/search/search.html', vals, request)
+    html = ajaxRender('site/pages/search.html', vals, request)
     url = '/search/' + term
-    return framedResponse(request, html, url, vals)
+    return homeResponse(request, html, url, vals)
 
 #-----------------------------------------------------------------------------------------------------------------------
 # Scorecards

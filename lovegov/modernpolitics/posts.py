@@ -1812,47 +1812,6 @@ def getElections(request, vals={}):
     html = ajaxRender('site/pages/browse/feed_helper_browse_elections.html', vals, request)
     return HttpResponse(json.dumps({'html':html, 'num_items':len(elections_info)}))
 
-#-----------------------------------------------------------------------------------------------------------------------
-# saves a filter setting
-#-----------------------------------------------------------------------------------------------------------------------
-def saveFilter(request, vals={}):
-
-    viewer = vals['viewer']
-
-    name = request.POST['feed_name']
-
-    ranking = request.POST['feed_ranking']
-    types = json.loads(request.POST['feed_types'])
-    levels = json.loads(request.POST['feed_levels'])
-    topics = json.loads(request.POST['feed_topics'])
-    groups = json.loads(request.POST['feed_groups'])
-    submissions_only = bool(int(request.POST['feed_submissions_only']))
-    display = request.POST['feed_display']
-
-    already = viewer.my_filters.filter(name=name)
-    if already:
-        filter = already[0]
-        filter.ranking = ranking
-        filter.types = types
-        filter.levels = levels
-        filter.submissions_only = submissions_only
-        filter.display = display
-        filter.save()
-    else:
-        filter = SimpleFilter(ranking=ranking, types=types,
-            levels=levels, submissions_only=submissions_only,
-        display=display, name=name, creator=viewer)
-        filter.save()
-        viewer.my_filters.add(filter)
-
-    filter.topics.clear()
-    for t in topics:
-        filter.topics.add(t)
-    filter.groups.clear()
-    for g in groups:
-        filter.groups.add(g)
-
-    return HttpResponse("success")
 
 #-----------------------------------------------------------------------------------------------------------------------
 # deletes a filter setting
@@ -2060,73 +2019,6 @@ def getUserGroups(request, vals={}):
     vals['num_groups'] = num_groups
     html = ajaxRender('site/snippets/group_snippet.html', vals, request)
     return HttpResponse(json.dumps({'html':html,'num_groups':num_groups}))
-
-
-def matchSection(request, vals={}):
-    section = request.POST['section']
-    vals['defaultImage'] = getDefaultImage().image
-    if section == 'election':
-        user = vals['viewer']
-        c1 = UserProfile.objects.get(first_name="Barack", last_name="Obama")
-        c2 = UserProfile.objects.get(first_name="Mitt",last_name="Romney")
-
-        list = [c1,c2]
-        for c in list:
-            comparison = getUserUserComparison(user,c)
-            c.compare = comparison.toJSON()
-            c.result = comparison.result
-        vals['c1'] = c1
-        vals['c2'] = c2
-
-        # vals['viewer'] doesn't translate well in the template
-        vals['userProfile'] = user
-        html = ajaxRender('site/pages/match/match-tryptic-template.html', vals, request)
-
-    elif section == 'social':
-        user = vals['viewer']
-        comparison = getUserUserComparison(user,user)
-        user.compare = comparison.toJSON()
-        user.result = comparison.result
-        vals['c1'] = user
-
-        # friends
-        vals['friends'] = user.getIFollow()[0:5]
-
-        # groups
-        vals['groups'] = user.getGroups()
-
-        # networks
-        lovegov = getLoveGovUser()
-        network = user.getNetwork()
-        congress = getCongressNetwork()
-        vals['networks'] = [network,congress,lovegov]
-
-        vals['userProfile'] = user
-        html = ajaxRender('site/pages/match/match-social-network.html', vals, request)
-
-    elif section == 'cause':
-        user = vals['viewer']
-        comparison = getUserUserComparison(user,user)
-        user.compare = comparison.toJSON()
-        user.result = comparison.result
-        vals['c1'] = user
-
-        # friends
-        vals['friends'] = user.getIFollow()[0:5]
-
-        # groups
-        vals['groups'] = user.getGroups()
-
-        # networks
-        lovegov = getLoveGovUser()
-        network = user.getNetwork()
-        congress = getCongressNetwork()
-        vals['networks'] = [network,congress,lovegov]
-
-        vals['userProfile'] = user
-        html = ajaxRender('site/pages/match/match-social-network.html', vals, request)
-
-    return HttpResponse(json.dumps({'html':html}))
 
 #-----------------------------------------------------------------------------------------------------------------------
 # Shares a piece of content
