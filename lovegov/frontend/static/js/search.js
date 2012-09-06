@@ -3,7 +3,11 @@ bind('div.search input', 'keydown', function(e) {
     switch(e.which) {
         // Enter
         case 13:
-            search($(this).val());
+            var val = $(this).val();
+            if(val) {
+                clearTimeout(searchTimeout);
+                window.location = '/search/' + val;
+            }
             break;
         // Up
         case 38:
