@@ -990,6 +990,7 @@ def legislation (request, vals={}):
         type_list.append({'abbreviation':k,'verbose':v})
 
     vals['types'] = type_list
+    vals['subjects'] = LEGISLATION_SUBJECTS
     vals['committees'] = LEGISLATION_COMMITTEES
     vals['bill_numbers'] = LEGISLATION_BILLNUMBERS
 
