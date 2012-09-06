@@ -169,9 +169,6 @@ def getLinkInfo(request, vals={}, html="",URL=""):
                 continue
 
         if html and URL:
-            # make HTML well formed
-            html = re.sub(r'<script\s*.*</script>',"",html)
-            html = re.sub(r'<!DOCTYPE html\s*.*>',"",html)
             soup = BeautifulSoup(html)
 
             # set title
@@ -217,18 +214,13 @@ def getLinkInfo(request, vals={}, html="",URL=""):
                 first_image['path'] =open(first_image['path'],'r+')
                 list.append(first_image)
 
-            if len(list) == 0:
-                rel_path = 'images/top-logo-default.png'
-                this_path = os.path.join(settings.STATIC_ROOT, rel_path)
-                list.append({'path':open(this_path,'r+')})
-
             vals['imglink'] = list
 
             html = ajaxRender('site/pieces/news-link-autogen.html', vals, request)
             return HttpResponse(json.dumps({'html':html}))
         else:
             return HttpResponseBadRequest("Something went wrong.")
-    except:
+    except Exception, e:
         return HttpResponseBadRequest("Something went wrong parsing the page.")
 
 #-----------------------------------------------------------------------------------------------------------------------

@@ -80,6 +80,9 @@ http://www.crummy.com/software/BeautifulSoup/
 pip install BeautifulSoup
 pip install beautifulsoup4
 
+lxml
+pip install lxml
+
 xlrd
 http://pypi.python.org/pypi/xlrd
 pip install xlrd
