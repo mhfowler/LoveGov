@@ -10,9 +10,6 @@
 from lovegov.frontend.views_helpers import *
 
 from pprint import pprint
-
-from datetime import datetime, timedelta
-
 from collections import OrderedDict
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -993,11 +990,11 @@ def legislation (request, vals={}):
     vals['committees'] = LEGISLATION_COMMITTEES
     vals['bill_numbers'] = LEGISLATION_BILLNUMBERS
 
-    now = datetime.now()
+    now = datetime.datetime.now()
     time_range = [1464,732,366,183]
     introduced_dates = []
     for x in time_range:
-        date = now - timedelta(days=x)
+        date = now - datetime.timedelta(days=x)
         json_date = json.dumps({'year':date.year, 'month':date.month, 'day':date.day})
         date_tuple = {'json':json_date, 'date':date}
         introduced_dates.append(date_tuple)
