@@ -1730,16 +1730,16 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
                 self.networks.add(school_network)
                 setEducationText(school_network)
 
-        if 'location' in fb_data:
-            location = fb_data['location']
-            name = location['name']
-            alias = genAliasSlug(name, unique=False)
-            location_network = Network.lg.get_or_none(alias=alias,network_type='L')
-            if not location_network:
-                location_network = Network(alias=alias,title=name,network_type='L')
-                location_network.autoSave()
-            location_network.joinMember(self)
-            self.networks.add(location_network)
+#        if 'location' in fb_data:
+#            location = fb_data['location']
+#            name = location['name']
+#            alias = genAliasSlug(name, unique=False)
+#            location_network = Network.lg.get_or_none(alias=alias,network_type='L')
+#            if not location_network:
+#                location_network = Network(alias=alias,title=name,network_type='L')
+#                location_network.autoSave()
+#            location_network.joinMember(self)
+#            self.networks.add(location_network)
 
 
         self.setUsername(fb_data['email'])
