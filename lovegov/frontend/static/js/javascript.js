@@ -461,7 +461,7 @@ function getFBInviteFriends() {
     var invite_wrapper = $(".fb_friends_wrapper");
     if (invite_wrapper.length!=0) {
         action({
-            data: {'action':'getFBInviteFriends' },
+            data: {'action':'getFBInviteFriends', 'log-ignore':true },
             success: function(data)
             {
                 var returned = eval('(' + data + ')');
@@ -2933,7 +2933,7 @@ function updateStats() {
 
 function updateStatsObject(stats) {
     var object = stats.data('object');
-    var data = {'action':'updateStats', 'object':object};
+    var data = {'action':'updateStats', 'object':object, 'log-ignore':true};
     if (object == 'you_agree_with') {
         data['q_id'] = stats.data('q_id');
     }

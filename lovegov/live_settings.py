@@ -2,6 +2,10 @@
 from dev_settings import *
 import base_settings
 
+DEBUG = False
+TEMPLATE_DEBUG = False
+THUMBNAIL_DEBUG = False
+
 ############################### DIFFERENCE BETWEEN LIVE AND DEV ########################################################
 
 DATABASES = {

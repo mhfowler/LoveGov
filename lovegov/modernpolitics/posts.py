@@ -2279,13 +2279,19 @@ def setFirstLoginStage(request, vals={}):
 # saves the posted incompatability information to the db
 #-----------------------------------------------------------------------------------------------------------------------
 def logCompatability(request, vals={}):
-    return HttpResponse("temp")
-#    incompatible = json.loads(request.POST['incompatible'])
-#    user = vals.get('viewer')
-#    CompatabilityLog(incompatible=incompatible, user=user,
-#        page=getSourcePath(request), ipaddress=request.META.get('REMOTE_ADDR'),
-#        user_agent=request.META.get('HTTP_USER_AGENT')).autoSave()
-#    return HttpResponse('compatability logged')
+
+    incompatible = json.loads(request.POST['incompatible'])
+    user = vals.get('viewer')
+    ipaddress = request.META.get('REMOTE_ADDR')
+    if ipaddress:
+        already = CompatabilityLog.objects.filter(ipaddress=ipaddress)
+    else:
+        already = None
+    if not already:
+        CompatabilityLog(incompatible=incompatible, user=user,
+            page=getSourcePath(request), ipaddress=ipaddress,
+            user_agent=request.META.get('HTTP_USER_AGENT')).autoSave()
+    return HttpResponse('compatability logged')
 
 #-----------------------------------------------------------------------------------------------------------------------
 # saves a link click on some news
