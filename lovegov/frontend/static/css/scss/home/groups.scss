@@ -91,6 +91,7 @@ div.like-minded-header {
       div.counter-num {
         @include fontSize(64px);
         float:left;
+        padding-right:15px;
       }
       div.counter-text {
         float:left;

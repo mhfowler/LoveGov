@@ -3835,11 +3835,6 @@ function findNewLikeMinded() {
                 $(".computing_result").hide();
                 $(".find_loading").hide();
                 var num_new = returned.num_new_members;
-                // display num new members
-                $('.num_new_found').html(num_new);
-                $('.num_processed').html(returned.num_processed);
-                $('.find_result').toggleClass("toggle");
-                $(".find_result").show();
                 // change total members number
                 var total_num = $(".total_members").data('num');
                 total_num += num_new;
@@ -3849,6 +3844,11 @@ function findNewLikeMinded() {
                 $(".total_found").html(total_num);
                 var total_processed = parseInt($(".total_processed").text());
                 $(".total_processed").html(total_processed + returned.num_processed);
+                // display num new members
+                $('.num_new_found').html(total_num);
+                $('.num_processed').html(returned.num_processed);
+                $('.find_result').toggleClass("toggle");
+                $(".find_result").show();
                 // if there were members adjust shit appropriately
                 if (num_new != 0) {
                     $(".no_members").hide();
