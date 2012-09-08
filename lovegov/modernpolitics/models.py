@@ -4758,7 +4758,7 @@ class CalculatedGroup(Group):
         found = []
         processed_num = 0
         for x in to_process:
-            if x.id != viewer and x.alias != "lovegov":
+            if x.id != viewer.id and x.alias != "lovegov":
                 if x.num_answers >= LIKE_MINDED_NUMQ_THRESHOLD:
                     comparison = x.getComparison(viewer)
                     if comparison.result >= LIKE_MINDED_RESULT_THRESHOLD and comparison.num_q >= LIKE_MINDED_NUMQ_THRESHOLD:
