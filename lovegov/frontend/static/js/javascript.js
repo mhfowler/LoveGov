@@ -3101,7 +3101,7 @@ function refreshHistogramData(histogram_wrapper, data) {
     histogram_metadata.total += data.total;
     histogram_metadata.identical += data.identical;
     histogram_metadata.identical_uids.push.apply(histogram_metadata.identical_uids, data.identical_uids);
-    histogram.increment += 1;
+    histogram_metadata.increment += 1;
 
     $.map(data.buckets, function(item, key) {
 
