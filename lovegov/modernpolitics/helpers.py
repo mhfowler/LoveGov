@@ -518,7 +518,17 @@ def logIterate(sequence, function):
         if not count%20:
             print count
 
-
+def calculate_age(born):
+    import datetime
+    today = datetime.datetime.today()
+    try: # raised when birth date is February 29 and the current year is not a leap year
+        birthday = born.replace(year=today.year)
+    except ValueError:
+        birthday = born.replace(year=today.year, day=born.day-1)
+    if birthday > today:
+        return today.year - born.year - 1
+    else:
+        return today.year - born.year
 
 
 

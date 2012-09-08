@@ -312,7 +312,7 @@ def setCityGroupText(city_group):
 def setEducationText(network):
 
     text = "This is an auto-generated group for students and alumni from " + network.get_name() + ". " \
-           "Students, groups, and alumni should use this to coordinate your efforts," \
+           "Students, groups, and alumni should use this to coordinate your efforts, " \
            "generate awareness for your initiatives, and recruit more members. " \
            "Share important news, have discussions, and create & answer polls so you can find out where people stand."
 

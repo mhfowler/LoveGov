@@ -25,14 +25,15 @@
             </tr>
             <tr class="break"></tr>
 
-            {% comment %}
             <tr>
-                <td class="left"><h3>dob</h3><p>in any format</p></td>
+                <td class="left"><h3>date of birth</h3><p>in any format</p></td>
 
-                <td><input class="account_input account-input" type="text" value="{% if viewer.dob %}{{ viewer.dob }}{% endif %}" name="age"/></td>
+                <td><input class="account_input account-input" type="text" value="{% if viewer.dob %}{{ viewer.dob }}{% endif %}" name="age" autocomplete="off"/>
+                    <span class="date_autofill_label"></span>
+                    <input type="hidden" name="gendate">
+                </td>
                 <td></td>
             </tr>
-            {% endcomment %}
 
             <tr class="break"></tr>
             <tr>

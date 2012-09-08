@@ -352,8 +352,7 @@ function getPolltype() {
 }
 
 function evalDate() {
-    var
-        messages = ["Nope", "Keep trying", "Nada", "Sorry", "Bummer", "Whoops",
+    var messages = ["Nope", "Keep trying", "Nada", "Sorry", "Bummer", "Whoops",
         "Snafu", "Blunder", "Almost there", "Invalid date", "Whoopsie daisy", "Try again",
         "I don't understand", "No comprendo", "That doesn't work", "Your input is bad and you should feel bad"];
     var val = $(this).val();
