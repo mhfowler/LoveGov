@@ -257,7 +257,7 @@ def lovegovSearch(term):
     news = SearchQuerySet().models(News).filter(content=term)
     questions = SearchQuerySet().models(Question).filter(content=term)
     petitions = SearchQuerySet().models(Petition).filter(content=term)
-    groups = SearchQuerySet().models(Group).filter(content=term,hidden=False)
+    groups = SearchQuerySet().models(Group).filter(content=term,hidden='False')
 
     # Get lists of actual objects
     userProfiles = [x.object for x in userProfiles]
@@ -541,6 +541,16 @@ def editAccount(request, vals={}):
     if box == 'basic_info':
         if 'first_name' in request.POST: viewer.first_name = request.POST['first_name']
         if 'last_name' in request.POST: viewer.last_name = request.POST['last_name']
+        if 'gendate' in request.POST:
+            dob = request.POST['gendate']
+            try:
+                from dateutil import parser
+                valid_datetime = parser.parse(dob)
+            except ValueError:
+                return HttpResponseBadRequest("Could not parse birth date.")
+            viewer.dob = valid_datetime
+            new_age = calculate_age(valid_datetime)
+            viewer.age = new_age
         viewer.phone_number = request.POST.get('phone_number')
         try:
             if 'age' in request.POST: viewer.age = int(request.POST['age'])
@@ -2467,7 +2477,6 @@ def createContent(request, vals={}):
                 valid_datetime = parser.parse(gendate)
             except ValueError:
                 return HttpResponseBadRequest("Could not parse election date.")
-            from datetime import datetime
             newc = Election(title=title, full_text=full_text, in_feed=False, in_search=True, in_calc=False,
                     election_date=valid_datetime)
             newc.autoSave(creator=viewer, privacy=privacy)
