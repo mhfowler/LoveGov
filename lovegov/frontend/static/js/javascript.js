@@ -3846,7 +3846,7 @@ function findNewLikeMinded() {
                 $(".total_processed").html(total_processed + returned.num_processed);
                 // display num new members
                 $('.num_new_found').html(total_num);
-                $('.num_processed').html(returned.num_processed);
+                $('.num_processed').html(total_processed + returned.num_processed);
                 $('.find_result').toggleClass("toggle");
                 $(".find_result").show();
                 // if there were members adjust shit appropriately
