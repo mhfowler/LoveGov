@@ -322,6 +322,14 @@ function initHomePage() {
 
 /* sets feed parameters pased on js variables */
 function initFeedParameters() {
+
+    if (path == '/home/' || path == '/questions/') {
+        feed_rank = 'H';
+    }
+    else {
+        feed_rank = 'N';
+    }
+
     selectRank(feed_rank);
     selectQuestionRank(question_rank);
     selectFeedTopic();

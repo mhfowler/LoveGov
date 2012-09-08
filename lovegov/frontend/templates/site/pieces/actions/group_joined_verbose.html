@@ -43,7 +43,7 @@
             request to {% if election %} run for {% else %} join {% endif %}
 
         {% endif %}
-        {{ group.get_name }}
+        the {% include 'site/pieces/actions/action_object.html' with to_object=group %}
     </td>
 
 {% endblock %}

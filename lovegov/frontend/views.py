@@ -270,6 +270,7 @@ def welcome(request, vals={}):
     return renderToResponseCSRF(template='site/pages/login/login-main-register-success.html', vals=vals, request=request)
 
 def loginAuthenticate(request,user,to_page='home/'):
+    if to_page == 'blog': to_page = 'home/'
     auth.login(request, user)
     redirect_response = shortcuts.redirect('/' + to_page)
     redirect_response.set_cookie('privacy', value='PUB')
