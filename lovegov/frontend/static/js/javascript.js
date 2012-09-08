@@ -688,12 +688,16 @@ function expandInfoToggle(wrapper, animate)
     else if( info_expanded )
     {   // Set expanded to false and un-expand the info
         wrapper.data('info_expanded', false);
+        wrapper.find(".text_expanded").hide();
+        wrapper.find(".text_unexpanded").show();
         info_div.animate({"height":reduced_height}, animation_time);
         wrapper.find(".expand_info").html('+ expand info');
     }
     else
     {   // Otherwise set expanded to true and expand the info
         wrapper.data('info_expanded', true);
+        wrapper.find(".text_expanded").show();
+        wrapper.find(".text_unexpanded").hide();
         expandAnimation(info_div,animation_time);
         wrapper.find(".expand_info").html('&#8211 reduce info');
     }
@@ -3101,7 +3105,9 @@ function refreshHistogramData(histogram_wrapper, data) {
     histogram_metadata.total += data.total;
     histogram_metadata.identical += data.identical;
     histogram_metadata.identical_uids.push.apply(histogram_metadata.identical_uids, data.identical_uids);
-    histogram_metadata.increment += 1;
+    if (histogram_metadata.increment < 20) {
+        histogram_metadata.increment += 1;
+    }
 
     $.map(data.buckets, function(item, key) {
 

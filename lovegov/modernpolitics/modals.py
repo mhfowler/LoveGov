@@ -64,7 +64,7 @@ def getFacebookShareModal(fb_share_id,fb_name,request,vals):
     vals['fb_name'] = fb_name
     vals['fb_image'] = "https://graph.facebook.com/" + str(fb_share_id) + "/picture?type=large"
     vals['fb_share_id'] = fb_share_id
-    vals['default_facebook_message'] = DEFAULT_FACEBOOK_MESSAGE
+    vals['default_facebook_message'] = "This is something worth sharing."
 
     return ajaxRender('site/pages/friends/facebook_share_modal.html',vals,request)
 
