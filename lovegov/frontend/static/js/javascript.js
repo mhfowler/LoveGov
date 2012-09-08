@@ -150,7 +150,7 @@ $(document).ready(function()
     auto_update_page= setInterval(function()
     {
         updatePage();
-    }, 60000);
+    }, 10000);
 });
 
 var auto_update_page;
@@ -232,6 +232,12 @@ function updatePage() {
             var obj = eval('(' + data + ')');
 
             // update notifications num
+            if (obj.notifications_num == 0) {
+                $(".notifications_box").removeClass("new-notifications");
+            }
+            else {
+                $(".notifications_box").addClass("new-notifications");
+            }
             $(".notifications_dropdown_button").text(obj.notifications_num);
         }
     });
