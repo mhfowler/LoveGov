@@ -83,6 +83,8 @@
                 <div class="election-card-wrapper {% if forloop.last %} last {% endif %}">
                     {% include 'site/pages/elections/election_card.html'  %}
                 </div>
+            {% empty %}
+                <div class="no-one-running"> No one is running in this election yet. </div>
             {% endfor %}
             <div style="clear:both;"></div>
         </div>
