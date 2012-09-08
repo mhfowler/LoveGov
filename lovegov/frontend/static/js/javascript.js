@@ -2837,6 +2837,8 @@ bind('.poll_answer' , 'click' , null , function(event)
 
 function saveAnswerInFeed(item) {
     var choice = item.find(".poll_answer.clicked");
+    var saved_message = item.find(".saved_message");
+    saved_message.hide();
     var a_id;
     if (choice.length!=0) {
         a_id = choice.data('a_id');
@@ -2850,9 +2852,8 @@ function saveAnswerInFeed(item) {
     action({
         data: data,
         success: function(data) {
-            var saved_message = item.find(".saved_message");
             saved_message.show();
-            saved_message.fadeOut(2000);
+            //saved_message.fadeOut(2000);
         }
     });
 }
@@ -3100,6 +3101,7 @@ function refreshHistogramData(histogram_wrapper, data) {
     histogram_metadata.total += data.total;
     histogram_metadata.identical += data.identical;
     histogram_metadata.identical_uids.push.apply(histogram_metadata.identical_uids, data.identical_uids);
+    histogram.increment += 1;
 
     $.map(data.buckets, function(item, key) {
 

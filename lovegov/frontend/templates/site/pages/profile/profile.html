@@ -107,7 +107,7 @@
                             </div>
                             {% for p in parties %}
                                 {% with full_url=p.party_label %}
-                                    <a href="{{ p.get_url }}">
+                                    <a href="{{ p.get_url }}" class="party-wrapper">
                                         {% thumbnail full_url "x20" format="PNG" as im %}
                                             <img src="{{ im.url }}" class="party-label"/>
                                         {% endthumbnail %}

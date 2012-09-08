@@ -275,13 +275,20 @@ div.feed-main
 /* feed items */
 div.feed-item-wrapper {
   width:100%;
-  margin-bottom:40px;
+  margin-bottom:20px;
 
-  margin-bottom:0px;
-  padding-bottom: 25px;
-  padding-top: 10px;
-  padding-left:50px;
+  //margin-bottom:15px;
+  //padding-bottom: 25px;
+  //padding-top: 10px;
+  //padding-top:20px;
+  //padding-left:50px;
   //border-top:1px solid $light-gray;
+
+  div.above-rule-line {
+    width:600px;
+    //border-bottom:1px solid $light-gray;
+    float:left;
+  }
 
   div.left-part {
     float:left;
@@ -318,11 +325,11 @@ div.feed-item-wrapper {
       @include border-radius(10px);
       position:relative;
       &:hover {
-        border-color:$dark-gray;
+        border-color:$black;
         cursor:pointer;
         span.triangle-wrapper {
           span.triangle-border {
-            border-right-color:$dark-gray;
+            border-right-color:black;
           }
         }
       }
@@ -351,7 +358,7 @@ div.feed-item-wrapper {
         }
         span.triangle-border {
           @extend span.triangle;
-          @include triangle('left', $deep-gray, $triangle-size);
+          @include triangle('left', $dark-gray, $triangle-size);
           top: -32px;
           right: 20px;
         }
@@ -385,6 +392,7 @@ div.item-bottom {
   //margin-top:10px;
   width:100%;
   display:block;
+  padding-bottom:20px;
 
   // float right
   a.pin-button {
@@ -452,6 +460,9 @@ div.group-posted-to {
 a.content-title {
   @include fontSize(24px);
   color:$text-blue;
+  line-height:32px;
+  position:relative;
+  top:1px;
   &:hover {
     color:$black;
   }
@@ -492,8 +503,11 @@ div.feed-item-wrapper {
   div.news-wrapper {
     a.feed-news-link {
       position: relative;
-      top: -10px;
+      top: -2px;
       color:$gray;
+      //float:left;
+      //width:100%;
+      //margin-top:8px;
       &:hover {
         color:$dark-gray;
       }
@@ -502,7 +516,7 @@ div.feed-item-wrapper {
 
   div.feed-item-summary {
     position: relative;
-    top: -5px;
+    //top: -5px;
     margin-bottom:10px;
   }
 
@@ -520,6 +534,7 @@ div.feed-item-wrapper {
       width:100%;
       display:block;
       $triangle-size:16px;
+      margin-top:5px;
       div.poll-arrow-left {
         float:left;
         @include triangle('left', $gray, $triangle-size + -1px);
@@ -543,7 +558,7 @@ div.feed-item-wrapper {
         margin-left:20px;
         width:450px;
         div.current-question {
-          margin-top:5px;
+          margin-top:2px;
           @include fontSize(18px);
           a {
             color:$dark-gray;
@@ -569,14 +584,18 @@ div.feed-item-wrapper {
           }
 
           div.poll-sample-bottom {
-            height:20px;
+            height:2px;
             margin-top:5px;
             width:100%;
             display:block;
+            position:relative;
             div.saved-message {
               float:right;
               color:$blue;
               display:none;
+              position: absolute;
+              top: -3px;
+              left: 90%;
             }
             a.bottom-link {
               float:right;
