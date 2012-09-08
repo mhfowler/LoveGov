@@ -214,6 +214,7 @@ div.like-minded-header {
             color:green;
             position: absolute;
             left: 235px;
+            margin-left:30px;
             div.num-found {
               @include inline-block;
             }
