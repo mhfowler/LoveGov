@@ -63,6 +63,9 @@
             <div class="content-main-wrapper">
                 {% block content_body %}
                 {% endblock %}
+                {% if viewer == content.creator %}
+                <div class="content-admin-actions"><strong>Creator actions:</strong> <span class="content-admin-action-delete" data-c_id="{{ content.id }}">delete</span></div>
+                {% endif %}
             </div>
         </div>
 

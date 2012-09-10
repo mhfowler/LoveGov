@@ -740,13 +740,17 @@ def edit(request, vals={}):
 #-----------------------------------------------------------------------------------------------------------------------
 # Deletes content.
 #
+# Checks if user is the owner and sets active=False
 #-----------------------------------------------------------------------------------------------------------------------
 def delete(request, vals={}):
     user = vals['viewer']
-    content = Content.objects.get(id=request.POST['c_id'])
+    c_id = request.POST.get('c_id')
+    if not c_id: return HttpResponseBadRequest("Delete action: no content to delete specified.")
+    content = Content.objects.get(id=c_id)
     if user == content.getCreator() and content.active:
         content.active = False
         content.save()
+        # For deleting comments
         if content.type == 'C':
             comment = content.downcast()
             root_content = comment.root_content
@@ -758,9 +762,9 @@ def delete(request, vals={}):
                 on_content.save()
         deleted = DeletedAction(user=user, content=content, privacy=getPrivacy(request))
         deleted.autoSave()
-        return HttpResponse("successfully deleted content with id:" + request.POST['c_id'])
+        return HttpResponse(json.dumps({'url': '/home/'}));
     else:
-        return HttpResponse("you don't have permission")
+        return HttpResponseForbidden("You don't have permission to delete the requested content or it does not exist.")
 
 #-----------------------------------------------------------------------------------------------------------------------
 # Saves comment to database from post request.
