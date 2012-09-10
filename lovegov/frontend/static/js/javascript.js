@@ -178,12 +178,16 @@ function getValueFromKey(element, key) {
     return value;
 }
 
+function backgroundAction(dict) {
+    action(dict, true);
+}
+
 var current_page_nonce=0;
-function action(dict) {
+function action(dict, in_background) {
     var data = dict['data'];
     var pre_page_nonce = current_page_nonce;
     var success_fun = function(data) {
-        if (pre_page_nonce == current_page_nonce) {
+        if (pre_page_nonce == current_page_nonce && !in_background) {
             var super_success = dict['success'];
             if (super_success) {
                 super_success(data);
@@ -3846,7 +3850,7 @@ function findNewLikeMinded() {
     if (computing_like_minded) {
         $(".clear_result").fadeOut();
         $(".find_loading").show();
-        action({
+        backgroundAction({
                 data: {'action': 'findLikeMinded'},
                 success: function(data) {
 
