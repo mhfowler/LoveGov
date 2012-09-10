@@ -4155,3 +4155,24 @@ function showBubbles() {
 bind('.x_helper_bubble','click', function() {
     $(this).parents(".helper_bubble").hide();
 });
+
+/***********************************************************************************************************************
+ *
+ *      ~ content detail
+ *
+ ***********************************************************************************************************************/
+bind('div.content-admin-actions span.content-admin-action-delete', 'click', function(e) {
+   if(confirm("\n\n\n\n\nAre you sure you want to delete this?\n\nAll associated discussions and data will also be deleted.\n\n\n\n\n")) {
+      var c_id = $(this).data('c_id');
+      action({
+         data: {
+             'action': 'delete',
+             'c_id': c_id,
+         },
+         success: function(data) {
+             var obj = eval('(' + data + ')');
+             homeReload(obj.url);
+         },
+      });
+   }
+});
