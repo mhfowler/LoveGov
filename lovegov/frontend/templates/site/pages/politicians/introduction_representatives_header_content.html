@@ -1,0 +1,17 @@
+<div class="stats_object" data-object="reps_first_login">
+    {% if not lgpoll_progress.completed %}
+
+        <h4> You haven't answered any questions. </h4>
+
+    {% elif not ABOVE_QUESTIONS_THRESHOLD %}
+
+        <h4> You have answered {{ lgpoll_progress.completed }} / {{ lgpoll_progress.total }} </h4>
+
+    {% else %}
+
+        <h4> Now find like minded citizens on lovegov. </h4>
+
+        <a href="/like_minded/"> go </a>
+
+    {% endif %}
+</div>
