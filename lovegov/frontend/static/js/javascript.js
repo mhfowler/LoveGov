@@ -187,7 +187,7 @@ function action(dict, in_background) {
     var data = dict['data'];
     var pre_page_nonce = current_page_nonce;
     var success_fun = function(data) {
-        if (pre_page_nonce == current_page_nonce && !in_background) {
+        if (pre_page_nonce == current_page_nonce || in_background) {
             var super_success = dict['success'];
             if (super_success) {
                 super_success(data);
