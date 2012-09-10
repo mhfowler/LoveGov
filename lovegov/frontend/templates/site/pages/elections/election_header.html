@@ -73,6 +73,9 @@
                 {% if viewer == info.election.creator %}
                     {% include 'site/pages/elections/invite_to_run_for_button.html' %}
                 {% endif %}
+                {% if not viewer.politician and not group.system and not viewer.running_for %}
+                    Are you a politician running for office? <a href="/settings/i_am_a_politician/">Update your profile</a> to run for this election.
+                {% endif %}
             </div>
 
             <div style="clear:both;"></div>
