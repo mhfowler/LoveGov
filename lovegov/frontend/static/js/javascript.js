@@ -2839,7 +2839,7 @@ function saveAnswer(stub) {
             updateStats();
 
             // if should compute like minded then start it up
-            if (returned.start_like_minded == 'True') {
+            if (returned.start_like_minded == 'true') {
                 findNewLikeMinded();
             }
         }
@@ -3841,18 +3841,20 @@ bind('.ask_to_join' , 'click' , null , function(e)
  *
  ***********************************************************************************************************************/
 // recursive ajax function for finding new like minded members. doesn't do anyting if computing_like_minded is false
+var computing_like_minded = false;
 function findNewLikeMinded() {
     if (computing_like_minded) {
+        $(".clear_result").fadeOut();
         $(".find_loading").show();
         action({
                 data: {'action': 'findLikeMinded'},
                 success: function(data) {
 
                     var returned = eval('(' + data + ')');
-                    var like_minded_wrapper = $(".like_minded_wrapper");
 
+                    var like_minded_header = $(".like_minded_header");
                     // if on like minded page, update stuff visually
-                    if (like_minded_wrapper.length != 0) {
+                    if (like_minded_header.length != 0) {
                         $(".computing_result").hide();
                         $(".find_loading").hide();
                         var num_new = returned.num_new_members;

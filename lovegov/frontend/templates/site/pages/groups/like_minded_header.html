@@ -18,14 +18,16 @@
 
 {% block header_info %}
 
-    <div class="like-minded-header">
+    <div class="like-minded-header like_minded_header">
 
         <div class="real-like-minded-header">
 
             <div class="like-minded-top">
                 <div class="like-minded-buttons">
-                    <a class="find-button like-minded-button find_like_minded"> find </a>
-                    <a class="clear-button like-minded-button clear_like_minded"> clear </a>
+                    {% comment %}
+                        <a class="find-button like-minded-button find_like_minded"> find </a>
+                    {% endcomment %}
+                    <a class="clear-button like-minded-button clear_like_minded"> update </a>
                     <a class="like-minded-explanation like_minded_explanation"> explanation </a>
                 </div>
                 <div class="button-explanations button_explanations">
