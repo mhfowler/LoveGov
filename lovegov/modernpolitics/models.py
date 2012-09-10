@@ -1559,6 +1559,7 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
             return None
 
     def clearLikeMinded(self):
+        self.removeFinishedTask("L")
         like_minded = self.getLikeMindedGroup()
         if like_minded:
             return like_minded.clear()
