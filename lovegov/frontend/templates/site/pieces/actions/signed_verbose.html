@@ -9,7 +9,7 @@
 
     <td class="action-text">
         {% include "site/pieces/actions/action_name_snippet.html" with object=user you=you_acted capital=true %}
-        signed {{ to_object.get_name }}
+        signed {% include 'site/pieces/actions/action_object.html' with to_object=to_object %}
     </td>
 
 {% endblock %}

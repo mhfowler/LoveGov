@@ -10,7 +10,7 @@
         <td class="action-text">
             {% include "site/pieces/actions/action_name_snippet.html" with object=user you=you_acted capital=true %}
             answered
-            {{ to_object.downcast.question.get_name }}
+            {% include 'site/pieces/actions/action_object.html' with to_object=to_object.downcast.question %}
         </td>
 
     {% elif to_object.type == 'P' %}
@@ -18,15 +18,15 @@
         <td class="action-text">
             {% include "site/pieces/actions/action_name_snippet.html" with object=user you=you_acted capital=true %}
             created
-            {{ to_object.get_name }}
+            {% include 'site/pieces/actions/action_object.html' with to_object=to_object %}
         </td>
 
     {% elif to_object.type == 'N' %}
         <td class="action-thumbnail"><img src="{{ STATIC_URL }}/images/icons/actions/news-small.png"/></td>
         <td class="action-text">
             {% include "site/pieces/actions/action_name_snippet.html" with object=user you=you_acted capital=true %}
-            created
-            {{ to_object.get_name }}
+            shared
+            {% include 'site/pieces/actions/action_object.html' with to_object=to_object %}
         </td>
 
     {% elif to_object.type == 'G' %}
@@ -38,7 +38,7 @@
         <td class="action-text">
             {% include "site/pieces/actions/action_name_snippet.html" with object=user you=you_acted capital=true %}
             created
-            {{ to_object.get_name }}
+            {% include 'site/pieces/actions/action_object.html' with to_object=to_object %}
         </td>
 
     {% elif to_object.type == 'C' %}
@@ -50,13 +50,13 @@
         <td class="action-text">
             {% include "site/pieces/actions/action_name_snippet.html" with object=user you=you_acted capital=true %}
             commented on
-            {{ to_object.root_content.get_name }}
+            {% include 'site/pieces/actions/action_object.html' with to_object=to_object.root_content %}
         </td>
 
     {% else %}
         {% include "site/pieces/actions/action_name_snippet.html" with object=user you=you_acted capital=true %}
         created
-        {{ to_object.get_name }}
+        {% include 'site/pieces/actions/action_object.html' with to_object=to_object %}
     {% endif %}
 
 {% endblock %}

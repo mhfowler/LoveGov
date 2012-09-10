@@ -3,6 +3,7 @@
 
 {% load humanize %}
 {% load thumbnail %}
+{% load customtags %}
 
 {% block header_top %}
 
@@ -27,6 +28,8 @@
 
         <span class="group-scale"> {{ group.getLocationVerbose }} </span>
         <span class="group-num-members"> {{ group.num_members }} member{{ group.num_members|pluralize }} </span>
+        <span class="ampersand"> , </span>
+        <span class="group-num-followers"> {{ group.num_followers }} follower{{ group.num_followers|pluralize }} </span>
 
     </div>
 
@@ -118,7 +121,12 @@
                 </div>
                 <div class="group-full-text inline_editable" data-model="Content" data-id="{{ group.id }}">
                     <div class="inline-div being_edited not_editing_display">
-                        {{ group.full_text|linebreaksbr }}
+                        <div class="text_unexpanded">
+                            {{ group.full_text|truncate_chars:200|linebreaksbr }}
+                        </div>
+                        <div class="text_expanded">
+                            {{ group.full_text|linebreaksbr }}
+                        </div>
                     </div>
                     {% if info.is_user_admin %}
                         <div class="inline-edit-input inline_edit doing_editing_display">

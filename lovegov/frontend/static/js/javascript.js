@@ -150,7 +150,7 @@ $(document).ready(function()
     auto_update_page= setInterval(function()
     {
         updatePage();
-    }, 60000);
+    }, 10000);
 });
 
 var auto_update_page;
@@ -232,6 +232,12 @@ function updatePage() {
             var obj = eval('(' + data + ')');
 
             // update notifications num
+            if (obj.notifications_num == 0) {
+                $(".notifications_box").removeClass("new-notifications");
+            }
+            else {
+                $(".notifications_box").addClass("new-notifications");
+            }
             $(".notifications_dropdown_button").text(obj.notifications_num);
         }
     });
@@ -322,6 +328,14 @@ function initHomePage() {
 
 /* sets feed parameters pased on js variables */
 function initFeedParameters() {
+
+    if (path == '/home/' || path == '/questions/') {
+        feed_rank = 'H';
+    }
+    else {
+        feed_rank = 'N';
+    }
+
     selectRank(feed_rank);
     selectQuestionRank(question_rank);
     selectFeedTopic();
@@ -680,12 +694,16 @@ function expandInfoToggle(wrapper, animate)
     else if( info_expanded )
     {   // Set expanded to false and un-expand the info
         wrapper.data('info_expanded', false);
+        wrapper.find(".text_expanded").hide();
+        wrapper.find(".text_unexpanded").show();
         info_div.animate({"height":reduced_height}, animation_time);
         wrapper.find(".expand_info").html('+ expand info');
     }
     else
     {   // Otherwise set expanded to true and expand the info
         wrapper.data('info_expanded', true);
+        wrapper.find(".text_expanded").show();
+        wrapper.find(".text_unexpanded").hide();
         expandAnimation(info_div,animation_time);
         wrapper.find(".expand_info").html('&#8211 reduce info');
     }
@@ -2829,6 +2847,8 @@ bind('.poll_answer' , 'click' , null , function(event)
 
 function saveAnswerInFeed(item) {
     var choice = item.find(".poll_answer.clicked");
+    var saved_message = item.find(".saved_message");
+    saved_message.hide();
     var a_id;
     if (choice.length!=0) {
         a_id = choice.data('a_id');
@@ -2842,9 +2862,8 @@ function saveAnswerInFeed(item) {
     action({
         data: data,
         success: function(data) {
-            var saved_message = item.find(".saved_message");
             saved_message.show();
-            saved_message.fadeOut(2000);
+            //saved_message.fadeOut(2000);
         }
     });
 }
@@ -3092,6 +3111,9 @@ function refreshHistogramData(histogram_wrapper, data) {
     histogram_metadata.total += data.total;
     histogram_metadata.identical += data.identical;
     histogram_metadata.identical_uids.push.apply(histogram_metadata.identical_uids, data.identical_uids);
+    if (histogram_metadata.increment < 20) {
+        histogram_metadata.increment += 1;
+    }
 
     $.map(data.buckets, function(item, key) {
 
@@ -3819,11 +3841,6 @@ function findNewLikeMinded() {
                 $(".computing_result").hide();
                 $(".find_loading").hide();
                 var num_new = returned.num_new_members;
-                // display num new members
-                $('.num_new_found').html(num_new);
-                $('.num_processed').html(returned.num_processed);
-                $('.find_result').toggleClass("toggle");
-                $(".find_result").show();
                 // change total members number
                 var total_num = $(".total_members").data('num');
                 total_num += num_new;
@@ -3833,6 +3850,11 @@ function findNewLikeMinded() {
                 $(".total_found").html(total_num);
                 var total_processed = parseInt($(".total_processed").text());
                 $(".total_processed").html(total_processed + returned.num_processed);
+                // display num new members
+                $('.num_new_found').html(total_num);
+                $('.num_processed').html(total_processed + returned.num_processed);
+                $('.find_result').toggleClass("toggle");
+                $(".find_result").show();
                 // if there were members adjust shit appropriately
                 if (num_new != 0) {
                     $(".no_members").hide();

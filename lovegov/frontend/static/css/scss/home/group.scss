@@ -58,6 +58,7 @@ span.group-title
   font-weight: bold;
   font-size: 16px;
   margin-right: 10px;
+  float:left;
   @include inline-block();
   a {
     color:$black;
@@ -69,6 +70,7 @@ span.group-scale
   color: $dark-gray;
   font-size: 12px;
   @include inline-block();
+  float:left;
   margin-right: 10px;
 }
 
@@ -76,7 +78,22 @@ span.group-num-members
 {
   font-size: 12px;
   @include inline-block();
+  float:left;
+  margin-left:5px;
 }
+span.ampersand {
+  font-size: 12px;
+  @include inline-block();
+  float:left;
+  margin-left:5px;
+}
+span.group-num-followers {
+  font-size: 12px;
+  @include inline-block();
+  float:left;
+  margin-left:5px;
+}
+
 
 div.group-top
 {
@@ -243,6 +260,13 @@ div.group-expanded
         height: 263px;
         margin-bottom: 10px;
         overflow: hidden;
+
+        div.text_unexpanded {
+
+        }
+        div.text_expanded {
+          display:none;
+        }
       }
     }
 
