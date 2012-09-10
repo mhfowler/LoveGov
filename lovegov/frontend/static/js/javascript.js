@@ -2844,6 +2844,7 @@ function saveAnswer(stub) {
 
             // if should compute like minded then start it up
             if (returned.start_like_minded) {
+                computing_like_minded = true;
                 findNewLikeMinded();
             }
         }
