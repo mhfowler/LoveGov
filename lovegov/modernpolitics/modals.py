@@ -78,6 +78,8 @@ def getFacebookShareContentModal(share_content,request,vals):
 
 
 def getCreateModal(request,vals={}):
+    # From vals, gid is the id of the group that the create modal was clicked from
+    # selected_group is the id of the group that should be preselected in the create modal
     main_topics = Topic.objects.filter(Q(alias='general') | Q(topic_text__in=MAIN_TOPICS))
     general_topic = Topic.lg.get(alias='general')
     vals['main_topics'] = main_topics
@@ -87,7 +89,14 @@ def getCreateModal(request,vals={}):
     viewer = vals['viewer']
     vals['all_polls'] = Poll.objects.all()
     gid = request.POST.get('gid')
-    vals['selected_group'] = request.POST.get('selected_group')
+    selected_group_id = request.POST.get('selected_group')
+    if selected_group_id:
+        selected_group = Group.lg.get_or_none(id=selected_group_id)
+    subscriptions = list(viewer.getSubscriptions())
+    if selected_group not in subscriptions:
+        subscriptions.append(selected_group)
+    vals['selected_group'] = selected_group_id
+    vals['viewerSubscriptions'] = subscriptions
     vals['group'] = Group.lg.get_or_none(id=gid)
     return ajaxRender('site/pages/create_modal.html',vals,request)
 

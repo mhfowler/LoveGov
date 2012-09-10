@@ -2440,7 +2440,7 @@ def createContent(request, vals={}):
                 newQ = Question(question_text=q['question'], title=q['question'], source=q['source'], official=False)
                 if polltype=='q':
                     newQ.posted_to = group
-                newQ.autoSave()
+                newQ.autoSave(creator=viewer, privacy=privacy)
                 newQ.setMainTopic(qtopic)
                 for a in q['answers']:
                     newA = Answer(answer_text=a, value=-1)
