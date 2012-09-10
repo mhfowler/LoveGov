@@ -2843,7 +2843,7 @@ function saveAnswer(stub) {
             updateStats();
 
             // if should compute like minded then start it up
-            if (returned.start_like_minded == 'true') {
+            if (returned.start_like_minded) {
                 findNewLikeMinded();
             }
         }
