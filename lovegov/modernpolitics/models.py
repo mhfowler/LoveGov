@@ -361,9 +361,31 @@ class Content(Privacy, LocationLevel):
         elif self.type=='D':
             return "Discussion: " + self.get_name()
         elif self.type=='L':
-            name = self.get_name()
-            if not name:
-                name = "No Title Available"
+            if self.get_name() and self.get_name()!='':
+                name = self.get_name()
+            else:
+                legtype = self.downcast().bill_type
+                legsession = self.downcast().congress_session_id
+                legnumber = self.downcast().bill_number
+                name_start = "Congress Session " + legsession
+                if legtype=="s":
+                    name = name_start + "S " + legnumber
+                elif legtype=="h":
+                    name = name_start + "H.R. " + legnumber
+                elif legtype=="hr":
+                    name = name_start + "H.Res. " + legnumber
+                elif legtype=="sr":
+                    name = name_start + "S.Res " + legnumber
+                elif legtype=="hc":
+                    name = name_start + "H.Con.Res. " + legnumber
+                elif legtype=="sc":
+                    name = name_start + "S.Con.Res. " + legnumber
+                elif legtype=="hj":
+                    name = name_start + "H.J. Res. " + legnumber
+                elif legtype=="sj":
+                    name = name_start + "S.J. Res. " + legnumber
+                else:
+                    name = "No Title Available"
             return "Legislation: " + name
         elif self.type=='C':
             return "Comment on " + self.downcast().root_content.get_name()
@@ -3348,9 +3370,9 @@ class Legislation(Content):
     # action relationship is stored in LegislationAction object.  To retrieve them you can use "self.legislation_actions"
 
     def setCongressBody(self):
-        if self.bill_type.startswith("h"):
+        if leg.startswith("h"):
             self.congress_body = "H"
-        elif self.bill_type.startswith("s"):
+        elif leg.startswith("s"):
             self.congress_body = "S"
         self.save()
 

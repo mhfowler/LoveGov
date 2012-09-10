@@ -4323,7 +4323,3 @@ bind('.x_helper_bubble','click', function() {
     $(this).parents(".helper_bubble").hide();
 });
 
-function updateFeed() {
-    alert('uppity');
-    $('div.feed-button').click();
-}
