@@ -373,25 +373,27 @@ class Content(Privacy, LocationLevel):
                 name = self.get_name()
             else:
                 legtype = self.downcast().bill_type
-                legsession = self.downcast().congress_session_id
-                legnumber = self.downcast().bill_number
-                name_start = "Congress Session " + legsession
-                if legtype=="s":
-                    name = name_start + "S " + legnumber
-                elif legtype=="h":
-                    name = name_start + "H.R. " + legnumber
-                elif legtype=="hr":
-                    name = name_start + "H.Res. " + legnumber
-                elif legtype=="sr":
-                    name = name_start + "S.Res " + legnumber
-                elif legtype=="hc":
-                    name = name_start + "H.Con.Res. " + legnumber
-                elif legtype=="sc":
-                    name = name_start + "S.Con.Res. " + legnumber
-                elif legtype=="hj":
-                    name = name_start + "H.J. Res. " + legnumber
-                elif legtype=="sj":
-                    name = name_start + "S.J. Res. " + legnumber
+                legsession = str(self.downcast().congress_session_id)
+                legsession = str(legsession)
+                legnumber = str(self.downcast().bill_number)
+                legnumber = str(legnumber)
+                name_start = "Session " + legsession
+                if legtype==u's':
+                    name = name_start + ", S " + legnumber
+                elif legtype==u'h':
+                    name = name_start + ", H.R. " + legnumber
+                elif legtype==u'hr':
+                    name = name_start + ", H.Res. " + legnumber
+                elif legtype==u'sr':
+                    name = name_start + ", S.Res " + legnumber
+                elif legtype==u'hc':
+                    name = name_start + ", H.Con.Res. " + legnumber
+                elif legtype==u'sc':
+                    name = name_start + ", S.Con.Res. " + legnumber
+                elif legtype==u'hj':
+                    name = name_start + ", H.J. Res. " + legnumber
+                elif legtype==u'sj':
+                    name = name_start + ", S.J. Res. " + legnumber
                 else:
                     name = "No Title Available"
             return "Legislation: " + name
