@@ -41,6 +41,9 @@ div.election-card {
           line-height:48px;
           font-weight:bold;
           padding-top: 2px;
+          span {
+            line-height:48px;
+          }
         }
         div.match-text {
           display:block;
@@ -115,6 +118,8 @@ div.election-info {
     margin-left:10px;
     div.election-leader {
       color:$gray;
+      margin-top: 15px;
+      margin-left: 30px;
       span.leader-name {
         color:$black;
         font-weight:bold;

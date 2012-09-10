@@ -1252,7 +1252,9 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
         self.save()
 
     def clearResponses(self):
-        return self.getView().clearResponses()
+        self.num_answers = 0
+        self.save()
+        self.getView().clearResponses()
 
     def getResponseToQuestion(self, question):
         response = self.view.responses.filter(question=question)
@@ -1492,8 +1494,6 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
             return self.initializeLikeMindedGroup()
 
     def initializeLikeMindedGroup(self):
-        if self.num_answers < 20:
-            return None
         like_minded = CalculatedGroup().createLikeMinded(self)
         self.like_minded = like_minded
         self.save()

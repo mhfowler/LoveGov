@@ -29,24 +29,32 @@
             <div class="tasks-wrapper">
 
                 <div class="task-wrapper">
-                    <a class="task-checkbox explore_your_feed {% if not explore_feed_task %} incomplete {% endif %}"> <div class="task-completed"></div> </a>
-                    <a class="task-label explore_your_feed"> Explore your feed (click me) </a>
+                    <a href="/presidential_election/" class="task-checkbox dummy_link home_link"> {% if presidential_task %} <div class="task-completed"></div> {% endif %}</a>
+                    <a href="/presidential_election/" class="task-label dummy_link home_link"> Match with presidential candidates (click me) </a>
                 </div>
 
                 <div class="task-wrapper">
-                    <a href="/representatives/" class="task-checkbox"> {% if find_reps_task %} <div class="task-completed"></div> {% endif %}</a>
-                    <a href="/representatives/" class="task-label"> Find your representatives </a>
+                    <a href="/representatives/" class="task-checkbox dummy_link home_link"> {% if reps_task %} <div class="task-completed"></div> {% endif %}</a>
+                    <a href="/representatives/" class="task-label dummy_link home_link"> Match with your representatives </a>
                 </div>
 
                 <div class="task-wrapper">
-                    <a href="{{ lgpoll.get_url }}" class="task-checkbox"> {% if lovegov_poll_task %} <div class="task-completed"></div> {% endif %} </a>
-                    <a href="{{ lgpoll.get_url }}" class="task-label"> Take LoveGov poll to match yourself to politicians, groups, and friends </a>
+                    <a href="/like_minded/" class="task-checkbox dummy_link home_link"> {% if like_minded_task %} <div class="task-completed"></div> {% endif %}</a>
+                    <a href="/like_minded/" class="task-label dummy_link home_link"> Find like minded citizens </a>
                 </div>
 
                 <div class="task-wrapper">
-                    <a href="/groups/" class="task-checkbox"> {% if join_groups_task %} <div class="task-completed"></div> {% endif %} </a>
-                    <a href="/groups/" class="task-label"> Join groups to customize your feed </a>
+                    <a href="/groups/" class="task-checkbox dummy_link home_link"> {% if join_groups_task %} <div class="task-completed"></div> {% endif %} </a>
+                    <a href="/groups/" class="task-label dummy_link home_link"> Join groups relevant to you </a>
                 </div>
+
+
+                {% if completed_all_matching_tasks %}
+                    <div class="task-wrapper">
+                        <a href="/home/" class="task-checkbox dummy_link home_link {% if not explore_feed_task %} incomplete {% endif %}"> <div class="task-completed"></div> </a>
+                        <a href="/home/" class="task-label dummy_link home_link"> Explore your feed </a>
+                    </div>
+                {% endif %}
 
             </div>
 

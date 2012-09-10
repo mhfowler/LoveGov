@@ -70,6 +70,11 @@ def answerAction(user, question, privacy, answer_id, weight=-1, explanation=None
         response.edited_when = datetime.datetime.now()
         response.saveEdited(privacy)
 
+    # if just reached number of answers of threshold, start computing like-minded group and congress comparison
+    if user.num_answers == QUESTIONS_THRESHOLD:
+        startComputingLikeMinded(user)
+        #startComparingWithCongress(user)
+
     return response
 
 

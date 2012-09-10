@@ -95,7 +95,7 @@ def twitterHandle(request, to_page="/home/", vals={}):
 #-----------------------------------------------------------------------------------------------------------------------
 # return true if succesfully logged in with twitter, or return false otherwise
 #-----------------------------------------------------------------------------------------------------------------------
-def twitterLogin(request, to_page="/web/", vals={}):
+def twitterLogin(request, to_page="/home/", vals={}):
     tat = tatHelper(request)
     if tat:
         twitter_user_id = tat['user_id']
@@ -107,7 +107,11 @@ def twitterLogin(request, to_page="/web/", vals={}):
             user.backend = 'django.contrib.auth.backends.ModelBackend'
             auth.login(request, user)
             user_prof.incrementNumLogins()
+
+            if user_prof.first_login:
+                to_page = '/match/'
             return shortcuts.redirect(to_page)
+
         else:
             return False
     else:
