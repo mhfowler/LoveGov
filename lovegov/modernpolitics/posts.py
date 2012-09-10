@@ -748,8 +748,7 @@ def delete(request, vals={}):
     if not c_id: return HttpResponseBadRequest("Delete action: no content to delete specified.")
     content = Content.objects.get(id=c_id)
     if user == content.getCreator() and content.active:
-        content.active = False
-        content.save()
+        content.deactivate()
         # For deleting comments
         if content.type == 'C':
             comment = content.downcast()

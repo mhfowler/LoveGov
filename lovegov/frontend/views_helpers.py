@@ -182,13 +182,13 @@ def makeThread(request, object, user, depth=0, user_votes=None, user_comments=No
     if not user_votes:
         user_votes = Voted.objects.filter(user=user)
     if not user_comments:
-        user_comments = Comment.objects.filter(creator=user)
+        user_comments = Comment.allobjects.filter(creator=user)
     if not rendered_so_far:
         rendered_so_far = [0]
     if not excluded:
         excluded = []
     # Get all comments that are children of the object
-    comments = Comment.objects.filter(on_content=object,active=True).order_by('-status').exclude(id__in=excluded)[start:]
+    comments = Comment.allobjects.filter(on_content=object).order_by('-status').exclude(id__in=excluded)[start:]
     viewer = vals['viewer']
     top_levels = 0
     if comments:
@@ -218,7 +218,7 @@ def renderComment(request, vals, c, depth, user_votes=None, user_comments=None):
     if not user_votes:
         user_votes = Voted.objects.filter(user=user)
     if not user_comments:
-        user_comments = Comment.objects.filter(creator=user)
+        user_comments = Comment.allobjects.filter(creator=user)
     margin = 30*(depth+1)
     my_vote = user_votes.filter(content=c) # check if i like comment
     if my_vote:
