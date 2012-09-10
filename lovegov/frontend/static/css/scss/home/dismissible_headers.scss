@@ -10,6 +10,9 @@ div.helper-bubble {
   padding: 5px 10px 5px 10px;
   position:relative;
   display:none;
+  &.show {
+    display:block;
+  }
   div.x-helper-bubble {
     float:right;
     display:block;

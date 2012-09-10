@@ -242,11 +242,12 @@ def aliasDowncastEdit(request, alias=None, vals={}):
 # login, password recovery and authentication
 #-----------------------------------------------------------------------------------------------------------------------
 def login(request, to_page='home/', message="", vals={}):
-    if vals.get('firstLoginStage'):
-        to_page = "home"
 
     # Try logging in with facebook
-    if fbLogin(request,vals,refresh=False):
+    user_prof = fbLogin(request,vals,refresh=False)
+    if user_prof:
+        if user_prof.first_login:
+            to_page = 'match/'
         return shortcuts.redirect('/' + to_page)
 
     # Try logging in with twitter
@@ -460,6 +461,10 @@ def compareWeb(request,alias=None,vals={}):
 # MAIN PAGES
 #-----------------------------------------------------------------------------------------------------------------------
 def home(request, vals):
+
+    viewer = vals['viewer']
+    viewer.completeTask("E")
+
     valsDismissibleHeader(request, vals)
     focus_html =  ajaxRender('site/pages/home/home.html', vals, request)
     url = request.path
@@ -490,18 +495,19 @@ def representatives(request, vals):
     vals['no_create_button'] = True
 
     viewer = vals['viewer']
+    valsQuestionsThreshold(vals)
+    vals['reps_task'] = viewer.checkTask("F")
     viewer.completeTask("F")
 
     focus_html =  ajaxRender('site/pages/politicians/representatives.html', vals, request)
     url = request.path
     return homeResponse(request, focus_html, url, vals)
 
-def discover(request, vals):
-    u_ids = UserProfile.objects.all().values_list("id", flat=True)
-    u_id = random.choice(u_ids)
-    u = UserProfile.objects.get(id=u_id)
-    vals['rando'] = u
-    focus_html =  ajaxRender('site/pages/discover/discover.html', vals, request)
+def match(request, vals):
+
+    valsFirstLogin(vals)
+
+    focus_html =  ajaxRender('site/pages/match/match.html', vals, request)
     url = request.path
     return homeResponse(request, focus_html, url, vals)
 
@@ -607,10 +613,16 @@ def electionPage(request, election, vals={}):
     viewer = vals['viewer']
     vals['info'] = valsElection(viewer, election, {})
 
+    valsQuestionsThreshold(vals)
+    vals['presidential_task'] = viewer.checkTask("P")
+    if election.alias == 'presidential_election':
+        viewer.completeTask("P")
+
     # render and return html
     focus_html =  ajaxRender('site/pages/elections/election_focus.html', vals, request)
     url = request.path
     return homeResponse(request, focus_html, url, vals)
+
 
 #-----------------------------------------------------------------------------------------------------------------------
 # like-minded group page
@@ -619,17 +631,21 @@ def likeMinded(request, vals={}):
 
     viewer = vals['viewer']
     like_minded = viewer.getLikeMindedGroup()
-    if not like_minded:
-        getMainTopics(vals)     # for question answering
-    else:
+    if like_minded:
         members = like_minded.members.all()
         vals['num_members'] = len(members)
         vals['members'] = members
         vals['num_processed'] = like_minded.processed.count()
     vals['like_minded'] = like_minded
 
+    # above or below question threshold
+    valsQuestionsThreshold(vals)
+
     # visuall stuff for feed
     vals['no_create_button'] = True
+
+    # complete task
+    viewer.completeTask("L")
 
     # render and return html
     focus_html =  ajaxRender('site/pages/groups/like_minded.html', vals, request)

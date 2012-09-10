@@ -19,6 +19,7 @@ function bindOnReload() {
     // for all home pages
     navSectionOpenAll();
     initHomePage();
+    selectHeaderLinks();
 
     // for reps paged
     loadGoogleMap();
@@ -256,6 +257,12 @@ bind(".header_link", 'click', null, function(event) {
 bind(".do_ajax_link", 'click', null, function(event) {
     ajaxReload($(this).attr("href"), true);
 });
+
+function selectHeaderLinks() {
+    $(".header_link").removeClass("clicked");
+    var header_link = $('.header_link[href="' + path + '"]');
+    header_link.addClass("clicked");
+}
 
 function ajaxReload(theurl, loadimg)
 {
@@ -584,7 +591,7 @@ function selectNavLink(navlink) {
         navlink.addClass("clicked");
         // add/remove header link stuff
         $(".header_link").removeClass("clicked");
-        $(".home_header_link").addClass("clicked");
+        //$(".home_header_link").addClass("clicked");
         // toggle section and remove new items num
         if (navlink.hasClass("navbar_link")) {
             var num_new_content = navlink.parents(".home_link_wrapper").find(".num_new_content");
@@ -4135,7 +4142,7 @@ bind(".change_privacy_mode", "click", function(e) {
  *
  ***********************************************************************************************************************/
 bind('.explore_your_feed','click', function() {
-    $(".helper_bubble").fadeIn(200);
+    showBubbles();
     $(".explore_your_feed").removeClass("incomplete");
     action({
         data: {
@@ -4147,7 +4154,34 @@ bind('.explore_your_feed','click', function() {
     });
 });
 
+function showBubbles() {
+    $(".helper_bubble").fadeIn(200);
+}
+
 bind('.x_helper_bubble','click', function() {
     $(this).parents(".helper_bubble").hide();
+});
+
+
+
+/***********************************************************************************************************************
+ *
+ *      ~ content detail
+ *
+ ***********************************************************************************************************************/
+bind('div.content-admin-actions span.content-admin-action-delete', 'click', function(e) {
+   if(confirm("\n\n\n\n\nAre you sure you want to delete this?\n\nAll associated discussions and data will also be deleted.\n\n\n\n\n")) {
+      var c_id = $(this).data('c_id');
+      action({
+         data: {
+             'action': 'delete',
+             'c_id': c_id,
+         },
+         success: function(data) {
+             var obj = eval('(' + data + ')');
+             homeReload(obj.url);
+         },
+      });
+   }
 });
 

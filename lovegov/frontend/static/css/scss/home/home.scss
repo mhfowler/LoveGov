@@ -4,6 +4,53 @@
 
 @import "compass";
 
+
+/* match page */
+
+div.match-links-wrapper {
+
+  a.match-box {
+    width:250px;
+    height:250px;
+    margin-bottom:30px;
+    margin-top:20px;
+    border: 1px solid $dark-gray;
+    //background-color:$light-gray;
+    //color:$black;
+    @include border-radius(10px);
+
+    &:hover {
+      background-color:$light-gray;
+      border-color:$dark-gray;
+      color:black;
+    }
+
+    &.left {
+      float:left;
+    }
+    &.middle {
+      float:left;
+      margin-left:90px;
+    }
+    &.right {
+      float:right;
+      margin-right:40px;
+    }
+
+    span.match-box-text {
+      width:100%;
+      padding-left:40px;
+      padding-right:40px;
+      text-align:center;
+      margin-top:70px;
+      font-size:36px;
+      float:left;
+    }
+  }
+}
+
+
+
 /* page reloading */
 div.home-reloading {
   @include staticImage("/images/gifs/ajax-loader.gif");

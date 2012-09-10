@@ -1,0 +1,17 @@
+<div class="stats_object" data-object="election_first_login">
+    {% if not lgpoll_progress.completed %}
+
+        <h4> You haven't answered any questions. </h4>
+
+    {% elif not ABOVE_QUESTIONS_THRESHOLD %}
+
+        <h4> You have answered {{ lgpoll_progress.completed }} / {{ lgpoll_progress.total }} </h4>
+
+    {% else %}
+
+        <h4> Now check out your matches with your reps. </h4>
+
+        <a href="/representatives/"> reps </a>
+
+    {% endif %}
+</div>

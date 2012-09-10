@@ -14,6 +14,17 @@ from lovegov.modernpolitics.initialize import *
 import math
 
 #-----------------------------------------------------------------------------------------------------------------------
+# start calculating your liked minded group, and comparing with congress
+#-----------------------------------------------------------------------------------------------------------------------
+def startComputingLikeMinded(user):
+    user.findLikeMinded(num=0)              # num=0 means calculate ALL
+
+def startComparingWithCongress(user):
+    congress = UserProfile.objects.filter(currently_in_office=True)
+    for x in congress:
+        x.getComparison(user)
+
+#-----------------------------------------------------------------------------------------------------------------------
 # Gets a list of buckets (by percent), based on an inputted resolution.
 #-----------------------------------------------------------------------------------------------------------------------
 def getBucketList(resolution=10):

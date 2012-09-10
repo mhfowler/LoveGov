@@ -13,7 +13,7 @@
 
 
 {% if dismissible_header == 'first_login' %}
-    {% include 'site/pages/dismissible_headers/first_login.html' %}
+    {% include 'site/pages/home/introduction_home_header.html' %}
 {% elif dismissible_header == 'congress_teaser' and not compare_congress_task %}
     {% include 'site/pages/dismissible_headers/congress_header.html' %}
 {% elif dismissible_header == 'find_reps' %}
@@ -31,4 +31,6 @@
     {% include 'site/pages/feed/feed.html' with feed_boxed=1 %}
 </div>
 
-<script> rebind="home"; </script>
+<script>
+    rebind="home";
+</script>

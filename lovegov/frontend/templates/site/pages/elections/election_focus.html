@@ -1,9 +1,21 @@
 {% extends 'site/pages/home/focus.html' %}
 
 {% block home_header %}
-    {% include 'site/pages/elections/election_header.html' with info_height="285px" info_expanded=1 %}
+
+    {% if not ABOVE_QUESTIONS_THRESHOLD or not presidential_task %}
+        {% include 'site/pages/elections/introduction_election_header.html' %}
+    {% endif %}
+
+    {% include 'site/pages/elections/election_header.html' with info_height="285px" info_expanded=ABOVE_QUESTIONS_THRESHOLD %}
+
 {% endblock %}
 
 {% block home_feed %}
-    {% include 'site/pages/feed/feed.html' with feed_boxed=1 g_id=group.id %}
+    {% if not ABOVE_QUESTIONS_THRESHOLD %}
+        <div class="questions-wrapper">
+            {% include 'site/pages/qa/feed_browse_questions.html' with special_feed="getQuestions" default_display="choose" only_unanswered=1 %}
+        </div>
+    {% else %}
+        {% include 'site/pages/feed/feed.html' with feed_boxed=1 g_id=group.id %}
+    {% endif %}
 {% endblock %}

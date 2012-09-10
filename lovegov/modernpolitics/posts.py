@@ -740,13 +740,16 @@ def edit(request, vals={}):
 #-----------------------------------------------------------------------------------------------------------------------
 # Deletes content.
 #
+# Checks if user is the owner and sets active=False
 #-----------------------------------------------------------------------------------------------------------------------
 def delete(request, vals={}):
     user = vals['viewer']
-    content = Content.objects.get(id=request.POST['c_id'])
+    c_id = request.POST.get('c_id')
+    if not c_id: return HttpResponseBadRequest("Delete action: no content to delete specified.")
+    content = Content.objects.get(id=c_id)
     if user == content.getCreator() and content.active:
-        content.active = False
-        content.save()
+        content.deactivate()
+        # For deleting comments
         if content.type == 'C':
             comment = content.downcast()
             root_content = comment.root_content
@@ -758,9 +761,9 @@ def delete(request, vals={}):
                 on_content.save()
         deleted = DeletedAction(user=user, content=content, privacy=getPrivacy(request))
         deleted.autoSave()
-        return HttpResponse("successfully deleted content with id:" + request.POST['c_id'])
+        return HttpResponse(json.dumps({'url': '/home/'}));
     else:
-        return HttpResponse("you don't have permission")
+        return HttpResponseForbidden("You don't have permission to delete the requested content or it does not exist.")
 
 #-----------------------------------------------------------------------------------------------------------------------
 # Saves comment to database from post request.
@@ -1065,6 +1068,9 @@ def updateMatch(request, vals={}):
         html = ajaxRender('site/pages/profile/has_answered_match.html', vals, request)
     elif display == 'comparison_web':
         html = ajaxRender('site/pages/qa/comparison_web.html', vals, request)
+    elif display == 'match_num':
+        to_compare.comparison = to_compare.getComparison(viewer)
+        html = ajaxRender('site/pages/qa/match_num.html', vals, request)
     return HttpResponse(json.dumps({'html':html}))
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -1116,6 +1122,18 @@ def updateStats(request, vals={}):
         html = ajaxRender('site/pages/elections/election_leaderboard.html', vals, request)
     elif object == 'like_minded_counter':
         html = ajaxRender('site/pages/groups/like_minded_counter.html', vals, request)
+    elif object == 'election_first_login':
+        from lovegov.frontend.views_helpers import valsQuestionsThreshold
+        valsQuestionsThreshold(vals)
+        html = ajaxRender('site/pages/elections/introduction_election_header_content.html', vals, request)
+    elif object == 'reps_first_login':
+        from lovegov.frontend.views_helpers import valsQuestionsThreshold
+        valsQuestionsThreshold(vals)
+        html = ajaxRender('site/pages/politicians/introduction_representatives_header_content.html', vals, request)
+    elif object == 'like_minded_first_login':
+        from lovegov.frontend.views_helpers import valsQuestionsThreshold
+        valsQuestionsThreshold(vals)
+        html = ajaxRender('site/pages/groups/introduction_like_minded_header_content.html', vals, request)
     return HttpResponse(json.dumps({'html':html}))
 
 #----------------------------------------------------------------------------------------------------------------------
@@ -1750,7 +1768,11 @@ def getLegislation(request, vals={}):
 def everythingLoadedHelper(request, vals, feed_items):
     num_items = len(feed_items)
     if not num_items:
-        p = random.choice(UserProfile.objects.filter(politician=True))
+        politicians = UserProfile.objects.filter(politician=True)
+        if politicians:
+            p = random.choice(politicians)
+        else:
+            p = vals['viewer']
         vals['politician'] = p
         everything_loaded = ajaxRender('site/pages/microcopy/everything_loaded.html', vals, request)
     else:
@@ -2416,7 +2438,7 @@ def createContent(request, vals={}):
                 newQ = Question(question_text=q['question'], title=q['question'], source=q['source'], official=False)
                 if polltype=='q':
                     newQ.posted_to = group
-                newQ.autoSave()
+                newQ.autoSave(creator=viewer, privacy=privacy)
                 newQ.setMainTopic(qtopic)
                 for a in q['answers']:
                     newA = Answer(answer_text=a, value=-1)

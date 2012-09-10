@@ -5,6 +5,28 @@ from lovegov.modernpolitics.backend import *
 from lovegov.base_settings import UPDATE
 
 #-----------------------------------------------------------------------------------------------------------------------
+# sets vals whether viewer is over or under question answering threshold
+#-----------------------------------------------------------------------------------------------------------------------
+def valsQuestionsThreshold(vals):
+    viewer = vals['viewer']
+
+    poll = getLoveGovPoll()
+    poll_progress = poll.getPollProgress(viewer)
+    vals['lgpoll'] = poll
+    vals['lgpoll_progress'] = poll_progress
+
+    above_questions_threshold = poll_progress['completed'] >= QUESTIONS_THRESHOLD
+    vals['ABOVE_QUESTIONS_THRESHOLD'] = above_questions_threshold
+    if not above_questions_threshold:
+        getMainTopics(vals)
+
+    if not viewer.checkTask("O"):
+        vals['first_only_unanswered'] = True
+        viewer.completeTask("O")
+
+    return above_questions_threshold
+
+#-----------------------------------------------------------------------------------------------------------------------
 # gets frame values and puts in dictionary.
 #-----------------------------------------------------------------------------------------------------------------------
 def frame(request, vals):
@@ -182,13 +204,13 @@ def makeThread(request, object, user, depth=0, user_votes=None, user_comments=No
     if not user_votes:
         user_votes = Voted.objects.filter(user=user)
     if not user_comments:
-        user_comments = Comment.objects.filter(creator=user)
+        user_comments = Comment.allobjects.filter(creator=user)
     if not rendered_so_far:
         rendered_so_far = [0]
     if not excluded:
         excluded = []
     # Get all comments that are children of the object
-    comments = Comment.objects.filter(on_content=object,active=True).order_by('-status').exclude(id__in=excluded)[start:]
+    comments = Comment.allobjects.filter(on_content=object).order_by('-status').exclude(id__in=excluded)[start:]
     viewer = vals['viewer']
     top_levels = 0
     if comments:
@@ -218,7 +240,7 @@ def renderComment(request, vals, c, depth, user_votes=None, user_comments=None):
     if not user_votes:
         user_votes = Voted.objects.filter(user=user)
     if not user_comments:
-        user_comments = Comment.objects.filter(creator=user)
+        user_comments = Comment.allobjects.filter(creator=user)
     margin = 30*(depth+1)
     my_vote = user_votes.filter(content=c) # check if i like comment
     if my_vote:
@@ -356,17 +378,21 @@ def valsGroupButtons(viewer, group, vals):
 # fill dictionary for a particular election
 #-----------------------------------------------------------------------------------------------------------------------
 def valsElection(viewer, election, vals):
-    if LOCAL:
-        running = UserProfile.objects.all()
-    elif election.alias == 'presidential_election':
-        obama = UserProfile.objects.get(alias='barack_obama')
-        mitt = UserProfile.objects.get(alias='mitt_romney')
-        ron = UserProfile.objects.get(alias='ronald_paul')
-        biden = UserProfile.objects.get(alias='joseph_biden')
-        ryan = UserProfile.objects.get(alias='paul_ryan')
-        running = [obama, mitt, ron, biden, ryan]
+
+    if election.alias == 'presidential_election':
+        if not LOCAL:
+            obama = UserProfile.objects.get(alias='barack_obama')
+            mitt = UserProfile.objects.get(alias='mitt_romney')
+            ron = UserProfile.objects.get(alias='ronald_paul')
+            biden = UserProfile.objects.get(alias='joseph_biden')
+            ryan = UserProfile.objects.get(alias='paul_ryan')
+            running = [obama, mitt, ron, biden, ryan]
+        else:
+            running = UserProfile.objects.all()[:5]
+
     else:
         running = election.members.all().order_by("-num_supporters")
+
     supporting = viewer.getPoliticians()
     for r in running:
         r.comparison = r.getComparison(viewer)
@@ -464,17 +490,7 @@ def valsDismissibleHeader(request, vals):
     vals['dismissible_header'] = header
 
     if header == 'first_login':
-        vals['explore_feed_task'] = explore_feed_task = viewer.checkTask("E")
-        vals['find_reps_task'] = find_reps_task = viewer.checkTask("F")
-        vals['lovegov_poll_task'] = lovegov_poll_task = viewer.checkTask("L")
-        vals['join_groups_task'] = join_groups_task = viewer.checkTask("J")
-
-        # if user has completed all tasks except seeing their congratulatory message, then they are seeing congratulatory message
-        if explore_feed_task and find_reps_task and lovegov_poll_task and join_groups_task:
-            vals['completed_all_tasks'] = True
-            viewer.completeTask("A")
-
-        vals['lgpoll'] = getLoveGovPoll()
+        valsFirstLogin(vals)
 
     elif header == 'congress_teaser':
         vals['compare_congress_task'] = viewer.checkTask("C")
@@ -501,3 +517,28 @@ def valsDismissibleHeader(request, vals):
         poll_progress = lgpoll.getPollProgress(viewer)
         vals['poll_progress'] = poll_progress
         vals['lgpoll'] = lgpoll
+
+
+#-----------------------------------------------------------------------------------------------------------------------
+# vals for first login
+#-----------------------------------------------------------------------------------------------------------------------
+def valsFirstLogin(vals):
+
+    viewer = vals['viewer']
+
+    vals['presidential_task'] = presidential_task = viewer.checkTask("P")
+    vals['reps_task'] = reps_task = viewer.checkTask("F")
+    vals['like_minded_task'] = like_minded_task = viewer.checkTask("L")
+    vals['join_groups_task'] = join_groups_task = viewer.checkTask("J")
+
+    vals['explore_feed_task'] = explore_feed_task = viewer.checkTask("E")
+
+    # if user has completed all matching tasks, they see explore feed task
+    if presidential_task and reps_task and like_minded_task and join_groups_task:
+        vals['completed_all_matching_tasks'] = True
+
+        # if user has seen explore_feed_task, either we don't show intro header, or we show message saying your job is not done
+        if explore_feed_task:
+            vals['completed_all_tasks'] = True
+            viewer.completeTask('A')
+

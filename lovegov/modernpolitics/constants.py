@@ -21,12 +21,16 @@ LOCAL = settings.LOCAL
 
 ########################################## FIRST LOGIN  ################################################################
 
-FIRST_LOGIN_TASKS=['E', # explore feed
-                   'F', # find reps
-                   'L', # lovegov poll
+FIRST_LOGIN_TASKS=['P', # match with presidents
+                   'R', # match with reps
+                   'L', # find like minded citizens
                    'J', # join groups to customize your feed
-                   'A', # you saw your congratulatory message
+                   'A', # you completed all matching tasks
+                   'O', # clicked off only_unanswered helper bubble
+                   'E', # explore feed
                     ]
+
+QUESTIONS_THRESHOLD = 15
 
 ########################################################################################################################
 
