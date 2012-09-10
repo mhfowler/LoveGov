@@ -152,6 +152,10 @@ $(document).ready(function()
     {
         updatePage();
     }, 10000);
+
+    // start background tasks
+    findNewLikeMinded();
+
 });
 
 var auto_update_page;
@@ -1085,69 +1089,69 @@ function getFeed(container) {
     }
     else if (feed == 'getLegislation') {
         var session = $('.session_select').val();
-            var session_json;
-            if ($("." + $('.session_select').data('selector')).hasClass('clicked')) {
-                session_json = JSON.stringify(session);
-            }
-            else {
-                session_json = JSON.stringify([]);
-            }
+        var session_json;
+        if ($("." + $('.session_select').data('selector')).hasClass('clicked')) {
+            session_json = JSON.stringify(session);
+        }
+        else {
+            session_json = JSON.stringify([]);
+        }
         var type = $('.type_select').val();
-            var type_json;
-            if ($("." + $('.type_select').data('selector')).hasClass('clicked')) {
-                type_json = JSON.stringify(type);
-            }
-            else {
-                type_json = JSON.stringify([]);
-            }
+        var type_json;
+        if ($("." + $('.type_select').data('selector')).hasClass('clicked')) {
+            type_json = JSON.stringify(type);
+        }
+        else {
+            type_json = JSON.stringify([]);
+        }
         var subject = $('.subject_select').val();
-            var subject_json;
-            if ($("." + $('.subject_select').data('selector')).hasClass('clicked')) {
-                subject_json = JSON.stringify(subject);
-            }
-            else {
-                subject_json = JSON.stringify([]);
-            }
+        var subject_json;
+        if ($("." + $('.subject_select').data('selector')).hasClass('clicked')) {
+            subject_json = JSON.stringify(subject);
+        }
+        else {
+            subject_json = JSON.stringify([]);
+        }
         var committee = $('.committee_select').val();
-            var committee_json;
-            if ($("." + $('.committee_select').data('selector')).hasClass('clicked')) {
-                committee_json = JSON.stringify(committee);
-            }
-            else {
-                committee_json = JSON.stringify([]);
-            }
+        var committee_json;
+        if ($("." + $('.committee_select').data('selector')).hasClass('clicked')) {
+            committee_json = JSON.stringify(committee);
+        }
+        else {
+            committee_json = JSON.stringify([]);
+        }
         var introduced = $('.introduced_select').val();
-            var introduced_json;
-            if ($("." + $('.introduced_select').data('selector')).hasClass('clicked')) {
-                introduced_json = JSON.stringify(introduced);
-            }
-            else {
-                introduced_json = JSON.stringify([]);
-            }
+        var introduced_json;
+        if ($("." + $('.introduced_select').data('selector')).hasClass('clicked')) {
+            introduced_json = JSON.stringify(introduced);
+        }
+        else {
+            introduced_json = JSON.stringify([]);
+        }
         var sponsor_body = $('.sponsor_select_body').val();
-            var sponsor_body_json;
-            if ($("." + $('.sponsor_select_body').data('selector')).hasClass('clicked')) {
-                sponsor_body_json = JSON.stringify(sponsor_body);
-            }
-            else {
-                sponsor_body_json = JSON.stringify([]);
-            }
+        var sponsor_body_json;
+        if ($("." + $('.sponsor_select_body').data('selector')).hasClass('clicked')) {
+            sponsor_body_json = JSON.stringify(sponsor_body);
+        }
+        else {
+            sponsor_body_json = JSON.stringify([]);
+        }
         var sponsor_name = $('.sponsor_select_name').val();
-            var sponsor_name_json;
-            if ($("." + $('.sponsor_select_name').data('selector')).hasClass('clicked')) {
-                sponsor_name_json = JSON.stringify(sponsor_name);
-            }
-            else {
-                sponsor_name_json = JSON.stringify([]);
-            }
+        var sponsor_name_json;
+        if ($("." + $('.sponsor_select_name').data('selector')).hasClass('clicked')) {
+            sponsor_name_json = JSON.stringify(sponsor_name);
+        }
+        else {
+            sponsor_name_json = JSON.stringify([]);
+        }
         var sponsor_party = $('.sponsor_select_party').val();
-            var sponsor_party_json;
-            if ($("." + $('.sponsor_select_party').data('selector')).hasClass('clicked')) {
-                sponsor_party_json = JSON.stringify(sponsor_party);
-            }
-            else {
-                sponsor_party_json = JSON.stringify([]);
-            }
+        var sponsor_party_json;
+        if ($("." + $('.sponsor_select_party').data('selector')).hasClass('clicked')) {
+            sponsor_party_json = JSON.stringify(sponsor_party);
+        }
+        else {
+            sponsor_party_json = JSON.stringify([]);
+        }
         data = {'action': 'getLegislation', 'feed_start':feed_start, 'session_set':session_json,
             'type_set':type_json, 'subject_set':subject_json, 'committee_set':committee_json,
             'introduced_set':introduced_json, 'sponsor_body_set':sponsor_body_json,
@@ -1696,7 +1700,7 @@ bind(".send_message", 'click', null, function(event) {
     var message = wrapper.find(".message_textarea").val();
     var phone_number = wrapper.find(".phonenumber_input").val();
     if (phone_number == "") {
-       $(".no_phonenumber").show();
+        $(".no_phonenumber").show();
     }
     else {
         action({
@@ -2833,6 +2837,11 @@ function saveAnswer(stub) {
             saved_message.fadeOut(5000);
             updateMatches();
             updateStats();
+
+            // if should compute like minded then start it up
+            if (returned.start_like_minded == 'True') {
+                findNewLikeMinded();
+            }
         }
     });
 }
@@ -3831,53 +3840,57 @@ bind('.ask_to_join' , 'click' , null , function(e)
  *      ~like minded group
  *
  ***********************************************************************************************************************/
-bind('.find_like_minded' , 'click' , null , function(e)
-{
-    $(".computing_result").show();
-    $(".button_result").hide();
-    findNewLikeMinded();
-});
-
-// recursive ajax function for finding new like minded members
+// recursive ajax function for finding new like minded members. doesn't do anyting if computing_like_minded is false
 function findNewLikeMinded() {
-    $(".find_loading").show();
-    action({
-            data: {'action': 'findLikeMinded'},
-            success: function(data) {
-                var returned = eval('(' + data + ')');
-                $(".computing_result").hide();
-                $(".find_loading").hide();
-                var num_new = returned.num_new_members;
-                // change total members number
-                var total_num = $(".total_members").data('num');
-                total_num += num_new;
-                $(".total_members").html(total_num);
-                $(".total_members").data('num', total_num);
-                // change members/display section
-                $(".total_found").html(total_num);
-                var total_processed = parseInt($(".total_processed").text());
-                $(".total_processed").html(total_processed + returned.num_processed);
-                // display num new members
-                $('.num_new_found').html(total_num);
-                $('.num_processed').html(total_processed + returned.num_processed);
-                $('.find_result').toggleClass("toggle");
-                $(".find_result").show();
-                // if there were members adjust shit appropriately
-                if (num_new != 0) {
-                    $(".no_members").hide();
-                    $(".some_members").show();
-                    $(".like_minded_members").prepend(returned.html);
-                    bindOnNewElements();
-                }
-                if (returned.num_processed != 0) {
-                    findNewLikeMinded();
-                }
-                else {
-                    var message = String(total_num) + " like-minded people were found on LoveGov";
-                    $(".find_result").html(message);
-                }
-            }}
-    );
+    if (computing_like_minded) {
+        $(".find_loading").show();
+        action({
+                data: {'action': 'findLikeMinded'},
+                success: function(data) {
+
+                    var returned = eval('(' + data + ')');
+                    var like_minded_wrapper = $(".like_minded_wrapper");
+
+                    // if on like minded page, update stuff visually
+                    if (like_minded_wrapper.length != 0) {
+                        $(".computing_result").hide();
+                        $(".find_loading").hide();
+                        var num_new = returned.num_new_members;
+                        // change total members number
+                        var total_num = $(".total_members").data('num');
+                        total_num += num_new;
+                        $(".total_members").html(total_num);
+                        $(".total_members").data('num', total_num);
+                        // change members/display section
+                        $(".total_found").html(total_num);
+                        var total_processed = parseInt($(".total_processed").text());
+                        $(".total_processed").html(total_processed + returned.num_processed);
+                        // display num new members
+                        $('.num_new_found').html(total_num);
+                        $('.num_processed').html(total_processed + returned.num_processed);
+                        $('.find_result').toggleClass("toggle");
+                        $(".find_result").show();
+                        // if there were members adjust shit appropriately
+                        if (num_new != 0) {
+                            $(".no_members").hide();
+                            $(".some_members").show();
+                            $(".like_minded_members").prepend(returned.html);
+                            bindOnNewElements();
+                        }
+                    }
+
+                    // if not finished, use recursion
+                    if (returned.num_processed != 0) {
+                        findNewLikeMinded();
+                    }
+                    else {
+                        computing_like_minded = false;
+                        var message = String(total_num) + " like-minded people were found on LoveGov";
+                        $(".find_result").html(message);
+                    }
+                }}
+        );
+    }
 }
 
 bind('.clear_like_minded' , 'click' , null , function(e)
@@ -3893,9 +3906,19 @@ bind('.clear_like_minded' , 'click' , null , function(e)
                     $(".total_members").data('num',0);
                     $(".total_found").html(0);
                     $(".total_processed").html(0);
+                    computing_like_minded = true;
+                    findNewLikeMinded();
                 }}
         );
     }
+});
+
+bind('.find_like_minded' , 'click' , null , function(e)
+{
+    computing_like_minded = true;
+    $(".computing_result").show();
+    $(".button_result").hide();
+    findNewLikeMinded();
 });
 
 bind('.like_minded_explanation' , 'click' , null , function(e)
@@ -4162,17 +4185,17 @@ bind('.x_helper_bubble','click', function() {
  *
  ***********************************************************************************************************************/
 bind('div.content-admin-actions span.content-admin-action-delete', 'click', function(e) {
-   if(confirm("\n\n\n\n\nAre you sure you want to delete this?\n\nAll associated discussions and data will also be deleted.\n\n\n\n\n")) {
-      var c_id = $(this).data('c_id');
-      action({
-         data: {
-             'action': 'delete',
-             'c_id': c_id,
-         },
-         success: function(data) {
-             var obj = eval('(' + data + ')');
-             homeReload(obj.url);
-         },
-      });
-   }
+    if(confirm("\n\n\n\n\nAre you sure you want to delete this?\n\nAll associated discussions and data will also be deleted.\n\n\n\n\n")) {
+        var c_id = $(this).data('c_id');
+        action({
+            data: {
+                'action': 'delete',
+                'c_id': c_id,
+            },
+            success: function(data) {
+                var obj = eval('(' + data + ')');
+                homeReload(obj.url);
+            },
+        });
+    }
 });

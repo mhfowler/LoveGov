@@ -135,6 +135,9 @@ def viewWrapper(view, requires_login=False):
                 if not user.confirmed:
                     return shortcuts.redirect("/need_email_confirmation/")
 
+                # background tasks
+                user.valsBackgroundTasks(vals)
+
             # vals for not logged in pages
             else:
                 vals['fb_state'] = fbGetRedirect(request, vals)

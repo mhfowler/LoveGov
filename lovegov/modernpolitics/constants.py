@@ -19,6 +19,12 @@ import os
 
 LOCAL = settings.LOCAL
 
+########################################## BACKGROUND TASKS ############################################################
+
+BACKGROUND_TASKS=['L', # calculate like minded group
+                   'C', # compare with congress
+]
+
 ########################################## FIRST LOGIN  ################################################################
 
 FIRST_LOGIN_TASKS=['P', # match with presidents

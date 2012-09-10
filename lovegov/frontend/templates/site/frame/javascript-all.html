@@ -53,4 +53,11 @@
     var csrf = '{{ csrf_token|escapejs }}';
     var path = '{{ request.path }}';
     var STATIC_URL = '{{ STATIC_URL }}';
+
+    {% if computing_like_minded %}
+        var computing_like_minded = true;
+    {% else %}
+        var computing_liked_minded = false;
+    {% endif %}
+
 </script>
