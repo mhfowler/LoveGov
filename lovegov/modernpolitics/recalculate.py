@@ -253,7 +253,7 @@ def purgeTopics():
 def setLoveGovPollText():
 
     text = "We wrote these questions based on recent legislation. " \
-           "Take the LoveGov poll to see how you match up with your Congressmen and other users."
+           "Take the LoveGov poll to see how you match up with your Congressmen and other users. "
 
     lgpoll = getLoveGovPoll()
     lgpoll.summary = text
@@ -270,13 +270,25 @@ def setCongressText():
     congress.summary = text
     congress.save()
 
+def setLoveGovUserText():
+
+    text = "LoveGov is a robot, and its " \
+           "views are the aggregate of all of the people of LoveGov. For every question " \
+           "its response is the most commonly chosen response to that question. " \
+           "LoveGov updates its responses every hour, so if your views have not been " \
+           "taken into account yet, they will be soon. "
+
+    lg = getLoveGovUser()
+    lg.bio = text
+    lg.save()
+
 
 def setStateGroupText(state_group):
 
     key = state_group.location.state
     state_name = STATES_DICT.get(key)
 
-    text = "This is the central place for everything relevant to " + state_name + "." \
+    text = "This is the central place for everything relevant to " + state_name + ". " \
            "Use this group to find out what is going on and generate awareness for your cause: " \
            "share the important news/legislation, have discussions, and poll your state on the key issues. "
 
@@ -287,7 +299,7 @@ def setStateGroupText(state_group):
 
 def setCityGroupText(city_group):
 
-    text = "This is an auto-generated group for people from " + city_group.getLocationVerbose() + "." \
+    text = "This is an auto-generated group for people from " + city_group.getLocationVerbose() + ". " \
            "Use this group to stay up to date, share news, have discussions" \
            " and poll the community to find out where everyone stands. " \
            "If you have something specific you are working on, this is the place to generate awareness."
@@ -299,8 +311,8 @@ def setCityGroupText(city_group):
 
 def setEducationText(network):
 
-    text = "This is an auto-generated group for students and alumni from " + network.get_name() + "." \
-           "Students, groups, and alumni should use this to coordinate your efforts," \
+    text = "This is an auto-generated group for students and alumni from " + network.get_name() + ". " \
+           "Students, groups, and alumni should use this to coordinate your efforts, " \
            "generate awareness for your initiatives, and recruit more members. " \
            "Share important news, have discussions, and create & answer polls so you can find out where people stand."
 
@@ -321,7 +333,7 @@ def setNetworkText(network):
 
 def setPartyText(party):
 
-    text = "This is a group auto-generated for a mainstream political party." \
+    text = "This is a group auto-generated for a mainstream political party. " \
            "Join to show your true colors, or just follow to stay informed."
 
     party.full_text = text
@@ -466,17 +478,17 @@ def updatePartyImages():
 
 def updatePoliticianImages():
 
-    romney = Politician.objects.get(first_name="Mitt",last_name="Romney")
+    romney = UserProfile.objects.get(first_name="Mitt",last_name="Romney", politician=True)
     im_ref = os.path.join(PROJECT_PATH, 'frontend/static/images/presidentialCandidates/romney.jpeg')
     im = open(im_ref)
     romney.setProfileImage(im)
 
-    elizabeth = Politician.objects.get(first_name="Elizabeth", last_name="Warren")
+    elizabeth = UserProfile.objects.get(first_name="Elizabeth", last_name="Warren", politician=True)
     im_ref = os.path.join(PROJECT_PATH, 'frontend/static/images/presidentialCandidates/warren.jpeg')
     im = open(im_ref)
     elizabeth.setProfileImage(im)
 
-    cicilline = ElectedOfficial.objects.get(first_name="David", last_name="Cicilline")
+    cicilline = UserProfile.objects.get(first_name="David", last_name="Cicilline", politician=True)
     im_ref = os.path.join(PROJECT_PATH, 'frontend/static/images/presidentialCandidates/cicilline.jpeg')
     im = open(im_ref)
     cicilline.setProfileImage(im)

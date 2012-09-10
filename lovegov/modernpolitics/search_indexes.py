@@ -48,12 +48,22 @@ class NewsIndex(indexes.SearchIndex, indexes.Indexable):
 
 class GroupIndex(indexes.SearchIndex, indexes.Indexable):
     text = indexes.CharField(document=True, use_template=True, template_name='search/indexes/group.txt')
+    hidden = indexes.CharField(model_attr='hidden')
+    group_type = indexes.CharField(model_attr='group_type')
 
     def get_model(self):
         return Group
 
     def index_queryset(self):
         return self.get_model().objects.all()
+
+    def prepare_hidden(self, obj):
+        # For some reason, this is necessary
+        if obj.hidden:
+            return 'True'
+        else:
+            return 'False'
+
 
 class MotionIndex(indexes.SearchIndex, indexes.Indexable):
     text = indexes.CharField(document=True, use_template=True, template_name='search/indexes/motion.txt')

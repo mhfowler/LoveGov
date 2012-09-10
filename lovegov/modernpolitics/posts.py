@@ -169,9 +169,6 @@ def getLinkInfo(request, vals={}, html="",URL=""):
                 continue
 
         if html and URL:
-            # make HTML well formed
-            html = re.sub(r'<script\s*.*</script>',"",html)
-            html = re.sub(r'<!DOCTYPE html\s*.*>',"",html)
             soup = BeautifulSoup(html)
 
             # set title
@@ -217,18 +214,13 @@ def getLinkInfo(request, vals={}, html="",URL=""):
                 first_image['path'] =open(first_image['path'],'r+')
                 list.append(first_image)
 
-            if len(list) == 0:
-                rel_path = 'images/top-logo-default.png'
-                this_path = os.path.join(settings.STATIC_ROOT, rel_path)
-                list.append({'path':open(this_path,'r+')})
-
             vals['imglink'] = list
 
             html = ajaxRender('site/pieces/news-link-autogen.html', vals, request)
             return HttpResponse(json.dumps({'html':html}))
         else:
             return HttpResponseBadRequest("Something went wrong.")
-    except:
+    except Exception, e:
         return HttpResponseBadRequest("Something went wrong parsing the page.")
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -265,7 +257,7 @@ def lovegovSearch(term):
     news = SearchQuerySet().models(News).filter(content=term)
     questions = SearchQuerySet().models(Question).filter(content=term)
     petitions = SearchQuerySet().models(Petition).filter(content=term)
-    groups = SearchQuerySet().models(Group).filter(content=term,hidden=False)
+    groups = SearchQuerySet().models(Group).filter(content=term,hidden='False')
 
     # Get lists of actual objects
     userProfiles = [x.object for x in userProfiles]
@@ -549,6 +541,16 @@ def editAccount(request, vals={}):
     if box == 'basic_info':
         if 'first_name' in request.POST: viewer.first_name = request.POST['first_name']
         if 'last_name' in request.POST: viewer.last_name = request.POST['last_name']
+        if 'gendate' in request.POST:
+            dob = request.POST['gendate']
+            try:
+                from dateutil import parser
+                valid_datetime = parser.parse(dob)
+            except ValueError:
+                return HttpResponseBadRequest("Could not parse birth date.")
+            viewer.dob = valid_datetime
+            new_age = calculate_age(valid_datetime)
+            viewer.age = new_age
         viewer.phone_number = request.POST.get('phone_number')
         try:
             if 'age' in request.POST: viewer.age = int(request.POST['age'])
@@ -572,16 +574,24 @@ def editAccount(request, vals={}):
             viewer.private_follow = False
         viewer.save()
 
-        all_parties = list( Party.objects.all() )
+        # get parties user should belong to
+        new_party_types = []
+        for party_type, party_name in PARTY_TYPE:
+            if str(party_name)+"_party" in request.POST:
+                new_party_types.append(party_type)
 
-        for party_type in PARTY_TYPE:
-            if str(party_type[1])+"_party" in request.POST:
-                party = Party.lg.get_or_none( party_type=party_type[0] )
-                party.joinMember(viewer)
-                all_parties.remove(party)
+        # remove user from parties which they are in but shouldn't be in
+        user_parties = viewer.parties.all()
+        for x in user_parties:
+            if not x.party_type in new_party_types:
+                x.removeMember(viewer)
+                viewer.parties.remove(x)
 
-        for party in all_parties:
-            party.removeMember(viewer)
+        # add user to parties which they are not in, but should be in
+        for x in new_party_types:
+            party = Party.objects.get(party_type=x)
+            party.joinMember(viewer)
+            viewer.parties.add(party)
 
         viewer.bio = request.POST['bio']
         viewer.save()
@@ -2287,13 +2297,19 @@ def setFirstLoginStage(request, vals={}):
 # saves the posted incompatability information to the db
 #-----------------------------------------------------------------------------------------------------------------------
 def logCompatability(request, vals={}):
-    return HttpResponse("temp")
-#    incompatible = json.loads(request.POST['incompatible'])
-#    user = vals.get('viewer')
-#    CompatabilityLog(incompatible=incompatible, user=user,
-#        page=getSourcePath(request), ipaddress=request.META.get('REMOTE_ADDR'),
-#        user_agent=request.META.get('HTTP_USER_AGENT')).autoSave()
-#    return HttpResponse('compatability logged')
+
+    incompatible = json.loads(request.POST['incompatible'])
+    user = vals.get('viewer')
+    ipaddress = request.META.get('REMOTE_ADDR')
+    if ipaddress:
+        already = CompatabilityLog.objects.filter(ipaddress=ipaddress)
+    else:
+        already = None
+    if not already:
+        CompatabilityLog(incompatible=incompatible, user=user,
+            page=getSourcePath(request), ipaddress=ipaddress,
+            user_agent=request.META.get('HTTP_USER_AGENT')).autoSave()
+    return HttpResponse('compatability logged')
 
 #-----------------------------------------------------------------------------------------------------------------------
 # saves a link click on some news
@@ -2461,7 +2477,6 @@ def createContent(request, vals={}):
                 valid_datetime = parser.parse(gendate)
             except ValueError:
                 return HttpResponseBadRequest("Could not parse election date.")
-            from datetime import datetime
             newc = Election(title=title, full_text=full_text, in_feed=False, in_search=True, in_calc=False,
                     election_date=valid_datetime)
             newc.autoSave(creator=viewer, privacy=privacy)

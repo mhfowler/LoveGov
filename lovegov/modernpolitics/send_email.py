@@ -92,7 +92,7 @@ def sendInviteByEmail(inviter, to_email):
 
 
 def sendTeamEmail(subject, email_html):
-    email_recipients = ["max_fowler@brown.edu"]
+    email_recipients = TEAM_EMAILS
     sendHTMLEmail(
         subject = subject,
         email_html = email_html,

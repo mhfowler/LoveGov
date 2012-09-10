@@ -10,9 +10,6 @@
 from lovegov.frontend.views_helpers import *
 
 from pprint import pprint
-
-from datetime import datetime, timedelta
-
 from collections import OrderedDict
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -249,9 +246,7 @@ def login(request, to_page='home/', message="", vals={}):
         to_page = "home"
 
     # Try logging in with facebook
-    if fbLogin(request,vals,refresh=True):
-        # to_page = to_page.replace("/login", "")
-        # print ("to_page: " + to_page)
+    if fbLogin(request,vals,refresh=False):
         return shortcuts.redirect('/' + to_page)
 
     # Try logging in with twitter
@@ -275,6 +270,7 @@ def welcome(request, vals={}):
     return renderToResponseCSRF(template='site/pages/login/login-main-register-success.html', vals=vals, request=request)
 
 def loginAuthenticate(request,user,to_page='home/'):
+    if to_page == 'blog': to_page = 'home/'
     auth.login(request, user)
     redirect_response = shortcuts.redirect('/' + to_page)
     redirect_response.set_cookie('privacy', value='PUB')
@@ -994,11 +990,11 @@ def legislation (request, vals={}):
     vals['committees'] = LEGISLATION_COMMITTEES
     vals['bill_numbers'] = LEGISLATION_BILLNUMBERS
 
-    now = datetime.now()
+    now = datetime.datetime.now()
     time_range = [1464,732,366,183]
     introduced_dates = []
     for x in time_range:
-        date = now - timedelta(days=x)
+        date = now - datetime.timedelta(days=x)
         json_date = json.dumps({'year':date.year, 'month':date.month, 'day':date.day})
         date_tuple = {'json':json_date, 'date':date}
         introduced_dates.append(date_tuple)

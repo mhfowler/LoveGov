@@ -159,9 +159,6 @@ div.account-right
       color:$black;
     }
 
-    &.phone-input {
-      top:-63px;
-    }
   }
 
 
@@ -478,6 +475,9 @@ div.voting-address-wrapper {
 
   div.location-city {
     margin-top:10px;
+  }
+  div.location-zip {
+    margin-top:20px;
   }
 
   textarea.address-textarea {

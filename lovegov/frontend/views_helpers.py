@@ -356,7 +356,17 @@ def valsGroupButtons(viewer, group, vals):
 # fill dictionary for a particular election
 #-----------------------------------------------------------------------------------------------------------------------
 def valsElection(viewer, election, vals):
-    running = election.members.all().order_by("-num_supporters")
+    if LOCAL:
+        running = UserProfile.objects.all()
+    elif election.alias == 'presidential_election':
+        obama = UserProfile.objects.get(alias='barack_obama')
+        mitt = UserProfile.objects.get(alias='mitt_romney')
+        ron = UserProfile.objects.get(alias='ronald_paul')
+        biden = UserProfile.objects.get(alias='joseph_biden')
+        ryan = UserProfile.objects.get(alias='paul_ryan')
+        running = [obama, mitt, ron, biden, ryan]
+    else:
+        running = election.members.all().order_by("-num_supporters")
     supporting = viewer.getPoliticians()
     for r in running:
         r.comparison = r.getComparison(viewer)
@@ -383,8 +393,10 @@ def valsPetition(viewer, petition, vals):
 # fill dictionary for fb friends invite sidebar
 #-----------------------------------------------------------------------------------------------------------------------
 def valsFBFriends(request, vals):
+
     class FBFriend:
         pass
+
     viewer = vals['viewer']
     fb_friends = []
     if viewer.facebook_id:
@@ -395,12 +407,14 @@ def valsFBFriends(request, vals):
             if friends_list:
                 vals['facebook_authorized'] = True
                 for friend in random.sample(friends_list, 4):
-                    fb_friend = FBFriend()
-                    fb_friend.name = friend['name']
-                    fb_friend.id = friend['id']
-                    fb_friend.picture_url = "https://graph.facebook.com/" + str(fb_friend.id) + "/picture?type=large"
-                    fb_friends.append(fb_friend)
-                    vals['facebook_friends'] = fb_friends
+                    fb_id = friend['id']
+                    if not UserProfile.lg.get_or_none(facebook_id=fb_id):
+                        fb_friend = FBFriend()
+                        fb_friend.name = friend['name']
+                        fb_friend.id = friend['id']
+                        fb_friend.picture_url = "https://graph.facebook.com/" + str(fb_friend.id) + "/picture?type=large"
+                        fb_friends.append(fb_friend)
+                vals['facebook_friends'] = fb_friends
     return fb_friends
 
 #-----------------------------------------------------------------------------------------------------------------------

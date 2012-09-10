@@ -154,6 +154,14 @@ class PhysicalAddress(LGModel):
         self.district = None
         self.save()
 
+    def getVerbose(self):
+        to_return = ''
+        if self.state:
+            to_return = self.state
+            if self.city:
+                to_return += ', ' + self.city
+        return to_return
+
 #=======================================================================================================================
 # Abstract tuple for representing what location and scale content is applicable to.
 #=======================================================================================================================
@@ -409,13 +417,10 @@ class Content(Privacy, LocationLevel):
     # gets location string, if content has location
     #-------------------------------------------------------------------------------------------------------------------
     def getLocationVerbose(self):
-        to_return = ''
         if self.location:
-            if self.location.state:
-                to_return = self.location.state
-                if self.location.city:
-                    to_return += ', ' + self.location.city
-        return to_return
+            return self.location.getVerbose()
+        else:
+            return ''
 
     #-------------------------------------------------------------------------------------------------------------------
     # returns group that this content was orginally posted to
@@ -1146,6 +1151,15 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
         return self.first_name
 
     #-------------------------------------------------------------------------------------------------------------------
+    # string representation of location
+    #-------------------------------------------------------------------------------------------------------------------
+    def getLocationVerbose(self):
+        if self.location:
+            return self.location.getVerbose()
+        else:
+            return ''
+
+    #-------------------------------------------------------------------------------------------------------------------
     # first login tasks
     #-------------------------------------------------------------------------------------------------------------------
     def hasFirstLoginHeader(self):
@@ -1738,16 +1752,16 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
                 self.networks.add(school_network)
                 setEducationText(school_network)
 
-        if 'location' in fb_data:
-            location = fb_data['location']
-            name = location['name']
-            alias = genAliasSlug(name, unique=False)
-            location_network = Network.lg.get_or_none(alias=alias,network_type='L')
-            if not location_network:
-                location_network = Network(alias=alias,title=name,network_type='L')
-                location_network.autoSave()
-            location_network.joinMember(self)
-            self.networks.add(location_network)
+#        if 'location' in fb_data:
+#            location = fb_data['location']
+#            name = location['name']
+#            alias = genAliasSlug(name, unique=False)
+#            location_network = Network.lg.get_or_none(alias=alias,network_type='L')
+#            if not location_network:
+#                location_network = Network(alias=alias,title=name,network_type='L')
+#                location_network.autoSave()
+#            location_network.joinMember(self)
+#            self.networks.add(location_network)
 
 
         self.setUsername(fb_data['email'])
@@ -1889,39 +1903,40 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
     #-------------------------------------------------------------------------------------------------------------------
     def notify(self, action):
         type = action.action_type
+        #action = action.downcast()
 
         #If you are the one doing the action, do not notify yourself
         if action.user.id == self.id:
             return False
 
         #Do aggregate notifications if necessary
-        if type in AGGREGATE_NOTIFY_TYPES:
-            # IF the action does not have modifiers or this modifier is notifiable
-            if type not in NOTIFY_MODIFIERS:
-
-                stale_date = datetime.datetime.today() - STALE_TIME_DELTA
-                # Find all recent notifications with this action type/modifier directed towards this user
-                already = Notification.objects.filter(notify_user=self,
-                                                        when__gte=stale_date,
-                                                        action__action_type=type ).order_by('-when')
-
-                for notification in already: # For all recent notifications matching this one
-                    if notification.action.getTo().id == action.getTo().id: # If these actions target the same content
-                        # Update Notification with this action
-                        notification.when = datetime.datetime.today()
-                        notification.addAggAction( action )
-                        return True
-
-                notification = Notification(action=action, notify_user=self)
-                notification.save()
-                notification.addAggAction( action )
-                return True
+#        if type in AGGREGATE_NOTIFY_TYPES:
+#            # IF the action does not have modifiers or this modifier is notifiable
+#            if type not in NOTIFY_MODIFIERS or (type == 'VO' and action.value == 1):
+#
+#                stale_date = datetime.datetime.today() - STALE_TIME_DELTA
+#                # Find all recent notifications with this action type/modifier directed towards this user
+#                already = Notification.objects.filter(notify_user=self,
+#                                                        when__gte=stale_date,
+#                                                        action__action_type=type ).order_by('-when')
+#
+#                for notification in already: # For all recent notifications matching this one
+#                    if notification.action.getTo().id == action.getTo().id: # If these actions target the same content
+#                        # Update Notification with this action
+#                        notification.when = datetime.datetime.today()
+#                        notification.addAggAction( action )
+#                        return True
+#
+#                notification = Notification(action=action, notify_user=self)
+#                notification.save()
+#                notification.addAggAction( action )
+#                return True
 
         #Otherwise do normal notifications
-        elif type in NOTIFY_TYPES:
+        if type in NOTIFY_TYPES:
             modifier = action.getModifier()
             # IF the action does not have modifiers or this modifier is notifiable
-            if type not in NOTIFY_MODIFIERS or (modifier and modifier in NOTIFY_MODIFIERS[type]):
+            if type not in NOTIFY_MODIFIERS or (modifier and modifier in NOTIFY_MODIFIERS[type]) or (type=='VO' and action.value==1):
                 notification = Notification(action=action, notify_user=self)
                 notification.save()
                 return True
@@ -2215,7 +2230,7 @@ class Action(Privacy):
         elif action_type == 'AD':
             object = self.addtoscorecardaction
         else:
-            object = None
+            object = self
         return object
 
     def getVerbose(self,viewer=None,vals={}):
@@ -2841,7 +2856,7 @@ class Notification(Privacy):
             'you_acted' : you_acted,
             'to_object' : action.content,
             'value' : action.value,
-            'tally' : action.agg_actions.count()
+            'tally' : self.agg_actions.count()
         })
 
         return render_to_string('site/pieces/notifications/voted_verbose.html',vals)
@@ -2910,7 +2925,7 @@ class Notification(Privacy):
             'shared_object' : action.content,
             'to_object' : to_object,
             'to_you' : to_you,
-            'tally' : action.agg_actions.count()
+            'tally' : self.agg_actions.count()
         })
 
         return render_to_string('site/pieces/notifications/shared_verbose.html',vals)
@@ -4329,11 +4344,12 @@ class Group(Content):
         if not group_joined.confirmed and not group.hidden and not group.is_election:
             user.num_groups += 1
             user.save()
-            self.num_members += 1
-            self.save()
         group_joined.confirm()
         group_joined.ever_member = True
-        self.members.add(user)
+        if not user in self.members.all():
+            self.num_members += 1
+            self.save()
+            self.members.add(user)
         from lovegov.modernpolitics.actions import followGroupAction
         followGroupAction(user, self, True, privacy)
 
@@ -4765,13 +4781,14 @@ class CalculatedGroup(Group):
         found = []
         processed_num = 0
         for x in to_process:
-            if x.num_answers >= LIKE_MINDED_NUMQ_THRESHOLD:
-                comparison = x.getComparison(viewer)
-                if comparison.result >= LIKE_MINDED_RESULT_THRESHOLD and comparison.num_q >= LIKE_MINDED_NUMQ_THRESHOLD:
-                    self.members.add(x)
-                    found.append(x)
-            self.processed.add(x)
-            processed_num += 1
+            if x.id != viewer.id and x.alias != "lovegov":
+                if x.num_answers >= LIKE_MINDED_NUMQ_THRESHOLD:
+                    comparison = x.getComparison(viewer)
+                    if comparison.result >= LIKE_MINDED_RESULT_THRESHOLD and comparison.num_q >= LIKE_MINDED_NUMQ_THRESHOLD:
+                        self.members.add(x)
+                        found.append(x)
+                self.processed.add(x)
+                processed_num += 1
         return found, processed_num
 
 

@@ -9,9 +9,9 @@
 
     <td class="action-text">
         {% include "site/pieces/actions/action_name_snippet.html" with object=from_user you=you_acted capital=true %}
-        {% if confirmed %} pinned {{ pinned_object.get_name }} to
-        {% else %} unpinned {{ pinned_object.get_name }} from {% endif %}
-        {% include "site/pieces/actions/action_name_snippet.html" with object=to_object you=to_you %}
+        {% if confirmed %} pinned {% include 'site/pieces/actions/action_object.html' with to_object=pinned_object %} to
+        {% else %} unpinned {% include 'site/pieces/actions/action_object.html' with to_object=pinned_object %} from {% endif %}
+        {% include 'site/pieces/actions/action_object.html' with to_object=to_object %}
     </td>
 
 {% endblock %}

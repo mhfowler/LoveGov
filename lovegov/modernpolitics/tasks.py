@@ -8,10 +8,11 @@ from celery.task.base import task
 def queueTask(task, args=(), kwargs=None):
     kwargs = kwargs or {}
     def call_task(*args, **kwargs):
-        if not LOCAL:
-            return task.delay(*args, **kwargs)
-        else:
-            return task(*args, **kwargs)
+#        if not LOCAL:
+#            return task.delay(*args, **kwargs)
+#        else:
+#            return task(*args, **kwargs)
+        return task(*args, **kwargs)
     return call_task(*args, **kwargs)
 
 #-----------------------------------------------------------------------------------------------------------------------

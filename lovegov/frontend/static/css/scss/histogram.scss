@@ -17,7 +17,6 @@
     border: 1px solid $red;
     overflow:hidden;
 
-
     .histogram-body {
       position:relative;
       width:980px;
@@ -110,6 +109,7 @@
         }
       }
     }
+
     div.histogram-footer {
       background-color:$red;
       width:980px;
@@ -120,24 +120,25 @@
         @include really-big();
         @include fontSize(30px);
         color:white;
-        margin: 15px 0 0 20px;
-
+        margin: 7px 0 0 20px;
         a {
-          font-style:italic;
+          //font-style:italic;
           color: white;
+          text-decoration:none;
         }
         a:hover {
           color: $black;
         }
       }
 
-      p.breakdown {
+      p.histogram-breakdown {
         display:block;
-        margin-left: 160px;
+        width:100%;
         text-align:center;
+        display:none;
       }
 
-      .histogram-topic {
+      p.histogram-topic {
         float:right;
         @include really-big();
         @include fontSize(30px);

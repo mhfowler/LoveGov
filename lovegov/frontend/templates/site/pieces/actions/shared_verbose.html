@@ -10,7 +10,7 @@
     <td class="action-text">
         {% include "site/pieces/actions/action_name_snippet.html" with object=from_user you=you_acted capital=true %}
         shared {{ shared_object.get_name }} with
-        {% include "site/pieces/actions/action_name_snippet.html" with object=to_object you=to_you %}
+        {% include 'site/pieces/actions/action_object.html' with to_object=to_object %}
     </td>
 
 {% endblock %}
