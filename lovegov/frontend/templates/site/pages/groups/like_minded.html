@@ -2,18 +2,29 @@
 
 {% block home_header %}
 
-    {% if not ABOVE_QUESTIONS_THRESHOLD %}
-        {% include 'site/pages/groups/introduction_like_minded_header.html' %}
-    {% else %}
-        {% include 'site/pages/groups/like_minded_header.html' with info_height="200" %}
-    {% endif %}
+    <div class="home-page-header">
+        {% if ABOVE_QUESTIONS_THRESHOLD %}
+
+            {% include 'site/pages/dismissible_headers/dismissible_header_switch.html' %}
+
+        {% else %}
+
+            {% include 'site/pages/groups/introduction_like_minded_header.html' %}
+
+        {% endif %}
+
+    </div>
 
 {% endblock %}
+
+
 
 {% block home_feed %}
 
     {% if ABOVE_QUESTIONS_THRESHOLD %}
-        {% include 'site/pages/feed/feed.html' %}
+
+        {% include 'site/pages/feed/feed.html' with like_minded_filter=1 %}
+
     {% else %}
         <div class="questions-wrapper">
             {% include 'site/pages/qa/feed_browse_questions.html' with special_feed="getQuestions" default_display="choose" only_unanswered=1 %}
@@ -21,4 +32,5 @@
     {% endif %}
 
     <script> rebind="home"; </script>
+
 {% endblock %}

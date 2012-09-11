@@ -30,6 +30,9 @@ function bindOnReload() {
     // misc
     bindNotificationsDropdownClickOutside();
 
+    // show any visible helper bubles
+    showBubbles();
+
     switch (rebind) {
 
         case "home": initHomePage(); break;
@@ -983,6 +986,20 @@ bind(".type_button" , "click" , null , function(event) {
     }
 });
 
+bind(".like_minded_button", "click", null, function(event) {
+    $(this).toggleClass("clicked");
+    var container = $(this).parents(".feed_main");
+    var like_minded_val;
+    if ($(this).hasClass("clicked")) {
+        like_minded_val = 1;
+        $(".like_minded_header_dialogue").show();
+    }
+    else {
+        like_minded_val = "";
+    }
+    container.data("like_minded", like_minded_val);
+});
+
 function clearTypes() {
     $(".type_button").removeClass("clicked");
     feed_types = [];
@@ -1045,10 +1062,11 @@ function getFeed(container) {
     var feed_timeout = setTimeout(function(){
         container.find(".feed_fetching").show();
     },time);
+    var like_minded = getValueFromKey(container, 'like_minded');
     var data;
     if (feed == 'getFeed')
     {
-        data = {'action': 'getFeed', 'path': path, 'feed_rank':feed_rank, 'feed_start':feed_start, 'feed_types':feed_types_json};
+        data = {'action': 'getFeed', 'path': path, 'feed_rank':feed_rank, 'feed_start':feed_start, 'feed_types':feed_types_json, 'like_minded':like_minded};
     }
     else if (feed == 'getQuestions')
     {
@@ -3947,6 +3965,10 @@ bind('.like_minded_close' , 'click' , null , function(e)
 });
 
 
+bind(".like_minded_x", "click", null, function(e) {
+    $(".like_minded_header_dialogue").hide();
+});
+
 /***********************************************************************************************************************
  *
  *      ~log news link clicks
@@ -4172,7 +4194,7 @@ bind(".change_privacy_mode", "click", function(e) {
  *
  ***********************************************************************************************************************/
 bind('.explore_your_feed','click', function() {
-    showBubbles();
+    showAllBubbles();
     $(".explore_your_feed").removeClass("incomplete");
     action({
         data: {
@@ -4184,12 +4206,33 @@ bind('.explore_your_feed','click', function() {
     });
 });
 
-function showBubbles() {
+function showAllBubbles() {
     $(".helper_bubble").fadeIn(200);
 }
 
+function showBubbles() {
+    var time = 600;
+    setTimeout(function() {
+        var bubbles = $(".helper_bubble.bubble_show");
+        bubbles.fadeIn(300);
+        bubbles.removeClass("bubble_show");
+    }, time);
+}
+
 bind('.x_helper_bubble','click', function() {
-    $(this).parents(".helper_bubble").hide();
+    var helper_bubble = $(this).parents(".helper_bubble").hide();
+    helper_bubble.hide();
+    var task = helper_bubble.data("task");
+    if (task!="") {
+        action({
+            data: {
+                'action': 'completeTask',
+                'task': task
+            },
+            success: function(data) {
+            }
+        });
+    }
 });
 
 

@@ -29,6 +29,19 @@ div.facebook-friend-card
 
 div.invite-friends-sidebar {
   float:left;
+  div.fb-friends-wrapper {
+    div.not-connected {
+      a.sign-in-fb {
+        float:left;
+        font-size:14px;
+        margin-top:10px;
+        color:$dark-gray;
+        &:hover {
+          color:$black;
+        }
+      }
+    }
+  }
   div.invite-header {
     margin-top:0px;
     margin-bottom: 8px;

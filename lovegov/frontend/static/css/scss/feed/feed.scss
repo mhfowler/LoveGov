@@ -32,16 +32,16 @@ div.load-more:hover {
 td.create-button
 {
   @include staticImage('/images/icons/white_create.png');
-  /*
-  background-repeat: no-repeat;
-  background-position: 12px 7px;
-  font-size: 22px;
-  color: white;
-  background-color: $red;
-  vertical-align: middle;
-  height: 60px;
-  padding: 0 18px 0 75px;
-  text-decoration: none; */
+/*
+background-repeat: no-repeat;
+background-position: 12px 7px;
+font-size: 22px;
+color: white;
+background-color: $red;
+vertical-align: middle;
+height: 60px;
+padding: 0 18px 0 75px;
+text-decoration: none; */
   background-repeat: no-repeat;
   background-size: 31px 26px;
   background-position: 14px 8px;
@@ -142,6 +142,11 @@ div.feed-main
         div.sort-button
         {
           @extend .base-button;
+        }
+
+        div.like-minded-filter-button {
+          margin-right:40px;
+          float:left;
         }
 
         a.topic-button {
@@ -287,7 +292,7 @@ div.feed-main
 div.feed-item-wrapper {
   width:100%;
   margin-bottom:20px;
-
+  margin-top:25px;
   //margin-bottom:15px;
   //padding-bottom: 25px;
   //padding-top: 10px;

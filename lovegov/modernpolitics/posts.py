@@ -50,6 +50,7 @@ def newRegister(request,vals={}):
     if email and email2:
         if email != email2:
             vals['email_error'] = "Both emails must be the same."
+            valid = False
         else:
             splitted = email.split("@")
             if len(splitted)!=2:
@@ -1136,6 +1137,10 @@ def updateStats(request, vals={}):
         from lovegov.frontend.views_helpers import valsQuestionsThreshold
         valsQuestionsThreshold(vals)
         html = ajaxRender('site/pages/groups/introduction_like_minded_header_content.html', vals, request)
+    elif object == 'sidebar_poll_progress':
+        from lovegov.frontend.views_helpers import valsQuestionsThreshold
+        valsQuestionsThreshold(vals)
+        html = ajaxRender('site/pages/home/lgpoll_progress_snippet.html', vals, request)
     return HttpResponse(json.dumps({'html':html}))
 
 #----------------------------------------------------------------------------------------------------------------------
@@ -1670,12 +1675,13 @@ def getFeed(request, vals):
 
     feed_ranking = request.POST['feed_rank']
     feed_types = json.loads(request.POST['feed_types'])
+    like_minded = request.POST['like_minded']
     feed_start = int(request.POST['feed_start'])
     path = request.POST['path']
     alias = path.replace("/","")
     viewer = vals['viewer']
     content = getFeedItems(viewer=viewer, alias=alias, feed_ranking=feed_ranking,
-        feed_types=feed_types, feed_start=feed_start, num=10)
+        feed_types=feed_types, feed_start=feed_start, num=10, like_minded=like_minded)
     feed_items = contentToFeedItems(content, vals['viewer'])
     vals['feed_items'] = feed_items
 

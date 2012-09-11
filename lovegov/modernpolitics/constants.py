@@ -45,7 +45,7 @@ TEMPDIR = settings.MEDIA_ROOT + 'temp/'
 
 ########################################## Content we cycle through ####################################################
 
-DISMISSIBLE_HEADERS = ['congress_teaser', 'find_reps', 'lovegov_poll']
+DISMISSIBLE_HEADERS = ['congress_teaser', 'find_reps']
 
 ########################################## SPECIAL ALIASES #############################################################
 

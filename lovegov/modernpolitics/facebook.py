@@ -118,7 +118,6 @@ def fbLogin(request, vals={}, refresh=False):
         user = user_prof.user
         user.backend = 'django.contrib.auth.backends.ModelBackend'
         auth.login(request, user)
-        user_prof.incrementNumLogins()
         return user_prof
 
 

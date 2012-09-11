@@ -246,15 +246,14 @@ def aliasDowncastEdit(request, alias=None, vals={}):
 #-----------------------------------------------------------------------------------------------------------------------
 def login(request, to_page='home/', message="", vals={}):
 
+    to_page = "/" + to_page
     # Try logging in with facebook
     user_prof = fbLogin(request,vals,refresh=False)
     if user_prof:
-        if user_prof.first_login:
-            to_page = 'match/'
-        return shortcuts.redirect('/' + to_page)
+        return loginRedirect(request, user_prof, to_page)
 
     # Try logging in with twitter
-    twitter = twitterLogin(request, "/" + to_page, vals)
+    twitter = twitterLogin(request,to_page, vals)
     if twitter:
         return twitter
 
@@ -265,8 +264,16 @@ def login(request, to_page='home/', message="", vals={}):
     else: # Otherwise load the login page
         vals.update( {"registerform":RegisterForm(), "username":'', "error":'', "state":'fb'} )
         response = renderToResponseCSRF(template='site/pages/login/login-main.html', vals=vals, request=request)
+
     response.delete_cookie('lovegov_try')
     return response
+
+def loginRedirect(request, viewer, to_page):
+    num_logins = viewer.num_logins
+    if not num_logins:
+        to_page = '/match/'
+    viewer.incrementNumLogins()
+    return shortcuts.redirect(to_page)
 
 def welcome(request, vals={}):
     vals['name'] = request.GET.get('name')
@@ -280,7 +287,7 @@ def loginAuthenticate(request,user,to_page='home/'):
     redirect_response.set_cookie('privacy', value='PUB')
     return redirect_response
 
-def loginPOST(request, to_page='home/',message="",vals={}):
+def loginPOST(request, to_page='/home/',message="",vals={}):
     vals['registerform'] = RegisterForm()
     # LOGIN
     if request.POST['button'] == 'login':
@@ -292,8 +299,8 @@ def loginPOST(request, to_page='home/',message="",vals={}):
             if not user_prof: # If the controlling user has no profile, we're boned
                 error = 'Your account is currently broken.  Our developers have been notified and your account should be fixed soon.'
             elif user_prof.confirmed: # Otherwise log this bitch in
-                user_prof.incrementNumLogins()
-                return loginAuthenticate(request,user,to_page)
+                auth.login(request, user)
+                return loginRedirect(request, user_prof, to_page)
             else: # If they can't authenticate, they probably need to validate
                 error = 'Your account has not been validated yet. Check your email for a confirmation link.  It might be in your spam folder.'
         else: # Otherwise they're just straight up not in our database
@@ -356,7 +363,7 @@ def passwordRecovery(request,confirm_link=None, vals={}):
 
 def logout(request, vals={}):
     auth.logout(request)
-    response = shortcuts.redirect('/login/web/')
+    response = shortcuts.redirect('/login/')
     response.delete_cookie('fb_token')
     response.delete_cookie('twitter_access_token')
     return response
@@ -463,13 +470,29 @@ def compareWeb(request,alias=None,vals={}):
 #-----------------------------------------------------------------------------------------------------------------------
 # MAIN PAGES
 #-----------------------------------------------------------------------------------------------------------------------
-def home(request, vals):
+def home(request, vals={}):
 
     viewer = vals['viewer']
-    viewer.completeTask("E")
+    like_minded = viewer.getLikeMindedGroup()
+    if like_minded:
+        members = like_minded.members.all()
+        vals['num_members'] = len(members)
+        vals['members'] = members
+        vals['num_processed'] = like_minded.processed.count()
+    vals['like_minded'] = like_minded
 
+    # dismissible header at top
     valsDismissibleHeader(request, vals)
-    focus_html =  ajaxRender('site/pages/home/home.html', vals, request)
+
+    # above or below question threshold
+    valsQuestionsThreshold(vals)
+
+    # check and complete task
+    vals['first_like_minded'] = not viewer.checkTask("L")
+    viewer.completeTask("L")
+
+    # render and return html
+    focus_html =  ajaxRender('site/pages/groups/like_minded.html', vals, request)
     url = request.path
     return homeResponse(request, focus_html, url, vals)
 
@@ -544,8 +567,8 @@ def questions(request, vals={}):
 
     getMainTopics(vals)
 
-    lgpoll = getLoveGovPoll()
-    vals['lgpoll'] = lgpoll
+    valsLGPoll(vals)
+    lgpoll = vals['lgpoll']
     getQuestionStats(vals, lgpoll)
 
     html =  ajaxRender('site/pages/qa/qa.html', vals, request)
@@ -626,34 +649,6 @@ def electionPage(request, election, vals={}):
     url = request.path
     return homeResponse(request, focus_html, url, vals)
 
-
-#-----------------------------------------------------------------------------------------------------------------------
-# like-minded group page
-#-----------------------------------------------------------------------------------------------------------------------
-def likeMinded(request, vals={}):
-
-    viewer = vals['viewer']
-    like_minded = viewer.getLikeMindedGroup()
-    if like_minded:
-        members = like_minded.members.all()
-        vals['num_members'] = len(members)
-        vals['members'] = members
-        vals['num_processed'] = like_minded.processed.count()
-    vals['like_minded'] = like_minded
-
-    # above or below question threshold
-    valsQuestionsThreshold(vals)
-
-    # visuall stuff for feed
-    vals['no_create_button'] = True
-
-    # complete task
-    viewer.completeTask("L")
-
-    # render and return html
-    focus_html =  ajaxRender('site/pages/groups/like_minded.html', vals, request)
-    url = request.path
-    return homeResponse(request, focus_html, url, vals)
 
 #-----------------------------------------------------------------------------------------------------------------------
 # profile page

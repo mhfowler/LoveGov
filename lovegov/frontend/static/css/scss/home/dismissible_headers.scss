@@ -164,6 +164,15 @@ div.first-login-header {
       }
     }
   }
+
+  div.get-involved {
+    width: 450px;
+    font-size: 16px;
+    display: inline-block;
+    margin-left: 77px;
+    margin-top: 10px;
+  }
+
   div.completed-all {
     float: right;
     width: 320px;
@@ -346,8 +355,8 @@ a.lgpoll-header {
 
   div.right-part {
     float:left;
-    margin-left:35px;
-    width:450px;
+    margin-left: 45px;
+    width: 400px;
     margin-top:30px;
     div.header-title {
       @include fontSize(24px);

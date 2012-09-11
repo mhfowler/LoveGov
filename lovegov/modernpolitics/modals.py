@@ -90,8 +90,7 @@ def getCreateModal(request,vals={}):
     vals['all_polls'] = Poll.objects.all()
     gid = request.POST.get('gid')
     selected_group_id = request.POST.get('selected_group')
-    if selected_group_id:
-        selected_group = Group.lg.get_or_none(id=selected_group_id)
+    selected_group = Group.lg.get_or_none(id=selected_group_id)
     subscriptions = list(viewer.getSubscriptions())
     if selected_group not in subscriptions:
         subscriptions.append(selected_group)
