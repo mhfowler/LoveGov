@@ -12,20 +12,7 @@
 {% endcomment %}
 
 
-{% if dismissible_header == 'first_login' %}
-    {% include 'site/pages/home/introduction_home_header.html' %}
-{% elif dismissible_header == 'congress_teaser' and not compare_congress_task %}
-    {% include 'site/pages/dismissible_headers/congress_header.html' %}
-{% elif dismissible_header == 'find_reps' %}
-    {% if not viewer.temp_location %}
-        {% include 'site/pages/dismissible_headers/find_reps_header.html' %}
-    {% endif %}
-{% elif dismissible_header == 'lovegov_poll' %}
-    {% if not poll_progress.finished %}
-        {% include 'site/pages/dismissible_headers/lgpoll_progress_header.html' %}
-    {% endif %}
-{% endif %}
-
+{% include 'site/pages/dismissible_headers/dismissible_header_switch.html' %}
 
 <div class="home-body">
     {% include 'site/pages/feed/feed.html' with feed_boxed=1 %}

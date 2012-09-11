@@ -96,4 +96,14 @@
         </a>
     </div>
 
+    <!-- lg poll progress, if not finished -->
+    {% include 'site/pages/home/lgpoll_progress_snippet.html' %}
+
+    <!-- topic stat box -->
+    {% comment %}
+    <div class="sidebar-question-stats-wrapper">
+        {% include 'site/pages/qa/poll_progress_by_topic.html' with poll=lgpoll %}
+    </div>
+    {% endcomment %}
+
 </div>

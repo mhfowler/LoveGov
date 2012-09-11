@@ -106,11 +106,8 @@ def twitterLogin(request, to_page="/home/", vals={}):
             user = user_prof.user
             user.backend = 'django.contrib.auth.backends.ModelBackend'
             auth.login(request, user)
-            user_prof.incrementNumLogins()
-
-            if user_prof.first_login:
-                to_page = '/match/'
-            return shortcuts.redirect(to_page)
+            from lovegov.frontend.views import loginRedirect
+            return loginRedirect(request, user_prof, to_page)
 
         else:
             return False

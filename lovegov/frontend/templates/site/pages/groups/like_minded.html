@@ -2,18 +2,30 @@
 
 {% block home_header %}
 
-    {% if not ABOVE_QUESTIONS_THRESHOLD %}
-        {% include 'site/pages/groups/introduction_like_minded_header.html' %}
-    {% else %}
+    {% if ABOVE_QUESTIONS_THRESHOLD %}
+
+        <!-- dismissible header at top, either ad/teaser or appeal to get engaged -->
+        {% include 'site/pages/dismissible_headers/dismissible_header_switch.html' %}
+
+        <!-- like minded group explanation header (members + explanation + update button) -->
         {% include 'site/pages/groups/like_minded_header.html' with info_height="200" %}
+
+    {% else %}
+
+        {% include 'site/pages/groups/introduction_like_minded_header.html' %}
+
     {% endif %}
 
 {% endblock %}
 
+
+
 {% block home_feed %}
 
     {% if ABOVE_QUESTIONS_THRESHOLD %}
+
         {% include 'site/pages/feed/feed.html' %}
+
     {% else %}
         <div class="questions-wrapper">
             {% include 'site/pages/qa/feed_browse_questions.html' with special_feed="getQuestions" default_display="choose" only_unanswered=1 %}
@@ -21,4 +33,5 @@
     {% endif %}
 
     <script> rebind="home"; </script>
+
 {% endblock %}

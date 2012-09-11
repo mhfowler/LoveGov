@@ -6,12 +6,14 @@
 
 {% block header_top %}
 
+    {% comment %}
     <div class="like-minded-title">
         <span class="group-title"> Like-Minded Group </span>
         {% if like_minded %}
             <span class="group-num-members"> {{ num_members }} member{{ num_members|pluralize }} </span>
         {% endif %}
     </div>
+    {% endcomment %}
 
 {% endblock %}
 

@@ -4,6 +4,36 @@
 
 @import "compass";
 
+/* lg poll sidebar snippet */
+div.sidebar-poll-progress {
+  width:100%;
+  margin-top:40px;
+  float:left;
+  div.lgpoll-progress-explanation {
+    width:100%;
+    text-align:center;
+    font-size:16px;
+    color:$dark-gray;
+    a {
+      color:$dark-gray;
+      &:hover {
+        color:$black;
+      }
+    }
+  }
+  div.lgpoll-progress-numbers {
+    margin-left: 20px;
+    font-size: 40px;
+    color:$black;
+  }
+}
+
+div.sidebar-question-stats-wrapper {
+  margin-top: -10px;
+  float: left;
+  position: relative;
+  left: 1px;
+}
 
 /* match page */
 
@@ -169,7 +199,7 @@ div.left-navbar {
   position:relative;
   top:5px;
   //padding-left:5px;
-  margin-top:5px;
+  margin-top:7px;
   @include titleFont();
   width:150px;
   overflow:hidden;
@@ -377,11 +407,12 @@ a.section_title.clicked {
   div.invite-friends-sidebar {
     margin-top:20px;
     margin-bottom:25px;
+    min-height:305px;
   }
 
   div.left-toggles {
     float:left;
-    margin-top:5px;
+    //margin-top:5px;
     a.left-toggle {
       width:100%;
       display:block;

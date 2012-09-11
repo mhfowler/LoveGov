@@ -10,10 +10,8 @@ from lovegov.base_settings import UPDATE
 def valsQuestionsThreshold(vals):
     viewer = vals['viewer']
 
-    poll = getLoveGovPoll()
-    poll_progress = poll.getPollProgress(viewer)
-    vals['lgpoll'] = poll
-    vals['lgpoll_progress'] = poll_progress
+    valsLGPoll(vals)
+    poll_progress = vals['lgpoll_progress']
 
     above_questions_threshold = poll_progress['completed'] >= QUESTIONS_THRESHOLD
     vals['ABOVE_QUESTIONS_THRESHOLD'] = above_questions_threshold
@@ -22,7 +20,6 @@ def valsQuestionsThreshold(vals):
 
     if not viewer.checkTask("O"):
         vals['first_only_unanswered'] = True
-        viewer.completeTask("O")
 
     return above_questions_threshold
 
@@ -56,6 +53,7 @@ def homeSidebar(request, vals):
         g.num_new = g.getNumNewContent(viewer)
     vals['group_subscriptions'] = group_subscriptions
     vals['election_subscriptions'] = election_subscriptions
+    valsQuestionsThreshold(vals)
 
 #-----------------------------------------------------------------------------------------------------------------------
 # gets the users responses to questions
@@ -294,6 +292,22 @@ def getQuestionStats(vals, poll=None):
         topic_stats.append(stat)
     vals['topic_stats'] = topic_stats
 
+
+def valsLGPoll(vals):
+
+    viewer = vals['viewer']
+
+    lgpoll = vals.get('lgpoll')
+    if not lgpoll:
+        lgpoll = getLoveGovPoll()
+        vals['lgpoll'] = lgpoll
+
+    lgpoll_progress = vals.get('lgpoll_progress')
+    if not lgpoll_progress:
+        lgpoll_progress = lgpoll.getPollProgress(viewer)
+        vals['lgpoll_progress'] = lgpoll_progress
+
+
 #-----------------------------------------------------------------------------------------------------------------------
 # returns a list of group tuples for rendering the agrees_box
 #-----------------------------------------------------------------------------------------------------------------------
@@ -482,8 +496,8 @@ def valsDismissibleHeader(request, vals):
 
     viewer = vals['viewer']
 
-    if viewer.hasFirstLoginHeader():
-        header = 'first_login'
+    if not viewer.checkTask("L"):
+        header = 'engagement_intro_header'
     else:
         header = random.choice(DISMISSIBLE_HEADERS)
 
@@ -492,31 +506,33 @@ def valsDismissibleHeader(request, vals):
     if header == 'first_login':
         valsFirstLogin(vals)
 
-    elif header == 'congress_teaser':
-        vals['compare_congress_task'] = viewer.checkTask("C")
-        congress = Group.lg.get_or_none(alias="congress")
-        #congress_members = list(UserProfile.objects.filter(primary_role__office__governmental=True))
-        #congress_members = random.sample(congress_members, min(16, len(congress_members)))
-        #congress_members = UserProfile.objects.filter(primary_role__office__governmental=True)[:16]
-        congress_members = UserProfile.objects.filter(currently_in_office=True)[:16]
-        if LOCAL:
-            congress_members = UserProfile.objects.all()[:16]
-        vals['congress'] = congress
-        vals['congress_members'] = congress_members
+    elif header == 'engagement_intro_header':
+        pass
 
-        # warning or not?
-        lgpoll = getLoveGovPoll()
-        poll_progress = lgpoll.getPollProgress(viewer)
-        vals['answer_warning'] = poll_progress['completed'] < 15
+    elif header == 'congress_teaser':
+        vals['compare_congress_task'] = congress_task = viewer.checkTask("C")
+        if not congress_task:
+            congress = Group.lg.get_or_none(alias="congress")
+            #congress_members = list(UserProfile.objects.filter(primary_role__office__governmental=True))
+            #congress_members = random.sample(congress_members, min(16, len(congress_members)))
+            #congress_members = UserProfile.objects.filter(primary_role__office__governmental=True)[:16]
+            congress_members = UserProfile.objects.filter(currently_in_office=True)[:16]
+            if LOCAL:
+                congress_members = UserProfile.objects.all()[:16]
+            vals['congress'] = congress
+            vals['congress_members'] = congress_members
+
+            # warning or not?
+            valsLGPoll(vals)
+            poll_progress = vals['lgpoll_progress']
+            vals['answer_warning'] = poll_progress['completed'] < 15
 
     elif header == 'find_reps':
         pass
 
     elif header == 'lovegov_poll':
-        lgpoll = getLoveGovPoll()
-        poll_progress = lgpoll.getPollProgress(viewer)
-        vals['poll_progress'] = poll_progress
-        vals['lgpoll'] = lgpoll
+        valsLGPoll(vals)
+        vals['poll_progress'] = vals['lgpoll_progress']
 
 
 #-----------------------------------------------------------------------------------------------------------------------

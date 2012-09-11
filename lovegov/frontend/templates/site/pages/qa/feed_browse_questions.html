@@ -4,7 +4,7 @@
     <span class="answered-filter only_unanswered only-unanswered {% if only_unanswered %} clicked {% endif %}"> only unanswered </span>
 
     <!-- helper bubble -->
-    {% include 'site/pages/helper_bubbles/only_unanswered_bubble.html' with which_bubble="only_unanswered_bubble" arrow_direction="up" bubble_show=first_only_unanswered %}
+    {% include 'site/pages/helper_bubbles/only_unanswered_bubble.html' with bubble_task="O" which_bubble="only_unanswered_bubble" arrow_direction="up" bubble_show=first_only_unanswered %}
 
     <div class='buttons-container-text'>Sort by:</div>
     <div class="sort-button feed_button rank_button" data-rank="N" >New</div>

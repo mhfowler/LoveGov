@@ -112,6 +112,7 @@ div.like-minded-header {
         float:left;
         @include inline-block;
         width:100px;
+        margin-top:10px;
         a.like-minded-explanation {
           color:$gray;
           margin-left:6px;
@@ -151,9 +152,9 @@ div.like-minded-header {
         border:1px solid $black;
         @include border-radius(8px);
         width:300px;
-        height:300px;
+        height:330px;
         background-color:white;
-        top: 104px;
+        top: 84px;
         left: -14px;
         display:none;
         div.explanation-header {

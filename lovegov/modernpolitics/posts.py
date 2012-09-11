@@ -50,6 +50,7 @@ def newRegister(request,vals={}):
     if email and email2:
         if email != email2:
             vals['email_error'] = "Both emails must be the same."
+            valid = False
         else:
             splitted = email.split("@")
             if len(splitted)!=2:
@@ -1136,6 +1137,10 @@ def updateStats(request, vals={}):
         from lovegov.frontend.views_helpers import valsQuestionsThreshold
         valsQuestionsThreshold(vals)
         html = ajaxRender('site/pages/groups/introduction_like_minded_header_content.html', vals, request)
+    elif object == 'sidebar_poll_progress':
+        from lovegov.frontend.views_helpers import valsQuestionsThreshold
+        valsQuestionsThreshold(vals)
+        html = ajaxRender('site/pages/home/lgpoll_progress_snippet.html', vals, request)
     return HttpResponse(json.dumps({'html':html}))
 
 #----------------------------------------------------------------------------------------------------------------------

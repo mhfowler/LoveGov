@@ -30,6 +30,9 @@ function bindOnReload() {
     // misc
     bindNotificationsDropdownClickOutside();
 
+    // show any visible helper bubles
+    showBubbles();
+
     switch (rebind) {
 
         case "home": initHomePage(); break;
@@ -4166,7 +4169,7 @@ bind(".change_privacy_mode", "click", function(e) {
  *
  ***********************************************************************************************************************/
 bind('.explore_your_feed','click', function() {
-    showBubbles();
+    showAllBubbles();
     $(".explore_your_feed").removeClass("incomplete");
     action({
         data: {
@@ -4178,12 +4181,33 @@ bind('.explore_your_feed','click', function() {
     });
 });
 
-function showBubbles() {
+function showAllBubbles() {
     $(".helper_bubble").fadeIn(200);
 }
 
+function showBubbles() {
+    var time = 600;
+    setTimeout(function() {
+        var bubbles = $(".helper_bubble.bubble_show");
+        bubbles.fadeIn(300);
+        bubbles.removeClass("bubble_show");
+    }, time);
+}
+
 bind('.x_helper_bubble','click', function() {
-    $(this).parents(".helper_bubble").hide();
+    var helper_bubble = $(this).parents(".helper_bubble").hide();
+    helper_bubble.hide();
+    var task = helper_bubble.data("task");
+    if (task!="") {
+        action({
+            data: {
+                'action': 'completeTask',
+                'task': task
+            },
+            success: function(data) {
+            }
+        });
+    }
 });
 
 /***********************************************************************************************************************
