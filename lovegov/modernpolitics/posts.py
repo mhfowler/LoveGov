@@ -10,7 +10,6 @@
 from lovegov.modernpolitics.modals import *
 from django.core.files.base import ContentFile
 
-
 #-----------------------------------------------------------------------------------------------------------------------
 # complete a first login task
 #-----------------------------------------------------------------------------------------------------------------------
@@ -961,8 +960,11 @@ def saveAnswer(request, vals={}):
     responses.append({'response':your_response,'responder':viewer})
     vals['compare_responses'] = responses
 
+    # if this was a real response, it set num_answers to be question threshold, then start calculating like minded
+    start_like_minded = your_response.most_chosen_answer and viewer.num_answers == QUESTIONS_THRESHOLD
+
     html = ajaxRender('site/pages/qa/question_stub.html', vals, request)
-    return HttpResponse(json.dumps({'html':html, 'num_responses':question.num_responses}))
+    return HttpResponse(json.dumps({'html':html, 'num_responses':question.num_responses, 'start_like_minded':start_like_minded}))
 
 def saveScorecardAnswer(request, vals):
     question = Question.objects.get(id=request.POST['q_id'])

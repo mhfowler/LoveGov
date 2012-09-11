@@ -19,6 +19,12 @@ import os
 
 LOCAL = settings.LOCAL
 
+########################################## BACKGROUND TASKS ############################################################
+
+BACKGROUND_TASKS=['L', # calculate like minded group
+                   'C', # compare with congress
+]
+
 ########################################## FIRST LOGIN  ################################################################
 
 FIRST_LOGIN_TASKS=['P', # match with presidents
@@ -564,8 +570,8 @@ PETITION_LEVELS = [0, 10, 50, 100, 500, 1000, 5000, 10000, 50000,
 
 ###################################### LIKE MINDED GROUP ###############################################################
 
-LIKE_MINDED_RESULT_THRESHOLD = 80
-LIKE_MINDED_NUMQ_THRESHOLD = 20
+LIKE_MINDED_RESULT_THRESHOLD = 75
+LIKE_MINDED_NUMQ_THRESHOLD = 15
 LIKE_MINDED_FIND_INCREMENT = 100
 
 ###################################### ACTIONS #########################################################################

@@ -45,9 +45,11 @@
                     <a href="{{ content.getCommentsURL }}" class="num-comments">
                         {{ content.num_comments }} comment {{ content.num_comments|pluralize }}
                     </a>
+                    {% if viewer.facebook_id %}
                     <a class="share-button facebook_share_content_button" data-c_id="{{ content.id }}">
                         share +
                     </a>
+                    {% endif %}
                     <a class="pin-button pin_content" data-c_id="{{ content.id }}">
                         pin
                     </a>

@@ -1163,10 +1163,46 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
     first_login = models.IntegerField(default=1)
     first_login_tasks = models.CharField(max_length=10, default="", blank=True)
     num_logins = models.IntegerField(default=0)
+    # background tasks
+    background_tasks = models.CharField(max_length=10, default="", blank=True)
+    finished_tasks = models.CharField(max_length=10, default="", blank=True)
 
 
     def __unicode__(self):
         return self.first_name
+
+    #-------------------------------------------------------------------------------------------------------------------
+    # background tasks
+    #-------------------------------------------------------------------------------------------------------------------
+    def valsBackgroundTasks(self, vals):
+        if self.checkBackgroundTask("L") and not self.checkFinishedTask("L"):
+            vals["computing_like_minded"] = True
+
+    def checkBackgroundTask(self, task):
+        return task in self.background_tasks
+
+    def addBackgroundTask(self, task):
+        if not task in self.background_tasks:
+            self.background_tasks += task
+            self.save()
+
+    def removeBackgroundTask(self, task):
+        if task in self.background_tasks:
+            self.background_tasks = self.background_tasks.replace(task, "")
+            self.save()
+
+    def checkFinishedTask(self, task):
+        return task in self.finished_tasks
+
+    def addFinishedTask(self, task):
+        if task not in self.finished_tasks:
+            self.finished_tasks += task
+            self.save()
+
+    def removeFinishedTask(self, task):
+        if task in self.finished_tasks:
+            self.finished_tasks = self.finished_tasks.replace(task, "")
+            self.save()
 
     #-------------------------------------------------------------------------------------------------------------------
     # string representation of location
@@ -1547,6 +1583,7 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
             return None
 
     def clearLikeMinded(self):
+        self.removeFinishedTask("L")
         like_minded = self.getLikeMindedGroup()
         if like_minded:
             return like_minded.clear()
@@ -4831,6 +4868,10 @@ class CalculatedGroup(Group):
                         found.append(x)
                 self.processed.add(x)
                 processed_num += 1
+
+        if not processed_num:
+            viewer.addFinishedTask("L")
+
         return found, processed_num
 
 
