@@ -79,8 +79,6 @@ div.autocomplete-div.autocomplete-more-results
 {
   $padding: 5px;
   padding: $padding;
-  width: $autocomplete-width - 2*$padding;
-  height: 20px;
   font-size: 18px;
   &:hover {
     background-color: $white-gray;

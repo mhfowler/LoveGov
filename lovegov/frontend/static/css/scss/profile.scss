@@ -10,6 +10,12 @@ div.profile-page {
     width:100%;
     overflow:hidden;
 
+    div.top-left {
+      float:left;
+      @include clearfix;
+      background-color: white;
+    }
+
     span.name {
       float:left;
       @include fontSize(22px);
@@ -60,11 +66,11 @@ div.profile-page {
     }
 
     span.redline {
-      float:left;
+      display: block;
       margin-left:8px;
       margin-top:16px;
-      width:600px;
       border-top: 1px solid $red;
+
     }
 
   }
