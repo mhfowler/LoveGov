@@ -1,0 +1,13 @@
+{% if not lgpoll_progress.finished %}
+    <div class="sidebar-poll-progress stats_object" data-object="sidebar_poll_progress">
+        <div class="lgpoll-progress-explanation">
+            <a href="{{ lgpoll.get_url }}">
+            LoveGov Poll </a> Progress
+        </div>
+        <div class="lgpoll-progress-numbers">
+            {{ lgpoll_progress.completed }} / {{ lgpoll_progress.total }}
+        </div>
+    </div>
+{% else %}
+    <p> Congratulations, you finished the LoveGov poll. </p>
+{% endif %}
