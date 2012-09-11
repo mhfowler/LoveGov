@@ -2,6 +2,7 @@
 {% load customtags %}
 <div class="profile-page">
     <div class="top">
+    <div class="top-left">
 
         <a href="{{ profile.get_url }}"> <span class="name"> {{ profile.get_name }} </span> </a>
         {% if viewer.politician %} <span class="election-icon"></span> {% endif %}
@@ -22,6 +23,7 @@
         {% if viewer.id == profile.id %}
             <a href="/settings/" class='edit-profile-link'> edit profile </a>
         {% endif %}
+    </div>
         <span class="redline"></span>
 
     </div>
