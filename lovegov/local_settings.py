@@ -182,3 +182,32 @@ COMPRESS_ENABLED = False
 
 STATIC_URL = '/static'
 
+THUMBNAIL_DUMMY = True
+
+THUMBNAIL_DUMMY_SOURCE = 'http://placekitten.com/%(width)s/%(height)s'
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

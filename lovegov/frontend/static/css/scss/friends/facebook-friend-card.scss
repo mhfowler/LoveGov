@@ -29,6 +29,19 @@ div.facebook-friend-card
 
 div.invite-friends-sidebar {
   float:left;
+  div.fb-friends-wrapper {
+    div.not-connected {
+      a.sign-in-fb {
+        @include staticImage($rel-path:'/images/login/FB_login.png');
+        background-repeat:no-repeat;
+        float:left;
+        width: 150px;
+        margin-top: 15px;
+        height:35px;
+        background-size:150px 30px;
+      }
+    }
+  }
   div.invite-header {
     margin-top:0px;
     margin-bottom: 8px;
