@@ -470,15 +470,29 @@ def compareWeb(request,alias=None,vals={}):
 #-----------------------------------------------------------------------------------------------------------------------
 # MAIN PAGES
 #-----------------------------------------------------------------------------------------------------------------------
-def home(request, vals):
+def home(request, vals={}):
 
     viewer = vals['viewer']
-    viewer.completeTask("E")
+    like_minded = viewer.getLikeMindedGroup()
+    if like_minded:
+        members = like_minded.members.all()
+        vals['num_members'] = len(members)
+        vals['members'] = members
+        vals['num_processed'] = like_minded.processed.count()
+    vals['like_minded'] = like_minded
 
-    valsLGPoll(vals)
+    # dismissible header at top
     valsDismissibleHeader(request, vals)
 
-    focus_html =  ajaxRender('site/pages/home/home.html', vals, request)
+    # above or below question threshold
+    valsQuestionsThreshold(vals)
+
+    # check and complete task
+    vals['first_like_minded'] = not viewer.checkTask("L")
+    viewer.completeTask("L")
+
+    # render and return html
+    focus_html =  ajaxRender('site/pages/groups/like_minded.html', vals, request)
     url = request.path
     return homeResponse(request, focus_html, url, vals)
 
@@ -635,38 +649,6 @@ def electionPage(request, election, vals={}):
     url = request.path
     return homeResponse(request, focus_html, url, vals)
 
-
-#-----------------------------------------------------------------------------------------------------------------------
-# like-minded group page
-#-----------------------------------------------------------------------------------------------------------------------
-def likeMinded(request, vals={}):
-
-    viewer = vals['viewer']
-    like_minded = viewer.getLikeMindedGroup()
-    if like_minded:
-        members = like_minded.members.all()
-        vals['num_members'] = len(members)
-        vals['members'] = members
-        vals['num_processed'] = like_minded.processed.count()
-    vals['like_minded'] = like_minded
-
-    # dismissible header at top
-    valsDismissibleHeader(request, vals)
-
-    # above or below question threshold
-    valsQuestionsThreshold(vals)
-
-    # visuall stuff for feed
-    vals['no_create_button'] = True
-
-    # check and complete task
-    vals['first_like_minded'] = not viewer.checkTask("L")
-    viewer.completeTask("L")
-
-    # render and return html
-    focus_html =  ajaxRender('site/pages/groups/like_minded.html', vals, request)
-    url = request.path
-    return homeResponse(request, focus_html, url, vals)
 
 #-----------------------------------------------------------------------------------------------------------------------
 # profile page
