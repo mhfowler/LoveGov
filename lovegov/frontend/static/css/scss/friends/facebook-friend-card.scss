@@ -32,13 +32,13 @@ div.invite-friends-sidebar {
   div.fb-friends-wrapper {
     div.not-connected {
       a.sign-in-fb {
-        @include staticImage($rel-path:'/images/login/FB_login.png');
-        background-repeat:no-repeat;
         float:left;
-        width: 150px;
-        margin-top: 15px;
-        height:35px;
-        background-size:150px 30px;
+        font-size:14px;
+        margin-top:10px;
+        color:$dark-gray;
+        &:hover {
+          color:$black;
+        }
       }
     }
   }
