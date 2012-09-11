@@ -1,0 +1,84 @@
+<div class="first-login-header">
+
+    <div class="welcome-div">
+
+        <div class="welcome-message">
+            welcome to
+        </div>
+
+        <div class="logo"></div>
+
+        <div class="our-goal">
+            Our goal is to provide good tools to make it easier to participate in democracy.
+            We hope you make us your political home on the internet.
+            Find out more about us <a href="/about/mission/"> here </a>.
+        </div>
+
+    </div>
+
+    <div class="get-started">
+
+        <div class="get-started-header">
+            GET STARTED!
+        </div>
+
+        <div class="tasks-wrapper">
+
+            <div class="task-wrapper">
+                <a href="/presidential_election/" class="task-checkbox dummy_link home_link"> {% if presidential_task %} <div class="task-completed"></div> {% endif %}</a>
+                <a href="/presidential_election/" class="task-label dummy_link home_link"> Match with presidential candidates (click me) </a>
+            </div>
+
+            <div class="task-wrapper">
+                <a href="/representatives/" class="task-checkbox dummy_link home_link"> {% if reps_task %} <div class="task-completed"></div> {% endif %}</a>
+                <a href="/representatives/" class="task-label dummy_link home_link"> Match with your representatives </a>
+            </div>
+
+            <div class="task-wrapper">
+                <a href="/like_minded/" class="task-checkbox dummy_link home_link"> {% if like_minded_task %} <div class="task-completed"></div> {% endif %}</a>
+                <a href="/like_minded/" class="task-label dummy_link home_link"> Find like minded citizens </a>
+            </div>
+
+            {% comment %}
+            <div class="task-wrapper">
+                <a href="/groups/" class="task-checkbox dummy_link home_link"> {% if join_groups_task %} <div class="task-completed"></div> {% endif %} </a>
+                <a href="/groups/" class="task-label dummy_link home_link"> Join groups relevant to you </a>
+            </div>
+
+
+            {% if completed_all_matching_tasks %}
+                <div class="task-wrapper">
+                    <a href="/home/" class="task-checkbox dummy_link home_link {% if not explore_feed_task %} incomplete {% endif %}"> <div class="task-completed"></div> </a>
+                    <a href="/home/" class="task-label dummy_link home_link"> Explore your feed </a>
+                </div>
+            {% endif %}
+            {% endcomment %}
+
+        </div>
+
+    </div>
+
+    {% if completed_all_tasks %}
+        <div class="completed-all">
+            Congratulations, you finished all of our getting started ideas. The next time you come to this page,
+            this list won't be here, and LoveGov will be yours to conquer.
+        </div>
+    {% endif %}
+
+
+    <div class="are-you">
+        <div class="are-you-wrapper">
+            Are you an interest group leader? <a href="/about/faq/#i_am_part_of" class="are-you-link"> Use our tools to further your cause. </a>
+        </div>
+
+        <div class="are-you-wrapper">
+            Are you a politician? <a href="/about/faq/#i_am_part_of" class="are-you-link"> Find out how to connect with constituents and supporters.</a>
+        </div>
+    </div>
+
+    <div class="get-involved">
+        Once you've finished matching yourself, you can use LoveGov to keep track of politics and get involved.
+        <a href="/home/"> Explore your feed. </a>
+    </div>
+
+</div>

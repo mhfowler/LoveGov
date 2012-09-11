@@ -2,19 +2,18 @@
 
 {% block home_header %}
 
-    {% if ABOVE_QUESTIONS_THRESHOLD %}
+    <div class="home-page-header">
+        {% if ABOVE_QUESTIONS_THRESHOLD %}
 
-        <!-- dismissible header at top, either ad/teaser or appeal to get engaged -->
-        {% include 'site/pages/dismissible_headers/dismissible_header_switch.html' %}
+            {% include 'site/pages/dismissible_headers/dismissible_header_switch.html' %}
 
-        <!-- like minded group explanation header (members + explanation + update button) -->
-        {% include 'site/pages/groups/like_minded_header.html' with info_height="200" %}
+        {% else %}
 
-    {% else %}
+            {% include 'site/pages/groups/introduction_like_minded_header.html' %}
 
-        {% include 'site/pages/groups/introduction_like_minded_header.html' %}
+        {% endif %}
 
-    {% endif %}
+    </div>
 
 {% endblock %}
 
@@ -24,7 +23,7 @@
 
     {% if ABOVE_QUESTIONS_THRESHOLD %}
 
-        {% include 'site/pages/feed/feed.html' %}
+        {% include 'site/pages/feed/feed.html' with like_minded_filter=1 %}
 
     {% else %}
         <div class="questions-wrapper">

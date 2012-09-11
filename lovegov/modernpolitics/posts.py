@@ -1675,12 +1675,13 @@ def getFeed(request, vals):
 
     feed_ranking = request.POST['feed_rank']
     feed_types = json.loads(request.POST['feed_types'])
+    like_minded = request.POST['like_minded']
     feed_start = int(request.POST['feed_start'])
     path = request.POST['path']
     alias = path.replace("/","")
     viewer = vals['viewer']
     content = getFeedItems(viewer=viewer, alias=alias, feed_ranking=feed_ranking,
-        feed_types=feed_types, feed_start=feed_start, num=10)
+        feed_types=feed_types, feed_start=feed_start, num=10, like_minded=like_minded)
     feed_items = contentToFeedItems(content, vals['viewer'])
     vals['feed_items'] = feed_items
 

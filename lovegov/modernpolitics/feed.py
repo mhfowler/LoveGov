@@ -16,12 +16,15 @@ from operator import itemgetter
 #-----------------------------------------------------------------------------------------------------------------------
 # Returns a queryset of feed items, given inputted parameters
 #-----------------------------------------------------------------------------------------------------------------------
-def getFeedItems(viewer, alias, feed_ranking, feed_types, feed_start, num):
+def getFeedItems(viewer, alias, feed_ranking, feed_types, feed_start, num, like_minded=False):
 
     # get all content in the running
-    content = getContentFromAlias(alias, viewer)
-    if not content:
-        return []
+    if like_minded:
+        content = viewer.getLikeMindedGroup().getContent()
+    else:
+        content = getContentFromAlias(alias, viewer)
+        if not content:
+            return []
 
     # filter
     if feed_types:
