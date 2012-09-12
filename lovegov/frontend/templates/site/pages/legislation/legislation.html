@@ -20,11 +20,10 @@
         {% endcomment %}
 
         <div style="clear:both;"></div>
-
     </div>
 
-    <div class="legislation_filter">
-        <div class="filter_prompt">
+    <div class="legislation_filter legislation-filter">
+        <div class="filter_prompt filter-prompt">
             <h6 class="no-hover">
                 filter legislation by:
             </h6>
@@ -48,10 +47,14 @@
             <span>sponsor</span>
         </div>
     </div>
+    <div class="feed_button search_button search-button">
+        <h6 class="no-hover">
+            search
+        </h6>
+    </div>
     <div class="legislation_selector_wrapper">
         {% include 'site/pages/legislation/legislation parameter helpers/leg_session_filter_helper.html' %}
         {% include 'site/pages/legislation/legislation parameter helpers/leg_type_filter_helper.html' %}
-        {% include 'site/pages/legislation/legislation parameter helpers/leg_subject_filter_helper.html' %}
         {% include 'site/pages/legislation/legislation parameter helpers/leg_committee_filter_helper.html' %}
         {% include 'site/pages/legislation/legislation parameter helpers/leg_introduced_filter_helper.html' %}
         {% include 'site/pages/legislation/legislation parameter helpers/leg_sponsor_filter_helper.html' %}

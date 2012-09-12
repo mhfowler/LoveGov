@@ -40,11 +40,10 @@ function updateFeed() {
 
 function loadBillSelect2() {
     function formatSession(session) {
-        return session.text+'th congress';
+        return "Congress Session " + session.text;
     }
     $('.session_select').select2({
         placeholder: "Search for bill sessions",
-        formatResult: formatSession,
         formatSelection: formatSession,
         change: updateFeed
     });
@@ -68,7 +67,7 @@ function loadBillSelect2() {
             results: function(data, page) {
                 var returned = eval('(' + data + ')');
                 return {'results': returned.subjects};
-            },
+            }
         },
         quietMillis: 200,
         dataType: 'json',

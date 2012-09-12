@@ -1026,7 +1026,13 @@ function removeType(type) {
 /* clicking any feed button, regets the feed */
 bind(".feed_button" , "click" , null , function(event) {
     event.preventDefault();
-    var container = $(this).parents(".feed_main");
+    var container;
+    if ($(this).parent().hasClass(".feed_main")) {
+        var container = $(this).parents(".feed_main");
+    }
+    else {
+        var container = $(this).closest(".home_focus").find(".feed_main");
+    }
     refreshFeed(container);
 });
 
@@ -1212,7 +1218,7 @@ function getFeed(container) {
     );
 }
 
-/* load more feed items */
+/* load (more) feed items */
 bind(".load_more" , "click" , null , function(event) {
     var container = $(this).parents(".feed_main");
     getFeed(container);
@@ -4229,6 +4235,8 @@ bind('.x_helper_bubble','click', function() {
     }
 });
 
+
+
 /***********************************************************************************************************************
  *
  *      ~ content detail
@@ -4249,3 +4257,4 @@ bind('div.content-admin-actions span.content-admin-action-delete', 'click', func
         });
     }
 });
+
