@@ -986,6 +986,20 @@ bind(".type_button" , "click" , null , function(event) {
     }
 });
 
+bind(".like_minded_button", "click", null, function(event) {
+    $(this).toggleClass("clicked");
+    var container = $(this).parents(".feed_main");
+    var like_minded_val;
+    if ($(this).hasClass("clicked")) {
+        like_minded_val = 1;
+        $(".like_minded_header_dialogue").show();
+    }
+    else {
+        like_minded_val = "";
+    }
+    container.data("like_minded", like_minded_val);
+});
+
 function clearTypes() {
     $(".type_button").removeClass("clicked");
     feed_types = [];
@@ -1012,7 +1026,13 @@ function removeType(type) {
 /* clicking any feed button, regets the feed */
 bind(".feed_button" , "click" , null , function(event) {
     event.preventDefault();
-    var container = $(this).parents(".feed_main");
+    var container;
+    if ($(this).parent().hasClass(".feed_main")) {
+        var container = $(this).parents(".feed_main");
+    }
+    else {
+        var container = $(this).closest(".home_focus").find(".feed_main");
+    }
     refreshFeed(container);
 });
 
@@ -1042,10 +1062,11 @@ function getFeed(container) {
     var feed_timeout = setTimeout(function(){
         container.find(".feed_fetching").show();
     },time);
+    var like_minded = getValueFromKey(container, 'like_minded');
     var data;
     if (feed == 'getFeed')
     {
-        data = {'action': 'getFeed', 'path': path, 'feed_rank':feed_rank, 'feed_start':feed_start, 'feed_types':feed_types_json};
+        data = {'action': 'getFeed', 'path': path, 'feed_rank':feed_rank, 'feed_start':feed_start, 'feed_types':feed_types_json, 'like_minded':like_minded};
     }
     else if (feed == 'getQuestions')
     {
@@ -1197,7 +1218,7 @@ function getFeed(container) {
     );
 }
 
-/* load more feed items */
+/* load (more) feed items */
 bind(".load_more" , "click" , null , function(event) {
     var container = $(this).parents(".feed_main");
     getFeed(container);
@@ -3944,6 +3965,10 @@ bind('.like_minded_close' , 'click' , null , function(e)
 });
 
 
+bind(".like_minded_x", "click", null, function(e) {
+    $(".like_minded_header_dialogue").hide();
+});
+
 /***********************************************************************************************************************
  *
  *      ~log news link clicks
@@ -4210,6 +4235,8 @@ bind('.x_helper_bubble','click', function() {
     }
 });
 
+
+
 /***********************************************************************************************************************
  *
  *      ~ content detail
@@ -4230,3 +4257,4 @@ bind('div.content-admin-actions span.content-admin-action-delete', 'click', func
         });
     }
 });
+

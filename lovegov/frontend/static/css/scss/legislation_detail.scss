@@ -79,7 +79,7 @@ div.legislation-wrapper {
 
         div.level1-summary-div {
           margin-left: 0px;
-          margin-top: 10px;
+          margin-top: 15px;
           height: auto;
           width: 510px;
 
@@ -820,17 +820,13 @@ div.legislation-wrapper {
     display: inline-block;
     margin-left: 10px;
     height: auto;
-    width: 320px;
+    width: 300px;
 
-    div.level1-cosponsors {
+    div.bill-cosponsors-title {
       margin-left: 0px;
       margin-top: 0px;
       height: 25px;
-      width: 320px;
-
-      div.bill-cosponsors-title {
-        height: 25px;
-        width: 320px;
+      width: 300px;
 
         h4 {
           font-size:18px;
@@ -841,127 +837,172 @@ div.legislation-wrapper {
           padding-left: 5px;
         }
       }
-    }
 
-    div.cosponsors {
-      float:left;
-      margin-top: 15px;
-      height: 20px;
-      width: 150px;
-      overflow: hidden;
+      div.level1-cosponsors-div {
+        margin-top: 15px;
+        height: 20px;
 
-      span{
+        div.cosponsors {
+          clear: left;
+          float: left;
+          margin-top: 0px;
+          margin-bottom: 0px;
+          height: 20px;
+          width: 150px;
+          overflow: hidden;
 
-        ul {
-          margin-top: -3px;
+          span{
 
-          li {
-            margin-left: -20px;
-            font-size: 14px;
+            ul {
+              margin-top: -3px;
+
+              li {
+                margin-left: -20px;
+                font-size: 14px;
+              }
+            }
+          }
+        }
+
+        div.cosponsors-roles {
+          margin-top: 0px;
+          margin-bottom: 0px;
+          height: 20px;
+          width: 150px;
+          overflow: hidden;
+
+          span{
+
+            ul {
+              margin-top: -3px;
+
+              li {
+                margin-left: -20px;
+                font-size: 14px;
+              }
+            }
           }
         }
       }
-    }
 
-    div.cosponsors-roles {
-      display: inline-block;
-      margin-top: 15px;
-      height: 20px;
-      width: 150px;
-      overflow: hidden;
-
-      span{
-
-        ul {
-          margin-top: -3px;
-
-          li {
-            margin-left: -20px;
-            font-size: 14px;
-          }
-        }
-      }
-    }
-
-
-    div.level1-subjects {
-      margin-left: 0px;
-      margin-top: 25px;
-      height: 25px;
-      width: 320px;
-
-      div.bill-subjects-title {
+      div.level1-subjects {
+        margin-left: 0px;
+        margin-top: 5px;
         height: 25px;
-        width: 320px;
+        width: 300px;
 
-        h4 {
-          font-size:18px;
-          text-align: left;
-          background-color: #E0E0E0;
-          color: black;
-          padding-top: 5px;
-          padding-left: 5px;
-        }
-      }
-    }
+        div.bill-subjects-title {
+          height: 25px;
+          width: 300px;
 
-    div.subjects {
-      margin-top: 0px;
-      height: auto;
-      width: 320px;
-      overflow: hidden;
-
-      span{
-
-        ul {
-
-          li {
-            margin-left: -20px;
-            font-size: 14px;
+          h4 {
+            font-size:18px;
+            text-align: left;
+            background-color: #E0E0E0;
+            color: black;
+            padding-top: 5px;
+            padding-left: 5px;
           }
         }
       }
-    }
 
-    div.level1-committees {
-      margin-left: 0px;
-      margin-top: 25px;
-      height: 25px;
-      width: 320px;
-
-      div.bill-committees-title {
-        height: 100%;
-        width: 320px;
-
-        h4 {
-          font-size: 18px;
-          text-align: left;
-          background-color: #E0E0E0;
-          color: black;
-          padding-top: 5px;
-          padding-left: 5px;
-        }
-      }
-    }
-
-    div.level1-committees-div {
-      margin-left: 0px;
-      margin-top: 0px;
-      height: auto;
-      width: 320px;
-
-      div.committees {
+      div.subjects {
         margin-top: 0px;
         height: auto;
-        width: 320px;
-        padding-left: -10px;
+        width: 300px;
         overflow: hidden;
 
-        span {
-          padding-left: -10px;
+        span{
 
           ul {
+
+            li {
+              margin-left: -20px;
+              font-size: 14px;
+            }
+          }
+        }
+      }
+
+      div.level1-committees {
+        margin-left: 0px;
+        margin-top: 5px;
+        height: 25px;
+        width: 300px;
+
+        div.bill-committees-title {
+          height: 100%;
+          width: 300px;
+
+          h4 {
+            font-size: 18px;
+            text-align: left;
+            background-color: #E0E0E0;
+            color: black;
+            padding-top: 5px;
+            padding-left: 5px;
+          }
+        }
+      }
+
+      div.level1-committees-div {
+        margin-left: 0px;
+        margin-top: 0px;
+        height: auto;
+        width: 300px;
+
+        div.committees {
+          margin-top: 0px;
+          height: auto;
+          width: 300px;
+          padding-left: -10px;
+          overflow: hidden;
+
+          span {
             padding-left: -10px;
+
+            ul {
+              padding-left: -10px;
+
+              li {
+                margin-left: -20px;
+                font-size: 14px;
+              }
+            }
+          }
+        }
+      }
+
+      div.level1-related {
+        margin-left: 0px;
+        margin-top: 5px;
+        height: 25px;
+        width: 300px;
+
+        div.related-bill-title {
+          height: 25px;
+          width: 300px;
+
+          h4 {
+            font-size:18px;
+            text-align: left;
+            background-color: #E0E0E0;
+            color: black;
+            padding-top: 5px;
+            padding-left: 5px;
+          }
+        }
+      }
+
+      div.related {
+        margin-top: 0px;
+        height: auto;
+        width: 300px;
+        overflow: hidden;
+
+        span{
+
+          ul {
 
             li {
               margin-left: -20px;
@@ -971,44 +1012,4 @@ div.legislation-wrapper {
         }
       }
     }
-
-    div.level1-related {
-      margin-left: 0px;
-      margin-top: 25px;
-      height: 25px;
-      width: 320px;
-
-      div.related-bill-title {
-        height: 25px;
-        width: 320px;
-
-        h4 {
-          font-size:18px;
-          text-align: left;
-          background-color: #E0E0E0;
-          color: black;
-          padding-top: 5px;
-          padding-left: 5px;
-        }
-      }
-    }
-
-    div.related {
-      margin-top: 0px;
-      height: auto;
-      width: 320px;
-      overflow: hidden;
-
-      span{
-
-        ul {
-
-          li {
-            margin-left: -20px;
-            font-size: 14px;
-          }
-        }
-      }
-    }
   }
-}

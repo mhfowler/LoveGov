@@ -471,15 +471,29 @@ def compareWeb(request,alias=None,vals={}):
 #-----------------------------------------------------------------------------------------------------------------------
 # MAIN PAGES
 #-----------------------------------------------------------------------------------------------------------------------
-def home(request, vals):
+def home(request, vals={}):
 
     viewer = vals['viewer']
-    viewer.completeTask("E")
+    like_minded = viewer.getLikeMindedGroup()
+    if like_minded:
+        members = like_minded.members.all()
+        vals['num_members'] = len(members)
+        vals['members'] = members
+        vals['num_processed'] = like_minded.processed.count()
+    vals['like_minded'] = like_minded
 
-    valsLGPoll(vals)
+    # dismissible header at top
     valsDismissibleHeader(request, vals)
 
-    focus_html =  ajaxRender('site/pages/home/home.html', vals, request)
+    # above or below question threshold
+    valsQuestionsThreshold(vals)
+
+    # check and complete task
+    vals['first_like_minded'] = not viewer.checkTask("L")
+    viewer.completeTask("L")
+
+    # render and return html
+    focus_html =  ajaxRender('site/pages/groups/like_minded.html', vals, request)
     url = request.path
     return homeResponse(request, focus_html, url, vals)
 
@@ -636,38 +650,6 @@ def electionPage(request, election, vals={}):
     url = request.path
     return homeResponse(request, focus_html, url, vals)
 
-
-#-----------------------------------------------------------------------------------------------------------------------
-# like-minded group page
-#-----------------------------------------------------------------------------------------------------------------------
-def likeMinded(request, vals={}):
-
-    viewer = vals['viewer']
-    like_minded = viewer.getLikeMindedGroup()
-    if like_minded:
-        members = like_minded.members.all()
-        vals['num_members'] = len(members)
-        vals['members'] = members
-        vals['num_processed'] = like_minded.processed.count()
-    vals['like_minded'] = like_minded
-
-    # dismissible header at top
-    valsDismissibleHeader(request, vals)
-
-    # above or below question threshold
-    valsQuestionsThreshold(vals)
-
-    # visuall stuff for feed
-    vals['no_create_button'] = True
-
-    # check and complete task
-    vals['first_like_minded'] = not viewer.checkTask("L")
-    viewer.completeTask("L")
-
-    # render and return html
-    focus_html =  ajaxRender('site/pages/groups/like_minded.html', vals, request)
-    url = request.path
-    return homeResponse(request, focus_html, url, vals)
 
 #-----------------------------------------------------------------------------------------------------------------------
 # profile page
@@ -1019,6 +1001,7 @@ def legislation (request, vals={}):
         type_list.append({'abbreviation':k,'verbose':v})
 
     vals['types'] = type_list
+#    vals['subjects'] = LEGISLATION_SUBJECTS
     vals['committees'] = LEGISLATION_COMMITTEES
     vals['bill_numbers'] = LEGISLATION_BILLNUMBERS
 
@@ -1049,10 +1032,13 @@ def legislationDetail(request, l_id, vals={}):
     vals['actions'] = legislation.legislation_actions.all().order_by("-datetime")
     vals['action_states'] = [x.state for x in vals['actions']]
     action_states = [x.state for x in vals['actions']]
+    vals['back_url'] = '/legislation/'
 
     if legislation.congress_body == "H":
         if "ENACTED:SIGNED" in action_states:
             bill_progress = "Passed House and Senate, Signed into Law"
+        if "PASSED:BILL" in action_states:
+            bill_progress = "Passed House and Senate"
         if "PASSED_OVER:HOUSE" in action_states:
             if legislation.bill_type == 'hc':
                 if legislation.bill_relation.count() != 0:
@@ -1098,6 +1084,8 @@ def legislationDetail(request, l_id, vals={}):
     elif legislation.congress_body == "S":
         if "ENACTED:SIGNED" in action_states:
             bill_progress = "Passed Senate and House, Signed into Law"
+        if "PASSED:BILL" in action_states:
+            bill_progress = "Passed Senate and House"
         if "PASSED_OVER:SENATE" in action_states:
             if legislation.bill_type == 'sc':
                 if legislation.bill_relation.count() != 0:
@@ -1121,19 +1109,19 @@ def legislationDetail(request, l_id, vals={}):
                 bill_progress = "Joint Resolution Passed Senate"
         elif "PASSED:SIMPLERES" in action_states:
             bill_progress = "Resolution Passed Senate"
-        elif legislation.bill_type == 'h':
+        elif legislation.bill_type == 's':
             if legislation.bill_relation.count() != 0:
                 bill_progress = "Passed House, Not Passed Senate"
             elif legislation.bill_relation.count() == 0:
                 bill_progress = "Not Passed Senate"
-        elif legislation.bill_type == 'hr':
+        elif legislation.bill_type == 'sr':
             bill_progress = "Resolution Not Passed Senate"
-        elif legislation.bill_type == 'hj':
+        elif legislation.bill_type == 'sj':
             if legislation.bill_relation.count() != 0:
                 bill_progress = "Joint Resolution Passed House, Not Passed Senate"
             elif legislation.bill_relation.count() == 0:
                 bill_progress = "Joint Resolution Not Passed Senate"
-        elif legislation.bill_type == 'hc':
+        elif legislation.bill_type == 'sc':
             if legislation.bill_relation.count() != 0:
                 bill_progress = "Concurrent Resolution Passed House, Not Passed Senate"
             elif legislation.bill_relation.count() == 0:
