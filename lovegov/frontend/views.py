@@ -1323,3 +1323,9 @@ def scorecardCompare(request, s_id, p_alias, vals={}):
 def scorecardMe(request, s_id, vals={}):
     viewer = vals['viewer']
     return scorecardCompare(request, s_id, viewer.alias, vals)
+
+def state(request, state, vals={}):
+    stategroup = StateGroup.lg.get_or_none(location__state=state)
+    if stategroup:
+        return HttpResponseRedirect(stategroup.get_url())
+    return HttpResponse("Requested state group does not exist.")

@@ -154,6 +154,7 @@ urlpatterns += patterns('',
     (r'(?P<alias>\w+)/edit/$', views.aliasDowncastEdit),
     (r'^(?P<alias>\w+)/worldview/$', viewWrapper(views.worldview, requires_login=True)),                 # view breakdown of person
     (r'^(?P<alias>\w+)/histogram/$', viewWrapper(views.histogramDetail, requires_login=True)),           # histogram detail of group
+    (r'^state/(?P<state>\w+)/$', viewWrapper(views.state, requires_login=True)),
 
     # REDIRECT
     (r'(?P<alias>\w+)/$', views.aliasDowncast),
