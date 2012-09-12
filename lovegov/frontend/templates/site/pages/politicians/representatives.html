@@ -1,10 +1,12 @@
 <div class="representatives">
 
+    {% comment %}
     {% if congressmen %}
         {% if not ABOVE_QUESTIONS_THRESHOLD or not reps_task %}
             {% include 'site/pages/politicians/introduction_representatives_header.html' %}
         {% endif %}
     {% endif %}
+    {% endcomment %}
 
     {% include 'site/pages/politicians/representatives_header_and_dismissible.html' %}
 

@@ -500,7 +500,6 @@ def valsDismissibleHeader(request, vals):
         header = 'engagement_intro_header'
     else:
         header = random.choice(DISMISSIBLE_HEADERS)
-    header = 'engagement_intro_header'
 
     vals['dismissible_header'] = header
 

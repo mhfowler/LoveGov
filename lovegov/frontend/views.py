@@ -271,7 +271,7 @@ def login(request, to_page='home/', message="", vals={}):
 def loginRedirect(request, viewer, to_page):
     num_logins = viewer.num_logins
     if not num_logins:
-        to_page = '/match/'
+        to_page = '/presidential_election/'
     viewer.incrementNumLogins()
     return shortcuts.redirect(to_page)
 
@@ -640,7 +640,8 @@ def electionPage(request, election, vals={}):
     vals['info'] = valsElection(viewer, election, {})
 
     valsQuestionsThreshold(vals)
-    vals['presidential_task'] = viewer.checkTask("P")
+    valsFirstLogin(vals)
+
     if election.alias == 'presidential_election':
         viewer.completeTask("P")
 

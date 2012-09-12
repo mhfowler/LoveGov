@@ -7,7 +7,7 @@
         {% if scorecard_id %} data-scorecard_id="{{ scorecard_id }}" {% endif %}
         {% if save_scorecard_answer %} data-save_scorecard_answer="1" {% endif %}
         {% if to_compare %} data-to_compare_id="{{ to_compare.id }}" {% endif %}
-        {% if like_minded_filter %} data-like_minded="1" {% endif %}
+        {% if like_minded_filter %} data-like_minded="" {% endif %}
         >
 
     <!-- helper bubble -->
@@ -23,7 +23,7 @@
 
                     {% if like_minded_filter %}
 
-                        <div class="sort-button last-button like-minded-filter-button feed_button like_minded_button clicked"> only like-minded </div>
+                        <div class="sort-button last-button like-minded-filter-button feed_button like_minded_button"> only like-minded </div>
 
                         <!-- like minded group explanation header (members + explanation + update button) -->
                         <div class="like-minded-header-dialogue like_minded_header_dialogue">

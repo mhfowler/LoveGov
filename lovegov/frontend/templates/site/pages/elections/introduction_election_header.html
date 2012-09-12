@@ -2,11 +2,15 @@
 
 {% block introduction_content %}
 
+    {% include 'site/pages/match/match_intro.html' %}
+
+    {% comment %}
     <div class="election-explanation">
         On LoveGov you can see how you match with politicians running for office, and find out who
         you actually agree with.
     </div>
 
     {% include 'site/pages/elections/introduction_election_header_content.html' %}
+    {% endcomment %}
 
 {% endblock %}

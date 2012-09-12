@@ -148,10 +148,11 @@ div.first-login-header {
   }
 
   div.are-you {
-    width:600px;
-    float:left;
-    margin-top:30px;
-    margin-bottom:30px;
+    width: 460px;
+    float: left;
+    margin-top: 30px;
+    margin-bottom: 30px;
+    margin-left: 65px;
     div.are-you-wrapper {
       margin-bottom:5px;
       @include fontSize(16px);
