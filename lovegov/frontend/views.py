@@ -12,10 +12,11 @@ from lovegov.frontend.views_helpers import *
 from pprint import pprint
 from collections import OrderedDict
 
-#-----------------------------------------------------------------------------------------------------------------------
-# Convenience method which returns a simple nice looking message in a frame
-#-----------------------------------------------------------------------------------------------------------------------
+
 def basicMessage(request,message,vals={}):
+    """
+    Convenience method which returns a simple nice looking message in a frame
+    """
     vals['basic_message'] = message
     url = '/'
     html = ajaxRender('site/pages/basic_message.html', vals, request)
@@ -27,10 +28,11 @@ def errorMessage(request,message,vals={}):
     html = ajaxRender('site/pages/basic_message.html', vals, request)
     return framedResponse(request, html, url, vals)
 
-#-----------------------------------------------------------------------------------------------------------------------
-# Convenience method which is a switch between rendering a page center and returning via ajax or rendering frame.
-#-----------------------------------------------------------------------------------------------------------------------
+
 def framedResponse(request, html, url, vals={}, rebind="home"):
+    """
+    Convenience method which is a switch between rendering a page center and returning via ajax or rendering frame.
+    """
     if request.is_ajax():
         to_return = {'html':html, 'url':url, 'rebind':rebind, 'title':vals['page_title']}
         return HttpResponse(json.dumps(to_return))
@@ -51,9 +53,7 @@ def homeResponse(request, focus_html, url, vals):
         html = ajaxRender('site/pages/home/home_frame.html', vals, request)
         return framedResponse(request, html, url, vals, rebind="home")
 
-#-----------------------------------------------------------------------------------------------------------------------
-# Wrapper for all views. Requires_login=True if requires login.
-#-----------------------------------------------------------------------------------------------------------------------
+
 def viewWrapper(view, requires_login=False):
     """Outer wrapper for all views"""
     def new_view(request, *args, **kwargs):
@@ -217,10 +217,11 @@ def blog(request,category=None,number=None,vals=None):
 
         return renderToResponseCSRF('site/pages/blog/blog.html',vals=vals,request=request)
 
-#-----------------------------------------------------------------------------------------------------------------------
-# points alias urls to correct pages
-#-----------------------------------------------------------------------------------------------------------------------
+
 def aliasDowncast(request, alias=None, vals={}):
+    """
+    points alias urls to correct pages
+    """
     if UserProfile.lg.get_or_none(alias=alias):
         return viewWrapper(profile, requires_login=True)(request, alias)
     matched_group = Group.lg.get_or_none(alias=alias)
@@ -233,6 +234,9 @@ def aliasDowncast(request, alias=None, vals={}):
 # points alias urls to correct pages, and then on to edit page
 #-----------------------------------------------------------------------------------------------------------------------
 def aliasDowncastEdit(request, alias=None, vals={}):
+    """
+    points alias urls to correct pages
+    """
     if UserProfile.lg.get_or_none(alias=alias):
         return viewWrapper(account, requires_login=True)(request, alias)
     matched_group = Group.lg.get_or_none(alias=alias)
@@ -250,7 +254,9 @@ def hello(request, vals={}):
     return renderToResponseCSRF(template='site/pages/login/login-main-register-success.html', vals=vals, request=request)
 
 def login(request, to_page='home/', message="", vals={}):
-
+    """
+    login, password recovery and authentication
+    """
     to_page = "/" + to_page
     # Try logging in with facebook
     user_prof = fbLogin(request,vals,refresh=False)
@@ -1293,3 +1299,9 @@ def scorecardCompare(request, s_id, p_alias, vals={}):
 def scorecardMe(request, s_id, vals={}):
     viewer = vals['viewer']
     return scorecardCompare(request, s_id, viewer.alias, vals)
+
+def state(request, state, vals={}):
+    stategroup = StateGroup.lg.get_or_none(location__state=state)
+    if stategroup:
+        return HttpResponseRedirect(stategroup.get_url())
+    return HttpResponse("Requested state group does not exist.")

@@ -3991,6 +3991,7 @@ class Response(Content):
     total_num = models.IntegerField(default=0)
     weight = models.IntegerField(default=50)
     explanation = models.TextField(max_length=1000, blank=True)
+    explanation_comment = models.OneToOneField(Comment,null=True,blank=True)
     answer_tallies = models.ManyToManyField('AnswerTally')
 
     def getPercent(self, a_id):
@@ -4006,6 +4007,27 @@ class Response(Content):
             return int(percent*100)
         else:
             return 0
+
+    # Adds an explanation, creating a new comment by the creator
+    def addExplanation(self, explanation):
+        if self.explanation_comment:
+            self.editExplanation(explanation)
+        self.explanation = explanation
+        if self.question and explanation:
+            newComment = Comment(root_content=self.question, on_content=self.question, text=explanation)
+            newComment.autoSave(creator=self.creator, privacy=self.privacy)
+            self.explanation_comment = newComment
+        self.save()
+
+    # Edits the corresponding explanation and comment for the response
+    def editExplanation(self, explanation):
+        if not self.explanation_comment:
+            self.addExplanation(explanation)
+        self.explanation = explanation
+        if self.question and explanation:
+            self.explanation_comment.text = explanation
+            self.explanation_comment.save()
+        self.save()
 
     #-------------------------------------------------------------------------------------------------------------------
     # Autosaves by adding picture and topic from question.
