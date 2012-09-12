@@ -30,18 +30,6 @@
 {% endblock %}
 
 
-{% block content_description %}
-    <div class="content-info-header">
-        Source
-    </div>
-
-    <div class="description">
-        {{ question.source }}
-    </div>
-
-{% endblock %}
-
-
 {% block content_body %}
 
     <div class="question-detail mini-feed-wrapper">
@@ -49,6 +37,14 @@
             {% include 'site/pages/qa/question_stub.html' %}
         {% endwith %}
     </div>
+
+    {% if question.source %}
+
+        <div class="question-source">
+            <strong>Source (by question submitter):</strong> {{ question.source }}
+        </div>
+
+    {% endif %}
 
     <script> rebind="question_detail"; </script>
 

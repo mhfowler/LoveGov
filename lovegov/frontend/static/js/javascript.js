@@ -2859,7 +2859,7 @@ function saveAnswer(stub) {
                 new_element.animate({"height":new_height}, {"duration":200, "complete":function(){new_element.css("height", "auto");}});
                 bindOnNewElements();
             }
-            stub.find(".num_responses").html(returned.num_responses);
+            stub.find(".num_responses span.num").html(returned.num_responses);
             var saved_message = stub.find(".saved_message");
             saved_message.show();
             saved_message.fadeOut(5000);

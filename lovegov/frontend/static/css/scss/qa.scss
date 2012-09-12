@@ -225,7 +225,6 @@ div.question_stub {
     background-color:$light-gray;
     a.question-title {
       @include inline-block;
-      width:600px;
       margin-left:8px;
       padding-top:10px;
       padding-bottom:6px;
@@ -290,6 +289,8 @@ div.question_stub {
     div.num-responses {
       float:right;
       margin-right:20px;
+      width: 78px;
+      color: $deep-gray;
     }
     div.change-privacy {
       float:right;
@@ -518,7 +519,7 @@ div.question_stub {
   -khtml-border-radius:20px;
   border-radius:20px;
 /*box-shadow: 8px 8px 20px #888888;*/
-  border: 1px solid $red;
+  border: 1px solid $deep-gray;
   z-index:9000;
 }
 
@@ -645,6 +646,12 @@ div.questions-header {
           }
       }
   }
+}
+
+div.question-source {
+  background-color: white;
+  color: $green;
+  padding: 10px;
 }
 
 

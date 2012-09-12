@@ -24,7 +24,7 @@
                     {% if default_display != "choose" %}
                         <a href="#" class="stub-button button-cancel hide_button dummy_link"> cancel </a>
                     {% else %}
-                        <div class="num-responses num_responses tooltip-top"> {{ question.num_responses }} {% comment %}responder{{ question.num_responses|pluralize }} {% endcomment %} </div>
+                        <div class="num-responses num_responses"> <span class="num"> {{ question.num_responses }}</span> response{{ question.num_responses|pluralize }} </div>
                     {% endif %}
                 </td>
             </tr>
