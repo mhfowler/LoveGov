@@ -23,21 +23,21 @@
     <div class="leg-title">
 
         {% if l.bill_type == "s" %}
-            <h3><span>Session {{l.congress_session_id}}, Bill S {{l.bill_number}}</span></h3>
+            <h3><span>Session {{l.congress_session_id}}, S {{l.bill_number}}</span></h3>
         {% elif l.bill_type == "h" %}
-            <h3><span>Session {{l.congress_session_id}}, Bill H.R. {{l.bill_number}}</span></h3>
+            <h3><span>Session {{l.congress_session_id}}, H.R. {{l.bill_number}}</span></h3>
         {% elif l.bill_type == "hr" %}
-            <h3><span>Session {{l.congress_session_id}}, Bill H.Res. {{l.bill_number}}</span></h3>
+            <h3><span>Session {{l.congress_session_id}}, H.Res. {{l.bill_number}}</span></h3>
         {% elif l.bill_type == "sr" %}
-            <h3><span>Session {{l.congress_session_id}}, Bill S.Res. {{l.bill_number}}</span></h3>
+            <h3><span>Session {{l.congress_session_id}}, S.Res. {{l.bill_number}}</span></h3>
         {% elif l.bill_type == "hc" %}
-            <h3><span>Session {{l.congress_session_id}}, Bill H.Con.Res. {{l.bill_number}}</span></h3>
+            <h3><span>Session {{l.congress_session_id}}, H.Con.Res. {{l.bill_number}}</span></h3>
         {% elif l.bill_type == "sc" %}
-            <h3><span>Session {{l.congress_session_id}}, Bill S.Con.Res. {{l.bill_number}}</span></h3>
+            <h3><span>Session {{l.congress_session_id}}, S.Con.Res. {{l.bill_number}}</span></h3>
         {% elif l.bill_type == "hj" %}
-            <h3><span>Session {{l.congress_session_id}}, Bill H.J.Res. {{l.bill_number}}</span></h3>
+            <h3><span>Session {{l.congress_session_id}}, H.J.Res. {{l.bill_number}}</span></h3>
         {% elif .bill_type == "sj" %}
-            <h3><span>Session {{l.congress_session_id}}, Bill S.J.Res. {{l.bill_number}}</span></h3>
+            <h3><span>Session {{l.congress_session_id}}, S.J.Res. {{l.bill_number}}</span></h3>
         {% endif %}
 
     </div>
@@ -92,8 +92,8 @@
                             <a href='{{creator.get_url}}' class="created-avatar">
                             {% include 'site/pieces/avatar.html' with user=creator height="100" width="100" %}
                         {% endwith %}
-                        <h6 class="sponsor-name">{{l.sponsor.get_name}}</h6></a>
-                    {{l.sponsor.getPartiesString}}<br>{{l.sponsor.getPoliticalTitle}}<br></span></h6>
+                        <h6 class="sponsor-name">{{creator.get_name}}</h6></a>
+                    {{creator.getPartiesString}}<br>{{creator.getPoliticalTitle}}<br></span></h6>
                 </div>
             </div>
 {% comment %}
@@ -649,12 +649,10 @@
         <div style="clear:both;"></div>
     </div>
     <div class="cosponsors-subjects-committees-related">
-        <div class="level1-cosponsors">
-            <div class="bill-cosponsors-title">
-                <h4>
-                    <span>Cosponsors</span>
-                </h4>
-            </div>
+        <div class="bill-cosponsors-title">
+            <h4>
+                <span>Cosponsors</span>
+            </h4>
         </div>
         {% ifnotequal l.legislation_cosponsors.all.count 0 %}
             {% for cosponsor in cosponsors %}
