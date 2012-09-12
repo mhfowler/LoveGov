@@ -10,10 +10,8 @@
 from lovegov.modernpolitics.modals import *
 from django.core.files.base import ContentFile
 
-#-----------------------------------------------------------------------------------------------------------------------
-# complete a first login task
-#-----------------------------------------------------------------------------------------------------------------------
 def completeTask(request,vals={}):
+    """Complete a first login task"""
     task = request.POST['task']
     viewer = vals['viewer']
     completed = viewer.first_login_tasks
@@ -22,11 +20,9 @@ def completeTask(request,vals={}):
         viewer.save()
     return HttpResponse("completed")
 
-#-----------------------------------------------------------------------------------------------------------------------
-# register from login page via form
-#-----------------------------------------------------------------------------------------------------------------------
-def newRegister(request,vals={}):
 
+def newRegister(request,vals={}):
+    """register from login page via form"""
     # get params from post
     valid = True
     name = request.POST['name']
@@ -147,13 +143,14 @@ def newRegister(request,vals={}):
         # return success, causes redirect to success page on client side
         return HttpResponse(json.dumps({"success":True, 'email':email, 'name':name}))
 
-#-----------------------------------------------------------------------------------------------------------------------
-# Takes URL and retrieves HTML.  Parses HTML and extracts title and description metadata.  Also takes a picture
-# snapshot of the website.
-#-----------------------------------------------------------------------------------------------------------------------
+
 PREFIX_ITERATIONS = ["","http://","http://www."]
 DESCRIPTION_TAGS = [("name","description"),("property","og:description")]
 def getLinkInfo(request, vals={}, html="",URL=""):
+    """Takes URL and retrieves HTML.
+
+    Parses HTML and extracts title and description metadata.
+    Also takes a picture snapshot of the website."""
     try:
         vals = {}
         url = str(request.POST['remote_url'])
@@ -223,11 +220,11 @@ def getLinkInfo(request, vals={}, html="",URL=""):
     except Exception, e:
         return HttpResponseBadRequest("Something went wrong parsing the page.")
 
-#-----------------------------------------------------------------------------------------------------------------------
-# Takes address and/or zip code, finds a geolocation from Google Maps, finds congressional district, POSTs congressmen,
-# generates comparisons, and returns HTML back to user
-#-----------------------------------------------------------------------------------------------------------------------
+
 def getCongressmen(request, vals={}):
+    """Takes address and/or zip code, finds a geolocation from Google Maps, finds congressional district, POSTs congressmen,
+     generates comparisons, and returns HTML back to user"""
+
     # POST variables from POST request and formats data
     viewer = vals['viewer']
     address = request.POST['address']
@@ -248,11 +245,13 @@ def getCongressmen(request, vals={}):
     return HttpResponse(json.dumps({'html':html}))
 
 
-#-----------------------------------------------------------------------------------------------------------------------
-# Given a search "term", returns lists of UserProfiles, News, Petitions, and Questions
-# that match given term.
-#-----------------------------------------------------------------------------------------------------------------------
+
 def lovegovSearch(term):
+    """
+    Given a search "term", returns lists of UserProfiles, News, Petitions, and Questions
+     that match given term.
+
+    """
     userProfiles = SearchQuerySet().models(UserProfile).autocomplete(content_auto=term)
     news = SearchQuerySet().models(News).filter(content=term)
     questions = SearchQuerySet().models(Question).filter(content=term)
@@ -269,11 +268,10 @@ def lovegovSearch(term):
     return userProfiles, petitions, questions, news, groups
 
 
-#-----------------------------------------------------------------------------------------------------------------------
-# Returns json of list of results which match inputted 'term'. For jquery autocomplete.
-#
-#-----------------------------------------------------------------------------------------------------------------------
 def searchAutoComplete(request,vals={},limit=5):
+    """
+    Returns json of list of results which match inputted 'term'. For jquery autocomplete.
+    """
     string = request.POST['string'].lstrip().rstrip()
 
     userProfiles, petitions, questions, news, groups = lovegovSearch(string)
@@ -325,11 +323,11 @@ def searchAutoComplete(request,vals={},limit=5):
     html = ajaxRender('site/frame/searchbar/autocomplete.html', vals, request)
     return HttpResponse(json.dumps({'html':html,'num_results': total_results}))
 
-#-----------------------------------------------------------------------------------------------------------------------
-# Loads members.
-#
-#-----------------------------------------------------------------------------------------------------------------------
+
 def loadGroupUsers(request,vals={}):
+    """
+    Loads members.
+    """
     user = vals['viewer']
     num = int(request.POST['histogram_displayed_num'])
     histogram_topic = request.POST['histogram_topic']
@@ -352,11 +350,11 @@ def loadGroupUsers(request,vals={}):
         html += ajaxRender('site/pieces/misc/group-member.div.html',vals,request)
     return HttpResponse(json.dumps({'html':html,'num':next_num}))
 
-#-----------------------------------------------------------------------------------------------------------------------
-# Loads histogram data.
-#
-#-----------------------------------------------------------------------------------------------------------------------
+
 def loadHistogram(request, vals={}):
+    """
+     Loads histogram data.
+    """
     user = vals['viewer']
     group = Group.objects.get(id=request.POST['group_id'])
     histogram_topic = request.POST['histogram_topic']
@@ -415,10 +413,11 @@ def createMotion(request, vals={}):
         LGException(error_message)
         return HttpResponse(error_message)
 
-#-----------------------------------------------------------------------------------------------------------------------
-# Sends invite email and and addds email to valid emails.
-#-----------------------------------------------------------------------------------------------------------------------
+
 def invite(request, vals={}):
+    """
+    Sends invite email and and addds email to valid emails.
+    """
     email = request.POST['email']
     inviter = vals['viewer']
     sendInviteByEmail(inviter, email)
@@ -1037,7 +1036,7 @@ def editExplanation(request, vals):
         question = Question.objects.get(id=q_id)
         response = answerAction(user=viewer, question=question,privacy=getPrivacy(request), answer_id=-1)
     if viewer == response.creator:
-        response.explanation = explanation
+        response.editExplanation(explanation)
         response.save()
         return HttpResponse(json.dumps({'explanation':explanation}))
     else:
@@ -1630,13 +1629,28 @@ def hoverWebComparison(request, vals={}):
     return HttpResponse(comparison.toJSON())
 
 #-----------------------------------------------------------------------------------------------------------------------
-# Adds e-mail to mailing list
+# Adds e-mail to emailing list
 #-----------------------------------------------------------------------------------------------------------------------
-def addEmailList(request):
-    email = request.POST['email']
-    newEmail = EmailList(email=email)
-    newEmail.save()
-    return HttpResponse("Success")
+def addEmailList(request,vals={}):
+    email = request.POST.get('email')
+    if not email or not is_valid_email(email):
+        vals['addToMailingListMsg'] = "The given email, "+email+", is invalid."
+    elif email in [x.email for x in EmailList.objects.all()]:
+        vals['addToMailingListMsg'] = "That email, "+email+", is already in the mailing list."
+    else:
+        newEmail = EmailList(email=email)
+        newEmail.save()
+        vals['addToMailingListMsg'] = "The email "+email+" was added to the email list successfully."
+    from lovegov.frontend.views import login
+    return login(request, vals=vals)
+
+from django.core.validators import email_re
+
+def is_valid_email(email):
+    if email_re.match(email):
+        return True
+    return False
+
 
 #-----------------------------------------------------------------------------------------------------------------------
 # returns match of user
@@ -2447,6 +2461,7 @@ def createContent(request, vals={}):
                     newQ.posted_to = group
                 newQ.autoSave(creator=viewer, privacy=privacy)
                 newQ.setMainTopic(qtopic)
+                newComment = Comment()
                 for a in q['answers']:
                     newA = Answer(answer_text=a, value=-1)
                     newA.save()

@@ -117,6 +117,15 @@ def recalculateAllUserStats():
         print "Calculating Stats For " + user.get_name()
         user.calculateAllStats()
 
+def recalculateExplanations():
+    allresponses = Response.objects.all()
+    for response in allresponses:
+        if response.explanation:
+            print "Adding explanation by "+response.creator.get_name()
+            explanation = response.explanation
+            response.addExplanation(explanation)
+
+
 ### recalculate everything ####
 def recalculateEverything():
     recalculateProhibitedActions()
