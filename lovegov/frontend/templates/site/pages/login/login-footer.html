@@ -1,9 +1,12 @@
 <div id="bottom">
     <div style="float:left;">
         <span id="mailingList">Join our mailing list:</span>
-        <form id='emailForm' action="" method='post'>
+        <form id='emailForm' action="/action/" method='post'>
+            <input type="hidden" name="action" value="addEmailList">
+            {% csrf_token %}
             <input id="emailInput" name="email" type="text" value=""/>
             <input id="emailSubmit" type="submit" value="Submit" name="submitemail"/>
+            <span class="add-to-mailing-list-msg">{{ addToMailingListMsg }}</span>
         </form>
         <div style="clear:both;padding-top:10px;">
             <a href="http://www.facebook.com/pages/Lovegov/368496463180373" target="_blank"><img src="{{ STATIC_URL }}/images/footer/facebook.png" ></a>
