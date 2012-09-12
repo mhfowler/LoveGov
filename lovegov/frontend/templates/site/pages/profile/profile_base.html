@@ -8,7 +8,7 @@
         {% if viewer.politician %} <span class="election-icon"></span> {% endif %}
         {% with state=profile.location.state %}
             <span class="state"> {{ profile.political_title }}{% if state %},{% endif %} </span>
-            <span class="state"> {% if state %}{{ profile.location.state }}{% endif %}</span>
+            <span class="state"> {% if state %}<a href="/state/{{ state }}"> {{ profile.location.state }}</a>{% endif %}</span>
         {% endwith %}
         <span class="redheart">
          {% with full_url='/static/images/icons/red_heart.png'|media_url:MEDIA_PREFIX %}

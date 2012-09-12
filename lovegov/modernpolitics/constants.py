@@ -686,13 +686,15 @@ ACTIONS = [
     'removeScorecard',
     'completeTask',
     'getBillSubjects',
+    'addEmailList',
 
 ]
 
 UNAUTHENTICATED_ACTIONS = [
     'logCompatability',
     'getModal',
-    'newRegister'
+    'newRegister',
+    'addEmailList'
 ]
 
 DEFAULT_PROHIBITED_ACTIONS = []

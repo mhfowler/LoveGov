@@ -7,7 +7,7 @@
         {% if scorecard_id %} data-scorecard_id="{{ scorecard_id }}" {% endif %}
         {% if save_scorecard_answer %} data-save_scorecard_answer="1" {% endif %}
         {% if to_compare %} data-to_compare_id="{{ to_compare.id }}" {% endif %}
-        {% if like_minded_filter %} data-like_minded="1" {% endif %}
+        {% if like_minded_filter %} data-like_minded="" {% endif %}
         >
 
     <!-- helper bubble -->
@@ -20,17 +20,6 @@
             <td class="feed-left-buttons">
 
                 <div class="feed-buttons-container">
-
-                    {% if like_minded_filter %}
-
-                        <div class="sort-button last-button like-minded-filter-button feed_button like_minded_button clicked"> only like-minded </div>
-
-                        <!-- like minded group explanation header (members + explanation + update button) -->
-                        <div class="like-minded-header-dialogue like_minded_header_dialogue">
-                            {% include 'site/pages/groups/like_minded_dialogue.html' %}
-                        </div>
-
-                    {% endif %}
 
                     {% block sort_buttons %}
                         <div class='buttons-container-text'>Sort by:</div>
@@ -52,6 +41,23 @@
                             <div class="sort-button feed_button type_button last-button" data-type="D">Discussion</div>
                         {% endif %}
                     {% endblock %}
+
+                    {% if like_minded_filter %}
+
+                        {% comment %}
+                        <div class="sort-button last-button like-minded-filter-button feed_button like_minded_button"> only like-minded </div>
+                        {% endcomment %}
+
+                        <a class="like-minded-text like_minded_link dummy_link" id="like_minded_link_id"> only like-minded </a>
+                        <input type="checkbox" class="like-minded-checkbox like_minded_button" id="like_minded_checkbox_id"
+                                {% if only_unanswered %} checked="checked" {% endif %} />
+
+                        <!-- like minded group explanation header (members + explanation + update button) -->
+                        <div class="like-minded-header-dialogue like_minded_header_dialogue">
+                            {% include 'site/pages/like_minded/like_minded_dialogue.html' %}
+                        </div>
+
+                    {% endif %}
 
                 </div>
 

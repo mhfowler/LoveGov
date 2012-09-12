@@ -1,0 +1,38 @@
+<div class="get-started">
+
+    <div class="get-started-header">
+        GET STARTED!
+    </div>
+
+    <div class="tasks-wrapper">
+
+        <div class="task-wrapper">
+            <a href="/presidential_election/" class="task-checkbox dummy_link home_link"> {% if presidential_task %} <div class="task-completed"></div> {% endif %}</a>
+            <a href="/presidential_election/" class="task-label dummy_link home_link"> Match with presidential candidates (click me) </a>
+        </div>
+
+        <div class="task-wrapper">
+            <a href="/representatives/" class="task-checkbox dummy_link home_link"> {% if reps_task %} <div class="task-completed"></div> {% endif %}</a>
+            <a href="/representatives/" class="task-label dummy_link home_link"> Match with your representatives </a>
+        </div>
+
+        <div class="task-wrapper">
+            <a href="/home/" class="task-checkbox dummy_link home_link"> {% if like_minded_task %} <div class="task-completed"></div> {% endif %}</a>
+            <a href="/home/" class="task-label dummy_link home_link"> See what's happening on LoveGov </a>
+        </div>
+
+        <div class="task-wrapper">
+            <a href="/groups/" class="task-checkbox dummy_link home_link"> {% if join_groups_task %} <div class="task-completed"></div> {% endif %} </a>
+            <a href="/groups/" class="task-label dummy_link home_link"> Join groups relevant to you </a>
+        </div>
+
+        {% if completed_all_first_tasks %}
+            <div class="task-wrapper">
+                <a class="task-checkbox see_congratulations dummy_link"> {% if congratulations_task %} <div class="task-completed"></div> {% endif %} </a>
+                <a class="task-label see_congratulations dummy_link"> See congratulations </a>
+            </div>
+        {% endif %}
+
+    </div>
+
+</div>

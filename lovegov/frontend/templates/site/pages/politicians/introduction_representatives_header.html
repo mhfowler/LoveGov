@@ -2,6 +2,26 @@
 
 {% block introduction_content %}
 
-    {% include 'site/pages/politicians/introduction_representatives_header_content.html' %}
+    <p class="introduction-text">
+        This page is for finding your representatives and seeing how you compare with the people
+        who directly represent you in congress.
+    </p>
+
+    {% if not ABOVE_QUESTIONS_THRESHOLD and congressmen %}
+
+        {% if lgpoll_progress.completed == 0 %}
+            <p> You haven't answered any questions from the LoveGov poll yet, so your matches with your representatives
+            will be 0.
+            </p>
+        {% else %}
+            <p> You haven't answered enough questions to get strong matches yet.
+            </p>
+        {% endif %}
+
+        <p>
+            To answer questions and see your matches update, click <a class="first_answer_questions dummy_link"> here. </a>
+        </p>
+
+    {% endif %}
 
 {% endblock %}

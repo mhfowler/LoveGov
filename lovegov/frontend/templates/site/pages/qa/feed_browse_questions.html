@@ -1,10 +1,13 @@
 {% extends 'site/pages/feed/feed.html' %}
 
 {% block sort_buttons %}
+
+    {% comment %}
     <span class="answered-filter only_unanswered only-unanswered {% if only_unanswered %} clicked {% endif %}"> only unanswered </span>
+    {% endcomment %}
 
     <!-- helper bubble -->
-    {% include 'site/pages/helper_bubbles/only_unanswered_bubble.html' with bubble_task="O" which_bubble="only_unanswered_bubble" arrow_direction="up" bubble_show=first_only_unanswered %}
+    {% include 'site/pages/helper_bubbles/qa_tutorial.html' %}
 
     <div class='buttons-container-text'>Sort by:</div>
     <div class="sort-button feed_button rank_button" data-rank="N" >New</div>
@@ -19,6 +22,9 @@
             {% include 'site/pieces/topic_icon.html' with topic=t width="30" height="30" %}
         </a>
     {% endfor %}
+
+    <span class="only-unanswered-text"> only unanswered </span>
+    <input type="checkbox" class="only-unanswered-checkbox only_unanswered" {% if only_unanswered %} checked="checked" {% endif %} />
 
 {% endblock %}
 

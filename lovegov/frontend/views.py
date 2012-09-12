@@ -12,10 +12,11 @@ from lovegov.frontend.views_helpers import *
 from pprint import pprint
 from collections import OrderedDict
 
-#-----------------------------------------------------------------------------------------------------------------------
-# Convenience method which returns a simple nice looking message in a frame
-#-----------------------------------------------------------------------------------------------------------------------
+
 def basicMessage(request,message,vals={}):
+    """
+    Convenience method which returns a simple nice looking message in a frame
+    """
     vals['basic_message'] = message
     url = '/'
     html = ajaxRender('site/pages/basic_message.html', vals, request)
@@ -27,10 +28,11 @@ def errorMessage(request,message,vals={}):
     html = ajaxRender('site/pages/basic_message.html', vals, request)
     return framedResponse(request, html, url, vals)
 
-#-----------------------------------------------------------------------------------------------------------------------
-# Convenience method which is a switch between rendering a page center and returning via ajax or rendering frame.
-#-----------------------------------------------------------------------------------------------------------------------
+
 def framedResponse(request, html, url, vals={}, rebind="home"):
+    """
+    Convenience method which is a switch between rendering a page center and returning via ajax or rendering frame.
+    """
     if request.is_ajax():
         to_return = {'html':html, 'url':url, 'rebind':rebind, 'title':vals['page_title']}
         return HttpResponse(json.dumps(to_return))
@@ -51,9 +53,7 @@ def homeResponse(request, focus_html, url, vals):
         html = ajaxRender('site/pages/home/home_frame.html', vals, request)
         return framedResponse(request, html, url, vals, rebind="home")
 
-#-----------------------------------------------------------------------------------------------------------------------
-# Wrapper for all views. Requires_login=True if requires login.
-#-----------------------------------------------------------------------------------------------------------------------
+
 def viewWrapper(view, requires_login=False):
     """Outer wrapper for all views"""
     def new_view(request, *args, **kwargs):
@@ -217,10 +217,11 @@ def blog(request,category=None,number=None,vals=None):
 
         return renderToResponseCSRF('site/pages/blog/blog.html',vals=vals,request=request)
 
-#-----------------------------------------------------------------------------------------------------------------------
-# points alias urls to correct pages
-#-----------------------------------------------------------------------------------------------------------------------
+
 def aliasDowncast(request, alias=None, vals={}):
+    """
+    points alias urls to correct pages
+    """
     if UserProfile.lg.get_or_none(alias=alias):
         return viewWrapper(profile, requires_login=True)(request, alias)
     matched_group = Group.lg.get_or_none(alias=alias)
@@ -230,9 +231,12 @@ def aliasDowncast(request, alias=None, vals={}):
     return redirect(request)
 
 #-----------------------------------------------------------------------------------------------------------------------
-# points alias urls to correct pages
+# points alias urls to correct pages, and then on to edit page
 #-----------------------------------------------------------------------------------------------------------------------
 def aliasDowncastEdit(request, alias=None, vals={}):
+    """
+    points alias urls to correct pages
+    """
     if UserProfile.lg.get_or_none(alias=alias):
         return viewWrapper(account, requires_login=True)(request, alias)
     matched_group = Group.lg.get_or_none(alias=alias)
@@ -244,8 +248,15 @@ def aliasDowncastEdit(request, alias=None, vals={}):
 #-----------------------------------------------------------------------------------------------------------------------
 # login, password recovery and authentication
 #-----------------------------------------------------------------------------------------------------------------------
-def login(request, to_page='home/', message="", vals={}):
+def hello(request, vals={}):
+    vals['name'] = request.GET.get('name')
+    vals['email'] = request.GET.get('email')
+    return renderToResponseCSRF(template='site/pages/login/login-main-register-success.html', vals=vals, request=request)
 
+def login(request, to_page='home/', message="", vals={}):
+    """
+    login, password recovery and authentication
+    """
     to_page = "/" + to_page
     # Try logging in with facebook
     user_prof = fbLogin(request,vals,refresh=False)
@@ -271,14 +282,9 @@ def login(request, to_page='home/', message="", vals={}):
 def loginRedirect(request, viewer, to_page):
     num_logins = viewer.num_logins
     if not num_logins:
-        to_page = '/match/'
+        to_page = '/welcome/'
     viewer.incrementNumLogins()
     return shortcuts.redirect(to_page)
-
-def welcome(request, vals={}):
-    vals['name'] = request.GET.get('name')
-    vals['email'] = request.GET.get('email')
-    return renderToResponseCSRF(template='site/pages/login/login-main-register-success.html', vals=vals, request=request)
 
 def loginAuthenticate(request,user,to_page='home/'):
     if to_page == 'blog': to_page = 'home/'
@@ -392,9 +398,7 @@ def needConfirmation(request, vals={}):
                                            'Check your email for a confirmation link.  '\
                                            'It might be in your spam folder.'
     vals['state'] = 'need-confirmation'
-
     return renderToResponseCSRF(template='site/pages/login/login-main.html', vals=vals, request=request)
-
 
 def claimYourProfile(request, claimed_by, vals={}):
 
@@ -404,7 +408,6 @@ def claimYourProfile(request, claimed_by, vals={}):
         return renderToResponseCSRF(template='site/pages/login/login-main.html', vals=vals, request=request)
     else:
         return login(request, vals)
-
 
 #-----------------------------------------------------------------------------------------------------------------------
 # This is the view that generates the QAWeb
@@ -470,29 +473,26 @@ def compareWeb(request,alias=None,vals={}):
 #-----------------------------------------------------------------------------------------------------------------------
 # MAIN PAGES
 #-----------------------------------------------------------------------------------------------------------------------
+def welcome(request, vals):
+
+    valsFirstLogin(vals)
+
+    focus_html =  ajaxRender('site/pages/home/welcome.html', vals, request)
+    url = request.path
+    return homeResponse(request, focus_html, url, vals)
+
 def home(request, vals={}):
 
     viewer = vals['viewer']
-    like_minded = viewer.getLikeMindedGroup()
-    if like_minded:
-        members = like_minded.members.all()
-        vals['num_members'] = len(members)
-        vals['members'] = members
-        vals['num_processed'] = like_minded.processed.count()
-    vals['like_minded'] = like_minded
-
-    # dismissible header at top
-    valsDismissibleHeader(request, vals)
-
-    # above or below question threshold
-    valsQuestionsThreshold(vals)
-
-    # check and complete task
-    vals['first_like_minded'] = not viewer.checkTask("L")
     viewer.completeTask("L")
 
+    # vals for page parts
+    valsFirstLogin(vals)
+    valsLikeMinded(vals)
+    valsDismissibleHeader(request, vals)
+
     # render and return html
-    focus_html =  ajaxRender('site/pages/groups/like_minded.html', vals, request)
+    focus_html =  ajaxRender('site/pages/home/home.html', vals, request)
     url = request.path
     return homeResponse(request, focus_html, url, vals)
 
@@ -510,37 +510,27 @@ def myElections(request, vals):
     url = request.path
     return homeResponse(request, focus_html, url, vals)
 
-def politicians(request, vals):
-    focus_html =  ajaxRender('site/pages/politicians/politicians.html', vals, request)
-    url = request.path
-    return homeResponse(request, focus_html, url, vals)
-
 def representatives(request, vals):
+
+    viewer = vals['viewer']
+    viewer.completeTask("F")
 
     valsRepsHeader(vals)
     vals['no_create_button'] = True
 
-    viewer = vals['viewer']
     valsQuestionsThreshold(vals)
-    vals['reps_task'] = viewer.checkTask("F")
-    viewer.completeTask("F")
+    valsFirstLogin(vals)
 
     focus_html =  ajaxRender('site/pages/politicians/representatives.html', vals, request)
     url = request.path
     return homeResponse(request, focus_html, url, vals)
 
 def match(request, vals):
-
     valsFirstLogin(vals)
-
     focus_html =  ajaxRender('site/pages/match/match.html', vals, request)
     url = request.path
     return homeResponse(request, focus_html, url, vals)
 
-
-#-----------------------------------------------------------------------------------------------------------------------
-# friends focus (home page)
-#-----------------------------------------------------------------------------------------------------------------------
 def friends(request, vals):
     viewer = vals['viewer']
     friends = viewer.getIFollow().filter(num_answers__gte=10)
@@ -561,7 +551,7 @@ def friends(request, vals):
     return homeResponse(request, focus_html, url, vals)
 
 #-----------------------------------------------------------------------------------------------------------------------
-# question answering center
+# qa
 #-----------------------------------------------------------------------------------------------------------------------
 def questions(request, vals={}):
 
@@ -583,6 +573,8 @@ def browseGroups(request, vals={}):
     viewer = vals['viewer']
     viewer.completeTask("J")
 
+    valsFirstLogin(vals)
+
     # Render and return HTML
     getStateTuples(vals)
     focus_html =  ajaxRender('site/pages/groups/all_groups.html', vals, request)
@@ -596,17 +588,6 @@ def browseElections(request, vals):
     focus_html =  ajaxRender('site/pages/browse/browse_elections.html', vals, request)
     url = request.path
     return homeResponse(request, focus_html, url, vals)
-
-
-def politicians(request, vals):
-    viewer = vals['viewer']
-    getStateTuples(vals)
-    valsRepsHeader(vals)
-    valsGroup(viewer, getCongressGroup(), vals)
-    focus_html =  ajaxRender('site/pages/politicians/politicians.html', vals, request)
-    url = request.path
-    return homeResponse(request, focus_html, url, vals)
-
 
 #-----------------------------------------------------------------------------------------------------------------------
 # group detail
@@ -637,12 +618,14 @@ def groupPage(request, g_alias, vals={}):
 def electionPage(request, election, vals={}):
 
     viewer = vals['viewer']
+    if election.alias == 'presidential_election':
+        viewer.completeTask("P")
+        vals['presidential_election'] = True
+
     vals['info'] = valsElection(viewer, election, {})
 
     valsQuestionsThreshold(vals)
-    vals['presidential_task'] = viewer.checkTask("P")
-    if election.alias == 'presidential_election':
-        viewer.completeTask("P")
+    valsFirstLogin(vals)
 
     # render and return html
     focus_html =  ajaxRender('site/pages/elections/election_focus.html', vals, request)
@@ -1022,9 +1005,6 @@ def legislation (request, vals={}):
     return homeResponse(request, focus_html, url, vals)
 
 
-#-----------------------------------------------------------------------------------------------------------------------
-# legislation detail
-#-----------------------------------------------------------------------------------------------------------------------
 def legislationDetail(request, l_id, vals={}):
     legislation = Legislation.objects.get(id=l_id)
     vals['l'] = legislation
@@ -1165,10 +1145,7 @@ def facebookHandle(request, to_page="/login/home/", vals={}):
 
     return shortcuts.redirect(to_page) #If this is the wrong state, go to default to_page
 
-#-----------------------------------------------------------------------------------------------------------------------
-# Authorize permission from facebook
-# Inputs: GET[ fb_scope , fb_to_page ]
-#----------------------------------------------------------------------------------------------------------------------
+
 def facebookAuthorize(request, vals={}, scope=""):
     auth_to_page = request.GET.get('auth_to_page') #Check for an authorization to_page
     fb_scope = request.GET.get('fb_scope') #Check for a scope
@@ -1322,3 +1299,9 @@ def scorecardCompare(request, s_id, p_alias, vals={}):
 def scorecardMe(request, s_id, vals={}):
     viewer = vals['viewer']
     return scorecardCompare(request, s_id, viewer.alias, vals)
+
+def state(request, state, vals={}):
+    stategroup = StateGroup.lg.get_or_none(location__state=state)
+    if stategroup:
+        return HttpResponseRedirect(stategroup.get_url())
+    return HttpResponse("Requested state group does not exist.")
