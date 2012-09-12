@@ -10,6 +10,7 @@ from django.contrib import admin
 from django.views.generic.simple import redirect_to
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from django.conf import settings
+from django.views.generic.simple import direct_to_template
 
 LOCAL = settings.LOCAL
 
@@ -64,6 +65,7 @@ urlpatterns += patterns('',
     (r'^try/(\S+)/$', viewWrapper(views.tryLoveGov)),
     (r'^unsubscribe/(\S+)/$', views.unsubscribe),
     (r'^underconstruction/$', views.underConstruction),
+    (r'^500/$', 'django.views.generic.simple.direct_to_template', {'template': '500.html', 'extra_context': {'STATIC_URL': settings.STATIC_URL}}),
 
     # home pages
     (r'^home/$', viewWrapper(views.home, requires_login=True)),

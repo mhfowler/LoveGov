@@ -209,7 +209,7 @@ def blog(request,category=None,number=None,vals=None):
                     if string.capitalize(category) in blogPost.category:
                         vals['blogPosts'].append(blogPost)
             else:
-                creator = UserProfile.objects.get(alias=category)
+                creator = UserProfile.lg.get_or_none(alias=category)
                 vals['ownBlog'] = creator == user
                 vals['blogPosts'] = blogPosts.filter(creator=creator)
         else:
