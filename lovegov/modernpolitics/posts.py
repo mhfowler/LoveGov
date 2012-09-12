@@ -1124,22 +1124,15 @@ def updateStats(request, vals={}):
         html = ajaxRender('site/pages/elections/election_leaderboard.html', vals, request)
     elif object == 'like_minded_counter':
         html = ajaxRender('site/pages/groups/like_minded_counter.html', vals, request)
-    elif object == 'election_first_login':
-        from lovegov.frontend.views_helpers import valsQuestionsThreshold
-        valsQuestionsThreshold(vals)
-        html = ajaxRender('site/pages/elections/introduction_election_header_content.html', vals, request)
-    elif object == 'reps_first_login':
-        from lovegov.frontend.views_helpers import valsQuestionsThreshold
-        valsQuestionsThreshold(vals)
-        html = ajaxRender('site/pages/politicians/introduction_representatives_header_content.html', vals, request)
-    elif object == 'like_minded_first_login':
-        from lovegov.frontend.views_helpers import valsQuestionsThreshold
-        valsQuestionsThreshold(vals)
-        html = ajaxRender('site/pages/groups/introduction_like_minded_header_content.html', vals, request)
     elif object == 'sidebar_poll_progress':
         from lovegov.frontend.views_helpers import valsQuestionsThreshold
         valsQuestionsThreshold(vals)
         html = ajaxRender('site/pages/home/lgpoll_progress_snippet.html', vals, request)
+    elif object == 'not_enough_questions_warning':
+        from lovegov.frontend.views_helpers import valsQuestionsThreshold
+        vals['of_what'] = request.POST.get('of_what')
+        valsQuestionsThreshold(vals)
+        html = ajaxRender('site/pages/dismissible_headers/not_enough_questions_warning.html', vals, request)
     return HttpResponse(json.dumps({'html':html}))
 
 #----------------------------------------------------------------------------------------------------------------------

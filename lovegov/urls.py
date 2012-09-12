@@ -46,7 +46,7 @@ urlpatterns += patterns('',
     (r'^confirm/(?P<confirm_link>\S+)/$', viewWrapper(views.confirm)),
     (r'^need_email_confirmation/$', viewWrapper(views.needConfirmation)),
     (r'^claim_your_profile/(?P<claimed_by>\S+)/$', viewWrapper(views.claimYourProfile)),
-    (r'^welcome/$', viewWrapper(views.welcome)),
+    (r'^hello/$', viewWrapper(views.hello)),
 
     # fb authentication
     (r'^fb/authorize/$', views.facebookAuthorize),
@@ -68,6 +68,7 @@ urlpatterns += patterns('',
     (r'^500/$', 'django.views.generic.simple.direct_to_template', {'template': '500.html', 'extra_context': {'STATIC_URL': settings.STATIC_URL}}),
 
     # home pages
+    (r'^welcome/$', viewWrapper(views.welcome, requires_login=True)),
     (r'^home/$', viewWrapper(views.home, requires_login=True)),
     (r'^groups/$', viewWrapper(views.browseGroups, requires_login=True)),
     (r'^elections/$', viewWrapper(views.browseElections, requires_login=True)),

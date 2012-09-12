@@ -1,0 +1,19 @@
+{% extends 'site/pages/home/focus.html' %}
+
+{% block home_header %}
+
+    <div class="home-page-header">
+        {% include 'site/pages/dismissible_headers/dismissible_header_switch.html' %}
+    </div>
+
+{% endblock %}
+
+
+
+{% block home_feed %}
+
+    {% include 'site/pages/feed/feed.html' with like_minded_filter=1 %}
+
+    <script> rebind="home"; </script>
+
+{% endblock %}
