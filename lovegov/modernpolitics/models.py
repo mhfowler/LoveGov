@@ -1332,6 +1332,10 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
         self.save()
         self.getView().clearResponses()
 
+    def clearTasks(self):
+        self.first_login_tasks = ""
+        self.save()
+
     def getResponseToQuestion(self, question):
         response = self.view.responses.filter(question=question)
         if response:

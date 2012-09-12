@@ -987,17 +987,31 @@ bind(".type_button" , "click" , null , function(event) {
 });
 
 bind(".like_minded_button", "click", null, function(event) {
-    $(this).toggleClass("clicked");
     var container = $(this).parents(".feed_main");
     var like_minded_val;
-    if ($(this).hasClass("clicked")) {
+    if ($(this).is(":checked")) {
         like_minded_val = 1;
-        $(".like_minded_header_dialogue").show();
     }
     else {
         like_minded_val = "";
     }
     container.data("like_minded", like_minded_val);
+    refreshFeed(container);
+});
+
+bind(".like_minded_link", "click", null, function(event) {
+    $(".like_minded_header_dialogue").fadeIn();
+});
+
+bind(null, "click", null, function(event) {
+    var click_id = event.target.id;
+    if ((click_id != "like_minded_link_id") && (click_id != "like_minded_checkbox_id")) {
+        $(".like_minded_header_dialogue").hide();
+    }
+});
+
+bind(".like_minded_header_dialogue", 'click', null, function(event) {
+    event.stopPropagation();
 });
 
 function clearTypes() {
@@ -1026,15 +1040,17 @@ function removeType(type) {
 /* clicking any feed button, regets the feed */
 bind(".feed_button" , "click" , null , function(event) {
     event.preventDefault();
+    var button = $(this);
     var container;
-    if ($(this).parent().hasClass(".feed_main")) {
-        var container = $(this).parents(".feed_main");
+    if (button.parent().hasClass(".feed_main")) {
+        container = button.parents(".feed_main");
     }
     else {
-        var container = $(this).closest(".home_focus").find(".feed_main");
+        container = button.closest(".home_focus").find(".feed_main");
     }
     refreshFeed(container);
 });
+
 
 /* replaces feed, rather than appendin */
 function refreshFeed(container) {
@@ -2956,9 +2972,8 @@ function bindImportanceSlider(div) {
  **********************************************************************************************************************/
 bind('.only_unanswered' , 'click' , null , function(event)
 {
-    $(this).toggleClass("clicked");
     var container = $(this).parents(".feed_main");
-    container.data("only_unanswered", $(this).hasClass("clicked"));
+    container.data("only_unanswered", $(this).is(":checked"));
     refreshFeed(container);
 });
 
@@ -3015,6 +3030,9 @@ function updateStatsObject(stats) {
     }
     if (object == 'poll_stats') {
         data['p_id'] = stats.data('p_id');
+    }
+    if (object == 'not_enough_questions_warning') {
+        data['of_what'] = stats.data('of_what');
     }
     action({
         data: data,
@@ -4206,6 +4224,32 @@ bind('.explore_your_feed','click', function() {
     });
 });
 
+bind('.click_to_complete_task','click', function() {
+    var task = $(this).data("task");
+    action({
+        data: {
+            'action': 'completeTask',
+            'task': task
+        },
+        success: function(data) {
+        }
+    });
+});
+
+bind('.hide_intros','click', function() {
+    if (confirm("Are you sure?")) {
+        action({
+            data: {
+                'action': 'completeTask',
+                'task': "H"
+            },
+            success: function(data) {
+            }
+        });
+        $(this).parents(".dismissible_header").hide();
+    }
+});
+
 function showAllBubbles() {
     $(".helper_bubble").fadeIn(200);
 }
@@ -4236,6 +4280,41 @@ bind('.x_helper_bubble','click', function() {
 });
 
 
+bind('.continue_tutorial','click', function() {
+    var helper_bubble = $(this).parents(".helper_bubble");
+    helper_bubble.fadeOut();
+    var next_classname = $(this).data("next");
+    $("." + next_classname).fadeIn();
+});
+
+
+bind('.normal_feed_button','click', function() {
+    $(".temp_questions_feed").hide();
+    $(".normal_feed").show();
+    $(".what_would_be_wrapper").hide();
+});
+
+bind('.what_would_be_x','click', function() {
+    $(".what_would_be_wrapper").hide();
+});
+
+bind('.see_congratulations','click', function() {
+    action({
+        data: {
+            'action': 'completeTask',
+            'task': "W"
+        },
+        success: function(data) {
+            window.location.href = "/home/";
+        }
+    });
+});
+
+bind('.first_answer_questions','click', function() {
+    $('body').animate({
+        scrollTop: 550
+    }, 1000);
+});
 
 /***********************************************************************************************************************
  *

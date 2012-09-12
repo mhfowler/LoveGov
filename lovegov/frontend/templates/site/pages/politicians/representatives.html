@@ -1,23 +1,41 @@
-<div class="representatives">
+{% extends 'site/pages/home/focus.html' %}
 
-    {% comment %}
-    {% if congressmen %}
-        {% if not ABOVE_QUESTIONS_THRESHOLD or not reps_task %}
-            {% include 'site/pages/politicians/introduction_representatives_header.html' %}
+{% block home_header %}
+
+    <div class="representatives">
+
+        {% if not hide_intros %}
+            {% if not congressmen %}
+                {% include 'site/pages/politicians/representatives_dismissible_header.html' %}
+                <div class="break-area" style="margin-top:40px;"></div>
+            {% endif %}
+
+            {% include 'site/pages/politicians/introduction_representatives_header.html' with intro_title="Your Reps" %}
         {% endif %}
-    {% endif %}
-    {% endcomment %}
 
-    {% include 'site/pages/politicians/representatives_header_and_dismissible.html' %}
+        {% if hide_intros or congressmen %}
+            {% include 'site/pages/politicians/representatives_header_and_dismissible.html' %}
+        {% endif %}
 
-    {% if not ABOVE_QUESTIONS_THRESHOLD %}
-        <div class="questions-wrapper">
-            {% include 'site/pages/qa/feed_browse_questions.html' with special_feed="getQuestions" default_display="choose" only_unanswered=1 %}
-        </div>
-    {% else %}
-        <div class="representatives-feed-wrapper">
+    </div>
+
+{% endblock %}
+
+{% block home_feed %}
+
+    {% if congressmen and not ABOVE_QUESTIONS_THRESHOLD %}
+
+        {% include 'site/pages/dismissible_headers/not_enough_questions.html' with of_what="legislation" %}
+
+        <div class="normal_feed" style="display:none;">
             {% include 'site/pages/feed/feed.html' with feed_boxed=1 %}
         </div>
+
+    {% elif congressmen %}
+
+        {% include 'site/pages/feed/feed.html' with feed_boxed=1 %}
+
     {% endif %}
 
-</div>
+{% endblock %}
+
