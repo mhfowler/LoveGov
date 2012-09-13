@@ -306,8 +306,9 @@ div.feed-main
 
         a.help-robot {
           float: left;
-          margin-left: 40px;
-          margin-top: 7px;
+          margin-left: 35px;
+          position: relative;
+          top: -7px;
         }
 
         div.feed-location-filters {
