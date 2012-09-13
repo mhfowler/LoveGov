@@ -1,5 +1,7 @@
 {% extends 'site/pages/home/focus.html' %}
 
+{% load thumbnail %}
+
 {% block home_header %}
 
     <div class="browse-all">
@@ -10,13 +12,26 @@
 
         <div class="questions-header">
 
-            <div class="questions-left">
-                <div class="header-title">
-                    Groups
+            <div class="select-parties">
+
+                <div class="select-parties-header">
+                    {% if not user_parties %}
+                        Do you affiliate with a mainstream political party?
+                    {% else %}
+                        Parties you belong to,
+                    {% endif %}
                 </div>
-                <div class="questions-explanation">
-                    Follow a group to add it to your feed. Join a group to support their cause.
+
+                <div class="parties-options party-choices-wrapper">
+                    {% for party in parties %}
+                        <span>
+                            {% thumbnail party.party_label "100x20" as im %}
+                                    <img class="select_party party-choice {% if party in user_parties %} selected {% endif %}" src="{{ im.url }}" data-g_id="{{ party.id }}"/>
+                            {% endthumbnail %}
+                        </span>
+                    {% endfor %}
                 </div>
+
             </div>
 
             <a class="create-a-group create_group_link">

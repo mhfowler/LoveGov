@@ -486,6 +486,9 @@ def home(request, vals={}):
     viewer = vals['viewer']
     viewer.completeTask("L")
 
+    # feed tutorial
+    vals['feedtut_tutorial'] = not viewer.checkTask("I")
+
     # vals for page parts
     valsFirstLogin(vals)
     valsLikeMinded(vals)
@@ -574,6 +577,7 @@ def browseGroups(request, vals={}):
     viewer.completeTask("J")
 
     valsFirstLogin(vals)
+    valsParties(vals)
 
     # Render and return HTML
     getStateTuples(vals)
@@ -893,9 +897,8 @@ def account(request, section="", vals={}):
 
     user = vals['viewer']
     vals['uploadform'] = UploadFileForm()
-    vals['parties'] = Party.objects.all()
-    vals['user_parties'] = user.parties.all()
 
+    valsParties(vals)
     getStateTuples(vals)
 
     if section == "profile": vals['profile_message'] = " "
@@ -1012,6 +1015,7 @@ def legislationDetail(request, l_id, vals={}):
     vals['action_states'] = [x.state for x in vals['actions']]
     action_states = [x.state for x in vals['actions']]
     vals['back_url'] = '/legislation/'
+    vals['content_string'] = 'legislation'
 
     if legislation.congress_body == "H":
         if "ENACTED:SIGNED" in action_states:

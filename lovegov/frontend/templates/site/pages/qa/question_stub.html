@@ -1,8 +1,15 @@
-<div class="question-stub question_stub" data-q_id="{{ question.id }}"
+<div class="question-stub question_stub {% if first_question %} qa_tutorial_question {% endif %}"
+        data-q_id="{{ question.id }}"
         {% if default_display %} data-default_display="{{ default_display }}" {% else  %} data-default_display="none" {% endif %}
         {% if your_response %} data-your_response="1" data-privacy="{{ your_response.privacy }}" {% else %} data-your_response="0" {% endif %}>
+
+    <!-- qa_tutorial -->
+    {% if first_question %}
+        {% include 'site/pages/helper_bubbles/qa/qa_tutorial.html' %}
+    {% endif %}
+
     <!-- question text -->
-    <div class="question-header">
+    <div class="question-header qa_this_is_title_parent">
         <table class="valign">
             <tr>
                 <td>
@@ -32,7 +39,7 @@
     </div>
     <!-- inline expansion for choosing answer, stage1 -->
     <div class="question_expanded_choose question_expanded">
-        <div class="answers-wrapper">
+        <div class="answers-wrapper qa_these_are_answers_parent">
             <a class="see-their-response see_their_response"> see their response </a>
             {% with your_response_id=your_response.most_chosen_answer.id %}
                 {% for a in question.answers.all %}
@@ -44,7 +51,7 @@
             {% endwith %}
 
             <!-- editable explanation -->
-            <div class="explanation-wrapper">
+            <div class="explanation-wrapper qa_add_explanation_parent">
                 {% include 'site/pages/qa/answer_explanation_editable.html' %}
             </div>
 
@@ -66,7 +73,7 @@
                 <span style="clear:both;"></span>
             </div>
 
-            <div class="answer-importance a-action importance_wrapper">
+            <div class="answer-importance a-action importance_wrapper qa_importance_parent">
                 <span class="action-icon answer-importance-num importance_percent"> {% if your_response %}{{ your_response.weight }}{% else %}50{% endif %}%</span>
                 <span class="action-text">
                     <a class='action-text-upper '> How important is this question to you? </a>

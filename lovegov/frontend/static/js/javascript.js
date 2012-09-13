@@ -31,9 +31,6 @@ function bindOnReload() {
     // misc
     bindNotificationsDropdownClickOutside();
 
-    // show any visible helper bubles
-    showBubbles();
-
     switch (rebind) {
 
         case "home": initHomePage(); break;
@@ -77,6 +74,9 @@ function bindOnNewElements() {
 
     // dummy_links are prevent defaulted
     undelegated();
+
+    // show any visible helper bubles
+    showBubbles();
 
     // hover comparison popup
     loadHoverComparison();
@@ -1090,7 +1090,7 @@ function getFeed(container) {
     {
         var default_display = container.data("default_display");
         data = {'action': 'getQuestions', 'feed_rank':feed_rank, 'question_rank':question_rank,
-            'feed_start':feed_start, 'feed_topic':feed_topic, 'default_display':default_display};
+            'feed_start':feed_start, 'feed_topic':feed_topic, 'default_display':default_display };
         // if feed is comparing responses with other user
         var to_compare_id = container.data("to_compare_id");
         if (typeof(to_compare_id) != 'undefined') {
@@ -2859,7 +2859,12 @@ function saveAnswer(stub) {
                     }
                 }
             });
-            expandChooseInterface(stub.next('.question_stub'));
+            var next_stub = stub.next('.question_stub');
+            $(".qa_tutorial_question").removeClass("qa_tutorial_question");
+            next_stub.addClass("qa_tutorial_question");
+            $(".qa_bubble").hide();
+            expandChooseInterface(next_stub);
+            showBubbles();
         }
     }
     action({
@@ -4240,17 +4245,18 @@ function showAllBubbles() {
 }
 
 function showBubbles() {
-    var time = 600;
+    var time = 200;
     setTimeout(function() {
         var bubbles = $(".helper_bubble.bubble_show");
-        bubbles.fadeIn(300);
-        bubbles.removeClass("bubble_show");
+        bubbles.each(function() {
+           showBubble($(this), true);
+        });
     }, time);
 }
 
 bind('.x_helper_bubble','click', function() {
-    var helper_bubble = $(this).parents(".helper_bubble").hide();
-    helper_bubble.hide();
+    var helper_bubble = $(this).parents(".helper_bubble");
+    hideBubble(helper_bubble, false);
     var task = helper_bubble.data("task");
     if (task!="") {
         action({
@@ -4264,13 +4270,55 @@ bind('.x_helper_bubble','click', function() {
     }
 });
 
+bind('.take_a_tutorial','click', function() {
+    var tutorial = $(this).data('tutorial');
+    if (tutorial == 'qa') {
+        showBubble($(".qa_start_tutorial"), true);
+    }
+    if (tutorial == 'feed') {
+        showBubble($(".feedtut_start_tutorial"), true);
+    }
+});
 
 bind('.continue_tutorial','click', function() {
+    // hide original bubble
     var helper_bubble = $(this).parents(".helper_bubble");
-    helper_bubble.fadeOut();
+    hideBubble(helper_bubble, true);
+    // this is the bubble we're going to show
     var next_classname = $(this).data("next");
-    $("." + next_classname).fadeIn();
+    var next_bubble = $("." + next_classname);
+    // show bubble
+    showBubble(next_bubble, true);
 });
+
+function hideBubble(bubble, animate) {
+    bubble.removeClass("bubble_show");
+    if (animate) {
+        bubble.fadeOut();
+    }
+    else {
+        bubble.hide();
+    }
+}
+function showBubble(bubble, animate) {
+
+    // my parent selector
+    var my_parent_selector = getValueFromKey(bubble, 'my_parent_selector');
+    // if directions, we must append next_bubble to next_parent before we show it
+    if (my_parent_selector != "") {
+        var my_parent = $(my_parent_selector);
+        my_parent.append(bubble);
+    }
+
+    // then show bubble
+    bubble.addClass("bubble_show");
+    if (animate) {
+        bubble.fadeIn();
+    }
+    else {
+        bubble.show();
+    }
+}
 
 
 bind('.normal_feed_button','click', function() {
@@ -4322,3 +4370,31 @@ bind('div.content-admin-actions span.content-admin-action-delete', 'click', func
     }
 });
 
+/***********************************************************************************************************************
+ *
+ *      ~ groups
+ *
+ ***********************************************************************************************************************/
+bind('.select_party','click', function() {
+    var deselect = $(this).hasClass("selected");
+    var g_id = $(this).data('g_id');
+    $(this).toggleClass("selected");
+    if (!deselect) {
+        action({
+            data: {
+                'action': 'joinGroupRequest',
+                'g_id':g_id
+            },
+            success: null
+        });
+    }
+    else {
+        action({
+            data: {
+                'action': 'leaveGroup',
+                'g_id':g_id
+            },
+            success: null
+        });
+    }
+});
