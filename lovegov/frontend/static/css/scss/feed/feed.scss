@@ -20,6 +20,86 @@ div.feedtut_start_tutorial_parent {
   }
 }
 
+div.feedtut_bubble {
+  position:absolute;
+  width:200px;
+  top:5px;
+  left:5px;
+}
+
+div.feedtut_feed_item_parent {
+  position:relative;
+  div.feedtut_feed_item {
+    position: absolute;
+    width: 318px;
+    top: 64px;
+    left: 71px;
+    font-size: 16px;
+    div.helper-bubble-arrow-wrapper.up {
+      top:-14px;
+    }
+  }
+}
+
+table.feedtut_create_parent {
+  position:relative;
+  div.feedtut_create {
+    position:absolute;
+    width: 250px;
+    top: 62px;
+    left: -100px;
+    div.helper-bubble-arrow-wrapper.up {
+      top: -14px;
+      left: 58px;
+    }
+  }
+}
+
+div.feedtut_groups_parent {
+  position:relative;
+  div.feedtut_groups {
+    position:absolute;
+    width: 250px;
+    top: 5px;
+    left: 5px;
+  }
+}
+
+div.feedtut_posted_to_parent {
+  position:relative;
+  div.feedtut_posted_to {
+    position:absolute;
+    width: 250px;
+    top: -145px;
+    left: -66px;
+  }
+}
+
+div.feedtut_hearts_parent {
+  position:relative;
+  div.feedtut_hearts {
+    position:absolute;
+    width: 177px;
+    top: -26px;
+    left: -174px;
+
+    div.helper-bubble-arrow-wrapper.right {
+      top: 20%;
+      left: 99%;
+    }
+  }
+}
+
+div.feedtut_creator_parent {
+  position:relative;
+  div.feedtut_creator {
+    position:absolute;
+    width: 250px;
+    top: -171px;
+    left: -91px;
+  }
+}
+
 
 /* feed */
 $button-top-padding: 5px;
@@ -226,8 +306,9 @@ div.feed-main
 
         a.help-robot {
           float: left;
-          margin-left: 40px;
-          margin-top: 7px;
+          margin-left: 35px;
+          position: relative;
+          top: -7px;
         }
 
         div.feed-location-filters {
