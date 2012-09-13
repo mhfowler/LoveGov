@@ -250,6 +250,9 @@ div.expand-info
   p.expand-text {
     line-height: 10px;
   }
+  &.collapse-introduction {
+    width:105%;
+  }
 }
 
 div.left-navbar {
