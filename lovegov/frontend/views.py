@@ -209,7 +209,7 @@ def blog(request,category=None,number=None,vals=None):
                     if string.capitalize(category) in blogPost.category:
                         vals['blogPosts'].append(blogPost)
             else:
-                creator = UserProfile.objects.get(alias=category)
+                creator = UserProfile.lg.get_or_none(alias=category)
                 vals['ownBlog'] = creator == user
                 vals['blogPosts'] = blogPosts.filter(creator=creator)
         else:
@@ -1012,6 +1012,7 @@ def legislationDetail(request, l_id, vals={}):
     vals['action_states'] = [x.state for x in vals['actions']]
     action_states = [x.state for x in vals['actions']]
     vals['back_url'] = '/legislation/'
+    vals['content_string'] = 'legislation'
 
     if legislation.congress_body == "H":
         if "ENACTED:SIGNED" in action_states:
