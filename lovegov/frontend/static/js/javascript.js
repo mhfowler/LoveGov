@@ -31,6 +31,9 @@ function bindOnReload() {
     // misc
     bindNotificationsDropdownClickOutside();
 
+    // like minded computing
+    likeMindedComputing();
+
     switch (rebind) {
 
         case "home": initHomePage(); break;
@@ -1043,13 +1046,14 @@ function removeType(type) {
 bind(".feed_button" , "click" , null , function(event) {
     event.preventDefault();
     var button = $(this);
-    var container;
+    var container = button.parents(".feed_main");
+    /*
     if (button.parent().hasClass(".feed_main")) {
         container = button.parents(".feed_main");
     }
     else {
         container = button.closest(".home_focus").find(".feed_main");
-    }
+    }*/
     refreshFeed(container);
 });
 
@@ -1715,7 +1719,7 @@ bind(".r_register", 'click', null, function(event) {
             var returned = eval('(' + data + ')');
 
             if (returned.success) {
-                window.location.href = "/welcome/";
+                window.location.href = "/hello/";
             }
             else {
                 form.replaceWith(returned.html);
@@ -2876,7 +2880,7 @@ function saveAnswer(stub) {
                 var old_height = stub.height();
                 stub.replaceWith(new_element);
                 stub = new_element;
-        ew_element.find(".question_expanded_responses").show();
+                new_element.find(".question_expanded_responses").show();
                 var new_height = new_element.height();
                 new_element.css('height', old_height);
                 new_element.animate({"height":new_height}, {"duration":200, "complete":function(){new_element.css("height", "auto");}});
@@ -3935,6 +3939,13 @@ function findNewLikeMinded() {
     }
 }
 
+function likeMindedComputing() {
+    if (computing_like_minded) {
+        $(".find_loading").show();
+        $(".computing_result").show();
+    }
+}
+
 bind('.clear_like_minded' , 'click' , null , function(e)
 {
     $(".button_result").hide();
@@ -4348,7 +4359,7 @@ bind('.see_congratulations','click', function() {
 
 bind('.first_answer_questions','click', function() {
     $('body').animate({
-        scrollTop: 550
+        scrollTop: 470
     }, 1000);
 });
 

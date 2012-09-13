@@ -1,0 +1,40 @@
+{% extends 'emails/lovegov/white_section.html' %}
+
+{% block white_section %}
+
+    <p>
+        Hi {{ user_profile.first_name }},
+    </p>
+    <p>
+        We are writing to let you know that <a href="http://lovegov.com">LoveGov</a> has recently undergone a significant update.
+        We’ve improved matching, added a host of new features, and made it significantly more community oriented.
+    </p>
+
+    <p>
+        The updated video below highlights some of the changes we've made.
+    </p>
+
+    <p>
+        <a href="http://www.youtube.com/watch?v=OdqzBtPlpoU"> http://www.youtube.com/watch?v=OdqzBtPlpoU </a>
+    </p>
+
+    <p>
+        As one of our earliest users,
+        your feedback is invaluable to us in improving the site and making it a useful tool for connecting people with legislators,
+        communities, and the political process. Since the website is brand new, you may experience bugs or be confused about the layout.
+        If this happens, please <a href="mailto:feedback@lovegov.com" target="_blank">let us know</a>.
+    </p>
+    <p>
+        Our goal is to make it easier to stay informed and get involved.
+        If you like it, spread the word! Thanks again for your help and for being one of our very first users.
+    </p>
+
+    <p>
+        Love,
+    </p>
+
+    <p>
+        The LoveGov team
+    </p>
+
+{% endblock %}

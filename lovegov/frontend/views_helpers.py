@@ -480,7 +480,9 @@ def getStateTuples(vals):
 
 def valsParties(vals):
     viewer = vals['viewer']
-    vals['parties'] = Party.objects.all()
+    parties = list(Party.objects.all())
+    parties.sort(key=lambda x: x.title[0])
+    vals['parties'] = parties
     vals['user_parties'] = viewer.parties.all()
 
 #-----------------------------------------------------------------------------------------------------------------------

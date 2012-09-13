@@ -12,7 +12,7 @@ div.select-parties {
     font-size:24px;
   }
   div.parties-options {
-    width: 500px;
+    width: 480px;
   }
 }
 
@@ -166,10 +166,10 @@ div.like-minded-header {
         border:1px solid $black;
         @include border-radius(8px);
         width:300px;
-        height:330px;
+        height:425px;
         background-color:white;
-        top: 84px;
-        left: -14px;
+        top: 210px;
+        left: -30px;
         display:none;
         div.explanation-header {
           font-weight:bold;
@@ -256,6 +256,7 @@ div.like-minded-header {
           div.computing-result {
             float:left;
             margin-left:40px;
+            margin-top: -3px;
             display:none;
           }
         }
