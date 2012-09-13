@@ -478,6 +478,11 @@ def valsFBFriends(request, vals):
 def getStateTuples(vals):
     vals['states'] = STATES
 
+def valsParties(vals):
+    viewer = vals['viewer']
+    vals['parties'] = Party.objects.all()
+    vals['user_parties'] = viewer.parties.all()
+
 #-----------------------------------------------------------------------------------------------------------------------
 # fills vals for reps header
 #-----------------------------------------------------------------------------------------------------------------------
@@ -569,4 +574,4 @@ def valsFirstLogin(vals):
                 viewer.completeTask("W")
                 viewer.completeTask("H")    # and complete hide task, because no get started header from now on
 
-    vals['first_questions'] = not viewer.checkTask("Q")
+    vals['qa_tutorial'] = not viewer.checkTask("Q")

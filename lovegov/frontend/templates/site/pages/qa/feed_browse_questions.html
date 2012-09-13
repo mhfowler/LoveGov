@@ -1,18 +1,18 @@
 {% extends 'site/pages/feed/feed.html' %}
 
+{% load thumbnail %}
+
 {% block sort_buttons %}
 
     {% comment %}
     <span class="answered-filter only_unanswered only-unanswered {% if only_unanswered %} clicked {% endif %}"> only unanswered </span>
     {% endcomment %}
 
-    <!-- helper bubble -->
-    {% include 'site/pages/helper_bubbles/qa_tutorial.html' %}
-
     <div class='buttons-container-text'>Sort by:</div>
     <div class="sort-button feed_button rank_button" data-rank="N" >New</div>
     <div class="sort-button feed_button rank_button" data-rank="H">Hot</div>
     <div class="sort-button feed_button rank_button last-button" data-rank="B">Best</div>
+
 {% endblock %}
 
 {% block filter_buttons %}
@@ -23,8 +23,16 @@
         </a>
     {% endfor %}
 
-    <span class="only-unanswered-text"> only unanswered </span>
+    <span class="only-unanswered-text qa_only_unanswered_parent"> only unanswered </span>
     <input type="checkbox" class="only-unanswered-checkbox only_unanswered" {% if only_unanswered %} checked="checked" {% endif %} />
+
+    {% comment %}
+    <a class="qa_help qa-help"> help? </a>
+    {% endcomment %}
+
+    <a class="qa_help help-robot tooltip-top" title="take a tutorial?">
+        {% include 'site/pieces/thumbnail.html' with thumbnail_url="/images/icons/logo/lg_robot.jpg" width="25" height="25" %}
+    </a>
 
 {% endblock %}
 

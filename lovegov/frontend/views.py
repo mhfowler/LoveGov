@@ -574,6 +574,7 @@ def browseGroups(request, vals={}):
     viewer.completeTask("J")
 
     valsFirstLogin(vals)
+    valsParties(vals)
 
     # Render and return HTML
     getStateTuples(vals)
@@ -893,9 +894,8 @@ def account(request, section="", vals={}):
 
     user = vals['viewer']
     vals['uploadform'] = UploadFileForm()
-    vals['parties'] = Party.objects.all()
-    vals['user_parties'] = user.parties.all()
 
+    valsParties(vals)
     getStateTuples(vals)
 
     if section == "profile": vals['profile_message'] = " "

@@ -4449,6 +4449,8 @@ class Group(Content):
             self.members.add(user)
         from lovegov.modernpolitics.actions import followGroupAction
         followGroupAction(user, self, True, privacy)
+        if group.group_type == 'P':
+            user.parties.add(self)
 
     #-------------------------------------------------------------------------------------------------------------------
     # Removes a member from the group and creates GroupJoined appropriately.
@@ -4469,6 +4471,8 @@ class Group(Content):
             self.save()
         self.members.remove(user)
         self.admins.remove(user)
+        if group.group_type == 'P':
+            user.parties.remove(group)
 
     #-------------------------------------------------------------------------------------------------------------------
     # Gets comparison between this group and inputted user.

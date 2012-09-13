@@ -147,7 +147,7 @@ div.feed-main
         a.like-minded-text {
           float:left;
           margin-top: 8px;
-          margin-left:60px;
+          margin-left:35px;
           font-size: 16px;
         }
         input.like-minded-checkbox {
@@ -189,7 +189,7 @@ div.feed-main
         span.only-unanswered-text {
           float:left;
           margin-top: 8px;
-          margin-left:60px;
+          margin-left:40px;
           font-size: 16px;
           //text-decoration: underline;
         }
@@ -199,98 +199,18 @@ div.feed-main
           margin-top: 11px;
         }
 
-        span.qa-tutorial-progress {
-          float:right;
-        }
-
-        div.qa_only_unanswered {
-          position:absolute;
-          top: 47px;
-          left: 638px;
-          width: 300px;
-          font-size:16px;
-          z-index:3;
-          div.helper-bubble-arrow-wrapper.up {
-            top:-14px;
-            div.helper-bubble-arrow {
-              margin-left:45px;
-            }
-          }
-          div.helper-text {
-            padding-left: 25px;
-            padding-bottom: 0px;
-          }
-          div.x-helper-bubble {
-            float:left;
-          }
-        }
-
-        div.qa_start_tutorial {
-          width: 160px;
+        a.qa-help {
+          float: left;
+          margin-left: 34px;
+          margin-top: 8px;
           font-size: 16px;
-          left: -184px;
-          top: 130px;
-          position: absolute;
-          div.x-helper-bubble {
-            //float:left;
-          }
-          div.helper-text {
-            //padding-left: 25px;
-            padding-bottom: 0px;
-          }
+          font-style: italic;
         }
 
-        div.qa_this_is_title {
-          width: 400px;
-          position: absolute;
-          font-size: 16px;
-          left: 11%;
-          padding-left: 21px;
-          padding-right: 20px;
-          top: 143px;
-        }
-        div.qa_these_are_answers {
-          position: absolute;
-          width: 256px;
-          left: 72%;
-          top: 68px;
-          z-index: 3;
-          font-size: 16px;
-          div.helper-text {
-            padding-left: 20px;
-            padding-right: 20px;
-          }
-        }
-
-        div.qa_privacy {
-          position:absolute;
-          width:400px;
-          top: 130px;
-          left: 325px;
-          font-size:16px;
-          div.helper-bubble-arrow-wrapper {
-            top:10%;
-          }
-        }
-
-        div.qa_add_explanation {
-          position: absolute;
-          width: 350px;
-          font-size: 16px;
-          top: 100px;
-          left: 29px;
-          padding-left: 17px;
-        }
-
-        div.qa_importance {
-          position:absolute;
-          width:400px;
-          top: 85px;
-          left: 325px;
-          font-size:16px;
-          div.helper-bubble-arrow-wrapper {
-            top:78%;
-          }
+        a.help-robot {
+          float: left;
+          margin-left: 40px;
+          margin-top: 7px;
         }
 
         div.feed-location-filters {

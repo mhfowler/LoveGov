@@ -4,6 +4,20 @@
 
 @import "compass";
 
+/* parties */
+div.select-parties {
+  width:600px;
+  float: left;
+  div.select-parties-header {
+    font-size:24px;
+  }
+  div.parties-options {
+    width: 500px;
+  }
+}
+
+
+/* groups */
 div.groups-header {
   width:100%;
   margin-top:10px;

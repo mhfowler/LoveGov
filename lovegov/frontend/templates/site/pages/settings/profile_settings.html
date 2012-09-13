@@ -10,7 +10,7 @@
             <tr>
                 <td class="left"><h3>avatar</h3></td>
                 <td>
-                    {% include 'site/pieces/avatar.html' with user=viewer height="75" width="75" %}
+                    {% include 'site/pieces/avatar.html' with user=viewer height="75" width="75" hoveroff=1%}
                     {{ uploadform.image }}
                 </td>
                 <td></td>
@@ -30,18 +30,20 @@
             <tr>
                 <td class="left"><h3>parties</h3></td>
                 <td>
-                    {% for party in parties %}
-                        <span>
+                    <div class="party-choices-wrapper">
+                        {% for party in parties %}
+                            <span>
                                 {% thumbnail party.party_label "100x20" as im %}
                                     <img class="party_choice party-choice" src="{{ im.url }}" />
                                 {% endthumbnail %}
-                            {% if party in user_parties %}
-                                <input class="party_input party-choice" type="checkbox" name="{{ party.alias }}" value="{{ party.alias }}" checked="checked">
-                            {% else %}
-                                <input class="party_input party-choice" type="checkbox" name="{{ party.alias }}" value="{{ party.alias }}">
-                            {% endif %}
+                                {% if party in user_parties %}
+                                    <input class="party_input party-choice" type="checkbox" name="{{ party.alias }}" value="{{ party.alias }}" checked="checked">
+                                {% else %}
+                                    <input class="party_input party-choice" type="checkbox" name="{{ party.alias }}" value="{{ party.alias }}">
+                                {% endif %}
                                 </span>
-                    {% endfor %}
+                        {% endfor %}
+                    </div>
                 </td>
                 <td></td>
             </tr>

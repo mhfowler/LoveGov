@@ -71,21 +71,8 @@ div.account-left
 
 }
 
-div.account-right
-{
-  float:left;
-  width:625px;
-  $input-width:360px;
-
-  div.edit-link-large
-  {
-    @include edit-link(20px);
-    vertical-align:middle;
-    position:relative;
-    margin-left:15px;
-    display: none;
-  }
-
+/* party choices */
+div.party-choices-wrapper {
   img.party-choice-deselected
   {
     filter: url(/static/images/party_labels/filter.svg#grayscale) !important; /* Firefox 3.5+ */
@@ -109,6 +96,13 @@ div.account-right
       filter: none;
       -webkit-filter: grayscale(0);
     }
+
+    &.selected {
+      opacity:1.0;
+      cursor:pointer;
+      filter: none;
+      -webkit-filter: grayscale(0);
+    }
   }
 
   img.party-choice-selected
@@ -124,6 +118,22 @@ div.account-right
 
   input.party-choice
   {
+    display: none;
+  }
+}
+
+div.account-right
+{
+  float:left;
+  width:625px;
+  $input-width:360px;
+
+  div.edit-link-large
+  {
+    @include edit-link(20px);
+    vertical-align:middle;
+    position:relative;
+    margin-left:15px;
     display: none;
   }
 

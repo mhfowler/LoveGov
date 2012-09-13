@@ -4,6 +4,125 @@
 @import "compass";
 
 /**********************************************************************************************************************/
+/*  ~ qa tutorial
+/**********************************************************************************************************************/
+span.qa-tutorial-progress {
+  float:right;
+}
+
+span.qa_only_unanswered_parent {
+  position:relative;
+  div.qa_only_unanswered {
+    position:absolute;
+    top: 39px;
+    left: 60px;
+    width: 300px;
+    font-size:16px;
+    z-index:3;
+    div.helper-bubble-arrow-wrapper.up {
+      top:-14px;
+      div.helper-bubble-arrow {
+        margin-left:45px;
+      }
+    }
+    div.helper-text {
+      padding-left: 25px;
+      padding-bottom: 0px;
+    }
+    div.x-helper-bubble {
+      float:left;
+    }
+  }
+}
+
+div.qa_tutorial_question {
+  position:relative;
+  div.qa_start_tutorial {
+    width: 160px;
+    font-size: 16px;
+    left: -184px;
+    top: 30%;
+    position: absolute;
+    div.x-helper-bubble {
+      //float:left;
+    }
+    div.helper-text {
+      //padding-left: 25px;
+      padding-bottom: 0px;
+    }
+  }
+}
+
+div.qa_this_is_title_parent {
+  position:relative;
+  div.qa_this_is_title {
+    width: 400px;
+    position: absolute;
+    font-size: 16px;
+    left: 11%;
+    padding-left: 21px;
+    padding-right: 20px;
+    top: 58px;
+  }
+}
+
+div.qa_these_are_answers_parent {
+  position:relative;
+  div.qa_these_are_answers {
+    position: absolute;
+    width: 256px;
+    left: 72%;
+    top: -50%;
+    z-index: 3;
+    font-size: 16px;
+    div.helper-text {
+      padding-left: 20px;
+      padding-right: 20px;
+    }
+  }
+}
+
+div.qa_privacy_parent {
+  position:relative;
+  div.qa_privacy {
+    position:absolute;
+    width:400px;
+    top: -44px;
+    left: -428px;
+    font-size:16px;
+    div.helper-bubble-arrow-wrapper {
+      top:10%;
+    }
+  }
+}
+
+div.qa_add_explanation_parent {
+  position:relative;
+  div.qa_add_explanation {
+    position: absolute;
+    width: 350px;
+    font-size: 16px;
+    top: -213px;
+    left: -23px;
+    padding-left: 17px;
+  }
+}
+
+div.qa_importance_parent {
+  position:relative;
+  div.qa_importance {
+    position:absolute;
+    width:400px;
+    top: -232px;
+    left: -430px;
+    font-size:16px;
+    div.helper-bubble-arrow-wrapper {
+      top:78%;
+    }
+  }
+}
+
+/**********************************************************************************************************************/
 /*  ~ poll-detail
 /**********************************************************************************************************************/
 div.poll-detail-sidebar {
@@ -630,20 +749,20 @@ div.questions-header {
     float:right;
     width:300px;
     margin-top: 15px;
-      a.question-link {
-          display:block;
-          padding:8px;
-          //text-transform:uppercase;
-          background-color:$light-gray;
-          color:black;
-          margin-top: 10px;
-          width: 250px;
-          float:right;
-          @include fontSize(12px);
-          &:hover {
-            background-color:$dark-gray;
-          }
+    a.question-link {
+      display:block;
+      padding:8px;
+      //text-transform:uppercase;
+      background-color:$light-gray;
+      color:black;
+      margin-top: 10px;
+      width: 250px;
+      float:right;
+      @include fontSize(12px);
+      &:hover {
+        background-color:$dark-gray;
       }
+    }
   }
 }
 
