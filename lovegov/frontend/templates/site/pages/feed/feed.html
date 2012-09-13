@@ -1,4 +1,4 @@
-<div class="feed-main feed_main feedtut_start_tutorial_parent"
+<div class="feed-main feed_main feedtut_start_tutorial_parent feedtut_groups_parent"
      data-feed_start="0"
         {% if not special_feed %} data-feed="getFeed" {% else %} data-feed="{{ special_feed }}" {% endif %}
         {% if not default_display %} data-default_display="none" {% else %} data-default_display="{{ default_display}}" {% endif %}
@@ -44,7 +44,7 @@
                             {% if like_minded_filter %}
 
                                 <a class="like-minded-text like_minded_link dummy_link" id="like_minded_link_id"> only like-minded </a>
-                                <input type="checkbox" class="like-minded-checkbox like_minded_button" id="like_minded_checkbox_id"
+                                <input type="checkbox" class="like-minded-checkbox like_minded_button" id="like_minded_link_id1"
                                         {% if only_unanswered %} checked="checked" {% endif %} />
 
                                 <div class="like-minded-header-dialogue like_minded_header_dialogue">
@@ -70,7 +70,7 @@
             <td>
                 {% block right_button %}
                     {% if not no_create_button %}
-                        <table class='create-button'>
+                        <table class='create-button feedtut_create_parent'>
                             <tr>
                                 <td class="create-button" {% if g_id %} data-g_id="{{ g_id }}" {% endif %}>
                                     create

@@ -211,7 +211,26 @@ div.helper-bubble {
   @include border-radius(7px);
   div.helper-text {
     width:100%;
+    padding:10px;
     float:left;
+    font-size:16px;
+
+    div.switch-buttons {
+      width:100%;
+      text-align:center;
+      a.next-button {
+        float:right;
+      }
+      span.tutorial-progress {
+        width:100%;
+        padding-right:10px;
+        text-align:center;
+      }
+      a.previous-button {
+        float:left;
+      }
+    }
+
   }
   div.helper-bubble-arrow-wrapper.down {
     top: 97%;

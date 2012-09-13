@@ -1133,6 +1133,10 @@ def updateStats(request, vals={}):
         vals['of_what'] = request.POST.get('of_what')
         valsQuestionsThreshold(vals)
         html = ajaxRender('site/pages/dismissible_headers/not_enough_questions_warning.html', vals, request)
+    elif object == 'poll_completed_num':
+        vals['poll'] = poll = Poll.objects.get(id=request.POST['p_id'])
+        vals['poll_progress'] = poll.getPollProgress(viewer)
+        html = ajaxRender('site/pages/qa/poll_completed_num.html', vals, request)
     return HttpResponse(json.dumps({'html':html}))
 
 #----------------------------------------------------------------------------------------------------------------------
