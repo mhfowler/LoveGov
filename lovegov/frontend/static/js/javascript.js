@@ -1719,7 +1719,7 @@ bind(".r_register", 'click', null, function(event) {
             var returned = eval('(' + data + ')');
 
             if (returned.success) {
-                window.location.href = "/welcome/";
+                window.location.href = "/hello/";
             }
             else {
                 form.replaceWith(returned.html);
