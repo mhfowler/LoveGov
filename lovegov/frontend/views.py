@@ -1032,6 +1032,7 @@ def legislationDetail(request, l_id, vals={}):
     vals['action_states'] = [x.state for x in vals['actions']]
     action_states = [x.state for x in vals['actions']]
     vals['back_url'] = '/legislation/'
+    vals['content_string'] = 'legislation'
 
     if legislation.congress_body == "H":
         if "ENACTED:SIGNED" in action_states:
