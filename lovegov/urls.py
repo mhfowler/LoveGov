@@ -160,6 +160,7 @@ urlpatterns += patterns('',
     (r'^state/(?P<state>\w+)/$', viewWrapper(views.state, requires_login=True)),
 
     # REDIRECT
+    (r'^popup_redirect/$', views.popupRedirect),
     (r'(?P<alias>\w+)/$', views.aliasDowncast),
     (r'.*/$', views.redirect),
     (r'^$', views.redirect)
