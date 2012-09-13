@@ -88,7 +88,11 @@ def sendInviteByEmail(inviter, to_email):
     email_template = 'emails/lovegov/invite_by_email.html'
     sendLoveGovEmailHelper(None, subject, email_vals, email_template, to_email=to_email)
 
-
+def sendLaunchEmail(user_profile):
+    subject = "The New LoveGov"
+    email_vals = {}
+    email_template = 'emails/lovegov/launch.html'
+    sendLoveGovEmailHelper(user_profile, subject, email_vals, email_template)
 
 
 def sendTeamEmail(subject, email_html):
