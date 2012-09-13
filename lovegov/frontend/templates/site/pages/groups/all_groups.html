@@ -1,36 +1,53 @@
-<div class="browse-all">
+{% extends 'site/pages/home/focus.html' %}
 
-    <div class="questions-header">
+{% load thumbnail %}
 
-        <div class="questions-left">
-            <div class="header-title">
-                Groups
+{% block home_header %}
+
+    <div class="browse-all">
+
+        {% if not hide_intros %}
+            {% include 'site/pages/groups/introduction_groups_header.html' with intro_title="Join Groups" %}
+        {% endif %}
+
+        <div class="questions-header">
+
+            <div class="select-parties">
+
+                <div class="select-parties-header">
+                    Political Parties
+                </div>
+
+                <div class="parties-options party-choices-wrapper">
+                    {% for party in parties %}
+                        <span>
+                            {% thumbnail party.party_label "100x20" as im %}
+                                    <img class="select_party party-choice {% if party in user_parties %} selected {% endif %}" src="{{ im.url }}" data-g_id="{{ party.id }}"/>
+                            {% endthumbnail %}
+                        </span>
+                    {% endfor %}
+                </div>
+
             </div>
-            <div class="questions-explanation">
-                Follow a group to add it to your feed. Join a group to support their cause.
-            </div>
+
+            <a class="create-a-group create_group_link">
+                create a group
+            </a>
+
+            <div style="clear:both;"></div>
+
         </div>
-
-        <a class="create-a-group create_group_link">
-             create a group
-        </a>
-
-        {% comment %}
-        <div class="questions-links">
-            <a href="/presidential_election/" class="question-link"> match with presidential candidates </a>
-            <a href="/representatives/" class="question-link"> match with your representatives </a>
-            <a href="/congress/" class="question-link"> match with congress </a>
-        </div>
-        {% endcomment %}
-
-        <div style="clear:both;"></div>
 
     </div>
 
+{% endblock %}
+
+{% block home_feed %}
 
     <div class="browse-all-wrapper">
         {% include 'site/pages/browse/feed_browse_groups.html' with special_feed="getGroups" %}
     </div>
-</div>
 
-<script> rebind="browse"; </script>
+    <script> rebind="browse"; </script>
+
+{% endblock %}

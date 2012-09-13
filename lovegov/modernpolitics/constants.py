@@ -19,14 +19,24 @@ import os
 
 LOCAL = settings.LOCAL
 
+########################################## BACKGROUND TASKS ############################################################
+
+BACKGROUND_TASKS=['L', # calculate like minded group
+                   'C', # compare with congress
+]
+
 ########################################## FIRST LOGIN  ################################################################
 
-FIRST_LOGIN_TASKS=['E', # explore feed
-                   'F', # find reps
-                   'L', # lovegov poll
+FIRST_LOGIN_TASKS=['P', # match with presidents
+                   'R', # match with reps
+                   'L', # find like minded citizens
                    'J', # join groups to customize your feed
-                   'A', # you saw your congratulatory message
+                   'A', # you completed all matching tasks
+                   'O', # clicked off only_unanswered helper bubble
+                   'E', # explore feed
                     ]
+
+QUESTIONS_THRESHOLD = 15
 
 ########################################################################################################################
 
@@ -35,7 +45,7 @@ TEMPDIR = settings.MEDIA_ROOT + 'temp/'
 
 ########################################## Content we cycle through ####################################################
 
-DISMISSIBLE_HEADERS = ['congress_teaser', 'find_reps', 'lovegov_poll']
+DISMISSIBLE_HEADERS = ['congress_teaser', 'find_reps']
 
 ########################################## SPECIAL ALIASES #############################################################
 
@@ -560,8 +570,8 @@ PETITION_LEVELS = [0, 10, 50, 100, 500, 1000, 5000, 10000, 50000,
 
 ###################################### LIKE MINDED GROUP ###############################################################
 
-LIKE_MINDED_RESULT_THRESHOLD = 80
-LIKE_MINDED_NUMQ_THRESHOLD = 20
+LIKE_MINDED_RESULT_THRESHOLD = 75
+LIKE_MINDED_NUMQ_THRESHOLD = 15
 LIKE_MINDED_FIND_INCREMENT = 100
 
 ###################################### ACTIONS #########################################################################
@@ -676,13 +686,15 @@ ACTIONS = [
     'removeScorecard',
     'completeTask',
     'getBillSubjects',
+    'addEmailList',
 
 ]
 
 UNAUTHENTICATED_ACTIONS = [
     'logCompatability',
     'getModal',
-    'newRegister'
+    'newRegister',
+    'addEmailList'
 ]
 
 DEFAULT_PROHIBITED_ACTIONS = []
@@ -852,3 +864,4 @@ except:
     LEGISLATION_BILLNUMBERS =  []
     LEGISLATION_COMMITTEES = []
     LEGISLATION_SESSIONS = []
+

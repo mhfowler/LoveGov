@@ -33,11 +33,7 @@ div.reply {
             margin-bottom: 0;
           @include transition(0.1s);
         }
-        &:active {
-          padding-top: 18px;
-          margin-bottom: -4px;
-          @include transition(0.05s);
-        }
+
             display: block;
         }
 

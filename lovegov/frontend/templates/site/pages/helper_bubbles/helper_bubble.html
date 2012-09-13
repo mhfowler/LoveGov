@@ -1,4 +1,7 @@
-<div class="helper_bubble helper-bubble {{ which_bubble }}">
+<div class="helper_bubble helper-bubble {{ bubble_classes }}
+{% if bubble_show %} bubble_show {% endif %}"
+    data-task="{{ bubble_task }}"
+    data-my_parent_selector="{{ my_parent_selector }}">
 
     <div class="x-helper-bubble x_helper_bubble"> x </div>
 

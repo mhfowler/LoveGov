@@ -4,12 +4,198 @@
 
 @import "compass";
 
+/* lovegov robot */
+div.lovegov-robot {
+  @include staticImage("/images/icons/logo/lg_robot.jpg");
+  width: 75px;
+  height: 75px;
+  background-size: 75px 75px;
+}
+
+/* what would be, questions feed */
+div.what-would-be-wrapper {
+  position:relative;
+  font-size: 18px;
+  padding: 15px 15px;
+  background-color: $yellow-light;
+  margin-top: 15px;
+  margin-bottom: 25px;
+
+  &.strong-match {
+    background-color:#D6ECBF;
+  }
+
+  div.what-would-be-text {
+    float:left;
+    width:820px;
+    span.bold-part {
+      font-weight:bold;
+    }
+  }
+  span.questions-progress {
+    float:right;
+    margin-right: 25px;
+    margin-top: 8px;
+    font-size: 30px;
+  }
+
+  a.what-would-be-x {
+    position: absolute;
+    left: 947px;
+    top: 7px;
+    color:$black;
+    &:hover {
+      color:$red;
+    }
+  }
+
+}
+
+/* introduction headers */
+div.completed-all-tasks {
+
+  width:475px;
+  float:left;
+
+  div.congratulations-header {
+    font-size:30px;
+    color:$gray;
+
+    div.lovegov-robot {
+      float:left;
+    }
+    span.congratulations-header-text {
+      float:left;
+      margin-left:20px;
+      height:100px;
+      padding-top:20px;
+      margin-right:25px;
+    }
+
+  }
+
+  div.congratulations-text {
+    margin-top:10px;
+    font-size:16px;
+  }
+}
+
+div.introduction-header {
+
+  width:100%;
+
+  div.where-am-i {
+
+    width: 475px;
+    float:left;
+
+    div.where-am-i-header {
+      width:100%;
+      float:left;
+      div.lovegov-robot {
+        float:left;
+      }
+      div.where-am-i-text {
+        float:left;
+        font-size: 30px;
+        margin-left: 30px;
+        margin-top: 16px;
+      }
+      a.hide-intros {
+        float: left;
+        margin-top: 27px;
+        margin-left: 31px;
+      }
+    }
+    div.where-am-i-content {
+      float:left;
+      width:100%;
+      margin-top:20px;
+      font-size:16px;
+      padding-left:20px;
+    }
+  }
+
+}
+
+
+/* get started checkboxes */
+div.get-started {
+
+  width:450px;
+  float:left;
+  margin-left:5px;
+  position: relative;
+  left: 50px;
+
+  div.get-started-header {
+    @include fontSize(20px);
+    width:100%;
+    margin-bottom:15px;
+    font-weight:bold;
+    letter-spacing: 1px;
+  }
+  div.tasks-wrapper {
+    width:100%;
+    div.task-wrapper {
+      width:100%;
+      float:left;
+      margin-bottom:20px;
+      a.task-checkbox {
+        width:25px;
+        height:25px;
+        border:1px solid $gray;
+        float:left;
+        &:hover {
+          border-color:$dark-gray;
+        }
+        div.task-completed {
+          @include staticImage("/images/icons/arrows/check.png");
+          width: 30px;
+          height: 30px;
+          background-size: 30px 30px;
+          position: relative;
+          top: -10px;
+          left: 2px;
+          z-index:1;
+        }
+        &.incomplete {
+          div.task-completed {
+            display:none;
+          }
+        }
+      }
+      a.task-label {
+        float:left;
+        margin-left:15px;
+        margin-top:0px;
+        width:400px;
+        @include fontSize(20px);
+        color:$black;
+        font-family:"Sonus-ExtraLight";
+        &:hover {
+          color:black;
+        }
+      }
+    }
+  }
+}
+
+
 /* helper bubbles */
 div.helper-bubble {
   z-index:1;
   padding: 5px 10px 5px 10px;
   position:relative;
   display:none;
+
+  a:hover {
+    color:$black;
+  }
+
+  &.show {
+    display:block;
+  }
   div.x-helper-bubble {
     float:right;
     display:block;
@@ -25,7 +211,26 @@ div.helper-bubble {
   @include border-radius(7px);
   div.helper-text {
     width:100%;
+    padding:10px;
     float:left;
+    font-size:16px;
+
+    div.switch-buttons {
+      width:100%;
+      text-align:center;
+      a.next-button {
+        float:right;
+      }
+      span.tutorial-progress {
+        width:100%;
+        padding-right:10px;
+        text-align:center;
+      }
+      a.previous-button {
+        float:left;
+      }
+    }
+
   }
   div.helper-bubble-arrow-wrapper.down {
     top: 97%;
@@ -33,8 +238,8 @@ div.helper-bubble {
     text-align:center;
     position: absolute;
     div.helper-bubble-arrow {
-        @include triangle('down', $text-blue, 15px);
-        margin-left:35%;
+      @include triangle('down', $text-blue, 15px);
+      margin-left:35%;
     }
   }
   div.helper-bubble-arrow-wrapper.up {
@@ -45,6 +250,22 @@ div.helper-bubble {
     div.helper-bubble-arrow {
       @include triangle('up', $text-blue, 15px);
       margin-left:35%;
+    }
+  }
+  div.helper-bubble-arrow-wrapper.right {
+    top:45%;
+    left:100%;
+    position: absolute;
+    div.helper-bubble-arrow {
+      @include triangle('right', $text-blue, 15px);
+    }
+  }
+  div.helper-bubble-arrow-wrapper.left {
+    top: 50%;
+    left: -5%;
+    position: absolute;
+    div.helper-bubble-arrow {
+      @include triangle('left', $text-blue, 15px);
     }
   }
 }
@@ -85,72 +306,22 @@ div.first-login-header {
   }
 
   div.get-started {
-
-    margin-top:30px;
-    width:450px;
-    float:left;
-    margin-left:75px;
-
-    div.get-started-header {
-      @include fontSize(20px);
-      width:100%;
-      margin-bottom:15px;
-      font-weight:bold;
-      letter-spacing: 1px;
-    }
-    div.tasks-wrapper {
-      width:100%;
-      div.task-wrapper {
-        width:100%;
-        float:left;
-        margin-bottom:20px;
-        a.task-checkbox {
-          width:25px;
-          height:25px;
-          border:1px solid $gray;
-          float:left;
-          &:hover {
-            border-color:$dark-gray;
-          }
-          div.task-completed {
-            @include staticImage("/images/icons/arrows/check.png");
-            width: 30px;
-            height: 30px;
-            background-size: 30px 30px;
-            position: relative;
-            top: -10px;
-            left: 2px;
-            z-index:1;
-          }
-          &.incomplete {
-            div.task-completed {
-              display:none;
-            }
-          }
-        }
-        a.task-label {
-          float:left;
-          margin-left:15px;
-          margin-top:0px;
-          width:400px;
-          @include fontSize(20px);
-          color:$black;
-          font-family:"Sonus-ExtraLight";
-          &:hover {
-            color:black;
-          }
-        }
-      }
-    }
+    margin-top:100px;
+    margin-left:50px;
+    left:0px;
   }
 
   div.are-you {
-    width:600px;
-    float:left;
-    margin-top:30px;
-    margin-bottom:30px;
+    //width: 460px;
+    width: 556px;
+    float: left;
+    margin-top: 14px;
+    margin-bottom: 30px;
+    padding-left: 49px;
+    height: 142px;
+    //margin-left: 65px;
     div.are-you-wrapper {
-      margin-bottom:5px;
+      margin-bottom:19px;
       @include fontSize(16px);
       color:$dark-gray;
       a.are-you-link {
@@ -161,6 +332,15 @@ div.first-login-header {
       }
     }
   }
+
+  div.get-involved {
+    width: 450px;
+    font-size: 16px;
+    display: inline-block;
+    margin-left: 77px;
+    margin-top: 10px;
+  }
+
   div.completed-all {
     float: right;
     width: 320px;
@@ -343,8 +523,8 @@ a.lgpoll-header {
 
   div.right-part {
     float:left;
-    margin-left:35px;
-    width:450px;
+    margin-left: 45px;
+    width: 400px;
     margin-top:30px;
     div.header-title {
       @include fontSize(24px);

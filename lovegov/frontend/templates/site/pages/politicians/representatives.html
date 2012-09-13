@@ -1,9 +1,41 @@
-<div class="representatives">
+{% extends 'site/pages/home/focus.html' %}
 
-    {% include 'site/pages/politicians/representatives_header_and_dismissible.html' %}
+{% block home_header %}
 
-    <div class="representatives-feed-wrapper">
-        {% include 'site/pages/feed/feed.html' with feed_boxed=1 %}
+    <div class="representatives">
+
+        {% if not hide_intros %}
+            {% if not congressmen %}
+                {% include 'site/pages/politicians/representatives_dismissible_header.html' %}
+                <div class="break-area" style="margin-top:40px;"></div>
+            {% endif %}
+
+            {% include 'site/pages/politicians/introduction_representatives_header.html' with intro_title="Your Reps" %}
+        {% endif %}
+
+        {% if hide_intros or congressmen %}
+            {% include 'site/pages/politicians/representatives_header_and_dismissible.html' %}
+        {% endif %}
+
     </div>
 
-</div>
+{% endblock %}
+
+{% block home_feed %}
+
+    {% if congressmen and not ABOVE_QUESTIONS_THRESHOLD %}
+
+        {% include 'site/pages/dismissible_headers/not_enough_questions.html' with of_what="legislation" %}
+
+        <div class="normal_feed" style="display:none;">
+            {% include 'site/pages/feed/feed.html' with feed_boxed=1 %}
+        </div>
+
+    {% elif congressmen %}
+
+        {% include 'site/pages/feed/feed.html' with feed_boxed=1 %}
+
+    {% endif %}
+
+{% endblock %}
+

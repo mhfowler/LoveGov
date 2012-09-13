@@ -4,7 +4,6 @@
 {% load macros %}
 {% loadmacros "site/pages/feed/feed_items/base_item.html" %}
 
-
 {% block top %}
 
     {% macro content_detail_title content %}
@@ -23,11 +22,19 @@
 {% block sidebar %}
     <div class='content-detail-sidebar'>
 
+
         <div class="back-buttons">
-            <a {% if back_url %} href="{{ back_url }}" {% else %} href="/home/" {% endif %} class="back-to-button">
+        {% if back_url %}
+            <a href="{{ back_url }}" class="back-to-button">
+                <div class="gray-triangle"></div>
+                <div class="back-container"> back to {{ content_string }} </div>
+            </a>
+        {% else %}
+            <a href="/home/" class="back-to-button">
                 <div class="gray-triangle"></div>
                 <div class="back-container"> back to feed </div>
             </a>
+        {% endif %}
             {% with posted_to=content.posted_to %}
                 <a {% if posted_to  %} href="{{ content.posted_to.get_url }}" {% else %} href="/lovegov_group/" {% endif %}class="back-to-button">
                     <div class="gray-triangle"></div>
@@ -35,6 +42,7 @@
                 </a>
             {% endwith %}
         </div>
+
 
     </div>
 {% endblock %}
@@ -63,6 +71,9 @@
             <div class="content-main-wrapper">
                 {% block content_body %}
                 {% endblock %}
+                {% if viewer == content.creator %}
+                <div class="content-admin-actions"><strong>Creator actions:</strong> <span class="content-admin-action-delete" data-c_id="{{ content.id }}">delete</span></div>
+                {% endif %}
             </div>
         </div>
 

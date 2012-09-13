@@ -2,12 +2,13 @@
 {% load customtags %}
 <div class="profile-page">
     <div class="top">
+    <div class="top-left">
 
         <a href="{{ profile.get_url }}"> <span class="name"> {{ profile.get_name }} </span> </a>
         {% if viewer.politician %} <span class="election-icon"></span> {% endif %}
         {% with state=profile.location.state %}
             <span class="state"> {{ profile.political_title }}{% if state %},{% endif %} </span>
-            <span class="state"> {% if state %}{{ profile.location.state }}{% endif %}</span>
+            <span class="state"> {% if state %}<a href="/state/{{ state }}"> {{ profile.location.state }}</a>{% endif %}</span>
         {% endwith %}
         <span class="redheart">
          {% with full_url='/static/images/icons/red_heart.png'|media_url:MEDIA_PREFIX %}
@@ -22,6 +23,7 @@
         {% if viewer.id == profile.id %}
             <a href="/settings/" class='edit-profile-link'> edit profile </a>
         {% endif %}
+    </div>
         <span class="redline"></span>
 
     </div>

@@ -4,6 +4,7 @@
  *
  ***********************************************************************************************************************/
 var rebind;
+var FACEBOOK_APP_ID = 184966154940334;
 function bindOnReload() {
 
     // things that get bound on items loaded by feeds and such (everything)
@@ -19,6 +20,7 @@ function bindOnReload() {
     // for all home pages
     navSectionOpenAll();
     initHomePage();
+    selectHeaderLinks();
 
     // for reps paged
     loadGoogleMap();
@@ -28,6 +30,9 @@ function bindOnReload() {
 
     // misc
     bindNotificationsDropdownClickOutside();
+
+    // like minded computing
+    likeMindedComputing();
 
     switch (rebind) {
 
@@ -72,6 +77,9 @@ function bindOnNewElements() {
 
     // dummy_links are prevent defaulted
     undelegated();
+
+    // show any visible helper bubles
+    showBubbles();
 
     // hover comparison popup
     loadHoverComparison();
@@ -151,6 +159,10 @@ $(document).ready(function()
     {
         updatePage();
     }, 10000);
+
+    // start background tasks
+    findNewLikeMinded();
+
 });
 
 var auto_update_page;
@@ -173,12 +185,16 @@ function getValueFromKey(element, key) {
     return value;
 }
 
+function backgroundAction(dict) {
+    action(dict, true);
+}
+
 var current_page_nonce=0;
-function action(dict) {
+function action(dict, in_background) {
     var data = dict['data'];
     var pre_page_nonce = current_page_nonce;
     var success_fun = function(data) {
-        if (pre_page_nonce == current_page_nonce) {
+        if (pre_page_nonce == current_page_nonce || in_background) {
             var super_success = dict['success'];
             if (super_success) {
                 super_success(data);
@@ -257,6 +273,12 @@ bind(".do_ajax_link", 'click', null, function(event) {
     ajaxReload($(this).attr("href"), true);
 });
 
+function selectHeaderLinks() {
+    $(".header_link").removeClass("clicked");
+    var header_link = $('.header_link[href="' + path + '"]');
+    header_link.addClass("clicked");
+}
+
 function ajaxReload(theurl, loadimg)
 {
     current_page_nonce += 1;
@@ -278,6 +300,7 @@ function ajaxReload(theurl, loadimg)
                     $('.main_content').css("top","0px");
                     $(".main_content").html(returned.html);
                     $('.main_content').show();
+                    bindOnReload();
                     rebind = returned.rebind;
                     path = returned.url;
                     bindOnReload();
@@ -584,7 +607,7 @@ function selectNavLink(navlink) {
         navlink.addClass("clicked");
         // add/remove header link stuff
         $(".header_link").removeClass("clicked");
-        $(".home_header_link").addClass("clicked");
+        //$(".home_header_link").addClass("clicked");
         // toggle section and remove new items num
         if (navlink.hasClass("navbar_link")) {
             var num_new_content = navlink.parents(".home_link_wrapper").find(".num_new_content");
@@ -968,6 +991,34 @@ bind(".type_button" , "click" , null , function(event) {
     }
 });
 
+bind(".like_minded_button", "click", null, function(event) {
+    var container = $(this).parents(".feed_main");
+    var like_minded_val;
+    if ($(this).is(":checked")) {
+        like_minded_val = 1;
+    }
+    else {
+        like_minded_val = "";
+    }
+    container.data("like_minded", like_minded_val);
+    refreshFeed(container);
+});
+
+bind(".like_minded_link", "click", null, function(event) {
+    $(".like_minded_header_dialogue").fadeIn();
+});
+
+bind(null, "click", null, function(event) {
+    var click_id = event.target.id;
+    if (click_id.indexOf("like_minded_link_id")==-1) {
+        $(".like_minded_header_dialogue").hide();
+    }
+});
+
+bind(".like_minded_header_dialogue", 'click', null, function(event) {
+    event.stopPropagation();
+});
+
 function clearTypes() {
     $(".type_button").removeClass("clicked");
     feed_types = [];
@@ -994,9 +1045,18 @@ function removeType(type) {
 /* clicking any feed button, regets the feed */
 bind(".feed_button" , "click" , null , function(event) {
     event.preventDefault();
-    var container = $(this).parents(".feed_main");
+    var button = $(this);
+    var container = button.parents(".feed_main");
+    /*
+    if (button.parent().hasClass(".feed_main")) {
+        container = button.parents(".feed_main");
+    }
+    else {
+        container = button.closest(".home_focus").find(".feed_main");
+    }*/
     refreshFeed(container);
 });
+
 
 /* replaces feed, rather than appendin */
 function refreshFeed(container) {
@@ -1024,16 +1084,17 @@ function getFeed(container) {
     var feed_timeout = setTimeout(function(){
         container.find(".feed_fetching").show();
     },time);
+    var like_minded = getValueFromKey(container, 'like_minded');
     var data;
     if (feed == 'getFeed')
     {
-        data = {'action': 'getFeed', 'path': path, 'feed_rank':feed_rank, 'feed_start':feed_start, 'feed_types':feed_types_json};
+        data = {'action': 'getFeed', 'path': path, 'feed_rank':feed_rank, 'feed_start':feed_start, 'feed_types':feed_types_json, 'like_minded':like_minded};
     }
     else if (feed == 'getQuestions')
     {
         var default_display = container.data("default_display");
         data = {'action': 'getQuestions', 'feed_rank':feed_rank, 'question_rank':question_rank,
-            'feed_start':feed_start, 'feed_topic':feed_topic, 'default_display':default_display};
+            'feed_start':feed_start, 'feed_topic':feed_topic, 'default_display':default_display };
         // if feed is comparing responses with other user
         var to_compare_id = container.data("to_compare_id");
         if (typeof(to_compare_id) != 'undefined') {
@@ -1078,69 +1139,69 @@ function getFeed(container) {
     }
     else if (feed == 'getLegislation') {
         var session = $('.session_select').val();
-            var session_json;
-            if ($("." + $('.session_select').data('selector')).hasClass('clicked')) {
-                session_json = JSON.stringify(session);
-            }
-            else {
-                session_json = JSON.stringify([]);
-            }
+        var session_json;
+        if ($("." + $('.session_select').data('selector')).hasClass('clicked')) {
+            session_json = JSON.stringify(session);
+        }
+        else {
+            session_json = JSON.stringify([]);
+        }
         var type = $('.type_select').val();
-            var type_json;
-            if ($("." + $('.type_select').data('selector')).hasClass('clicked')) {
-                type_json = JSON.stringify(type);
-            }
-            else {
-                type_json = JSON.stringify([]);
-            }
+        var type_json;
+        if ($("." + $('.type_select').data('selector')).hasClass('clicked')) {
+            type_json = JSON.stringify(type);
+        }
+        else {
+            type_json = JSON.stringify([]);
+        }
         var subject = $('.subject_select').val();
-            var subject_json;
-            if ($("." + $('.subject_select').data('selector')).hasClass('clicked')) {
-                subject_json = JSON.stringify(subject);
-            }
-            else {
-                subject_json = JSON.stringify([]);
-            }
+        var subject_json;
+        if ($("." + $('.subject_select').data('selector')).hasClass('clicked')) {
+            subject_json = JSON.stringify(subject);
+        }
+        else {
+            subject_json = JSON.stringify([]);
+        }
         var committee = $('.committee_select').val();
-            var committee_json;
-            if ($("." + $('.committee_select').data('selector')).hasClass('clicked')) {
-                committee_json = JSON.stringify(committee);
-            }
-            else {
-                committee_json = JSON.stringify([]);
-            }
+        var committee_json;
+        if ($("." + $('.committee_select').data('selector')).hasClass('clicked')) {
+            committee_json = JSON.stringify(committee);
+        }
+        else {
+            committee_json = JSON.stringify([]);
+        }
         var introduced = $('.introduced_select').val();
-            var introduced_json;
-            if ($("." + $('.introduced_select').data('selector')).hasClass('clicked')) {
-                introduced_json = JSON.stringify(introduced);
-            }
-            else {
-                introduced_json = JSON.stringify([]);
-            }
+        var introduced_json;
+        if ($("." + $('.introduced_select').data('selector')).hasClass('clicked')) {
+            introduced_json = JSON.stringify(introduced);
+        }
+        else {
+            introduced_json = JSON.stringify([]);
+        }
         var sponsor_body = $('.sponsor_select_body').val();
-            var sponsor_body_json;
-            if ($("." + $('.sponsor_select_body').data('selector')).hasClass('clicked')) {
-                sponsor_body_json = JSON.stringify(sponsor_body);
-            }
-            else {
-                sponsor_body_json = JSON.stringify([]);
-            }
+        var sponsor_body_json;
+        if ($("." + $('.sponsor_select_body').data('selector')).hasClass('clicked')) {
+            sponsor_body_json = JSON.stringify(sponsor_body);
+        }
+        else {
+            sponsor_body_json = JSON.stringify([]);
+        }
         var sponsor_name = $('.sponsor_select_name').val();
-            var sponsor_name_json;
-            if ($("." + $('.sponsor_select_name').data('selector')).hasClass('clicked')) {
-                sponsor_name_json = JSON.stringify(sponsor_name);
-            }
-            else {
-                sponsor_name_json = JSON.stringify([]);
-            }
+        var sponsor_name_json;
+        if ($("." + $('.sponsor_select_name').data('selector')).hasClass('clicked')) {
+            sponsor_name_json = JSON.stringify(sponsor_name);
+        }
+        else {
+            sponsor_name_json = JSON.stringify([]);
+        }
         var sponsor_party = $('.sponsor_select_party').val();
-            var sponsor_party_json;
-            if ($("." + $('.sponsor_select_party').data('selector')).hasClass('clicked')) {
-                sponsor_party_json = JSON.stringify(sponsor_party);
-            }
-            else {
-                sponsor_party_json = JSON.stringify([]);
-            }
+        var sponsor_party_json;
+        if ($("." + $('.sponsor_select_party').data('selector')).hasClass('clicked')) {
+            sponsor_party_json = JSON.stringify(sponsor_party);
+        }
+        else {
+            sponsor_party_json = JSON.stringify([]);
+        }
         data = {'action': 'getLegislation', 'feed_start':feed_start, 'session_set':session_json,
             'type_set':type_json, 'subject_set':subject_json, 'committee_set':committee_json,
             'introduced_set':introduced_json, 'sponsor_body_set':sponsor_body_json,
@@ -1179,7 +1240,7 @@ function getFeed(container) {
     );
 }
 
-/* load more feed items */
+/* load (more) feed items */
 bind(".load_more" , "click" , null , function(event) {
     var container = $(this).parents(".feed_main");
     getFeed(container);
@@ -1658,7 +1719,7 @@ bind(".r_register", 'click', null, function(event) {
             var returned = eval('(' + data + ')');
 
             if (returned.success) {
-                window.location.href = "/welcome/";
+                window.location.href = "/hello/";
             }
             else {
                 form.replaceWith(returned.html);
@@ -1689,7 +1750,7 @@ bind(".send_message", 'click', null, function(event) {
     var message = wrapper.find(".message_textarea").val();
     var phone_number = wrapper.find(".phonenumber_input").val();
     if (phone_number == "") {
-       $(".no_phonenumber").show();
+        $(".no_phonenumber").show();
     }
     else {
         action({
@@ -2802,7 +2863,12 @@ function saveAnswer(stub) {
                     }
                 }
             });
-            expandChooseInterface(stub.next('.question_stub'));
+            var next_stub = stub.next('.question_stub');
+            $(".qa_tutorial_question").removeClass("qa_tutorial_question");
+            next_stub.addClass("qa_tutorial_question");
+            $(".qa_bubble").hide();
+            expandChooseInterface(next_stub);
+            showBubbles();
         }
     }
     action({
@@ -2820,12 +2886,18 @@ function saveAnswer(stub) {
                 new_element.animate({"height":new_height}, {"duration":200, "complete":function(){new_element.css("height", "auto");}});
                 bindOnNewElements();
             }
-            stub.find(".num_responses").html(returned.num_responses);
+            stub.find(".num_responses span.num").html(returned.num_responses);
             var saved_message = stub.find(".saved_message");
             saved_message.show();
             saved_message.fadeOut(5000);
             updateMatches();
             updateStats();
+
+            // if should compute like minded then start it up
+            if (returned.start_like_minded) {
+                computing_like_minded = true;
+                findNewLikeMinded();
+            }
         }
     });
 }
@@ -2911,9 +2983,8 @@ function bindImportanceSlider(div) {
  **********************************************************************************************************************/
 bind('.only_unanswered' , 'click' , null , function(event)
 {
-    $(this).toggleClass("clicked");
     var container = $(this).parents(".feed_main");
-    container.data("only_unanswered", $(this).hasClass("clicked"));
+    container.data("only_unanswered", $(this).is(":checked"));
     refreshFeed(container);
 });
 
@@ -2969,6 +3040,12 @@ function updateStatsObject(stats) {
         data['e_id'] = stats.data('e_id');
     }
     if (object == 'poll_stats') {
+        data['p_id'] = stats.data('p_id');
+    }
+    if (object == 'not_enough_questions_warning') {
+        data['of_what'] = stats.data('of_what');
+    }
+    if (object == 'poll_completed_num') {
         data['p_id'] = stats.data('p_id');
     }
     action({
@@ -3513,33 +3590,16 @@ function showTopicIcon(wrapper) {
 
 bind( '.facebook_share_button' , 'click' , null , function(e)
 {
-    var data = {
-        'fb_name' : $(this).data('fb_name'),
-        'fb_share_id' : $(this).data('fb_share_id')
-    };
 
-    getModal('facebook_share_modal' , data);
-});
-
-
-bind( '.facebook_share_submit' , 'click' , null , function(e)
-{
-    e.preventDefault();
-
-    var share_message = $(this).parents('.facebook_share_form').find('textarea[name="facebook_share_message"]').val();
+    var fb_name = $(this).data('fb_name');
     var fb_share_id = $(this).data('fb_share_id');
-    var link = $(this).data('fb_link');
 
-    var url = "/fb/action/?fb_action=share&fb_share_to=" + fb_share_id;
-    url += "&message=" + share_message;
-
-    if( link != null ) { url += "&fb_link=" + link; }
-
-    url += "&action_to_page=" + window.location.pathname;
-
-    window.location.href = url
-
+    // open share modal in new window
+    window.open('http://www.facebook.com/dialog/feed?app_id='+FACEBOOK_APP_ID+'&to='+fb_share_id+'&display=popup&name=LoveGov&link=http://www.lovegov.com&redirect_uri='+location.host+'/popup_redirect&description='+
+        'LoveGov is a political social network that personalizes politics. We are making it easy to stay informed and get involved.',
+        '_blank','width=450,height=300');
 });
+
 
 
 /***********************************************************************************************************************
@@ -3824,53 +3884,66 @@ bind('.ask_to_join' , 'click' , null , function(e)
  *      ~like minded group
  *
  ***********************************************************************************************************************/
-bind('.find_like_minded' , 'click' , null , function(e)
-{
-    $(".computing_result").show();
-    $(".button_result").hide();
-    findNewLikeMinded();
-});
-
-// recursive ajax function for finding new like minded members
+// recursive ajax function for finding new like minded members. doesn't do anyting if computing_like_minded is false
+var computing_like_minded = false;
 function findNewLikeMinded() {
-    $(".find_loading").show();
-    action({
-            data: {'action': 'findLikeMinded'},
-            success: function(data) {
-                var returned = eval('(' + data + ')');
-                $(".computing_result").hide();
-                $(".find_loading").hide();
-                var num_new = returned.num_new_members;
-                // change total members number
-                var total_num = $(".total_members").data('num');
-                total_num += num_new;
-                $(".total_members").html(total_num);
-                $(".total_members").data('num', total_num);
-                // change members/display section
-                $(".total_found").html(total_num);
-                var total_processed = parseInt($(".total_processed").text());
-                $(".total_processed").html(total_processed + returned.num_processed);
-                // display num new members
-                $('.num_new_found').html(total_num);
-                $('.num_processed').html(total_processed + returned.num_processed);
-                $('.find_result').toggleClass("toggle");
-                $(".find_result").show();
-                // if there were members adjust shit appropriately
-                if (num_new != 0) {
-                    $(".no_members").hide();
-                    $(".some_members").show();
-                    $(".like_minded_members").prepend(returned.html);
-                    bindOnNewElements();
-                }
-                if (returned.num_processed != 0) {
-                    findNewLikeMinded();
-                }
-                else {
-                    var message = String(total_num) + " like-minded people were found on LoveGov";
-                    $(".find_result").html(message);
-                }
-            }}
-    );
+    if (computing_like_minded) {
+        $(".clear_result").fadeOut();
+        $(".find_loading").show();
+        backgroundAction({
+                data: {'action': 'findLikeMinded'},
+                success: function(data) {
+
+                    var returned = eval('(' + data + ')');
+
+                    var like_minded_header = $(".like_minded_header");
+                    // if on like minded page, update stuff visually
+                    if (like_minded_header.length != 0) {
+                        $(".computing_result").hide();
+                        $(".find_loading").hide();
+                        var num_new = returned.num_new_members;
+                        // change total members number
+                        var total_num = $(".total_members").data('num');
+                        total_num += num_new;
+                        $(".total_members").html(total_num);
+                        $(".total_members").data('num', total_num);
+                        // change members/display section
+                        $(".total_found").html(total_num);
+                        var total_processed = parseInt($(".total_processed").text());
+                        $(".total_processed").html(total_processed + returned.num_processed);
+                        // display num new members
+                        $('.num_new_found').html(total_num);
+                        $('.num_processed').html(total_processed + returned.num_processed);
+                        $('.find_result').toggleClass("toggle");
+                        $(".find_result").show();
+                        // if there were members adjust shit appropriately
+                        if (num_new != 0) {
+                            $(".no_members").hide();
+                            $(".some_members").show();
+                            $(".like_minded_members").prepend(returned.html);
+                            bindOnNewElements();
+                        }
+                    }
+
+                    // if not finished, use recursion
+                    if (returned.num_processed != 0) {
+                        findNewLikeMinded();
+                    }
+                    else {
+                        computing_like_minded = false;
+                        var message = String(total_num) + " like-minded people were found on LoveGov";
+                        $(".find_result").html(message);
+                    }
+                }}
+        );
+    }
+}
+
+function likeMindedComputing() {
+    if (computing_like_minded) {
+        $(".find_loading").show();
+        $(".computing_result").show();
+    }
 }
 
 bind('.clear_like_minded' , 'click' , null , function(e)
@@ -3886,9 +3959,19 @@ bind('.clear_like_minded' , 'click' , null , function(e)
                     $(".total_members").data('num',0);
                     $(".total_found").html(0);
                     $(".total_processed").html(0);
+                    computing_like_minded = true;
+                    findNewLikeMinded();
                 }}
         );
     }
+});
+
+bind('.find_like_minded' , 'click' , null , function(e)
+{
+    computing_like_minded = true;
+    $(".computing_result").show();
+    $(".button_result").hide();
+    findNewLikeMinded();
 });
 
 bind('.like_minded_explanation' , 'click' , null , function(e)
@@ -3903,6 +3986,10 @@ bind('.like_minded_close' , 'click' , null , function(e)
     $(".button_explanations").hide();
 });
 
+
+bind(".like_minded_x", "click", null, function(e) {
+    $(".like_minded_header_dialogue").hide();
+});
 
 /***********************************************************************************************************************
  *
@@ -4129,7 +4216,7 @@ bind(".change_privacy_mode", "click", function(e) {
  *
  ***********************************************************************************************************************/
 bind('.explore_your_feed','click', function() {
-    $(".helper_bubble").fadeIn(200);
+    showAllBubbles();
     $(".explore_your_feed").removeClass("incomplete");
     action({
         data: {
@@ -4141,6 +4228,187 @@ bind('.explore_your_feed','click', function() {
     });
 });
 
+bind('.click_to_complete_task','click', function() {
+    var task = $(this).data("task");
+    action({
+        data: {
+            'action': 'completeTask',
+            'task': task
+        },
+        success: function(data) {
+        }
+    });
+});
+
+bind('.hide_intros','click', function() {
+    if (confirm("Are you sure?")) {
+        action({
+            data: {
+                'action': 'completeTask',
+                'task': "H"
+            },
+            success: function(data) {
+            }
+        });
+        $(this).parents(".dismissible_header").hide();
+    }
+});
+
+function showAllBubbles() {
+    $(".helper_bubble").fadeIn(200);
+}
+
+function showBubbles() {
+    var time = 200;
+    setTimeout(function() {
+        var bubbles = $(".helper_bubble.bubble_show");
+        bubbles.each(function() {
+           showBubble($(this), true);
+        });
+    }, time);
+}
+
 bind('.x_helper_bubble','click', function() {
-    $(this).parents(".helper_bubble").hide();
+    var helper_bubble = $(this).parents(".helper_bubble");
+    hideBubble(helper_bubble, false);
+    var task = helper_bubble.data("task");
+    if (task!="") {
+        action({
+            data: {
+                'action': 'completeTask',
+                'task': task
+            },
+            success: function(data) {
+            }
+        });
+    }
+});
+
+bind('.take_a_tutorial','click', function() {
+    var tutorial = $(this).data('tutorial');
+    if (tutorial == 'qa') {
+        showBubble($(".qa_start_tutorial"), true);
+    }
+    if (tutorial == 'feed') {
+        showBubble($(".feedtut_start_tutorial"), true);
+    }
+});
+
+bind('.continue_tutorial','click', function() {
+    // hide original bubble
+    var helper_bubble = $(this).parents(".helper_bubble");
+    hideBubble(helper_bubble, true);
+    // this is the bubble we're going to show
+    var next_classname = $(this).data("next");
+    var next_bubble = $("." + next_classname);
+    // show bubble
+    showBubble(next_bubble, true);
+});
+
+function hideBubble(bubble, animate) {
+    bubble.removeClass("bubble_show");
+    if (animate) {
+        bubble.fadeOut();
+    }
+    else {
+        bubble.hide();
+    }
+}
+function showBubble(bubble, animate) {
+
+    // my parent selector
+    var my_parent_selector = getValueFromKey(bubble, 'my_parent_selector');
+    // if directions, we must append next_bubble to next_parent before we show it
+    if (my_parent_selector != "") {
+        var my_parent = $(my_parent_selector);
+        my_parent.append(bubble);
+    }
+
+    // then show bubble
+    bubble.addClass("bubble_show");
+    if (animate) {
+        bubble.fadeIn();
+    }
+    else {
+        bubble.show();
+    }
+}
+
+
+bind('.normal_feed_button','click', function() {
+    $(".temp_questions_feed").hide();
+    $(".normal_feed").show();
+    $(".what_would_be_wrapper").hide();
+});
+
+bind('.what_would_be_x','click', function() {
+    $(".what_would_be_wrapper").hide();
+});
+
+bind('.see_congratulations','click', function() {
+    action({
+        data: {
+            'action': 'completeTask',
+            'task': "W"
+        },
+        success: function(data) {
+            window.location.href = "/home/";
+        }
+    });
+});
+
+bind('.first_answer_questions','click', function() {
+    $('body').animate({
+        scrollTop: 470
+    }, 1000);
+});
+
+/***********************************************************************************************************************
+ *
+ *      ~ content detail
+ *
+ ***********************************************************************************************************************/
+bind('div.content-admin-actions span.content-admin-action-delete', 'click', function(e) {
+    if(confirm("\n\n\n\n\nAre you sure you want to delete this?\n\nAll associated discussions and data will also be deleted.\n\n\n\n\n")) {
+        var c_id = $(this).data('c_id');
+        action({
+            data: {
+                'action': 'delete',
+                'c_id': c_id,
+            },
+            success: function(data) {
+                var obj = eval('(' + data + ')');
+                homeReload(obj.url);
+            },
+        });
+    }
+});
+
+/***********************************************************************************************************************
+ *
+ *      ~ groups
+ *
+ ***********************************************************************************************************************/
+bind('.select_party','click', function() {
+    var deselect = $(this).hasClass("selected");
+    var g_id = $(this).data('g_id');
+    $(this).toggleClass("selected");
+    if (!deselect) {
+        action({
+            data: {
+                'action': 'joinGroupRequest',
+                'g_id':g_id
+            },
+            success: null
+        });
+    }
+    else {
+        action({
+            data: {
+                'action': 'leaveGroup',
+                'g_id':g_id
+            },
+            success: null
+        });
+    }
 });

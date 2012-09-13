@@ -95,7 +95,7 @@ def twitterHandle(request, to_page="/home/", vals={}):
 #-----------------------------------------------------------------------------------------------------------------------
 # return true if succesfully logged in with twitter, or return false otherwise
 #-----------------------------------------------------------------------------------------------------------------------
-def twitterLogin(request, to_page="/web/", vals={}):
+def twitterLogin(request, to_page="/home/", vals={}):
     tat = tatHelper(request)
     if tat:
         twitter_user_id = tat['user_id']
@@ -106,8 +106,9 @@ def twitterLogin(request, to_page="/web/", vals={}):
             user = user_prof.user
             user.backend = 'django.contrib.auth.backends.ModelBackend'
             auth.login(request, user)
-            user_prof.incrementNumLogins()
-            return shortcuts.redirect(to_page)
+            from lovegov.frontend.views import loginRedirect
+            return loginRedirect(request, user_prof, to_page)
+
         else:
             return False
     else:

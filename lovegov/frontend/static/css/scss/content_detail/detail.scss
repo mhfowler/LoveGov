@@ -179,14 +179,12 @@ div.content-detail-wrapper {
           span.only-unanswered {
             margin-right:0px;
           }
-        }
-        td.saved-message-wrapper {
-          position:relative;
-          left:20px;
+          span.only-unanswered-text {
+            margin-left:15px;
+          }
         }
         div.num-responses {
           position: relative;
-          left: -21px;
         }
       }
     }

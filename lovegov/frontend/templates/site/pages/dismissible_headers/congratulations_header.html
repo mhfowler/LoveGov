@@ -1,0 +1,36 @@
+{% extends 'site/pages/dismissible_headers/dismissible_header.html' %}
+
+{% block dismissible_content %}
+
+    <div class="completed-all-tasks">
+
+        <div class="congratulations-header">
+            <a href="/lovegov/"> <div class="lovegov-robot tooltip-top" title="I'm a robot, that's here to help you."></div> </a>
+            <span class="congratulations-header-text"> Nice work! </span>
+        </div>
+
+        <div class="congratulations-text">
+            <p>
+                You finished checking out all of our getting started ideas and won't be seeing these
+                headers anymore.
+            </p>
+            <p>
+                But LoveGov is much more than just
+                figuring out who you match with. We're trying to put politics online and grow a community
+                of politically engaged citizens who will be able to influence local through federal policy every single day.
+            </p>
+            <p>
+                Use your groups to get organized and take action: share news, track legislation, poll the community and sign petitions.
+                As more politicians take notice of your activity, they will also join LoveGov so that you can interact with them directly.
+            </p>
+            <p> Click <a class="dismissible_x"> here </a> to hide this message, and start getting involved. </p>
+        </div>
+    </div>
+
+    {% include 'site/pages/dismissible_headers/get_started.html' %}
+
+    <div class="expand-info dismissible_x">
+        <p class="expand-text">  &#8211 collapse congratulations </p>
+    </div>
+
+{% endblock %}

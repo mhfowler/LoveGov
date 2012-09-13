@@ -1,0 +1,18 @@
+{% extends 'site/pages/dismissible_headers/introduction_header.html' %}
+
+{% block introduction_content %}
+
+    <p>
+        You're on the presidential election page. Here you can see your matches with presidential and vice presidential candidates
+        and stay up to date on the election.
+    </p>
+
+    {% comment %}
+    <p>
+        Every election on LoveGov has its own page where you can raise awareness about related causes, and create/answer questions about the key issues.
+    </p>
+    {% endcomment %}
+
+    {% include 'site/pages/dismissible_headers/introduction_questions_warning.html' %}
+
+{% endblock %}

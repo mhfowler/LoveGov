@@ -10,11 +10,8 @@
 from lovegov.modernpolitics.modals import *
 from django.core.files.base import ContentFile
 
-
-#-----------------------------------------------------------------------------------------------------------------------
-# complete a first login task
-#-----------------------------------------------------------------------------------------------------------------------
 def completeTask(request,vals={}):
+    """Complete a first login task"""
     task = request.POST['task']
     viewer = vals['viewer']
     completed = viewer.first_login_tasks
@@ -23,11 +20,9 @@ def completeTask(request,vals={}):
         viewer.save()
     return HttpResponse("completed")
 
-#-----------------------------------------------------------------------------------------------------------------------
-# register from login page via form
-#-----------------------------------------------------------------------------------------------------------------------
-def newRegister(request,vals={}):
 
+def newRegister(request,vals={}):
+    """register from login page via form"""
     # get params from post
     valid = True
     name = request.POST['name']
@@ -51,6 +46,7 @@ def newRegister(request,vals={}):
     if email and email2:
         if email != email2:
             vals['email_error'] = "Both emails must be the same."
+            valid = False
         else:
             splitted = email.split("@")
             if len(splitted)!=2:
@@ -147,13 +143,14 @@ def newRegister(request,vals={}):
         # return success, causes redirect to success page on client side
         return HttpResponse(json.dumps({"success":True, 'email':email, 'name':name}))
 
-#-----------------------------------------------------------------------------------------------------------------------
-# Takes URL and retrieves HTML.  Parses HTML and extracts title and description metadata.  Also takes a picture
-# snapshot of the website.
-#-----------------------------------------------------------------------------------------------------------------------
+
 PREFIX_ITERATIONS = ["","http://","http://www."]
 DESCRIPTION_TAGS = [("name","description"),("property","og:description")]
 def getLinkInfo(request, vals={}, html="",URL=""):
+    """Takes URL and retrieves HTML.
+
+    Parses HTML and extracts title and description metadata.
+    Also takes a picture snapshot of the website."""
     try:
         vals = {}
         url = str(request.POST['remote_url'])
@@ -223,11 +220,11 @@ def getLinkInfo(request, vals={}, html="",URL=""):
     except Exception, e:
         return HttpResponseBadRequest("Something went wrong parsing the page.")
 
-#-----------------------------------------------------------------------------------------------------------------------
-# Takes address and/or zip code, finds a geolocation from Google Maps, finds congressional district, POSTs congressmen,
-# generates comparisons, and returns HTML back to user
-#-----------------------------------------------------------------------------------------------------------------------
+
 def getCongressmen(request, vals={}):
+    """Takes address and/or zip code, finds a geolocation from Google Maps, finds congressional district, POSTs congressmen,
+     generates comparisons, and returns HTML back to user"""
+
     # POST variables from POST request and formats data
     viewer = vals['viewer']
     address = request.POST['address']
@@ -248,11 +245,13 @@ def getCongressmen(request, vals={}):
     return HttpResponse(json.dumps({'html':html}))
 
 
-#-----------------------------------------------------------------------------------------------------------------------
-# Given a search "term", returns lists of UserProfiles, News, Petitions, and Questions
-# that match given term.
-#-----------------------------------------------------------------------------------------------------------------------
+
 def lovegovSearch(term):
+    """
+    Given a search "term", returns lists of UserProfiles, News, Petitions, and Questions
+     that match given term.
+
+    """
     userProfiles = SearchQuerySet().models(UserProfile).autocomplete(content_auto=term)
     news = SearchQuerySet().models(News).filter(content=term)
     questions = SearchQuerySet().models(Question).filter(content=term)
@@ -269,11 +268,10 @@ def lovegovSearch(term):
     return userProfiles, petitions, questions, news, groups
 
 
-#-----------------------------------------------------------------------------------------------------------------------
-# Returns json of list of results which match inputted 'term'. For jquery autocomplete.
-#
-#-----------------------------------------------------------------------------------------------------------------------
 def searchAutoComplete(request,vals={},limit=5):
+    """
+    Returns json of list of results which match inputted 'term'. For jquery autocomplete.
+    """
     string = request.POST['string'].lstrip().rstrip()
 
     userProfiles, petitions, questions, news, groups = lovegovSearch(string)
@@ -325,11 +323,11 @@ def searchAutoComplete(request,vals={},limit=5):
     html = ajaxRender('site/frame/searchbar/autocomplete.html', vals, request)
     return HttpResponse(json.dumps({'html':html,'num_results': total_results}))
 
-#-----------------------------------------------------------------------------------------------------------------------
-# Loads members.
-#
-#-----------------------------------------------------------------------------------------------------------------------
+
 def loadGroupUsers(request,vals={}):
+    """
+    Loads members.
+    """
     user = vals['viewer']
     num = int(request.POST['histogram_displayed_num'])
     histogram_topic = request.POST['histogram_topic']
@@ -352,11 +350,11 @@ def loadGroupUsers(request,vals={}):
         html += ajaxRender('site/pieces/misc/group-member.div.html',vals,request)
     return HttpResponse(json.dumps({'html':html,'num':next_num}))
 
-#-----------------------------------------------------------------------------------------------------------------------
-# Loads histogram data.
-#
-#-----------------------------------------------------------------------------------------------------------------------
+
 def loadHistogram(request, vals={}):
+    """
+     Loads histogram data.
+    """
     user = vals['viewer']
     group = Group.objects.get(id=request.POST['group_id'])
     histogram_topic = request.POST['histogram_topic']
@@ -415,10 +413,11 @@ def createMotion(request, vals={}):
         LGException(error_message)
         return HttpResponse(error_message)
 
-#-----------------------------------------------------------------------------------------------------------------------
-# Sends invite email and and addds email to valid emails.
-#-----------------------------------------------------------------------------------------------------------------------
+
 def invite(request, vals={}):
+    """
+    Sends invite email and and addds email to valid emails.
+    """
     email = request.POST['email']
     inviter = vals['viewer']
     sendInviteByEmail(inviter, email)
@@ -740,13 +739,16 @@ def edit(request, vals={}):
 #-----------------------------------------------------------------------------------------------------------------------
 # Deletes content.
 #
+# Checks if user is the owner and sets active=False
 #-----------------------------------------------------------------------------------------------------------------------
 def delete(request, vals={}):
     user = vals['viewer']
-    content = Content.objects.get(id=request.POST['c_id'])
+    c_id = request.POST.get('c_id')
+    if not c_id: return HttpResponseBadRequest("Delete action: no content to delete specified.")
+    content = Content.objects.get(id=c_id)
     if user == content.getCreator() and content.active:
-        content.active = False
-        content.save()
+        content.deactivate()
+        # For deleting comments
         if content.type == 'C':
             comment = content.downcast()
             root_content = comment.root_content
@@ -758,9 +760,9 @@ def delete(request, vals={}):
                 on_content.save()
         deleted = DeletedAction(user=user, content=content, privacy=getPrivacy(request))
         deleted.autoSave()
-        return HttpResponse("successfully deleted content with id:" + request.POST['c_id'])
+        return HttpResponse(json.dumps({'url': '/home/'}));
     else:
-        return HttpResponse("you don't have permission")
+        return HttpResponseForbidden("You don't have permission to delete the requested content or it does not exist.")
 
 #-----------------------------------------------------------------------------------------------------------------------
 # Saves comment to database from post request.
@@ -958,8 +960,11 @@ def saveAnswer(request, vals={}):
     responses.append({'response':your_response,'responder':viewer})
     vals['compare_responses'] = responses
 
+    # if this was a real response, it set num_answers to be question threshold, then start calculating like minded
+    start_like_minded = your_response.most_chosen_answer and viewer.num_answers == QUESTIONS_THRESHOLD
+
     html = ajaxRender('site/pages/qa/question_stub.html', vals, request)
-    return HttpResponse(json.dumps({'html':html, 'num_responses':question.num_responses}))
+    return HttpResponse(json.dumps({'html':html, 'num_responses':question.num_responses, 'start_like_minded':start_like_minded}))
 
 def saveScorecardAnswer(request, vals):
     question = Question.objects.get(id=request.POST['q_id'])
@@ -1031,7 +1036,7 @@ def editExplanation(request, vals):
         question = Question.objects.get(id=q_id)
         response = answerAction(user=viewer, question=question,privacy=getPrivacy(request), answer_id=-1)
     if viewer == response.creator:
-        response.explanation = explanation
+        response.editExplanation(explanation)
         response.save()
         return HttpResponse(json.dumps({'explanation':explanation}))
     else:
@@ -1065,6 +1070,9 @@ def updateMatch(request, vals={}):
         html = ajaxRender('site/pages/profile/has_answered_match.html', vals, request)
     elif display == 'comparison_web':
         html = ajaxRender('site/pages/qa/comparison_web.html', vals, request)
+    elif display == 'match_num':
+        to_compare.comparison = to_compare.getComparison(viewer)
+        html = ajaxRender('site/pages/qa/match_num.html', vals, request)
     return HttpResponse(json.dumps({'html':html}))
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -1116,6 +1124,19 @@ def updateStats(request, vals={}):
         html = ajaxRender('site/pages/elections/election_leaderboard.html', vals, request)
     elif object == 'like_minded_counter':
         html = ajaxRender('site/pages/groups/like_minded_counter.html', vals, request)
+    elif object == 'sidebar_poll_progress':
+        from lovegov.frontend.views_helpers import valsQuestionsThreshold
+        valsQuestionsThreshold(vals)
+        html = ajaxRender('site/pages/home/lgpoll_progress_snippet.html', vals, request)
+    elif object == 'not_enough_questions_warning':
+        from lovegov.frontend.views_helpers import valsQuestionsThreshold
+        vals['of_what'] = request.POST.get('of_what')
+        valsQuestionsThreshold(vals)
+        html = ajaxRender('site/pages/dismissible_headers/not_enough_questions_warning.html', vals, request)
+    elif object == 'poll_completed_num':
+        vals['poll'] = poll = Poll.objects.get(id=request.POST['p_id'])
+        vals['poll_progress'] = poll.getPollProgress(viewer)
+        html = ajaxRender('site/pages/qa/poll_completed_num.html', vals, request)
     return HttpResponse(json.dumps({'html':html}))
 
 #----------------------------------------------------------------------------------------------------------------------
@@ -1605,13 +1626,28 @@ def hoverWebComparison(request, vals={}):
     return HttpResponse(comparison.toJSON())
 
 #-----------------------------------------------------------------------------------------------------------------------
-# Adds e-mail to mailing list
+# Adds e-mail to emailing list
 #-----------------------------------------------------------------------------------------------------------------------
-def addEmailList(request):
-    email = request.POST['email']
-    newEmail = EmailList(email=email)
-    newEmail.save()
-    return HttpResponse("Success")
+def addEmailList(request,vals={}):
+    email = request.POST.get('email')
+    if not email or not is_valid_email(email):
+        vals['addToMailingListMsg'] = "The given email, "+email+", is invalid."
+    elif email in [x.email for x in EmailList.objects.all()]:
+        vals['addToMailingListMsg'] = "That email, "+email+", is already in the mailing list."
+    else:
+        newEmail = EmailList(email=email)
+        newEmail.save()
+        vals['addToMailingListMsg'] = "The email "+email+" was added to the email list successfully."
+    from lovegov.frontend.views import login
+    return login(request, vals=vals)
+
+from django.core.validators import email_re
+
+def is_valid_email(email):
+    if email_re.match(email):
+        return True
+    return False
+
 
 #-----------------------------------------------------------------------------------------------------------------------
 # returns match of user
@@ -1650,12 +1686,13 @@ def getFeed(request, vals):
 
     feed_ranking = request.POST['feed_rank']
     feed_types = json.loads(request.POST['feed_types'])
+    like_minded = request.POST['like_minded']
     feed_start = int(request.POST['feed_start'])
     path = request.POST['path']
     alias = path.replace("/","")
     viewer = vals['viewer']
     content = getFeedItems(viewer=viewer, alias=alias, feed_ranking=feed_ranking,
-        feed_types=feed_types, feed_start=feed_start, num=10)
+        feed_types=feed_types, feed_start=feed_start, num=10, like_minded=like_minded)
     feed_items = contentToFeedItems(content, vals['viewer'])
     vals['feed_items'] = feed_items
 
@@ -1716,6 +1753,7 @@ def getQuestions(request, vals):
     vals['question_items']= question_items
     vals['to_compare'] = to_compare
     vals['default_display'] = request.POST.get('default_display')
+    vals['qa_tutorial'] = not viewer.checkTask("Q")
 
     html = ajaxRender('site/pages/qa/feed_helper_questions.html', vals, request)
 
@@ -1750,7 +1788,11 @@ def getLegislation(request, vals={}):
 def everythingLoadedHelper(request, vals, feed_items):
     num_items = len(feed_items)
     if not num_items:
-        p = random.choice(UserProfile.objects.filter(politician=True))
+        politicians = UserProfile.objects.filter(politician=True)
+        if politicians:
+            p = random.choice(politicians)
+        else:
+            p = vals['viewer']
         vals['politician'] = p
         everything_loaded = ajaxRender('site/pages/microcopy/everything_loaded.html', vals, request)
     else:
@@ -2416,8 +2458,9 @@ def createContent(request, vals={}):
                 newQ = Question(question_text=q['question'], title=q['question'], source=q['source'], official=False)
                 if polltype=='q':
                     newQ.posted_to = group
-                newQ.autoSave()
+                newQ.autoSave(creator=viewer, privacy=privacy)
                 newQ.setMainTopic(qtopic)
+                newComment = Comment()
                 for a in q['answers']:
                     newA = Answer(answer_text=a, value=-1)
                     newA.save()
@@ -2575,6 +2618,7 @@ def getFBInviteFriends(request, vals={}):
 #-----------------------------------------------------------------------------------------------------------------------
 def findLikeMinded(request, vals={}):
     viewer = vals['viewer']
+    num_answers = viewer.num_answers
     new_members, num_processed = viewer.findLikeMinded()
     vals['display'] = 'avatar'
     vals['users'] = new_members

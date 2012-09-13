@@ -1,34 +1,25 @@
+{% extends 'site/pages/home/focus.html' %}
 
-{% comment %}
-<div class="random-dismissible-header dismissible_header">
+{% block home_header %}
 
-    <div class="dismissible-x dismissible_x"> X </div>
-
-    {% if dismissible_header == 'congress_teaser' %}
-        {% include 'site/pages/dismissible_headers/congress_header.html' %}
+    {% if see_congratulations %}
+        {% include 'site/pages/dismissible_headers/congratulations_header.html' %}
+    {% elif not hide_intros %}
+        {% include 'site/pages/home/introduction_home_header.html' with intro_title="My Home Page" %}
+    {% else %}
+        <div class="home-page-header">
+            {% include 'site/pages/dismissible_headers/dismissible_header_switch.html' %}
+        </div>
     {% endif %}
 
-</div>
-{% endcomment %}
+{% endblock %}
 
 
-{% if dismissible_header == 'first_login' %}
-    {% include 'site/pages/dismissible_headers/first_login.html' %}
-{% elif dismissible_header == 'congress_teaser' and not compare_congress_task %}
-    {% include 'site/pages/dismissible_headers/congress_header.html' %}
-{% elif dismissible_header == 'find_reps' %}
-    {% if not viewer.temp_location %}
-        {% include 'site/pages/dismissible_headers/find_reps_header.html' %}
-    {% endif %}
-{% elif dismissible_header == 'lovegov_poll' %}
-    {% if not poll_progress.finished %}
-        {% include 'site/pages/dismissible_headers/lgpoll_progress_header.html' %}
-    {% endif %}
-{% endif %}
 
+{% block home_feed %}
 
-<div class="home-body">
-    {% include 'site/pages/feed/feed.html' with feed_boxed=1 %}
-</div>
+    {% include 'site/pages/feed/feed.html' with like_minded_filter=1 %}
 
-<script> rebind="home"; </script>
+    <script> rebind="home"; </script>
+
+{% endblock %}

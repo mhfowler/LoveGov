@@ -1,0 +1,24 @@
+{% extends 'site/pages/dismissible_headers/introduction_header.html' %}
+
+{% block introduction_content %}
+
+    <p class="introduction-text">
+        This is where you can find your voting district and congressmen and see how you compare with the people
+        who directly represent you in government.
+    </p>
+    <p>
+        In the future you will also be able to find your state and local representatives here.
+    </p>
+
+    {% if congressmen %}
+        {% include 'site/pages/dismissible_headers/introduction_questions_warning.html' %}
+
+        {% if ABOVE_QUESTIONS_THRESHOLD %}
+            <p>
+                Below is a feed of legislation that they have sponsored.
+            </p>
+        {% endif %}
+
+    {% endif %}
+
+{% endblock %}

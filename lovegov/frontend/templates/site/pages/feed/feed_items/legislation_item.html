@@ -5,6 +5,122 @@
     <div class="legislation-item-wrapper">
         <div class="legislation-item-summary feed-item-summary">
             {{ content.bill_summary|truncatechars:200 }}
+            <div><strong>
+                {% if content.congress_body == "H" %}
+                    {% if content.state_text == "ENACTED:SIGNED" %}
+                       {{ content.state_date }} - Passed House and Senate, Signed into Law
+                    {% elif content.state_text == "PASSED:BILL" %}
+                        {{ content.state_date }} - Passed House and Senate
+                    {% elif content.state_text == "PASS_OVER:HOUSE" %}
+                        {% if content.bill_type == 'hc' %}
+                            {% if content.bill_relation.count != 0 %}
+                                {{ content.state_date }} - Concurrent Resolution Passed House and Senate
+                            {% elif content.bill_relation.count == 0 %}
+                                {{ content.state_date }} - Concurrent Resolution Passed House
+                            {% endif %}
+                        {% else %}
+                            {% if content.bill_relation.count != 0 %}
+                                {{ content.state_date }} - Passed House and Senate
+                            {% elif content.bill_relation.count == 0 %}
+                                {{ content.state_date }} - Passed House
+                           {% endif %}
+                        {% endif %}
+                    {% elif content.state_text == "PASSED:JOINTRES" %}
+                        {% if content.bill_relation.count != 0 %}
+                            {{ content.state_date }} - Joint Resolution Passed House and Senate
+                        {% elif content.bill_relation.count == 0 %}
+                            {{ content.state_date }} - Joint Resolution Passed House
+                        {% endif %}
+                    {% elif content.state_text == "PASSED:CONCURRENTRES" %}
+                        {% if content.bill_relation.count != 0 %}
+                            {{ content.state_date }} - Concurrent Resolution Passed House and Senate
+                        {% elif content.bill_relation.count == 0 %}
+                            {{ content.state_date }} - Concurrent Resolution Passed House
+                        {% endif %}
+                    {% elif content.state_text == "PASSED:SIMPLERES" %}
+                        {{ content.state_date }} - Resolution Passed House
+                    {% elif content.bill_type == 'h' %}
+                        {% if content.bill_relation.count != 0 %}
+                            {{ content.state_date }} - Passed Senate, Not Passed House
+                        {% elif content.bill_relation.count == 0 %}
+                            Not Passed House
+                        {% endif %}
+                    {% elif content.bill_type == 'hr' %}
+                        Resolution Not Passed House
+                    {% elif content.bill_type == 'hj' %}
+                        {% if content.bill_relation.count != 0 %}
+                            {{ content.state_date }} - Joint Resolution Passed Senate, Not Passed House
+                        {% elif content.bill_relation.count == 0 %}
+                            Joint Resolution Not Passed House
+                        {% endif %}
+                    {% elif content.bill_type == 'hc' %}
+                        {% if content.bill_relation.count != 0 %}
+                            {{ content.state_date }} - Concurrent Resolution Passed Senate, Not Passed House
+                        {% elif content.bill_relation.count == 0 %}
+                            Concurrent Resolution Not Passed House
+                        {% endif %}
+                    {% else %}
+                        Not Passed House
+                    {% endif %}
+                {% elif content.congress_body == "S" %}
+                    {% if content.state_text == "ENACTED:SIGNED" %}
+                        {{ content.state_date }} - Passed Senate and House, Signed into Law
+                    {% elif content.state_text == "PASSED:BILL" %}
+                        {{ content.state_date }} - Passed Senate and House
+                    {% elif content.state_text == "PASS_OVER:SENATE" %}
+                        {% if content.bill_type == 'sc' %}
+                            {% if content.bill_relation.count != 0 %}
+                                {{ content.state_date }} - Concurrent Resolution Passed House, Not Passed Senate
+                            {% elif content.bill_relation.count == 0 %}
+                                Concurrent Resolution Not Passed Senate
+                            {% endif %}
+                        {% else %}
+                            {% if content.bill_relation.count != 0 %}
+                                {{ content.state_date }} - Passed Senate and House
+                            {% elif content.bill_relation.count == 0 %}
+                                {{ content.state_date }} - Passed Senate
+                            {% endif %}
+                        {% endif %}
+                    {% elif content.state_text == "PASSED:JOINTRES" %}
+                        {% if content.bill_relation.count != 0 %}
+                            {{ content.state_date }} - Joint Resolution Passed Senate and House
+                        {% elif content.bill_relation.count == 0 %}
+                            {{ content.state_date }} - Joint Resolution Passed Senate
+                        {% endif %}
+                    {% elif content.state_text == "PASSED:CONCURRENTRES" %}
+                        {% if content.bill_relation.count != 0 %}
+                            {{ content.state_date }} - Joint Resolution Passed Senate and House
+                        {% elif content.bill_relation.count == 0 %}
+                            {{ content.state_date }} - Joint Resolution Passed Senate
+                        {% endif %}
+                    {% elif content.state_text == "PASSED:SIMPLERES" %}
+                        {{ content.state_date }} - Resolution Passed Senate
+                    {% elif content.bill_type == 'h' %}
+                        {% if content.bill_relation.count != 0 %}
+                            {{ content.state_date }} - Passed House, Not Passed Senate
+                        {% elif content.bill_relation.count == 0 %}
+                            Not Passed Senate
+                        {% endif %}
+                    {% elif content.bill_type == 'sr' %}
+                        Resolution Not Passed Senate
+                    {% elif content.bill_type == 'sj' %}
+                        {% if content.bill_relation.count != 0 %}
+                            {{ content.state_date }} - Joint Resolution Passed House, Not Passed Senate
+                        {% elif content.bill_relation.count == 0 %}
+                            Joint Resolution Not Passed Senate
+                        {% endif %}
+                    {% elif content.bill_type == 'sc' %}
+                        {% if content.bill_relation.count != 0 %}
+                            {{ content.state_date }} - Concurrent Resolution Passed House, Not Passed Senate
+                        {% elif content.bill_relation.count == 0 %}
+                            Concurrent Resolution Not Passed Senate
+                        {% endif %}
+                    {% else %}
+                        Not Passed Senate
+                    {% endif %}
+                {% endif %}
+                </strong>
+            </div>
         </div>
     </div>
 

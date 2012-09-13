@@ -35,8 +35,8 @@ def answerAction(user, question, privacy, answer_id, weight=-1, explanation=None
             explanation = ""
         response = Response( question = question,
             most_chosen_answer = chosen_answer,
-            weight = weight,
-            explanation = explanation)
+            weight = weight
+            )
         if chosen_answer:
             response.most_chosen_num = 1
             response.total_num = 1
@@ -44,6 +44,7 @@ def answerAction(user, question, privacy, answer_id, weight=-1, explanation=None
             response.most_chosen_num = 0
             response.total_num = 0
         response.autoSave(creator=user, privacy=privacy)
+        response.addExplanation(explanation)
         view.responses.add(response)
         user.num_answers += 1
         user.upvotes += 1
@@ -60,7 +61,7 @@ def answerAction(user, question, privacy, answer_id, weight=-1, explanation=None
             explanation = response.explanation
         response.most_chosen_answer = chosen_answer
         response.weight = weight
-        response.explanation = explanation
+        response.editExplanation(explanation)
         if chosen_answer:
             response.most_chosen_num = 1
             response.total_num = 1
@@ -69,6 +70,10 @@ def answerAction(user, question, privacy, answer_id, weight=-1, explanation=None
             response.total_num = 0
         response.edited_when = datetime.datetime.now()
         response.saveEdited(privacy)
+
+    # if just reached number of answers of threshold, start computing like-minded group and congress comparison
+    if user.num_answers >= QUESTIONS_THRESHOLD:
+        user.addBackgroundTask("L")
 
     return response
 

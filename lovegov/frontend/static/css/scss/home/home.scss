@@ -4,6 +4,140 @@
 
 @import "compass";
 
+/* like minded home page */
+div.home-page-header {
+  position:relative;
+}
+
+/* like minded header dialogue */
+div.like-minded-header-dialogue {
+
+  display:none;
+  @include border-radius(25px);
+  position:absolute;
+  left: 0px;
+  top: 60px;
+  z-index:2;
+  background-color:white;
+  padding:30px;
+  border:1px solid $black;
+  width:950px;
+  div.like-minded-header div.real-like-minded-header div.like-minded-top div.like-minded-description  {
+    width:600px;
+  }
+  div.like-minded-title span.group-num-members {
+    margin-top:2px;
+  }
+  div.like-minded-title {
+    width:100%;
+    span.like-minded-x {
+      float:right;
+      @include fontSize(20px);
+      &:hover {
+        cursor:pointer;
+        color:$red;
+      }
+    }
+  }
+
+  $triangle-size: 20px;
+  span.triangle-wrapper {
+    position:relative;
+    left:658px;
+    top: -29px;
+    span.triangle {
+      @include triangle('up', $white, $triangle-size + -1px);
+      position: absolute;
+      top:-$triangle-size + 1px;
+      right:20px;
+    }
+    span.triangle-border {
+      @extend span.triangle;
+      @include triangle('up', black, $triangle-size);
+      top:-21px;
+      right:19px;
+    }
+  }
+}
+
+/* lg poll sidebar snippet */
+div.sidebar-poll-progress {
+  width:100%;
+  margin-top:40px;
+  float:left;
+  div.lgpoll-progress-explanation {
+    width:100%;
+    text-align:center;
+    font-size:16px;
+    color:$dark-gray;
+    a {
+      color:$dark-gray;
+      &:hover {
+        color:$black;
+      }
+    }
+  }
+  div.lgpoll-progress-numbers {
+    //margin-left: 20px;
+    font-size: 40px;
+    color:$black;
+  }
+}
+
+div.sidebar-question-stats-wrapper {
+  margin-top: -10px;
+  float: left;
+  position: relative;
+  left: 1px;
+}
+
+/* match page */
+
+div.match-links-wrapper {
+  float:left;
+  a.match-box {
+    width:250px;
+    height:250px;
+    margin-bottom:30px;
+    margin-top:20px;
+    border: 1px solid $dark-gray;
+    //background-color:$light-gray;
+    //color:$black;
+    //@include border-radius(10px);
+
+    &:hover {
+      background-color:$light-gray;
+      border-color:$dark-gray;
+      color:black;
+    }
+
+    &.left {
+      float:left;
+    }
+    &.middle {
+      float:left;
+      margin-left:90px;
+    }
+    &.right {
+      float:right;
+      margin-right:40px;
+    }
+
+    span.match-box-text {
+      width:100%;
+      padding-left:40px;
+      padding-right:40px;
+      text-align:center;
+      margin-top:70px;
+      font-size:36px;
+      float:left;
+      color:$black;
+    }
+  }
+}
+
+
+
 /* page reloading */
 div.home-reloading {
   @include staticImage("/images/gifs/ajax-loader.gif");
@@ -116,13 +250,16 @@ div.expand-info
   p.expand-text {
     line-height: 10px;
   }
+  &.collapse-introduction {
+    width:105%;
+  }
 }
 
 div.left-navbar {
   position:relative;
   top:5px;
   //padding-left:5px;
-  margin-top:5px;
+  margin-top:7px;
   @include titleFont();
   width:150px;
   overflow:hidden;
@@ -278,7 +415,7 @@ a.section_title.clicked {
       color:$red;
     }
     span.lil-goob {
-        //background-color:$black;
+      //background-color:$black;
       background-color:$red;
     }
   }
@@ -330,22 +467,23 @@ a.section_title.clicked {
   div.invite-friends-sidebar {
     margin-top:20px;
     margin-bottom:25px;
+    //min-height:305px;
   }
 
   div.left-toggles {
     float:left;
-    margin-top:5px;
+    //margin-top:5px;
     a.left-toggle {
       width:100%;
       display:block;
       margin-top:10px;
-      color:$red;
+      color:$black;
       &:hover {
-        color:$gray;
+        color:black;
       }
     }
     a.sidebar-feedback {
-      color:$red;
+      color:$black;
     }
   }
 

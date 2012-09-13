@@ -7,16 +7,27 @@
 
     {% comment %}<div class="navbar-divider-line"></div> {% endcomment %}
 
+    {% comment %}
+    <div class="navbar-section navbar_section groups_section">
+        <a class="home_link dummy_link left_link section_title" href="/home/" data-sequence="{{ sequence|increment }}">
+            <span class="lil-goob"></span>
+            <div class="navbar_title navbar-title"> Home </div>
+        </a>
+    </div>
+    {% endcomment %}
+
     <div class="navbar-section navbar_section groups_section">
         <a class="home_link dummy_link left_link section_title" href="/my_groups/" data-sequence="{{ sequence|increment }}">
             <span class="lil-goob"></span>
             <div class="navbar_title navbar-title"> My Groups </div> </a>  <span class="red_triangle red-triangle"></span>
         <div class="navbar_links_wrapper groups_wrapper">
-            {% include 'site/pages/home/navbar_snippet.html' with section_url="/like_minded/" section_title="Like-Minded Group" %}
             {% for x in group_subscriptions %}
                 {% include 'site/pages/home/navbar_snippet.html' %}
             {% endfor %}
             <a href="#" class="create-link create_group_link"> + Create a Group </a>
+            {% comment %}
+            <a href="/groups/" class="create-link"> + Find Groups </a>
+            {% endcomment %}
         </div>
     </div>
 
@@ -29,19 +40,22 @@
             {% for x in election_subscriptions %}
                 {% include 'site/pages/home/navbar_snippet.html' %}
             {% endfor %}
-            <a href="#" class="create-link create_election_link"> + Create an Election </a>
+                <a href="#" class="create-link create_election_link"> + Create an Election </a>
+            {% comment %}
+            <a href="/elections/" class="create-link"> + Find Elections </a>
+            {% endcomment %}
         </div>
     </div>
 
     <div class="navbar-section navbar_section discover_section">
-        <a class="home_link dummy_link left_link section_title" href="/discover/" data-sequence="{{ sequence|increment }}">
+        <a class="home_link dummy_link left_link section_title" href="/match/" data-sequence="{{ sequence|increment }}">
             <span class="lil-goob"></span>
-            <div class="navbar_title navbar-title"> Discover </div> </a>
+            <div class="navbar_title navbar-title"> Match </div> </a>
         <span class="red_triangle red-triangle"></span>
         <div class="navbar_links_wrapper discover_wrapper">
-            {% include 'site/pages/home/navbar_snippet.html' with section_url="/representatives/" section_title="Find Representatives" %}
-            {% include 'site/pages/home/navbar_snippet.html' with section_url="/congress/histogram/" section_title="Compare with Congress" outside_link=1 %}
-            {% include 'site/pages/home/navbar_snippet.html' with section_url="/friends/" section_title="Compare with Friends" %}
+            {% include 'site/pages/home/navbar_snippet.html' with section_url="/representatives/" section_title="Match with Representatives" %}
+            {% include 'site/pages/home/navbar_snippet.html' with section_url="/congress/histogram/" section_title="Match with Congress" outside_link=1 %}
+            {% include 'site/pages/home/navbar_snippet.html' with section_url="/friends/" section_title="Match with Friends" %}
         </div>
     </div>
 
@@ -81,5 +95,17 @@
             about us
         </a>
     </div>
+
+    {% comment %}
+    <!-- lg poll progress, if not finished -->
+    {% include 'site/pages/home/lgpoll_progress_snippet.html' %}
+    {% endcomment %}
+
+    <!-- topic stat box -->
+    {% comment %}
+    <div class="sidebar-question-stats-wrapper">
+        {% include 'site/pages/qa/poll_progress_by_topic.html' with poll=lgpoll %}
+    </div>
+    {% endcomment %}
 
 </div>

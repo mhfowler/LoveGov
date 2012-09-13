@@ -61,19 +61,37 @@ class LGModel(models.Model):
     class Meta:
         abstract = True
 
-#=======================================================================================================================
-# Abstract class for all models which should be governed by privacy constraints.
-#
-#=======================================================================================================================
+
+
+class ActiveContentManager(models.Manager):
+    """ Manager for filtering content with an 'active' attribute """
+    def get_query_set(self):
+        return super(ActiveContentManager, self).get_query_set().exclude(active=False)
+
+class ActiveModel(models.Model):
+    """Abstract model for models which override default manager to filter 'active'"""
+    objects = ActiveContentManager()
+    # Special name to access default manager
+    allobjects = models.Manager()
+
+    active = models.BooleanField(default=True)
+    def deactivate(self):
+        self.active = False
+        self.save()
+    class Meta:
+        abstract = True
+
+
+
 class Privacy(LGModel):
+    """ Abstract class for all models which should be governed by privacy constraints."""
     privacy = models.CharField(max_length=3, choices=PRIVACY_CHOICES, default='PUB')
     creator = models.ForeignKey("UserProfile", null=True)             # 154 is lovegov user
     class Meta:
         abstract = True
-    #-------------------------------------------------------------------------------------------------------------------
-    # Returns boolean, as to whether user has permission to view this.
-    #-------------------------------------------------------------------------------------------------------------------
+
     def getPermission(self, user):
+        """Returns boolean, as to whether user has permission to view this."""
         if self.privacy == 'PUB':
             return True
         elif self.privacy == 'PRI':
@@ -82,10 +100,8 @@ class Privacy(LGModel):
             else:
                 return False
 
-    #-------------------------------------------------------------------------------------------------------------------
-    # Returns user who created this.
-    #-------------------------------------------------------------------------------------------------------------------
     def getCreator(self):
+        """Returns user who created this."""
         try:
             creator = self.creator
         except UserProfile.DoesNotExist:
@@ -106,10 +122,8 @@ class Privacy(LGModel):
 
         return creator
 
-    #-------------------------------------------------------------------------------------------------------------------
-    # Return boolean based on privacy.
-    #-------------------------------------------------------------------------------------------------------------------
     def getPrivate(self):
+        """Return boolean based on privacy."""
         return self.privacy == 'PRI'
 
     def getPublic(self):
@@ -264,7 +278,8 @@ class OfficeTag(LGModel):
 # Content
 #
 #=======================================================================================================================
-class Content(Privacy, LocationLevel):
+class Content(ActiveModel, Privacy, LocationLevel):
+
     # unique identifier
     alias = models.CharField(max_length=1000, default="default")
     # optimizations for excluding some types of content
@@ -280,7 +295,6 @@ class Content(Privacy, LocationLevel):
     created_when = models.DateTimeField(auto_now_add=True)
     edited_when = models.DateTimeField(auto_now_add=True, null=True)
     main_image = models.ForeignKey("UserImage", null=True, blank=True)
-    active = models.BooleanField(default=True)
     calculated_view = models.ForeignKey("WorldView", null=True, blank=True)     # foreign key to worldview
     last_answered = models.DateTimeField(auto_now_add=True, null=True)          # last time answer question, or have answers calculated
     # RANK, VOTES
@@ -369,9 +383,33 @@ class Content(Privacy, LocationLevel):
         elif self.type=='D':
             return "Discussion: " + self.get_name()
         elif self.type=='L':
-            name = self.get_name()
-            if not name:
-                name = "No Title Available"
+            if self.get_name() and self.get_name()!='':
+                name = self.get_name()
+            else:
+                legtype = self.downcast().bill_type
+                legsession = str(self.downcast().congress_session_id)
+                legsession = str(legsession)
+                legnumber = str(self.downcast().bill_number)
+                legnumber = str(legnumber)
+                name_start = "Session " + legsession
+                if legtype==u's':
+                    name = name_start + ", S " + legnumber
+                elif legtype==u'h':
+                    name = name_start + ", H.R. " + legnumber
+                elif legtype==u'hr':
+                    name = name_start + ", H.Res. " + legnumber
+                elif legtype==u'sr':
+                    name = name_start + ", S.Res " + legnumber
+                elif legtype==u'hc':
+                    name = name_start + ", H.Con.Res. " + legnumber
+                elif legtype==u'sc':
+                    name = name_start + ", S.Con.Res. " + legnumber
+                elif legtype==u'hj':
+                    name = name_start + ", H.J. Res. " + legnumber
+                elif legtype==u'sj':
+                    name = name_start + ", S.J. Res. " + legnumber
+                else:
+                    name = "No Title Available"
             return "Legislation: " + name
         elif self.type=='C':
             return "Comment on " + self.downcast().root_content.get_name()
@@ -907,11 +945,13 @@ class Content(Privacy, LocationLevel):
         else:
             return None
 
+
 #=======================================================================================================================
 # UserImage
 # use instead of image fields (to allow commenting and shit on images)
 #=======================================================================================================================
 class UserImage(Content):
+    
     image = models.ImageField(upload_to='images/')
     def autoSave(self, creator=None, privacy='PUB'):
         self.type = 'I'
@@ -1120,13 +1160,49 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
     # anon ids
     anonymous = models.ManyToManyField(AnonID)
     # first login experience
-    first_login = models.IntegerField(default=1)
-    first_login_tasks = models.CharField(max_length=10, default="", blank=True)
+    first_login = models.IntegerField(default=1)             # 1 means just registered, after that 0
+    first_login_tasks = models.CharField(max_length=50, default="", blank=True)
     num_logins = models.IntegerField(default=0)
+    # background tasks
+    background_tasks = models.CharField(max_length=10, default="", blank=True)
+    finished_tasks = models.CharField(max_length=10, default="", blank=True)
 
 
     def __unicode__(self):
         return self.first_name
+
+    #-------------------------------------------------------------------------------------------------------------------
+    # background tasks
+    #-------------------------------------------------------------------------------------------------------------------
+    def valsBackgroundTasks(self, vals):
+        if self.checkBackgroundTask("L") and not self.checkFinishedTask("L"):
+            vals["computing_like_minded"] = True
+
+    def checkBackgroundTask(self, task):
+        return task in self.background_tasks
+
+    def addBackgroundTask(self, task):
+        if not task in self.background_tasks:
+            self.background_tasks += task
+            self.save()
+
+    def removeBackgroundTask(self, task):
+        if task in self.background_tasks:
+            self.background_tasks = self.background_tasks.replace(task, "")
+            self.save()
+
+    def checkFinishedTask(self, task):
+        return task in self.finished_tasks
+
+    def addFinishedTask(self, task):
+        if task not in self.finished_tasks:
+            self.finished_tasks += task
+            self.save()
+
+    def removeFinishedTask(self, task):
+        if task in self.finished_tasks:
+            self.finished_tasks = self.finished_tasks.replace(task, "")
+            self.save()
 
     #-------------------------------------------------------------------------------------------------------------------
     # string representation of location
@@ -1252,7 +1328,13 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
         self.save()
 
     def clearResponses(self):
-        return self.getView().clearResponses()
+        self.num_answers = 0
+        self.save()
+        self.getView().clearResponses()
+
+    def clearTasks(self):
+        self.first_login_tasks = ""
+        self.save()
 
     def getResponseToQuestion(self, question):
         response = self.view.responses.filter(question=question)
@@ -1492,8 +1574,6 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
             return self.initializeLikeMindedGroup()
 
     def initializeLikeMindedGroup(self):
-        if self.num_answers < 20:
-            return None
         like_minded = CalculatedGroup().createLikeMinded(self)
         self.like_minded = like_minded
         self.save()
@@ -1507,6 +1587,7 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
             return None
 
     def clearLikeMinded(self):
+        self.removeFinishedTask("L")
         like_minded = self.getLikeMindedGroup()
         if like_minded:
             return like_minded.clear()
@@ -3044,6 +3125,7 @@ class Notification(Privacy):
 ########################################################################################################################
 ############ POLITICAL_ROLE ############################################################################################
 class Office(Content):
+    
     tags = models.ManyToManyField("OfficeTag",related_name='tag_offices')
     # user genereated
     user_generated = models.BooleanField(default=False)
@@ -3084,6 +3166,7 @@ class Office(Content):
 #
 #=======================================================================================================================
 class Petition(Content):
+    
     full_text = models.TextField(max_length=10000)
     signers = models.ManyToManyField(UserProfile, related_name = 'petitions')
     finalized = models.BooleanField(default=False)
@@ -3185,6 +3268,7 @@ class Petition(Content):
 #
 #=======================================================================================================================
 class News(Content):
+
     link = models.URLField()
     link_summary = models.TextField(default="")
     link_screenshot = models.ImageField(upload_to='screenshots/')
@@ -3225,6 +3309,7 @@ class News(Content):
 #
 #=======================================================================================================================
 class Discussion(Content):
+    
     user_post = models.TextField(blank=True)
     def autoSave(self, creator=None, privacy="PUB"):
         self.in_feed = True
@@ -3239,7 +3324,7 @@ class Discussion(Content):
 #
 #=======================================================================================================================
 class Comment(Content):
-
+    
     root_content = models.ForeignKey(Content, related_name='root_content')
     on_content = models.ForeignKey(Content, related_name='comments')
     text = models.TextField(max_length = 10000)
@@ -3339,6 +3424,7 @@ class CongressSession(LGModel):
 #
 #=======================================================================================================================
 class Legislation(Content):
+    
     # Bill Identifiers
     congress_session = models.ForeignKey(CongressSession)
     bill_type = models.CharField(max_length=2)
@@ -3363,9 +3449,9 @@ class Legislation(Content):
     # action relationship is stored in LegislationAction object.  To retrieve them you can use "self.legislation_actions"
 
     def setCongressBody(self):
-        if self.bill_type.startswith("h"):
+        if leg.startswith("h"):
             self.congress_body = "H"
-        elif self.bill_type.startswith("s"):
+        elif leg.startswith("s"):
             self.congress_body = "S"
         self.save()
 
@@ -3638,6 +3724,7 @@ class LegislationReference(LGModel):
 #
 #=======================================================================================================================
 class LegislationAmendment(Content):
+    
     # Identifiers
     legislation= models.ForeignKey(Legislation, related_name="legislation_amendments")
     congress_session = models.ForeignKey('CongressSession', related_name='session_amendments')
@@ -3721,6 +3808,7 @@ class CongressVote(LGModel):
 #
 #=======================================================================================================================
 class Poll(Content):
+    
     questions = models.ManyToManyField("Question")
     num_questions = models.IntegerField(default=0)
     description = models.TextField(blank=True)
@@ -3762,6 +3850,7 @@ class Poll(Content):
 #
 #=======================================================================================================================
 class Scorecard(Content):
+    
     group = models.ForeignKey("Group", null=True, related_name="scorecards")
     poll = models.ForeignKey(Poll)
     scorecard_view = models.ForeignKey("WorldView")
@@ -3820,6 +3909,7 @@ class Answer(LGModel):
 #
 #=======================================================================================================================
 class Question(Content):
+    
     question_text = models.TextField(max_length=500)
     question_type = models.CharField(max_length=2, default="D")
     relevant_info = models.TextField(max_length=1000, blank=True, null=True)
@@ -3882,12 +3972,18 @@ class Question(Content):
         self.num_responses = responses.count()
         self.save()
 
+    def deactivate(self):
+        super(Question,self).deactivate()
+        for r in self.response_set.all():
+            r.deactivate()
+
 
 #=======================================================================================================================
 # Response, abstract so that content users and groups can inherit from it
 #
 #=======================================================================================================================
 class Response(Content):
+    
     question = models.ForeignKey(Question)
     answer_val = models.IntegerField(default=-1)
     most_chosen_answer = models.ForeignKey(Answer,related_name="responses",null=True)
@@ -3895,6 +3991,7 @@ class Response(Content):
     total_num = models.IntegerField(default=0)
     weight = models.IntegerField(default=50)
     explanation = models.TextField(max_length=1000, blank=True)
+    explanation_comment = models.OneToOneField(Comment,null=True,blank=True)
     answer_tallies = models.ManyToManyField('AnswerTally')
 
     def getPercent(self, a_id):
@@ -3910,6 +4007,27 @@ class Response(Content):
             return int(percent*100)
         else:
             return 0
+
+    # Adds an explanation, creating a new comment by the creator
+    def addExplanation(self, explanation):
+        if self.explanation_comment:
+            self.editExplanation(explanation)
+        self.explanation = explanation
+        if self.question and explanation:
+            newComment = Comment(root_content=self.question, on_content=self.question, text=explanation)
+            newComment.autoSave(creator=self.creator, privacy=self.privacy)
+            self.explanation_comment = newComment
+        self.save()
+
+    # Edits the corresponding explanation and comment for the response
+    def editExplanation(self, explanation):
+        if not self.explanation_comment:
+            self.addExplanation(explanation)
+        self.explanation = explanation
+        if self.question and explanation:
+            self.explanation_comment.text = explanation
+            self.explanation_comment.save()
+        self.save()
 
     #-------------------------------------------------------------------------------------------------------------------
     # Autosaves by adding picture and topic from question.
@@ -4137,6 +4255,7 @@ class AnswerTally(LGModel):
 #
 #=======================================================================================================================
 class Group(Content):
+    
     # people
     admins = models.ManyToManyField(UserProfile, related_name='admin_of')
     members = models.ManyToManyField(UserProfile, related_name='member_of')
@@ -4330,6 +4449,8 @@ class Group(Content):
             self.members.add(user)
         from lovegov.modernpolitics.actions import followGroupAction
         followGroupAction(user, self, True, privacy)
+        if group.group_type == 'P':
+            user.parties.add(self)
 
     #-------------------------------------------------------------------------------------------------------------------
     # Removes a member from the group and creates GroupJoined appropriately.
@@ -4350,6 +4471,8 @@ class Group(Content):
             self.save()
         self.members.remove(user)
         self.admins.remove(user)
+        if group.group_type == 'P':
+            user.parties.remove(group)
 
     #-------------------------------------------------------------------------------------------------------------------
     # Gets comparison between this group and inputted user.
@@ -4534,6 +4657,7 @@ class GroupView(LGModel):
 #
 #=======================================================================================================================
 class Motion(Content):
+    
     group = models.ForeignKey(Group)
     motion_type = models.CharField(max_length=30, choices=MOTION_CHOICES, default='other')
     full_text = models.TextField()
@@ -4632,6 +4756,7 @@ class Motion(Content):
 #
 #=======================================================================================================================
 class Network(Group):
+    
     name = models.CharField(max_length=50)                  # DEPRECATED
     network_type = models.CharField(max_length=1, choices=NETWORK_TYPE, default='D')
     extension = models.CharField(max_length=50, null=True)
@@ -4650,6 +4775,7 @@ class Network(Group):
 #
 #=======================================================================================================================
 class StateGroup(Group):
+    
     pass
     def autoCreate(self, state):
         state_text = STATES_DICT[state]
@@ -4668,6 +4794,7 @@ class StateGroup(Group):
         return self
 
 class TownGroup(Group):
+    
     def autoCreate(self, city, state):
         city_state = city + ", " + state
         self.title = city_state + " Group"
@@ -4689,6 +4816,7 @@ class TownGroup(Group):
 #
 #=======================================================================================================================
 class PoliticianGroup(Group):
+    
     def autoSave(self):
         self.group_type = 'Y'
         self.system = True
@@ -4699,10 +4827,12 @@ class PoliticianGroup(Group):
 
 # uniquely identified by location__state                # for visualization of all congress from a state
 class StatePoliticianGroup(PoliticianGroup):
+    
     pass
 
 # uniquely identified by location__state location__district combo           # for visualization for all congress form a district
 class DistrictPoliticianGroup(PoliticianGroup):
+    
     representatives = models.ManyToManyField(UserProfile, related_name="district_rep_group")
     senators = models.ManyToManyField(UserProfile, related_name="district_sen_group")
     pass
@@ -4712,6 +4842,7 @@ class DistrictPoliticianGroup(PoliticianGroup):
 #
 #=======================================================================================================================
 class CalculatedGroup(Group):
+    
     calculation_type = models.CharField(max_length=2, default="LM")
     user = models.ForeignKey(UserProfile)
     processed = models.ManyToManyField(UserProfile, related_name="processed_by")
@@ -4767,6 +4898,10 @@ class CalculatedGroup(Group):
                         found.append(x)
                 self.processed.add(x)
                 processed_num += 1
+
+        if not processed_num:
+            viewer.addFinishedTask("L")
+
         return found, processed_num
 
 
@@ -4776,6 +4911,7 @@ class CalculatedGroup(Group):
 #
 #=======================================================================================================================
 class Party(Group):
+    
     party_type = models.CharField(max_length=1, choices=PARTY_TYPE, default='D')
     party_label = models.ImageField(null=True, upload_to="defaults/")
 
@@ -4803,6 +4939,7 @@ class Party(Group):
 #
 #=======================================================================================================================
 class UserGroup(Group):
+    
     def autoSave(self, creator=None, privacy="PUB"):
         self.group_type = 'U'
         super(UserGroup, self).autoSave(creator=creator,privacy=privacy)
@@ -4811,6 +4948,7 @@ class UserGroup(Group):
 # an election, is a group centered around a particular office
 #=======================================================================================================================
 class Election(Group):
+    
     winner = models.ForeignKey(UserProfile, null=True, related_name="elections_won")
     election_date = models.DateTimeField()
     office = models.ForeignKey(Office, null=True)
@@ -4847,6 +4985,7 @@ class Election(Group):
 ################################################### Committees #########################################################
 # External Imports
 class Committee(Group):
+    
     code = models.CharField(max_length=20)
     committee_type = models.CharField(max_length=2, choices=COMMITTEE_CHOICES)
     parent = models.ForeignKey('self', null=True)

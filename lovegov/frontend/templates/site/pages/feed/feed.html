@@ -1,4 +1,4 @@
-<div class="feed-main feed_main"
+<div class="feed-main feed_main feedtut_start_tutorial_parent"
      data-feed_start="0"
         {% if not special_feed %} data-feed="getFeed" {% else %} data-feed="{{ special_feed }}" {% endif %}
         {% if not default_display %} data-default_display="none" {% else %} data-default_display="{{ default_display}}" {% endif %}
@@ -7,11 +7,11 @@
         {% if scorecard_id %} data-scorecard_id="{{ scorecard_id }}" {% endif %}
         {% if save_scorecard_answer %} data-save_scorecard_answer="1" {% endif %}
         {% if to_compare %} data-to_compare_id="{{ to_compare.id }}" {% endif %}
+        {% if like_minded_filter %} data-like_minded="" {% endif %}
         >
 
-    <!-- helper bubble -->
-    {% include 'site/pages/helper_bubbles/feed_item_helper_bubble.html' with which_bubble="feed_item_helper_bubble" arrow_direction="down" %}
-
+    <!-- feed tutorial -->
+    {% include 'site/pages/helper_bubbles/feedtut/feedtut.html' %}
 
     <table class="feed-top-bar">
         <tr>
@@ -32,13 +32,33 @@
                 <div class="feed-buttons-container">
 
                     {% block filter_buttons %}
+
                         {% if not no_filters %}
+
                             <div class='buttons-container-text'>Filter by:</div>
                             <div class="sort-button feed_button type_button" data-type="N" >News</div>
                             <div class="sort-button feed_button type_button" data-type="O">Poll</div>
                             <div class="sort-button feed_button type_button" data-type="P">Petition</div>
                             <div class="sort-button feed_button type_button last-button" data-type="D">Discussion</div>
+
+                            {% if like_minded_filter %}
+
+                                <a class="like-minded-text like_minded_link dummy_link" id="like_minded_link_id"> only like-minded </a>
+                                <input type="checkbox" class="like-minded-checkbox like_minded_button" id="like_minded_link_id1"
+                                        {% if only_unanswered %} checked="checked" {% endif %} />
+
+                                <div class="like-minded-header-dialogue like_minded_header_dialogue">
+                                    {% include 'site/pages/like_minded/like_minded_dialogue.html' %}
+                                </div>
+
+                            {% endif %}
+
                         {% endif %}
+
+                        {% if feedtut %}
+                            {% include 'site/pages/helper_bubbles/helper_robot.html' with tutorial="feed" %}
+                        {% endif %}
+
                     {% endblock %}
 
                 </div>
@@ -50,7 +70,7 @@
             <td>
                 {% block right_button %}
                     {% if not no_create_button %}
-                        <table class='create-button'>
+                        <table class='create-button feedtut_create_parent'>
                             <tr>
                                 <td class="create-button" {% if g_id %} data-g_id="{{ g_id }}" {% endif %}>
                                     create

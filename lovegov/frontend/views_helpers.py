@@ -5,6 +5,40 @@ from lovegov.modernpolitics.backend import *
 from lovegov.base_settings import UPDATE
 
 #-----------------------------------------------------------------------------------------------------------------------
+# vals for likeminded filter
+#-----------------------------------------------------------------------------------------------------------------------
+def valsLikeMinded(vals):
+    viewer = vals['viewer']
+    like_minded = viewer.getLikeMindedGroup()
+    if like_minded:
+        members = like_minded.members.all()
+        vals['num_members'] = len(members)
+        vals['members'] = members
+        vals['num_processed'] = like_minded.processed.count()
+    vals['like_minded'] = like_minded
+
+    valsQuestionsThreshold(vals)
+
+#-----------------------------------------------------------------------------------------------------------------------
+# sets vals whether viewer is over or under question answering threshold
+#-----------------------------------------------------------------------------------------------------------------------
+def valsQuestionsThreshold(vals):
+    viewer = vals['viewer']
+
+    valsLGPoll(vals)
+    poll_progress = vals['lgpoll_progress']
+
+    above_questions_threshold = poll_progress['completed'] >= QUESTIONS_THRESHOLD
+    vals['ABOVE_QUESTIONS_THRESHOLD'] = above_questions_threshold
+    if not above_questions_threshold:
+        getMainTopics(vals)
+
+    if not viewer.checkTask("O"):
+        vals['first_only_unanswered'] = True
+
+    return above_questions_threshold
+
+#-----------------------------------------------------------------------------------------------------------------------
 # gets frame values and puts in dictionary.
 #-----------------------------------------------------------------------------------------------------------------------
 def frame(request, vals):
@@ -34,6 +68,7 @@ def homeSidebar(request, vals):
         g.num_new = g.getNumNewContent(viewer)
     vals['group_subscriptions'] = group_subscriptions
     vals['election_subscriptions'] = election_subscriptions
+    valsQuestionsThreshold(vals)
 
 #-----------------------------------------------------------------------------------------------------------------------
 # gets the users responses to questions
@@ -182,13 +217,13 @@ def makeThread(request, object, user, depth=0, user_votes=None, user_comments=No
     if not user_votes:
         user_votes = Voted.objects.filter(user=user)
     if not user_comments:
-        user_comments = Comment.objects.filter(creator=user)
+        user_comments = Comment.allobjects.filter(creator=user)
     if not rendered_so_far:
         rendered_so_far = [0]
     if not excluded:
         excluded = []
     # Get all comments that are children of the object
-    comments = Comment.objects.filter(on_content=object,active=True).order_by('-status').exclude(id__in=excluded)[start:]
+    comments = Comment.allobjects.filter(on_content=object).order_by('-status').exclude(id__in=excluded)[start:]
     viewer = vals['viewer']
     top_levels = 0
     if comments:
@@ -218,7 +253,7 @@ def renderComment(request, vals, c, depth, user_votes=None, user_comments=None):
     if not user_votes:
         user_votes = Voted.objects.filter(user=user)
     if not user_comments:
-        user_comments = Comment.objects.filter(creator=user)
+        user_comments = Comment.allobjects.filter(creator=user)
     margin = 30*(depth+1)
     my_vote = user_votes.filter(content=c) # check if i like comment
     if my_vote:
@@ -271,6 +306,22 @@ def getQuestionStats(vals, poll=None):
         stat['empty'] = 100-percent
         topic_stats.append(stat)
     vals['topic_stats'] = topic_stats
+
+
+def valsLGPoll(vals):
+
+    viewer = vals['viewer']
+
+    lgpoll = vals.get('lgpoll')
+    if not lgpoll:
+        lgpoll = getLoveGovPoll()
+        vals['lgpoll'] = lgpoll
+
+    lgpoll_progress = vals.get('lgpoll_progress')
+    if not lgpoll_progress:
+        lgpoll_progress = lgpoll.getPollProgress(viewer)
+        vals['lgpoll_progress'] = lgpoll_progress
+
 
 #-----------------------------------------------------------------------------------------------------------------------
 # returns a list of group tuples for rendering the agrees_box
@@ -356,15 +407,19 @@ def valsGroupButtons(viewer, group, vals):
 # fill dictionary for a particular election
 #-----------------------------------------------------------------------------------------------------------------------
 def valsElection(viewer, election, vals):
-    if not LOCAL and election.alias == 'presidential_election':
-        obama = UserProfile.objects.get(alias='barack_obama')
-        mitt = UserProfile.objects.get(alias='mitt_romney')
-        ron = UserProfile.objects.get(alias='ronald_paul')
-        biden = UserProfile.objects.get(alias='joseph_biden')
-        ryan = UserProfile.objects.get(alias='paul_ryan')
-        running = [obama, mitt, ron, biden, ryan]
+    if election.alias == 'presidential_election':
+        if not LOCAL:
+            obama = UserProfile.objects.get(alias='barack_obama')
+            mitt = UserProfile.objects.get(alias='mitt_romney')
+            ron = UserProfile.objects.get(alias='ronald_paul')
+            biden = UserProfile.objects.get(alias='joseph_biden')
+            ryan = UserProfile.objects.get(alias='paul_ryan')
+            running = [obama, mitt, ron, biden, ryan]
+        else:
+            running = UserProfile.objects.all()[:5]
     else:
         running = election.members.all().order_by("-num_supporters")
+
     supporting = viewer.getPoliticians()
     for r in running:
         r.comparison = r.getComparison(viewer)
@@ -421,6 +476,13 @@ def valsFBFriends(request, vals):
 def getStateTuples(vals):
     vals['states'] = STATES
 
+def valsParties(vals):
+    viewer = vals['viewer']
+    parties = list(Party.objects.all())
+    parties.sort(key=lambda x: x.title[0])
+    vals['parties'] = parties
+    vals['user_parties'] = viewer.parties.all()
+
 #-----------------------------------------------------------------------------------------------------------------------
 # fills vals for reps header
 #-----------------------------------------------------------------------------------------------------------------------
@@ -454,48 +516,62 @@ def valsDismissibleHeader(request, vals):
 
     viewer = vals['viewer']
 
-    if viewer.hasFirstLoginHeader():
-        header = 'first_login'
-    else:
-        header = random.choice(DISMISSIBLE_HEADERS)
+    if viewer.checkTask("H"):
+        return None
 
+    header = random.choice(DISMISSIBLE_HEADERS)
     vals['dismissible_header'] = header
 
-    if header == 'first_login':
-        vals['explore_feed_task'] = explore_feed_task = viewer.checkTask("E")
-        vals['find_reps_task'] = find_reps_task = viewer.checkTask("F")
-        vals['lovegov_poll_task'] = lovegov_poll_task = viewer.checkTask("L")
-        vals['join_groups_task'] = join_groups_task = viewer.checkTask("J")
+    if header == 'congress_teaser':
+        vals['compare_congress_task'] = congress_task = viewer.checkTask("C")
+        if not congress_task:
+            congress = Group.lg.get_or_none(alias="congress")
+            #congress_members = list(UserProfile.objects.filter(primary_role__office__governmental=True))
+            #congress_members = random.sample(congress_members, min(16, len(congress_members)))
+            #congress_members = UserProfile.objects.filter(primary_role__office__governmental=True)[:16]
+            congress_members = UserProfile.objects.filter(currently_in_office=True)[:16]
+            if LOCAL:
+                congress_members = UserProfile.objects.all()[:16]
+            vals['congress'] = congress
+            vals['congress_members'] = congress_members
 
-        # if user has completed all tasks except seeing their congratulatory message, then they are seeing congratulatory message
-        if explore_feed_task and find_reps_task and lovegov_poll_task and join_groups_task:
-            vals['completed_all_tasks'] = True
-            viewer.completeTask("A")
-
-        vals['lgpoll'] = getLoveGovPoll()
-
-    elif header == 'congress_teaser':
-        vals['compare_congress_task'] = viewer.checkTask("C")
-        congress = Group.lg.get_or_none(alias="congress")
-        #congress_members = list(UserProfile.objects.filter(primary_role__office__governmental=True))
-        #congress_members = random.sample(congress_members, min(16, len(congress_members)))
-        #congress_members = UserProfile.objects.filter(primary_role__office__governmental=True)[:16]
-        congress_members = UserProfile.objects.filter(currently_in_office=True)[:16]
-        if LOCAL:
-            congress_members = UserProfile.objects.all()[:16]
-        vals['congress'] = congress
-        vals['congress_members'] = congress_members
-
-        # warning or not?
-        lgpoll = getLoveGovPoll()
-        poll_progress = lgpoll.getPollProgress(viewer)
-        vals['answer_warning'] = poll_progress['completed'] < 15
+            # warning or not?
+            valsLGPoll(vals)
+            poll_progress = vals['lgpoll_progress']
+            vals['answer_warning'] = poll_progress['completed'] < 15
 
     elif header == 'find_reps':
         pass
 
     elif header == 'lovegov_poll':
-        lgpoll = getLoveGovPoll()
-        poll_progress = lgpoll.getPollProgress(viewer)
-        vals['poll_progress'] = poll_progress
-        vals['lgpoll'] = lgpoll
+        valsLGPoll(vals)
+        vals['poll_progress'] = vals['lgpoll_progress']
+
+
+#-----------------------------------------------------------------------------------------------------------------------
+# vals for first login
+#-----------------------------------------------------------------------------------------------------------------------
+def valsFirstLogin(vals):
+
+    viewer = vals['viewer']
+    vals['hide_intros'] = hide_intros = viewer.checkTask("H")
+
+    if not hide_intros:
+        vals['presidential_task'] = presidential_task = viewer.checkTask("P")
+        vals['reps_task'] = reps_task = viewer.checkTask("F")
+        vals['like_minded_task'] = like_minded_task = viewer.checkTask("L")
+        vals['join_groups_task'] = join_groups_task = viewer.checkTask("J")
+
+        # if user has completed all matching tasks, they see explore feed task
+        if presidential_task and reps_task and like_minded_task and join_groups_task:
+            vals['completed_all_first_tasks'] = True
+
+            vals['congratulations_task'] = congratulations_task = viewer.checkTask("W")
+
+            # if completed congratulations task (clicking on see congratulations), then show congratulations message and get started header
+            if congratulations_task:
+                vals['see_congratulations'] = True
+                viewer.completeTask("W")
+                viewer.completeTask("H")    # and complete hide task, because no get started header from now on
+
+    vals['qa_tutorial'] = not viewer.checkTask("Q")

@@ -684,3 +684,19 @@ div.petition-signers-modal {
     padding: 50px;
 
 }
+
+div.content-admin-actions {
+  margin-top: 20px;
+  border: 1px solid $gray;
+  border-left: none;
+  border-right: none;
+  padding: 10px;
+  span.content-admin-action-delete {
+    cursor: pointer;
+    color: $text-blue-light;
+    margin: 0 10px;
+    &:hover {
+      color: $red;
+    }
+  }
+}

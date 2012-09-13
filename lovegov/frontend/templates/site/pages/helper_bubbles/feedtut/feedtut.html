@@ -1,0 +1,9 @@
+<div class="feedtut_tutorial_wrapper tutorial_wrapper">
+    {% include 'site/pages/helper_bubbles/feedtut/feedtut_start_tutorial.html' with bubble_classes="feedtut_start_tutorial feedtut_bubble" bubble_task="I" arrow_direction="left" my_parent_selector=".feedtut_start_tutorial_parent" bubble_show=feedtut_tutorial %}
+    {% include 'site/pages/helper_bubbles/feedtut/feedtut_feed_item.html' with bubble_classes="feedtut_feed_item feedtut_bubble" bubble_task="I" arrow_direction="up" my_parent_selector=".feedtut_tutorial_item .feedtut_feed_item_parent" %}
+    {% include 'site/pages/helper_bubbles/feedtut/feedtut_create.html' with bubble_classes="feedtut_create feedtut_bubble" bubble_task="I" arrow_direction="up" my_parent_selector=".feedtut_create_parent" %}
+    {% include 'site/pages/helper_bubbles/feedtut/feedtut_groups.html' with bubble_classes="feedtut_groups feedtut_bubble" bubble_task="I" arrow_direction="left" my_parent_selector=".feedtut_groups_parent" %}
+    {% include 'site/pages/helper_bubbles/feedtut/feedtut_posted_to.html' with bubble_classes="feedtut_posted_to feedtut_bubble" bubble_task="I" arrow_direction="down" my_parent_selector=".feedtut_tutorial_item .feedtut_posted_to_parent" %}
+    {% include 'site/pages/helper_bubbles/feedtut/feedtut_hearts.html' with bubble_classes="feedtut_hearts feedtut_bubble" bubble_task="I" arrow_direction="right" my_parent_selector=".feedtut_tutorial_item .feedtut_hearts_parent" %}
+    {% include 'site/pages/helper_bubbles/feedtut/feedtut_creator.html' with bubble_classes="feedtut_creator feedtut_bubble" bubble_task="I" arrow_direction="down" my_parent_selector=".feedtut_tutorial_item .feedtut_creator_parent" %}
+</div>

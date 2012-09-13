@@ -9,7 +9,7 @@
         <div class="right-side">
             <div class="match">
                 <a href="{{ user.getQuestionsURL }}" class="match-num has_hover_comparison" data-href="{{ user.get_url }}" data-display_name="{{ user.get_name }}">
-                    {{ user.comparison.result }}
+                    {% include 'site/pages/qa/match_num.html' with to_compare=user %}
                 </a>
                 <div class="match-text">
                     match
@@ -22,10 +22,12 @@
                 view profile
             </a>
         </div>
+        <div style="clear:both;"></div>
     </div>
 
     <div class="card-bottom">
         <a href="{{ user.get_url }}" class="politician-name"> {{ user.get_name }}</a>
+        <div style="clear:both;"></div>
     </div>
 
 </div>

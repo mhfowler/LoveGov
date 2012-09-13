@@ -1,5 +1,5 @@
 {% for x in question_items %}
-    {% with question=x.question your_response=x.you compare_responses=x.compare_responses %}
+    {% with question=x.question your_response=x.you compare_responses=x.compare_responses  first_question=forloop.first %}
         {% include 'site/pages/qa/question_stub.html' %}
     {% endwith %}
 {% endfor %}

@@ -61,23 +61,30 @@ def getFollowRequestsModal(user,request,vals={}):
 
 def getFacebookShareModal(fb_share_id,fb_name,request,vals):
 
-    vals['fb_name'] = fb_name
-    vals['fb_image'] = "https://graph.facebook.com/" + str(fb_share_id) + "/picture?type=large"
-    vals['fb_share_id'] = fb_share_id
-    vals['default_facebook_message'] = "This is something worth sharing."
-
-    return ajaxRender('site/pages/friends/facebook_share_modal.html',vals,request)
+#    vals['fb_name'] = fb_name
+#    vals['fb_image'] = "https://graph.facebook.com/" + str(fb_share_id) + "/picture?type=large"
+#    vals['fb_share_id'] = fb_share_id
+#    vals['default_facebook_message'] = DEFAULT_FACEBOOK_MESSAGE
+#
+#    return ajaxRender('site/pages/friends/facebook_share_modal.html',vals,request)
+    return HttpResponseRedirect("http://www.facebook.com/dialog/send?display=popup"+
+                                "app_id="+settings.FACEBOOK_APP_ID+"&"+
+                                "name=LoveGov&"+
+                                "link=http://www.lovegov.com&"+
+                                "redirect_uri=http://www.lovegov.com/home")
 
 
 def getFacebookShareContentModal(share_content,request,vals):
 
     vals['share_content'] = share_content
-    vals['default_facebook_message'] = DEFAULT_FACEBOOK_MESSAGE
+    vals['default_facebook_message'] = "Look at this!"
 
     return ajaxRender('site/pages/feed/feed_items/facebook_share_content_modal.html',vals,request)
 
 
 def getCreateModal(request,vals={}):
+    # From vals, gid is the id of the group that the create modal was clicked from
+    # selected_group is the id of the group that should be preselected in the create modal
     main_topics = Topic.objects.filter(Q(alias='general') | Q(topic_text__in=MAIN_TOPICS))
     general_topic = Topic.lg.get(alias='general')
     vals['main_topics'] = main_topics
@@ -87,7 +94,13 @@ def getCreateModal(request,vals={}):
     viewer = vals['viewer']
     vals['all_polls'] = Poll.objects.all()
     gid = request.POST.get('gid')
-    vals['selected_group'] = request.POST.get('selected_group')
+    selected_group_id = request.POST.get('selected_group')
+    selected_group = Group.lg.get_or_none(id=selected_group_id)
+    subscriptions = list(viewer.getSubscriptions())
+    if selected_group not in subscriptions:
+        subscriptions.append(selected_group)
+    vals['selected_group'] = selected_group_id
+    vals['viewerSubscriptions'] = subscriptions
     vals['group'] = Group.lg.get_or_none(id=gid)
     return ajaxRender('site/pages/create_modal.html',vals,request)
 

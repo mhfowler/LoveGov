@@ -4,6 +4,20 @@
 
 @import "compass";
 
+/* parties */
+div.select-parties {
+  width:600px;
+  float: left;
+  div.select-parties-header {
+    font-size:24px;
+  }
+  div.parties-options {
+    width: 480px;
+  }
+}
+
+
+/* groups */
 div.groups-header {
   width:100%;
   margin-top:10px;
@@ -112,6 +126,7 @@ div.like-minded-header {
         float:left;
         @include inline-block;
         width:100px;
+        margin-top:10px;
         a.like-minded-explanation {
           color:$gray;
           margin-left:6px;
@@ -151,10 +166,10 @@ div.like-minded-header {
         border:1px solid $black;
         @include border-radius(8px);
         width:300px;
-        height:300px;
+        height:425px;
         background-color:white;
-        top: 104px;
-        left: -14px;
+        top: 210px;
+        left: -30px;
         display:none;
         div.explanation-header {
           font-weight:bold;
@@ -241,6 +256,7 @@ div.like-minded-header {
           div.computing-result {
             float:left;
             margin-left:40px;
+            margin-top: -3px;
             display:none;
           }
         }

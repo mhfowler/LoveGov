@@ -10,6 +10,7 @@ from django.contrib import admin
 from django.views.generic.simple import redirect_to
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from django.conf import settings
+from django.views.generic.simple import direct_to_template
 
 LOCAL = settings.LOCAL
 
@@ -45,7 +46,7 @@ urlpatterns += patterns('',
     (r'^confirm/(?P<confirm_link>\S+)/$', viewWrapper(views.confirm)),
     (r'^need_email_confirmation/$', viewWrapper(views.needConfirmation)),
     (r'^claim_your_profile/(?P<claimed_by>\S+)/$', viewWrapper(views.claimYourProfile)),
-    (r'^welcome/$', viewWrapper(views.welcome)),
+    (r'^hello/$', viewWrapper(views.hello)),
 
     # fb authentication
     (r'^fb/authorize/$', views.facebookAuthorize),
@@ -64,17 +65,19 @@ urlpatterns += patterns('',
     (r'^try/(\S+)/$', viewWrapper(views.tryLoveGov)),
     (r'^unsubscribe/(\S+)/$', views.unsubscribe),
     (r'^underconstruction/$', views.underConstruction),
+    (r'^500/$', 'django.views.generic.simple.direct_to_template', {'template': '500.html', 'extra_context': {'STATIC_URL': settings.STATIC_URL}}),
 
     # home pages
+    (r'^welcome/$', viewWrapper(views.welcome, requires_login=True)),
     (r'^home/$', viewWrapper(views.home, requires_login=True)),
     (r'^groups/$', viewWrapper(views.browseGroups, requires_login=True)),
     (r'^elections/$', viewWrapper(views.browseElections, requires_login=True)),
     (r'^politicians/$', viewWrapper(views.browseElections, requires_login=True)),
     (r'^representatives/$', viewWrapper(views.representatives, requires_login=True)),
     (r'^friends/$', viewWrapper(views.friends, requires_login=True)),
-    (r'^like_minded/$', viewWrapper(views.likeMinded, requires_login=True)),
     (r'^questions/$', viewWrapper(views.questions, requires_login=True)),
-    (r'^discover/$', viewWrapper(views.discover, requires_login=True)),
+    (r'^discover/$', viewWrapper(views.match, requires_login=True)),
+    (r'^match/$', viewWrapper(views.match, requires_login=True)),
 
     (r'^my_groups/$', viewWrapper(views.myGroups, requires_login=True)),
     (r'^my_elections/$', viewWrapper(views.myElections, requires_login=True)),
@@ -154,8 +157,10 @@ urlpatterns += patterns('',
     (r'(?P<alias>\w+)/edit/$', views.aliasDowncastEdit),
     (r'^(?P<alias>\w+)/worldview/$', viewWrapper(views.worldview, requires_login=True)),                 # view breakdown of person
     (r'^(?P<alias>\w+)/histogram/$', viewWrapper(views.histogramDetail, requires_login=True)),           # histogram detail of group
+    (r'^state/(?P<state>\w+)/$', viewWrapper(views.state, requires_login=True)),
 
     # REDIRECT
+    (r'^popup_redirect/$', views.popupRedirect),
     (r'(?P<alias>\w+)/$', views.aliasDowncast),
     (r'.*/$', views.redirect),
     (r'^$', views.redirect)
