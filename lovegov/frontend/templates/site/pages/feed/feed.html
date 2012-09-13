@@ -1,4 +1,4 @@
-<div class="feed-main feed_main"
+<div class="feed-main feed_main feedtut_start_tutorial_parent"
      data-feed_start="0"
         {% if not special_feed %} data-feed="getFeed" {% else %} data-feed="{{ special_feed }}" {% endif %}
         {% if not default_display %} data-default_display="none" {% else %} data-default_display="{{ default_display}}" {% endif %}
@@ -10,9 +10,8 @@
         {% if like_minded_filter %} data-like_minded="" {% endif %}
         >
 
-    <!-- helper bubble -->
-    {% include 'site/pages/helper_bubbles/feed_item_helper_bubble.html' with which_bubble="feed_item_helper_bubble" arrow_direction="down" %}
-
+    <!-- feed tutorial -->
+    {% include 'site/pages/helper_bubbles/feedtut/feedtut.html' %}
 
     <table class="feed-top-bar">
         <tr>
@@ -33,35 +32,34 @@
                 <div class="feed-buttons-container">
 
                     {% block filter_buttons %}
+
                         {% if not no_filters %}
+
                             <div class='buttons-container-text'>Filter by:</div>
                             <div class="sort-button feed_button type_button" data-type="N" >News</div>
                             <div class="sort-button feed_button type_button" data-type="O">Poll</div>
                             <div class="sort-button feed_button type_button" data-type="P">Petition</div>
                             <div class="sort-button feed_button type_button last-button" data-type="D">Discussion</div>
+
+                            {% if like_minded_filter %}
+
+                                <a class="like-minded-text like_minded_link dummy_link" id="like_minded_link_id"> only like-minded </a>
+                                <input type="checkbox" class="like-minded-checkbox like_minded_button" id="like_minded_checkbox_id"
+                                        {% if only_unanswered %} checked="checked" {% endif %} />
+
+                                <div class="like-minded-header-dialogue like_minded_header_dialogue">
+                                    {% include 'site/pages/like_minded/like_minded_dialogue.html' %}
+                                </div>
+
+                            {% endif %}
+
                         {% endif %}
+
+                        <a class="take_a_tutorial help-robot tooltip-top" title="take a tutorial?" data-tutorial="feed">
+                            {% include 'site/pieces/thumbnail.html' with thumbnail_url="/images/icons/logo/lg_robot.jpg" width="25" height="25" %}
+                        </a>
+
                     {% endblock %}
-
-                    {% if like_minded_filter %}
-
-                        {% comment %}
-                        <div class="sort-button last-button like-minded-filter-button feed_button like_minded_button"> only like-minded </div>
-                        {% endcomment %}
-
-                        <a class="like-minded-text like_minded_link dummy_link" id="like_minded_link_id"> only like-minded </a>
-                        <input type="checkbox" class="like-minded-checkbox like_minded_button" id="like_minded_checkbox_id"
-                                {% if only_unanswered %} checked="checked" {% endif %} />
-
-                        <!-- like minded group explanation header (members + explanation + update button) -->
-                        <div class="like-minded-header-dialogue like_minded_header_dialogue">
-                            {% include 'site/pages/like_minded/like_minded_dialogue.html' %}
-                        </div>
-
-                    {% endif %}
-
-                    <a class="feed_help help-robot tooltip-top" title="take a tutorial?">
-                        {% include 'site/pieces/thumbnail.html' with thumbnail_url="/images/icons/logo/lg_robot.jpg" width="25" height="25" %}
-                    </a>
 
                 </div>
 

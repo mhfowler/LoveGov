@@ -26,11 +26,7 @@
     <span class="only-unanswered-text qa_only_unanswered_parent"> only unanswered </span>
     <input type="checkbox" class="only-unanswered-checkbox only_unanswered" {% if only_unanswered %} checked="checked" {% endif %} />
 
-    {% comment %}
-    <a class="qa_help qa-help"> help? </a>
-    {% endcomment %}
-
-    <a class="qa_help help-robot tooltip-top" title="take a tutorial?">
+    <a class="take_a_tutorial help-robot tooltip-top" title="take a tutorial?" data-tutorial="qa">
         {% include 'site/pieces/thumbnail.html' with thumbnail_url="/images/icons/logo/lg_robot.jpg" width="25" height="25" %}
     </a>
 

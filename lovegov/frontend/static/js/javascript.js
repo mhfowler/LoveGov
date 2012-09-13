@@ -4285,8 +4285,14 @@ bind('.x_helper_bubble','click', function() {
     }
 });
 
-bind('.qa_help','click', function() {
-    showBubble($(".qa_start_tutorial"), true);
+bind('.take_a_tutorial','click', function() {
+    var tutorial = $(this).data('tutorial');
+    if (tutorial == 'qa') {
+        showBubble($(".qa_start_tutorial"), true);
+    }
+    if (tutorial == 'feed') {
+        showBubble($(".feedtut_start_tutorial"), true);
+    }
 });
 
 bind('.continue_tutorial','click', function() {

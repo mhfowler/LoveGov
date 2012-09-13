@@ -486,6 +486,9 @@ def home(request, vals={}):
     viewer = vals['viewer']
     viewer.completeTask("L")
 
+    # feed tutorial
+    vals['feedtut_tutorial'] = not viewer.checkTask("I")
+
     # vals for page parts
     valsFirstLogin(vals)
     valsLikeMinded(vals)
