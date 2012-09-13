@@ -3,25 +3,16 @@
 {% block introduction_content %}
 
     <p>
-        You are currently on the presidential election page. On LoveGov you can see how you match with the candidates
-        running in elections that you vote in.
+        You're on the presidential election page. Here you can see your matches with presidential and vice presidential candidates
+        and stay up to date on the election.
     </p>
 
-    {% if not ABOVE_QUESTIONS_THRESHOLD %}
+    {% comment %}
+    <p>
+        Every election on LoveGov has its own page where you can raise awareness about related causes, and create/answer questions about the key issues.
+    </p>
+    {% endcomment %}
 
-        {% if lgpoll_progress.completed == 0 %}
-            <p> The red number to the right of the candidates profile pictures below should be zero right now. This
-                number is zero because you haven't answered any questions from the lovegov poll yet. Once you
-                answer some questions match percentages will show how closely your views agree with that person.
-            </p>
-        {% else %}
-
-        {% endif %}
-
-        <p>
-            To answer questions and see your matches update, click <a class="first_answer_questions dummy_link"> here. </a>
-        </p>
-
-    {% endif %}
+    {% include 'site/pages/dismissible_headers/introduction_questions_warning.html' %}
 
 {% endblock %}

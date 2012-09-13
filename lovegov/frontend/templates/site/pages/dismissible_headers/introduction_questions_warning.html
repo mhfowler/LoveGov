@@ -1,0 +1,17 @@
+{% if not ABOVE_QUESTIONS_THRESHOLD %}
+
+    {% if lgpoll_progress.completed == 0 %}
+        <p>
+            Right now your matches are 0% because you haven’t answered any questions.
+            We recommend that you <a class="first_answer_questions dummy_link">answer 15 questions</a> to get a baseline for your matches.
+        </p>
+    {% else %}
+        {% comment %}
+        <p>
+            You have answered {% include 'site/pages/qa/poll_completed_num.html' with poll=lgpoll poll_progress=lgpoll_progress %} question{{ lgpoll_progress.completed|pluralize }} from the LoveGov poll.
+            We recommend that you <a class="first_answer_questions dummy_link">answer at least 15 questions</a> to get well-rounded matches.
+        </p>
+        {% endcomment %}
+    {% endif %}
+
+{% endif %}

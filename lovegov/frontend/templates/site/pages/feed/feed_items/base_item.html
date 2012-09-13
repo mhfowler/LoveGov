@@ -2,11 +2,11 @@
 {% load customtags %}
 {% load macros %}
 
-<div class="feed-item-wrapper">
+<div class="feed-item-wrapper{% if first_item %} feedtut_tutorial_item {% endif %}">
 
-    <div class="above-rule-line">
+    <div class="above-rule-line feedtut_feed_item_parent ">
 
-        <div class="left-part">
+        <div class="left-part feedtut_hearts_parent">
             {% macro hearts_rank content my_vote %}
                 <div class="item-ranking" data-c_id="{{ content.id }}">
                     <div class="heart-plus heart_plus heart_button{% if my_vote == 1 %} clicked{% endif %}"></div>
@@ -19,7 +19,7 @@
 
         <div class="main-part">
             {% macro feed_title content %}
-                <div class="group-posted-to">
+                <div class="group-posted-to feedtut_posted_to_parent">
                     {% with posted_to=content.posted_to %}
                         <a href="{{ posted_to.get_url }}" class="posted-to-link"> {{ posted_to.get_name }} </a>
                     {% endwith %}
@@ -60,7 +60,7 @@
                             {% include 'site/pieces/avatar.html' with user=creator height="30" width="30" %}
                         </a>
 
-                        <div class="name-and-submitted">
+                        <div class="name-and-submitted feedtut_creator_parent">
                             <a href="{{ creator.get_url }}" class="name"> {{ creator.get_name }} </a>
                             <div class="submitted"> {{ content.created_when|naturaltime }}</div>
                         </div>

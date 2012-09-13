@@ -1005,7 +1005,7 @@ bind(".like_minded_link", "click", null, function(event) {
 
 bind(null, "click", null, function(event) {
     var click_id = event.target.id;
-    if ((click_id != "like_minded_link_id") && (click_id != "like_minded_checkbox_id")) {
+    if (click_id.indexOf("like_minded_link_id")==-1) {
         $(".like_minded_header_dialogue").hide();
     }
 });
@@ -3038,6 +3038,9 @@ function updateStatsObject(stats) {
     }
     if (object == 'not_enough_questions_warning') {
         data['of_what'] = stats.data('of_what');
+    }
+    if (object == 'poll_completed_num') {
+        data['p_id'] = stats.data('p_id');
     }
     action({
         data: data,
