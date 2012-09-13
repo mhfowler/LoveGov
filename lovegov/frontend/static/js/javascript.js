@@ -1043,13 +1043,14 @@ function removeType(type) {
 bind(".feed_button" , "click" , null , function(event) {
     event.preventDefault();
     var button = $(this);
-    var container;
+    var container = button.parents(".feed_main");
+    /*
     if (button.parent().hasClass(".feed_main")) {
         container = button.parents(".feed_main");
     }
     else {
         container = button.closest(".home_focus").find(".feed_main");
-    }
+    }*/
     refreshFeed(container);
 });
 
