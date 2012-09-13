@@ -1305,3 +1305,8 @@ def state(request, state, vals={}):
     if stategroup:
         return HttpResponseRedirect(stategroup.get_url())
     return HttpResponse("Requested state group does not exist.")
+
+# for use by popups - popup will close and redirect to given redirect page
+def popupRedirect(request, vals={}):
+    redirect = request.REQUEST.get('redirect') or '/legislation/'
+    return HttpResponse("<script>window.opener.location.href = \""+redirect+"\"; window.close();</script>");

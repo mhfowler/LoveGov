@@ -61,18 +61,23 @@ def getFollowRequestsModal(user,request,vals={}):
 
 def getFacebookShareModal(fb_share_id,fb_name,request,vals):
 
-    vals['fb_name'] = fb_name
-    vals['fb_image'] = "https://graph.facebook.com/" + str(fb_share_id) + "/picture?type=large"
-    vals['fb_share_id'] = fb_share_id
-    vals['default_facebook_message'] = "This is something worth sharing."
-
-    return ajaxRender('site/pages/friends/facebook_share_modal.html',vals,request)
+#    vals['fb_name'] = fb_name
+#    vals['fb_image'] = "https://graph.facebook.com/" + str(fb_share_id) + "/picture?type=large"
+#    vals['fb_share_id'] = fb_share_id
+#    vals['default_facebook_message'] = DEFAULT_FACEBOOK_MESSAGE
+#
+#    return ajaxRender('site/pages/friends/facebook_share_modal.html',vals,request)
+    return HttpResponseRedirect("http://www.facebook.com/dialog/send?display=popup"+
+                                "app_id="+settings.FACEBOOK_APP_ID+"&"+
+                                "name=LoveGov&"+
+                                "link=http://www.lovegov.com&"+
+                                "redirect_uri=http://www.lovegov.com/home")
 
 
 def getFacebookShareContentModal(share_content,request,vals):
 
     vals['share_content'] = share_content
-    vals['default_facebook_message'] = DEFAULT_FACEBOOK_MESSAGE
+    vals['default_facebook_message'] = "Look at this!"
 
     return ajaxRender('site/pages/feed/feed_items/facebook_share_content_modal.html',vals,request)
 

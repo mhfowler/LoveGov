@@ -34,7 +34,6 @@ bind( '.filter_box' , 'click' , null , function(event) {
 });
 
 function updateFeed() {
-    alert('uppity');
     $('div.feed-button').click();
 }
 
