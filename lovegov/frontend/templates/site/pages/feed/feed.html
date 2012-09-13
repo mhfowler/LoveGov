@@ -55,7 +55,9 @@
 
                         {% endif %}
 
-                        {% include 'site/pages/helper_bubbles/helper_robot.html' with tutorial="feed" %}
+                        {% if feedtut %}
+                            {% include 'site/pages/helper_bubbles/helper_robot.html' with tutorial="feed" %}
+                        {% endif %}
 
                     {% endblock %}
 
