@@ -4,6 +4,7 @@
  *
  ***********************************************************************************************************************/
 var rebind;
+var FACEBOOK_APP_ID = 184966154940334;
 function bindOnReload() {
 
     // things that get bound on items loaded by feeds and such (everything)
@@ -296,6 +297,7 @@ function ajaxReload(theurl, loadimg)
                     $('.main_content').css("top","0px");
                     $(".main_content").html(returned.html);
                     $('.main_content').show();
+                    bindOnReload();
                     rebind = returned.rebind;
                     path = returned.url;
                     bindOnReload();
@@ -2874,7 +2876,7 @@ function saveAnswer(stub) {
                 var old_height = stub.height();
                 stub.replaceWith(new_element);
                 stub = new_element;
-                new_element.find(".question_expanded_responses").show();
+        ew_element.find(".question_expanded_responses").show();
                 var new_height = new_element.height();
                 new_element.css('height', old_height);
                 new_element.animate({"height":new_height}, {"duration":200, "complete":function(){new_element.css("height", "auto");}});
@@ -3584,33 +3586,16 @@ function showTopicIcon(wrapper) {
 
 bind( '.facebook_share_button' , 'click' , null , function(e)
 {
-    var data = {
-        'fb_name' : $(this).data('fb_name'),
-        'fb_share_id' : $(this).data('fb_share_id')
-    };
 
-    getModal('facebook_share_modal' , data);
-});
-
-
-bind( '.facebook_share_submit' , 'click' , null , function(e)
-{
-    e.preventDefault();
-
-    var share_message = $(this).parents('.facebook_share_form').find('textarea[name="facebook_share_message"]').val();
+    var fb_name = $(this).data('fb_name');
     var fb_share_id = $(this).data('fb_share_id');
-    var link = $(this).data('fb_link');
 
-    var url = "/fb/action/?fb_action=share&fb_share_to=" + fb_share_id;
-    url += "&message=" + share_message;
-
-    if( link != null ) { url += "&fb_link=" + link; }
-
-    url += "&action_to_page=" + window.location.pathname;
-
-    window.location.href = url
-
+    // open share modal in new window
+    window.open('http://www.facebook.com/dialog/feed?app_id='+FACEBOOK_APP_ID+'&to='+fb_share_id+'&display=popup&name=LoveGov&link=http://www.lovegov.com&redirect_uri='+location.host+'/popup_redirect&description='+
+        'LoveGov is a political social network that personalizes politics. We are making it easy to stay informed and get involved.',
+        '_blank','width=450,height=300');
 });
+
 
 
 /***********************************************************************************************************************
