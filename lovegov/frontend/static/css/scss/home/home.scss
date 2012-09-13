@@ -15,15 +15,15 @@ div.like-minded-header-dialogue {
   display:none;
   @include border-radius(25px);
   position:absolute;
-  left: 3px;
-  top: 68px;
+  left: 0px;
+  top: 60px;
   z-index:1;
   background-color:white;
   padding:30px;
-  border:1px solid $light-gray;
-  width:750px;
+  border:1px solid $black;
+  width:950px;
   div.like-minded-header div.real-like-minded-header div.like-minded-top div.like-minded-description  {
-    width:500px;
+    width:600px;
   }
   div.like-minded-title span.group-num-members {
     margin-top:2px;
@@ -43,7 +43,7 @@ div.like-minded-header-dialogue {
   $triangle-size: 20px;
   span.triangle-wrapper {
     position:relative;
-    left: 65px;
+    left:658px;
     top: -29px;
     span.triangle {
       @include triangle('up', $white, $triangle-size + -1px);
@@ -53,7 +53,7 @@ div.like-minded-header-dialogue {
     }
     span.triangle-border {
       @extend span.triangle;
-      @include triangle('up', $light-gray, $triangle-size);
+      @include triangle('up', black, $triangle-size);
       top:-21px;
       right:19px;
     }

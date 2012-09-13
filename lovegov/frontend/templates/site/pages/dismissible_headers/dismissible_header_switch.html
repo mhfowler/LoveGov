@@ -1,6 +1,4 @@
-{% if dismissible_header == 'first_login' %}
-    {% include 'site/pages/home/introduction_home_header.html' %}
-{% elif dismissible_header == 'congress_teaser' and not compare_congress_task %}
+{% if dismissible_header == 'congress_teaser' and not compare_congress_task %}
     {% include 'site/pages/dismissible_headers/congress_header.html' %}
 {% elif dismissible_header == 'find_reps' %}
     {% if not viewer.temp_location %}
@@ -10,6 +8,4 @@
     {% if not poll_progress.finished %}
         {% include 'site/pages/dismissible_headers/lgpoll_progress_header.html' %}
     {% endif %}
-{% elif dismissible_header == 'engagement_intro_header' %}
-    {% include 'site/pages/dismissible_headers/engagement_intro_header.html' %}
 {% endif %}

@@ -59,13 +59,13 @@ def sendLoveGovEmailHelper(user_profile, subject, email_vals, email_template, em
 
 
 def sendConfirmationEmail(user_profile, verified=False):
-    subject = "Confirmation Email"
+    subject = "LoveGov Confirmation Email"
     email_vals = {'verified':verified}
     email_template = 'emails/lovegov/welcome.html'
     sendLoveGovEmailHelper(user_profile, subject, email_vals, email_template)
 
 def sendPasswordRecoveryEmail(user_profile, recovery_url):
-    subject = "Password Recovery"
+    subject = "LoveGov Password Recovery"
     email_vals = {'recovery_url':recovery_url}
     email_template = 'emails/lovegov/password_change.html'
     sendLoveGovEmailHelper(user_profile, subject, email_vals, email_template)

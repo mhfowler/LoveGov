@@ -1,0 +1,24 @@
+<div class="stats_object" data-object="not_enough_questions_warning" data-of_what="{{ of_what }}">
+    <div class="what-would-be-wrapper what_would_be_wrapper {% if ABOVE_QUESTIONS_THRESHOLD %} strong-match {% endif %}">
+        {% if not ABOVE_QUESTIONS_THRESHOLD %}
+            <div class="what-would-be-text">
+                <span class="bold-part"> You haven't answered enough questions to get strong matches yet. </span> Answer questions to improve your matches, or click <a class="normal_feed_button"> here </a> to hide the questions
+                and see the feed of {% if of_what %} {{ of_what }} {% else %} content {% endif %} that would normally be here.
+            </div>
+        {% else %}
+            <div class="what-would-be-text strong-match">
+                You've answered enough questions that your matches ought to tell you something. Your match strength will continue
+                to improve as you answer more <a href="/questions/"> questions </a>.
+            </div>
+        {% endif %}
+        <span class="questions-progress">
+            {% if not ABOVE_QUESTIONS_THRESHOLD %}
+                {{ lgpoll_progress.completed }} / 15
+            {% else %}
+                {{ lgpoll_progress.completed }} / {{ lgpoll_progress.total }}
+            {% endif %}
+        </span>
+        <a class="what-would-be-x what_would_be_x"> X </a>
+        <div style="clear:both;"></div>
+    </div>
+</div>

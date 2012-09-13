@@ -7,12 +7,14 @@
 
     {% comment %}<div class="navbar-divider-line"></div> {% endcomment %}
 
+    {% comment %}
     <div class="navbar-section navbar_section groups_section">
         <a class="home_link dummy_link left_link section_title" href="/home/" data-sequence="{{ sequence|increment }}">
             <span class="lil-goob"></span>
             <div class="navbar_title navbar-title"> Home </div>
         </a>
     </div>
+    {% endcomment %}
 
     <div class="navbar-section navbar_section groups_section">
         <a class="home_link dummy_link left_link section_title" href="/my_groups/" data-sequence="{{ sequence|increment }}">
@@ -45,7 +47,6 @@
         </div>
     </div>
 
-    {% comment %}
     <div class="navbar-section navbar_section discover_section">
         <a class="home_link dummy_link left_link section_title" href="/match/" data-sequence="{{ sequence|increment }}">
             <span class="lil-goob"></span>
@@ -57,7 +58,6 @@
             {% include 'site/pages/home/navbar_snippet.html' with section_url="/friends/" section_title="Match with Friends" %}
         </div>
     </div>
-    {% endcomment %}
 
     {% comment %}
     <div class="navbar-section navbar_section">
@@ -96,8 +96,10 @@
         </a>
     </div>
 
+    {% comment %}
     <!-- lg poll progress, if not finished -->
     {% include 'site/pages/home/lgpoll_progress_snippet.html' %}
+    {% endcomment %}
 
     <!-- topic stat box -->
     {% comment %}

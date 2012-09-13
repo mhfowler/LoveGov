@@ -2,12 +2,28 @@
 
 {% block dismissible_content %}
 
-    {% block introduction_content %}
-        <h4> introduction content! </h4>
-    {% endblock %}
+    <div class="introduction-header">
+
+        <div class="where-am-i">
+
+            <div class="where-am-i-header">
+                <a href="/lovegov/"> <div class="lovegov-robot tooltip-top" title="I'm a robot, that's here to help you."></div> </a>
+                <div class="where-am-i-text"> {% if intro_title %} {{ intro_title }} {% else  %} Where Am I? {% endif %} </div>
+                <a class="hide_intros hide-intros"> (hide all intros forever) </a>
+            </div>
+            <div class="where-am-i-content">
+                {% block introduction_content %}
+
+                {% endblock %}
+            </div>
+        </div>
+
+        {% include 'site/pages/dismissible_headers/get_started.html' %}
+
+    </div>
 
     <div class="expand-info dismissible_x">
-        <p class="expand-text"> collapse introduction </p>
+        <p class="expand-text">  &#8211 collapse introduction </p>
     </div>
 
 {% endblock %}

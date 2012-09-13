@@ -5,6 +5,21 @@ from lovegov.modernpolitics.backend import *
 from lovegov.base_settings import UPDATE
 
 #-----------------------------------------------------------------------------------------------------------------------
+# vals for likeminded filter
+#-----------------------------------------------------------------------------------------------------------------------
+def valsLikeMinded(vals):
+    viewer = vals['viewer']
+    like_minded = viewer.getLikeMindedGroup()
+    if like_minded:
+        members = like_minded.members.all()
+        vals['num_members'] = len(members)
+        vals['members'] = members
+        vals['num_processed'] = like_minded.processed.count()
+    vals['like_minded'] = like_minded
+
+    valsQuestionsThreshold(vals)
+
+#-----------------------------------------------------------------------------------------------------------------------
 # sets vals whether viewer is over or under question answering threshold
 #-----------------------------------------------------------------------------------------------------------------------
 def valsQuestionsThreshold(vals):
@@ -496,21 +511,13 @@ def valsDismissibleHeader(request, vals):
 
     viewer = vals['viewer']
 
-    if not viewer.checkTask("L"):
-        header = 'engagement_intro_header'
-    else:
-        header = random.choice(DISMISSIBLE_HEADERS)
-    header = 'engagement_intro_header'
+    if viewer.checkTask("H"):
+        return None
 
+    header = random.choice(DISMISSIBLE_HEADERS)
     vals['dismissible_header'] = header
 
-    if header == 'first_login':
-        valsFirstLogin(vals)
-
-    elif header == 'engagement_intro_header':
-        pass
-
-    elif header == 'congress_teaser':
+    if header == 'congress_teaser':
         vals['compare_congress_task'] = congress_task = viewer.checkTask("C")
         if not congress_task:
             congress = Group.lg.get_or_none(alias="congress")
@@ -542,20 +549,24 @@ def valsDismissibleHeader(request, vals):
 def valsFirstLogin(vals):
 
     viewer = vals['viewer']
+    vals['hide_intros'] = hide_intros = viewer.checkTask("H")
 
-    vals['presidential_task'] = presidential_task = viewer.checkTask("P")
-    vals['reps_task'] = reps_task = viewer.checkTask("F")
-    vals['like_minded_task'] = like_minded_task = viewer.checkTask("L")
-    vals['join_groups_task'] = join_groups_task = viewer.checkTask("J")
+    if not hide_intros:
+        vals['presidential_task'] = presidential_task = viewer.checkTask("P")
+        vals['reps_task'] = reps_task = viewer.checkTask("F")
+        vals['like_minded_task'] = like_minded_task = viewer.checkTask("L")
+        vals['join_groups_task'] = join_groups_task = viewer.checkTask("J")
 
-    vals['explore_feed_task'] = explore_feed_task = viewer.checkTask("E")
+        # if user has completed all matching tasks, they see explore feed task
+        if presidential_task and reps_task and like_minded_task and join_groups_task:
+            vals['completed_all_first_tasks'] = True
 
-    # if user has completed all matching tasks, they see explore feed task
-    if presidential_task and reps_task and like_minded_task and join_groups_task:
-        vals['completed_all_matching_tasks'] = True
+            vals['congratulations_task'] = congratulations_task = viewer.checkTask("W")
 
-        # if user has seen explore_feed_task, either we don't show intro header, or we show message saying your job is not done
-        if explore_feed_task:
-            vals['completed_all_tasks'] = True
-            viewer.completeTask('A')
+            # if completed congratulations task (clicking on see congratulations), then show congratulations message and get started header
+            if congratulations_task:
+                vals['see_congratulations'] = True
+                viewer.completeTask("W")
+                viewer.completeTask("H")    # and complete hide task, because no get started header from now on
 
+    vals['first_questions'] = not viewer.checkTask("Q")
