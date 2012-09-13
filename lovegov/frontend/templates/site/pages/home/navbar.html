@@ -24,10 +24,10 @@
             {% for x in group_subscriptions %}
                 {% include 'site/pages/home/navbar_snippet.html' %}
             {% endfor %}
-            {% comment %}
             <a href="#" class="create-link create_group_link"> + Create a Group </a>
-            {% endcomment %}
+            {% comment %}
             <a href="/groups/" class="create-link"> + Find Groups </a>
+            {% endcomment %}
         </div>
     </div>
 
@@ -40,10 +40,10 @@
             {% for x in election_subscriptions %}
                 {% include 'site/pages/home/navbar_snippet.html' %}
             {% endfor %}
-            {% comment %}
                 <a href="#" class="create-link create_election_link"> + Create an Election </a>
-            {% endcomment %}
+            {% comment %}
             <a href="/elections/" class="create-link"> + Find Elections </a>
+            {% endcomment %}
         </div>
     </div>
 
