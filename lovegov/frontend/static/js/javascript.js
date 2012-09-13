@@ -31,6 +31,9 @@ function bindOnReload() {
     // misc
     bindNotificationsDropdownClickOutside();
 
+    // like minded computing
+    likeMindedComputing();
+
     switch (rebind) {
 
         case "home": initHomePage(); break;
@@ -3936,6 +3939,13 @@ function findNewLikeMinded() {
     }
 }
 
+function likeMindedComputing() {
+    if (computing_like_minded) {
+        $(".find_loading").show();
+        $(".computing_result").show();
+    }
+}
+
 bind('.clear_like_minded' , 'click' , null , function(e)
 {
     $(".button_result").hide();
@@ -4349,7 +4359,7 @@ bind('.see_congratulations','click', function() {
 
 bind('.first_answer_questions','click', function() {
     $('body').animate({
-        scrollTop: 550
+        scrollTop: 470
     }, 1000);
 });
 

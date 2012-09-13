@@ -306,20 +306,22 @@ div.first-login-header {
   }
 
   div.get-started {
-    margin-top:30px;
-    margin-left:75px;
+    margin-top:100px;
+    margin-left:50px;
     left:0px;
   }
 
   div.are-you {
     //width: 460px;
-    width:100%;
+    width: 556px;
     float: left;
-    margin-top: 30px;
+    margin-top: 14px;
     margin-bottom: 30px;
+    padding-left: 49px;
+    height: 142px;
     //margin-left: 65px;
     div.are-you-wrapper {
-      margin-bottom:5px;
+      margin-bottom:19px;
       @include fontSize(16px);
       color:$dark-gray;
       a.are-you-link {

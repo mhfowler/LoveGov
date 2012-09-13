@@ -2618,6 +2618,7 @@ def getFBInviteFriends(request, vals={}):
 #-----------------------------------------------------------------------------------------------------------------------
 def findLikeMinded(request, vals={}):
     viewer = vals['viewer']
+    num_answers = viewer.num_answers
     new_members, num_processed = viewer.findLikeMinded()
     vals['display'] = 'avatar'
     vals['users'] = new_members
