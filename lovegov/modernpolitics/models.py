@@ -1161,7 +1161,7 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
     anonymous = models.ManyToManyField(AnonID)
     # first login experience
     first_login = models.IntegerField(default=1)             # 1 means just registered, after that 0
-    first_login_tasks = models.CharField(max_length=10, default="", blank=True)
+    first_login_tasks = models.CharField(max_length=50, default="", blank=True)
     num_logins = models.IntegerField(default=0)
     # background tasks
     background_tasks = models.CharField(max_length=10, default="", blank=True)
