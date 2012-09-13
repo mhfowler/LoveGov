@@ -4,7 +4,24 @@
 
 @import "compass";
 
+/* feedtut tutorial */
+div.feedtut_start_tutorial_parent {
+  div.feedtut_start_tutorial {
+    position: absolute;
+    top: 98px;
+    padding-left: 20px;
+    padding-right: 20px;
+    left: 65%;
+    width: 300px;
+    font-size: 16px;
+    div.helper-bubble-arrow-wrapper.left {
+      left:-4%;
+    }
+  }
+}
 
+
+/* feed */
 $button-top-padding: 5px;
 $button-side-padding: 12px;
 
