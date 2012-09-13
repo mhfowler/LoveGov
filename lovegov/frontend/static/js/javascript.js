@@ -2880,7 +2880,7 @@ function saveAnswer(stub) {
                 var old_height = stub.height();
                 stub.replaceWith(new_element);
                 stub = new_element;
-        ew_element.find(".question_expanded_responses").show();
+                new_element.find(".question_expanded_responses").show();
                 var new_height = new_element.height();
                 new_element.css('height', old_height);
                 new_element.animate({"height":new_height}, {"duration":200, "complete":function(){new_element.css("height", "auto");}});
