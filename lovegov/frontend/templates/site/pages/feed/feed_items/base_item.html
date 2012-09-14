@@ -46,9 +46,9 @@
                         {{ content.num_comments }} comment {{ content.num_comments|pluralize }}
                     </a>
                     {% if viewer.facebook_id %}
-                    <a class="share-button facebook_share_content_button" data-c_id="{{ content.id }}">
-                        share +
-                    </a>
+                        <a class="share-button facebook_share_content_button" data-c_id="{{ content.id }}">
+                            share +
+                        </a>
                     {% endif %}
                     <a class="pin-button pin_content" data-c_id="{{ content.id }}">
                         pin
@@ -84,9 +84,11 @@
                     {% include 'site/pages/feed/feed_items/top_comment.html' %}
                 {% endwith %}
             {% elif content.main_image or content.link_screenshot %}
+                {% comment %}
                 <div class="right-image-wrapper">
                     {% include 'site/pieces/avatar.html' with user=content height="100" width="100" hoveroff=1 %}
                 </div>
+                {% endcomment %}
             {% endif %}
         {% endblock %}
     </div>
