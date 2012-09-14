@@ -15,7 +15,7 @@
 {% endcomment %}
 
 {% for x in feed_items %}
-    {% with content=x.0.downcast my_vote=x.1 first_item=forloop.first %}
+    {% with content=x.0 my_vote=x.1 first_item=forloop.first %}
         {% if content.type == "N" %}
             {% include "site/pages/feed/feed_items/news_item.html" %}
         {% elif content.type == "P" %}

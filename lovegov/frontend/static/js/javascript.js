@@ -3715,7 +3715,7 @@ bind('.sign_button' , 'click' , null , function(e)
 {
     var p_id = $(this).data('p_id');
     var signers_sidebar = $(this).parents(".signers_sidebar");
-    var sign_areas = $(".sign_area");
+    var sign_areas = $('.sign_area[data-p_id="' + p_id + '"]');
     action({
             data: {'action': 'signPetition', 'p_id':p_id},
             success: function(data) {

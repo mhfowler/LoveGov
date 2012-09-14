@@ -1,4 +1,4 @@
-<div class="sign-area sign_area">
+<div class="sign-area sign_area" data-p_id="{{ petition.id }}">
     {% if petition.finalized %}
         <a class="action-button sign_button dummy_link" data-p_id="{{ petition.id }}"
                 {% if i_signed %} style="display:none" {% endif %}> sign </a>
@@ -8,8 +8,12 @@
             <a class="action-button finalize_button dummy_link" data-p_id="{{ petition.id }}"> finalize </a>
         {% endif %}
         <div class="not-finalized">
-            This petition has not been finalized by its author. Before it's finalized a petition can be discussed and edited by
-            its author, but no one can sign it.
+            {% if not in_feed_sign %}
+                This petition has not been finalized by its author. Before it's finalized a petition can be discussed and edited by
+                its author, but no one can sign it.
+            {% else %}
+                not finalized
+            {% endif %}
         </div>
     {% endif %}
     <div style="clear:both;"></div>
