@@ -24,7 +24,8 @@ def sendHTMLEmail(subject, email_sender, email_recipients, email_html=None, temp
     emailHelper(subject, email_html, email_sender, email_recipients)
 
 def emailHelper(subject, email_html, email_sender, email_recipients):
-    msg = EmailMessage(subject, email_html, email_sender, email_recipients)
+    headers = {'From':"LoveGov"}
+    msg = EmailMessage(subject, email_html, email_sender, email_recipients, headers=headers)
     msg.content_subtype = "html"
     try:
         msg.send()
@@ -93,6 +94,8 @@ def sendLaunchEmail(user_profile):
     email_vals = {}
     email_template = 'emails/lovegov/launch.html'
     sendLoveGovEmailHelper(user_profile, subject, email_vals, email_template)
+
+
 
 
 def sendTeamEmail(subject, email_html):
