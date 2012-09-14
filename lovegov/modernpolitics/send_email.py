@@ -148,8 +148,7 @@ def sendTeamClaimedProfileEmail(claimed):
 # batch emails
 #-----------------------------------------------------------------------------------------------------------------------
 def sendLaunchEmailBatch():
-    #to_send = UserProfile.objects.filter(ghost=False)
-    to_send = UserProfile.objects.filter(developer=True)
+    to_send = UserProfile.objects.filter(ghost=False)
     count = 0
     for x in to_send:
         try:
