@@ -3003,7 +3003,7 @@ function updateMatch(match) {
     var display = match.data('display');
     var to_compare_alias = match.data('to_compare_alias');
     action({
-        data: {'action':'updateMatch', 'to_compare_alias':to_compare_alias, 'display':display},
+        data: {'action':'updateMatch', 'to_compare_alias':to_compare_alias, 'display':display, 'log-ignore':true},
         success: function(data) {
             var returned = eval('(' + data + ')');
             var new_element = $(returned.html);

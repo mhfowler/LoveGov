@@ -296,12 +296,16 @@ div.feed-main
           margin-top: 11px;
         }
 
-        a.qa-help {
+        a.help-link {
           float: left;
           margin-left: 34px;
           margin-top: 8px;
           font-size: 16px;
           font-style: italic;
+          color:$dark-gray;
+          &:hover {
+            color:$gray;
+          }
         }
 
         a.help-robot {
@@ -408,7 +412,14 @@ div.feed-main
 }
 
 
-
+div.feed-item-wrapper.no-top-comment {
+  div.above-rule-line {
+    width:1000px;
+    div.main-part {
+      width:900px;
+    }
+  }
+}
 
 /* feed items */
 div.feed-item-wrapper {
@@ -602,6 +613,9 @@ a.content-title {
   line-height:32px;
   position:relative;
   top:1px;
+  width: 100%;
+  overflow: hidden;
+  float: left;
   &:hover {
     color:$black;
   }

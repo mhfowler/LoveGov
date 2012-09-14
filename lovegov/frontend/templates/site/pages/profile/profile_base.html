@@ -5,7 +5,11 @@
     <div class="top-left">
 
         <a href="{{ profile.get_url }}"> <span class="name"> {{ profile.get_name }} </span> </a>
-        {% if viewer.politician %} <span class="election-icon"></span> {% endif %}
+
+        {% comment %}
+        {% if profile.politician %} <span class="election-icon-wrapper"><span class="election-icon"></span> </span>{% endif %}
+        {% endcomment %}
+
         {% with state=profile.location.state %}
             <span class="state"> {{ profile.political_title }}{% if state %},{% endif %} </span>
             <span class="state"> {% if state %}<a href="/state/{{ state }}"> {{ profile.location.state }}</a>{% endif %}</span>

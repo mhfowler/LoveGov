@@ -3,6 +3,16 @@
 @import 'master-mixins';
 @import "compass";
 
+/* password reset */
+input.password-reset-input {
+  margin-bottom:15px;
+}
+input.change-password-button {
+  float:right;
+  @include div-button-padding($radius:7px,$padding:8px,$font-size:14px,$color:white,$background-color:$red,$hover-color:$red-light);
+  font-size:18px;
+}
+
 /* new register form */
 div.new-register-form {
   width:400px;

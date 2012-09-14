@@ -270,6 +270,7 @@ div.content-detail-sidebar {
       top:-1px;
     }
     &:hover {
+      text-decoration:none;
       div.back-container {
         background-color:$gray;
       }
