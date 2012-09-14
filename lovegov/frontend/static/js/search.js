@@ -6,7 +6,8 @@ bind('div.search input', 'keydown', function(e) {
             var val = $(this).val();
             if(val) {
                 clearTimeout(searchTimeout);
-                window.location = '/search/' + val;
+                stopSearch();
+                homeReload('/search/' + val);
             }
             break;
         // Up
@@ -16,6 +17,11 @@ bind('div.search input', 'keydown', function(e) {
         // Down
         case 40:
             e.stopPropagation();
+            break;
+        // Backspace
+        case 8:
+            e.stopPropagation();
+            $("div.search div.search-dropdown").fadeOut();
             break;
     }
 
@@ -74,16 +80,17 @@ function searchVal(selector) {
 }
 
 
-var searchLock = false;
+var lastSearch = '';
 // Does the actual search
 function search(str) {
-    if(searchLock || str=='') return;
-    searchLock = true;
+    lastSearch = str;
     $('<img src="/static/images/ajax-spinner.gif" class="loading-gif">').insertBefore('div.search img.mag-glass');
     action({
         data: {'action':'searchAutoComplete','string':str},
         success: function(data)
         {
+            // ensure desired search hasn't changed
+            if(lastSearch!=str) return;
             var obj = eval('(' + data + ')');
             var dropdown = $("div.search div.search-dropdown");
             dropdown.html(obj.html);
@@ -91,8 +98,11 @@ function search(str) {
         },
         timeout: 10000,
         complete: function() {
-            $('div.search img.loading-gif').remove();
-            searchLock = false;
+            stopSearch();
         }
     });
+}
+
+function stopSearch() {
+    $('div.search img.loading-gif').remove();
 }
