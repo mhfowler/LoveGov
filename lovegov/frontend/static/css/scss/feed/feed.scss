@@ -565,6 +565,7 @@ div.item-bottom {
   // float left
   a.created-avatar {
     float:left;
+    margin-top:4px;
   }
   div.name-and-submitted {
     margin-left:8px;
@@ -640,7 +641,9 @@ div.feed-item-wrapper {
 
   div.news-wrapper {
     a.feed-news-link {
+      overflow:hidden;
       position: relative;
+      width:400px;
       top: -2px;
       color:$gray;
       //float:left;

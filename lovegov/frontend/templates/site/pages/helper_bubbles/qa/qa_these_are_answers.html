@@ -10,7 +10,11 @@
         <a class="continue_tutorial" data-next="qa_only_unanswered"> only-unanswered </a> filter is checked.
     </p>
 
-    <p> Click <a class="continue_tutorial" data-next="qa_privacy"> here </a> to continue the tutorial. </p>
+    <div class="switch-buttons">
+        <a class="continue_tutorial previous-button" data-next="qa_this_is_title">previous</a>
+        <span class="tutorial-progress"> 2/5 </span>
+        <a class="continue_tutorial next-button" data-next="qa_privacy">next</a>
+        <div style="clear:both;"></div>
+    </div>
 
-    <span class="qa-tutorial-progress"> 2/7 </span>
 {% endblock %}

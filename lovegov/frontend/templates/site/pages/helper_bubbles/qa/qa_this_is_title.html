@@ -1,11 +1,16 @@
 {% extends 'site/pages/helper_bubbles/helper_bubble.html' %}
 
 {% block helper_text %}
-    <p> This is the actual question. As a user of LoveGov you can create your own questions. If a question
-    seems biased or poorly worded, just don't answer it. Questions which more people answer
-    will get promoted and be seen by more people. </p>
+    <p> This is the actual question. Except for the LoveGov poll, questions are created by other users,
+        and you can create your own questions.</p>
+    <p> If a question
+        seems biased or poorly worded, don't answer it. Questions which more people answer
+        will get promoted and be seen by more people.
+    </p>
+    <div class="switch-buttons">
+        <span class="tutorial-progress"> 1/5 </span>
+        <a class="continue_tutorial next-button" data-next="qa_these_are_answers">next</a>
+        <div style="clear:both;"></div>
+    </div>
 
-    <p> Click <a class="continue_tutorial" data-next="qa_these_are_answers"> here </a> to continue the tutorial. </p>
-
-    <span class="qa-tutorial-progress"> 1/7 </span>
 {% endblock %}
