@@ -159,6 +159,7 @@ bind("div.create-modal div.save", "click", function(e) {
     }
 
     if(section.hasClass('news')) {
+        invalid = invalid || !validField('input.title', 'title', form);
         invalid = invalid || !validField('input.link', 'link', form);
     }
 
@@ -201,8 +202,8 @@ bind("div.create-modal div.save", "click", function(e) {
     if(section.hasClass('news')) {
         var screenshot = $('.news_link_selected').attr("src");
         form.append('<input type="hidden" name="screenshot" value="'+screenshot+'">');
-        var title = $('#news-input-title').val();
-        form.append('<input type="hidden" name="title" value="'+title+'">');
+        var link_title = $('#news-input-title').val();
+        form.append('<input type="hidden" name="link_title" value="'+link_title+'">');
         var link_summary = $('#news-link-generation-description').text();
         form.append('<input type="hidden" name="link_summary" value="'+link_summary+'">');
     }

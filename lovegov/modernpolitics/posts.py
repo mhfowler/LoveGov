@@ -2373,6 +2373,7 @@ def createContent(request, vals={}):
     title = request.POST.get('title')
     full_text = request.POST.get('full_text')
     post_to = request.POST.get('post_to')
+    link_title = request.POST.get('link_title')
     link_summary = request.POST.get('link_summary')
     group = None
     if post_to:
@@ -2434,9 +2435,11 @@ def createContent(request, vals={}):
             newc = News(link=link, posted_to=group)
             if full_text:
                 newc.link_summary = full_text
+            if link_title:
+                newc.link_title = link_title
             if link_summary:
                 newc.summary = link_summary
-            if title and title!='undefined':
+            if title:
                 newc.title = title
             else:
                 newc.title = link
