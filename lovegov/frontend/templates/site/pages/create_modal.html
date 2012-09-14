@@ -80,7 +80,7 @@
                 Share an article with a relevant group.
             </p>
             <div class="form">
-                {% usemacro textbox "Link:" "link" "link" "" %}
+                {% usemacro textbox "Link:" "link" "link" "Enter a URL beginning with http:// or www" %}
                 {% usemacro link-image %}
                 {% usemacro textbox "Title:" "title" "title" "" %}
                 {% usemacro post-to viewerSubscriptions selected_group %}
@@ -125,8 +125,10 @@
                                 <span class="add-source">add source</span>
                             </span>
                             <div class="label padded">
-                                <span class="topic_button tooltip-top chosen" data-t_alias="{{ general_t.alias }}" title="{{ general_t.topic_text }}">
-                                    {% include 'site/pieces/topic_icon.html' with topic=general_t width="30" height="30" %}
+                                <span class="tooltip-left choose-topic-tip" data-trigger="manual" title="Choose a topic for this question">
+                                    <span class="topic_button tooltip-top chosen" data-t_alias="{{ general_t.alias }}" title="{{ general_t.topic_text }}">
+                                        {% include 'site/pieces/topic_icon.html' with topic=general_t width="30" height="30" %}
+                                    </span>
                                 </span>
                                 <div class="qt-select">
                                     <span class="triangle-border"></span>

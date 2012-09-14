@@ -55,6 +55,11 @@ bind("div.create-modal div.selection", "click", function(e) {
     if(selection=='poll') {
         if(getNumQuestions()==0) {
             $('div.create-modal div.add-question').click();
+            $('div.create-modal div.questions span.choose-topic-tip').tooltip('show');
+            setTimeout(function(e) {
+                $('div.create-modal div.questions span.choose-topic-tip').tooltip('hide');
+            }, 3000);
+
         }
     }
 });
