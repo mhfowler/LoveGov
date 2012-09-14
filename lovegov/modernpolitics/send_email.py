@@ -148,15 +148,18 @@ def sendTeamClaimedProfileEmail(claimed):
 # batch emails
 #-----------------------------------------------------------------------------------------------------------------------
 def sendLaunchEmailBatch():
+    from lovegov.modernpolitics.helpers import enc
     to_send = UserProfile.objects.filter(ghost=False)
+    exclude_ids = range(0,4822)
+    to_send = to_send.exclude(id__in=exclude_ids)
     count = 0
     for x in to_send:
         try:
             sendLaunchEmail(x)
             count += 1
-            print "+II+ " + x.get_name()
+            print "+II+ " + enc(x.get_name())
         except:
-            print '+EE+ ERROR SENDING TO: ' + x.get_name()
+            print '+EE+ ERROR SENDING TO: ' + enc(x.get_name())
     return count
 
 
