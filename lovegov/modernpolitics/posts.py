@@ -1686,7 +1686,7 @@ def getFeed(request, vals):
 
     feed_ranking = request.POST['feed_rank']
     feed_types = json.loads(request.POST['feed_types'])
-    like_minded = request.POST['like_minded']
+    like_minded = request.POST.get('like_minded')
     feed_start = int(request.POST['feed_start'])
     path = request.POST['path']
     alias = path.replace("/","")
@@ -1753,7 +1753,9 @@ def getQuestions(request, vals):
     vals['question_items']= question_items
     vals['to_compare'] = to_compare
     vals['default_display'] = request.POST.get('default_display')
-    vals['qa_tutorial'] = not viewer.checkTask("Q")
+
+    if not to_compare:
+        vals['qa_tutorial'] = not viewer.checkTask("Q")
 
     html = ajaxRender('site/pages/qa/feed_helper_questions.html', vals, request)
 

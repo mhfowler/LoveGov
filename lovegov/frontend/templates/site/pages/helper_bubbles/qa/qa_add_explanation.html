@@ -2,12 +2,18 @@
 
 {% block helper_text %}
     <p>
-        If neither answer exactly captures your view, choose the answer which is closest to your view,
-        and then add an explanation which other users will see when they browse your public responses.
+        Add an explanation to your response if neither answer captures exactly how you feel.
+    </p>
+    <p>
+        Your explanation will appear as a comment on the question and will
+        also be visible to other users when they are browsing your responses.
     </p>
 
-    <p> Click <a class="continue_tutorial" data-next="qa_importance"> here </a> to continue the tutorial. </p>
-
-    <span class="qa-tutorial-progress"> 4/5 </span>
+    <div class="switch-buttons">
+        <a class="continue_tutorial previous-button" data-next="qa_privacy">previous</a>
+        <span class="tutorial-progress"> 4/5 </span>
+        <a class="continue_tutorial next-button" data-next="qa_importance">next</a>
+        <div style="clear:both;"></div>
+    </div>
 
 {% endblock %}

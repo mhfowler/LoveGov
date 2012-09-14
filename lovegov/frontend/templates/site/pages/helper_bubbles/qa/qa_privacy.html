@@ -8,12 +8,15 @@
     </p>
 
     <p> If your answer is private then it will appear to others as though you didn't answer this question.
-        Your answer will also be ignored in the calculation when other people match themselves with you.
-        However your private responses still contribute to the match percentages that you see.
+        Your private responses still contribute to the match percentages that you see but will be
+        ignored in the calculation when other people match themselves with you.
     </p>
 
-    <p> Click <a class="continue_tutorial" data-next="qa_add_explanation"> here </a> to continue the tutorial. </p>
-
-    <span class="qa-tutorial-progress"> 3/5 </span>
+    <div class="switch-buttons">
+        <a class="continue_tutorial previous-button" data-next="qa_these_are_answers">previous</a>
+        <span class="tutorial-progress"> 3/5 </span>
+        <a class="continue_tutorial next-button" data-next="qa_add_explanation">next</a>
+        <div style="clear:both;"></div>
+    </div>
 
 {% endblock %}

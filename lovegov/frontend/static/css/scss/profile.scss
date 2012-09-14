@@ -26,14 +26,20 @@ div.profile-page {
       }
     }
 
-    span.election-icon {
-      @include staticImage('/images/create/election_blue.png');
-      width:60px;
-      height:60px;
-      background-size:60px 60px;
-      background-repeat:no-repeat;
+    span.election-icon-wrapper {
+      position:relative;
       float:left;
+      width:60px;
+      height:10px;
       margin-left:10px;
+      span.election-icon {
+        @include staticImage('/images/create/election_blue.png');
+        width:60px;
+        height:60px;
+        background-size:60px 60px;
+        background-repeat:no-repeat;
+        position:absolute;
+      }
     }
 
     span.state {
@@ -54,6 +60,7 @@ div.profile-page {
       float:left;
       margin-left:8px;
       margin-top:6px;
+      margin-right: 15px;
       color:$red;
       @include fontSize(16px);
     }
