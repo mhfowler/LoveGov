@@ -1686,7 +1686,7 @@ def getFeed(request, vals):
 
     feed_ranking = request.POST['feed_rank']
     feed_types = json.loads(request.POST['feed_types'])
-    like_minded = request.POST['like_minded']
+    like_minded = request.POST.get('like_minded')
     feed_start = int(request.POST['feed_start'])
     path = request.POST['path']
     alias = path.replace("/","")
