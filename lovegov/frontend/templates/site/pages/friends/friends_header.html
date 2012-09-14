@@ -31,11 +31,13 @@
                     <div class="no-friends-message">
                         You're not following anyone on lovegov :(
                     </div>
+                    {% comment %}
                     <div class="import-friends">
                         {% if viewer.facebook_id %}
                             import friends from facebook?
                         {% endif %}
                     </div>
+                    {% endcomment %}
                 </div>
             {% endfor %}
         </div>
