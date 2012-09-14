@@ -2976,6 +2976,9 @@ def getModal(request,vals={}):
     elif modal_name == "answer_questions_warning_modal":
         modal_html = getAnswerQuestionsWarningModal(request, vals)
 
+    elif modal_name == "get_full_image_modal":
+        modal_html = getFullImageModal(request,vals)
+
     ## If a modal was successfully made, return it ##
     if modal_html:
         return HttpResponse( json.dumps({'modal_html':modal_html}) )

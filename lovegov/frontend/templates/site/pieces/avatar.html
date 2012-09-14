@@ -33,6 +33,7 @@
                 {% thumbnail full_url geometry crop="center" format="PNG" as im %}
                     <img class=" {% if not hoveroff %} has_hover_comparison {% endif %} avatar-image"
                          data-href="{{ user.get_url }}" data-display_name="{{ user.get_name }}"
+                         data-src="{{ full_url }}"
                          src="{{ im.url }}" />
                 {% empty %}
                     <img class=" {% if not hoveroff %} has_hover_comparison {% endif %} avatar-image"

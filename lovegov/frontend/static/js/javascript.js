@@ -3595,7 +3595,7 @@ bind( '.facebook_share_button' , 'click' , null , function(e)
     var fb_share_id = $(this).data('fb_share_id');
 
     // open share modal in new window
-    window.open('http://www.facebook.com/dialog/feed?app_id='+FACEBOOK_APP_ID+'&to='+fb_share_id+'&display=popup&name=LoveGov&link=http://www.lovegov.com&redirect_uri='+location.host+'/popup_redirect&description='+
+    window.open('http://www.facebook.com/dialog/feed?app_id='+FACEBOOK_APP_ID+'&to='+fb_share_id+'&display=popup&name=LoveGov&link=http://www.lovegov.com&redirect_uri=http://www.lovegov.com/popup_redirect&description='+
         'LoveGov is a political social network that personalizes politics. We are making it easy to stay informed and get involved.',
         '_blank','width=450,height=300');
 });
@@ -4411,4 +4411,9 @@ bind('.select_party','click', function() {
             success: null
         });
     }
+});
+
+bind('div.profile-page div.profile-image', 'click', function(e) {
+    var uid=$(this).data('uid');
+    getModal('get_full_image_modal', {'uid': uid});
 });
