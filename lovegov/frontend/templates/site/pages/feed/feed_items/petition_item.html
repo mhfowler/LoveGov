@@ -2,18 +2,22 @@
 
 {% block item_main %}
 
-   <div class="feed-petition-wrapper">
+    <div class="feed-petition-wrapper">
 
-       <div class="petition-summary feed-item-summary">
-           {{ content.summary }}
-       </div>
+        <div class="petition-summary feed-item-summary">
+            {{ content.summary }}
+        </div>
 
+        <div class="feed-petition-bar-wrapper">
+            {% include 'site/pages/content_detail/petition_bar.html' with petition=content %}
 
-           <div class="feed-petition-bar-wrapper">
-               {% include 'site/pages/content_detail/petition_bar.html' with petition=content %}
-               <div style="clear:both;"></div>
-           </div>
+            <div class="in-feed-sign">
+                {% include 'site/pages/content_detail/petition_sign_area.html' with in_feed_sign=1 petition=content i_signed=content.i_signed %}
+            </div>
 
-   </div>
+            <div style="clear:both;"></div>
+        </div>
+
+    </div>
 
 {% endblock %}

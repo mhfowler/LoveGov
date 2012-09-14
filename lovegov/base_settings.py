@@ -50,7 +50,6 @@ MIDDLEWARE_CLASSES = (
 #    static and media
 #
 ########################################################################################################################
-
 # different projects will use different root
 STATIC_ROOT = '/static/'
 
