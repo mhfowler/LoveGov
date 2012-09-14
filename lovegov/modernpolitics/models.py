@@ -3271,6 +3271,7 @@ class News(Content):
 
     link = models.URLField()
     link_summary = models.TextField(default="")
+    link_title = models.TextField(default="No title")
     link_screenshot = models.ImageField(upload_to='screenshots/')
     link_clicks = models.IntegerField(default=0)
 
