@@ -24,8 +24,9 @@ def sendHTMLEmail(subject, email_sender, email_recipients, email_html=None, temp
     emailHelper(subject, email_html, email_sender, email_recipients)
 
 def emailHelper(subject, email_html, email_sender, email_recipients):
-    headers = {'From':"LoveGov"}
+    headers = {'From':'LoveGov <' + email_sender + '>'}
     msg = EmailMessage(subject, email_html, email_sender, email_recipients, headers=headers)
+    #msg = EmailMessage(subject, email_html, email_sender, email_recipients)
     msg.content_subtype = "html"
     try:
         msg.send()
@@ -143,17 +144,18 @@ def sendTeamClaimedProfileEmail(claimed):
 
     sendTeamEmail('Someone Claimed Their Profile [to_do]', email_html)
 
-
-
-
-
-
-
-
-
-
-
-
+#-----------------------------------------------------------------------------------------------------------------------
+# batch emails
+#-----------------------------------------------------------------------------------------------------------------------
+def sendLaunchEmailBatch():
+    #to_send = UserProfile.objects.filter(ghost=False)
+    to_send = UserProfile.objects.filter(developer=True)
+    count = 0
+    for x in to_send:
+        sendLaunchEmail(x)
+        count += 1
+        print x.get_name()
+    return count
 
 
 
