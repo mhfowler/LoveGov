@@ -1753,7 +1753,9 @@ def getQuestions(request, vals):
     vals['question_items']= question_items
     vals['to_compare'] = to_compare
     vals['default_display'] = request.POST.get('default_display')
-    vals['qa_tutorial'] = not viewer.checkTask("Q")
+
+    if not to_compare:
+        vals['qa_tutorial'] = not viewer.checkTask("Q")
 
     html = ajaxRender('site/pages/qa/feed_helper_questions.html', vals, request)
 
