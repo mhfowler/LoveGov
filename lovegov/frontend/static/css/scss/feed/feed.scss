@@ -296,12 +296,16 @@ div.feed-main
           margin-top: 11px;
         }
 
-        a.qa-help {
+        a.help-link {
           float: left;
           margin-left: 34px;
           margin-top: 8px;
           font-size: 16px;
           font-style: italic;
+          color:$dark-gray;
+          &:hover {
+            color:$gray;
+          }
         }
 
         a.help-robot {
