@@ -2,7 +2,7 @@
 {% load customtags %}
 {% load macros %}
 
-<div class="feed-item-wrapper{% if first_item %} feedtut_tutorial_item {% endif %}">
+<div class="feed-item-wrapper{% if first_item %} feedtut_tutorial_item {% endif %}{% if not content.num_comments %} no-top-comment {% endif %}">
 
     <div class="above-rule-line feedtut_feed_item_parent ">
 

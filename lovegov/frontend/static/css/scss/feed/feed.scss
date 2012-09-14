@@ -408,7 +408,14 @@ div.feed-main
 }
 
 
-
+div.feed-item-wrapper.no-top-comment {
+  div.above-rule-line {
+    width:1000px;
+    div.main-part {
+      width:900px;
+    }
+  }
+}
 
 /* feed items */
 div.feed-item-wrapper {
