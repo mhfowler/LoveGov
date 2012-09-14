@@ -104,7 +104,7 @@ div.election-info {
   div.election-info-left {
     float:left;
     div.election-date {
-      width:200px;
+      width:250px;
       color:gray;
       @include fontSize(32px);
       display:block;
@@ -131,6 +131,10 @@ div.election-info {
     }
     div.election-description {
       margin-top:5px;
+      width: 500px;
+      padding-top: 12px;
+      padding-bottom: 12px;
+      padding-left: 30px;
     }
   }
   div.election-buttons {
