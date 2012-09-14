@@ -609,6 +609,9 @@ a.content-title {
   line-height:32px;
   position:relative;
   top:1px;
+  width: 100%;
+  overflow: hidden;
+  float: left;
   &:hover {
     color:$black;
   }
