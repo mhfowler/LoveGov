@@ -4412,3 +4412,8 @@ bind('.select_party','click', function() {
         });
     }
 });
+
+bind('div.profile-page div.profile-image', 'click', function(e) {
+    var uid=$(this).data('uid');
+    getModal('get_full_image_modal', {'uid': uid});
+});

@@ -158,3 +158,32 @@ def getAnswerQuestionsWarningModal(request, vals):
     vals['lgpoll_progress'] = poll_progress['completed']
     vals['congress'] = getCongressGroup()
     return ajaxRender('site/pages/dismissible_headers/answer_warning_modal.html', vals,request)
+
+def getFullImageModal(request, vals):
+    uid = request.POST.get('uid')
+    if uid:
+        vals['viewee'] = UserProfile.lg.get_or_none(id=uid)
+    return ajaxRender("site/pages/profile/full_profile_image.html",vals,request)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
