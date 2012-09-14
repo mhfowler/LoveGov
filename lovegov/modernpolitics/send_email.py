@@ -152,9 +152,12 @@ def sendLaunchEmailBatch():
     to_send = UserProfile.objects.filter(developer=True)
     count = 0
     for x in to_send:
-        sendLaunchEmail(x)
-        count += 1
-        print x.get_name()
+        try:
+            sendLaunchEmail(x)
+            count += 1
+            print "+II+ " + x.get_name()
+        except:
+            print '+EE+ ERROR SENDING TO: ' + x.get_name()
     return count
 
 
