@@ -5,7 +5,7 @@
     <div class="feed-petition-wrapper">
 
         <div class="petition-summary feed-item-summary">
-            {{ content.summary }}
+            {{ content.summary|truncatechars:375 }}
         </div>
 
         <div class="feed-petition-bar-wrapper">
