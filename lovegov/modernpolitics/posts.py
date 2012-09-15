@@ -1708,11 +1708,15 @@ def contentToFeedItems(content, user):
     list = []
     user_votes = Voted.objects.filter(user=user)
     for c in content:
+        c = c.downcast()
         vote = user_votes.filter(content=c)
         if vote:
             my_vote=vote[0].value
         else:
             my_vote=0
+        if c.type == 'P':
+            i_signed = user in c.getSigners()
+            c.i_signed = i_signed
         list.append((c,my_vote))    # content, my_vote
     return list
 

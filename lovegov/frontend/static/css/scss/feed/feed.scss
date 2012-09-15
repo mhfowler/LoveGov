@@ -633,6 +633,7 @@ a.content-title {
 div.feed-petition-bar-wrapper {
   margin-top:10px;
   max-width: 400px;
+  position:relative;
   div.petition-bar-wrapper {
     div.petition-bar {
       border: 1px solid $gray;
@@ -648,6 +649,40 @@ div.feed-petition-bar-wrapper {
       color:$dark-gray;
     }
   }
+
+  div.in-feed-sign {
+    //position:absolute;
+    //top: -24px;
+    //left: 90%;
+    position:relative;
+    left:100px;
+    top: -40px;
+    float: right;
+    div.sign-area {
+      a.action-button {
+        height: 18px;
+        font-size: 12px;
+        margin-bottom: 0px;
+        padding-top: 0px;
+        position: absolute;
+        left: -109px;
+        width: 100px;
+      }
+      div.signed {
+        width: 200px;
+        position: absolute;
+        left: -154px;
+        margin-bottom:0px;
+        margin-top:0px;
+      }
+      div.not-finalized {
+        font-style: italic;
+        margin-top: 3px;
+        margin-right:20px;
+      }
+    }
+  }
+
 }
 
 
