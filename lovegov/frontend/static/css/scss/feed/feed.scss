@@ -632,6 +632,7 @@ a.content-title {
 /* petition bar */
 div.feed-petition-bar-wrapper {
   margin-top:10px;
+  max-width: 400px;
   div.petition-bar-wrapper {
     div.petition-bar {
       border: 1px solid $gray;
