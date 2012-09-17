@@ -150,6 +150,7 @@ BROKER_URL = base_settings.BROKER_URL
 #EMAIL_HOST_PASSWORD = 'lglglgLG'
 #EMAIL_PORT = '25'
 
+
 ########################################################################################################################
 #    misc settings
 #
@@ -185,13 +186,6 @@ STATIC_URL = '/static'
 THUMBNAIL_DUMMY = True
 
 THUMBNAIL_DUMMY_SOURCE = 'http://placekitten.com/%(width)s/%(height)s'
-
-EMAIL_BACKEND = base_settings.EMAIL_BACKEND
-
-DKIM_DOMAIN = base_settings.DKIM_DOMAIN
-DKIM_PRIVATE_KEY = base_settings.DKIM_PRIVATE_KEY
-
-
 
 
 

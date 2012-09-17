@@ -171,6 +171,8 @@ BROKER_URL = base_settings.BROKER_URL
 #EMAIL_HOST_PASSWORD = 'lglglgLG'
 #EMAIL_PORT = '25'
 
+EMAIL_BACKEND = base_settings.EMAIL_BACKEND
+
 ########################################################################################################################
 #    misc base_settings
 #
@@ -197,9 +199,4 @@ SECRET_KEY = base_settings.SECRET_KEY
 ADMINS = base_settings.ADMINS
 
 MANAGERS = base_settings.MANAGERS
-
-EMAIL_BACKEND = base_settings.EMAIL_BACKEND
-
-DKIM_DOMAIN = base_settings.DKIM_DOMAIN
-DKIM_PRIVATE_KEY = base_settings.DKIM_PRIVATE_KEY
 
