@@ -150,6 +150,7 @@ EMAIL_FILE_PATH = '/log/emails'
 #EMAIL_HOST_PASSWORD = 'lglglgLG'
 #EMAIL_PORT = '25'
 
+
 ########################################################################################################################
 #    misc settings
 #
@@ -185,9 +186,6 @@ STATIC_URL = '/static'
 THUMBNAIL_DUMMY = True
 
 THUMBNAIL_DUMMY_SOURCE = 'http://placekitten.com/%(width)s/%(height)s'
-
-
-
 
 
 
