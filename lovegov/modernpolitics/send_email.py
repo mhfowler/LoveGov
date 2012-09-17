@@ -25,8 +25,8 @@ def sendHTMLEmail(subject, email_sender, email_recipients, email_html=None, temp
 
 def emailHelper(subject, email_html, email_sender, email_recipients):
     headers = {'From':'LoveGov <' + email_sender + '>'}
-    msg = EmailMessage(subject, email_html, email_sender, email_recipients, headers=headers)
-    #msg = EmailMessage(subject, email_html, email_sender, email_recipients)
+    #msg = EmailMessage(subject, email_html, email_sender, email_recipients, headers=headers)
+    msg = EmailMessage(subject, email_html, email_sender, email_recipients)
     msg.content_subtype = "html"
     try:
         msg.send()
@@ -150,7 +150,7 @@ def sendTeamClaimedProfileEmail(claimed):
 def sendLaunchEmailBatch():
     from lovegov.modernpolitics.helpers import enc
     to_send = UserProfile.objects.filter(ghost=False)
-    exclude_ids = range(0,4822)
+    exclude_ids = range(0,4815)
     to_send = to_send.exclude(id__in=exclude_ids)
     count = 0
     for x in to_send:
