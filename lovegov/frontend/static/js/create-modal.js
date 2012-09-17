@@ -261,7 +261,8 @@ function getLinkInfo(link, input) {
     if(input.data('last-link')==link) return;
     // cache link to prevent double get
     input.data('last-link', link);
-    input.parent().append('<img src="http://local.lovegov.com:8000/static/images/ajax-spinner.gif" class="loading-gif">')
+    var parent = input.parent();
+    parent.append('<img src="/static/images/ajax-spinner.gif" class="loading-gif">');
     var link_image = $("div.create-modal div.create-section.news div.link-image");
     action({
         data: {'action':'getLinkInfo','remote_url':link},
@@ -270,6 +271,7 @@ function getLinkInfo(link, input) {
             var obj = eval('(' + data + ')');
             link_image.fadeIn(200);
             link_image.children("div.field").html(obj.html);
+            input.closest('div.form').find('input.title').val(obj.link_title);
             image_count = $('.news_link_image_container').children().length;
         },
         complete: function() {

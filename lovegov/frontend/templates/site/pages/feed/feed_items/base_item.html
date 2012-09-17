@@ -24,7 +24,9 @@
                         <a href="{{ posted_to.get_url }}" class="posted-to-link"> {{ posted_to.get_name }} </a>
                     {% endwith %}
                 </div>
-                <a href="{{ content.get_url }}" class="content-title"> {{ content.getFeedTitle }}</a>
+                {% block content-title %}
+                    <a href="{{ content.get_url }}" class="content-title"> {{ content.getFeedTitle }}</a>
+                {% endblock %}
             {% endmacro %}
             {% usemacro feed_title content %}
             <div class="item-main-wrapper">

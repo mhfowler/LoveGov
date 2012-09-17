@@ -615,7 +615,6 @@ a.content-title {
   top:1px;
   width: 100%;
   overflow: hidden;
-  float: left;
   &:hover {
     color:$black;
   }
@@ -624,6 +623,22 @@ a.content-title {
     &:hover {
       color:$black;
     }
+  }
+}
+
+
+a.feed-news-link {
+  overflow:hidden;
+  position: relative;
+  width:400px;
+  top: -2px;
+  color:$dark-gray;
+  font-size: 13px;
+  //float:left;
+  //width:100%;
+  //margin-top:8px;
+  &:hover {
+    color:$deep-gray;
   }
 }
 
@@ -688,22 +703,6 @@ div.feed-petition-bar-wrapper {
 
 /*  news item */
 div.feed-item-wrapper {
-
-  div.news-wrapper {
-    a.feed-news-link {
-      overflow:hidden;
-      position: relative;
-      width:400px;
-      top: -2px;
-      color:$gray;
-      //float:left;
-      //width:100%;
-      //margin-top:8px;
-      &:hover {
-        color:$dark-gray;
-      }
-    }
-  }
 
   div.feed-item-summary {
     position: relative;
