@@ -24,3 +24,5 @@ MEDIA_ROOT = '/media/live/'
 LOG_ROOT = "/log/live/"
 LOGGING = base_settings.setLogging(LOG_ROOT)
 
+ADMIN_MEDIA_PREFIX = STATIC_ROOT + "admin/"
+
