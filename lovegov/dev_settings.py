@@ -31,6 +31,8 @@ MEDIA_ROOT = '/media/dev/'
 LOG_ROOT = "/log/dev/"
 LOGGING = base_settings.setLogging(LOG_ROOT)
 
+ADMIN_MEDIA_PREFIX = STATIC_ROOT + "admin/"
+
 ############################### EVERYTHING BELOW THE SAME ##############################################################
 
 ########################################################################################################################
