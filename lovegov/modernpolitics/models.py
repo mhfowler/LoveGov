@@ -312,6 +312,9 @@ class Content(ActiveModel, Privacy, LocationLevel):
     # deprecated
     unique_commenter_ids = custom_fields.ListField(default=[])
 
+    def __unicode__(self):
+        return self.title
+
     #-------------------------------------------------------------------------------------------------------------------
     # Gets url for viewing detail of this content.
     #-------------------------------------------------------------------------------------------------------------------
@@ -1169,7 +1172,7 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
 
 
     def __unicode__(self):
-        return self.first_name
+        return self.get_name()
 
     #-------------------------------------------------------------------------------------------------------------------
     # background tasks

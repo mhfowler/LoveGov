@@ -242,7 +242,7 @@ def getLinkInfo(request, vals={}, html="",URL=""):
             vals['imglink'] = list
 
             html = ajaxRender('site/pieces/news-link-autogen.html', vals, request)
-            return HttpResponse(json.dumps({'html':html}))
+            return HttpResponse(json.dumps({'html':html, 'link_title': vals['title']}))
         else:
             return HttpResponseBadRequest("Something went wrong.")
     except Exception, e:

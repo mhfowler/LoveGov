@@ -8,4 +8,5 @@ from lovegov.scripts.daily_summary import *
 
 #updateGroupView(g)
 
-dailySummaryEmail()
+sendLaunchEmail(getUser("Max Fowler"))
+

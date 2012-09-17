@@ -108,7 +108,6 @@ URL_SPECIAL_NAMES = [
 TEAM_EMAILS =  ['max_fowler@brown.edu','loweth.g@gmail.com',
                 'yoshi141@gmail.com', 'jsgreenf@gmail.com',
                 'marcus330@gmail.com']
-TEAM_EMAILS = ['max_fowler@brown.edu']
 YAY_EMAILS = TEAM_EMAILS
 DAILY_SUMMARY_EMAILS = TEAM_EMAILS
 
