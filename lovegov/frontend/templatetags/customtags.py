@@ -61,6 +61,9 @@ def media_url(value, media_prefix):
     return value
 
 @register.filter("domain")
-def domain(value):
+def domain(value, stripwww=True):
     parsed_uri = urlparse.urlparse(value)
-    return parsed_uri.netloc
+    netloc = parsed_uri.netloc
+    if stripwww:
+        netloc.lstrip('www.')
+    return netloc

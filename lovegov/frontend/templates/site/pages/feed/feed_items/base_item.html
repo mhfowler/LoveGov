@@ -25,7 +25,7 @@
                     {% endwith %}
                 </div>
                 {% block content-title %}
-                    <a href="{{ content.get_url }}" class="content-title"> {{ content.getFeedTitle }}</a>
+                    <a href="{{ content.get_url }}"><span class="content-title"> {{ content.getFeedTitle }}</span></a>
                 {% endblock %}
             {% endmacro %}
             {% usemacro feed_title content %}
