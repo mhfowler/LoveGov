@@ -203,10 +203,11 @@ def dailySummaryEmail(days_ago=1, days_for=0):
     for x in pa:
         try:
             user = x.user
-            alias = user.alias
-            if not alias in accessed:
-                accessed[alias] = {'user':user, 'session':Session()}
-            accessed[alias]['session'].pa.append(x)
+            if not user.isAnon():
+                alias = user.alias
+                if not alias in accessed:
+                    accessed[alias] = {'user':user, 'session':Session()}
+                accessed[alias]['session'].pa.append(x)
         except UserProfile.DoesNotExist:
             print "user does not exist for page access, " + str(x.id)
 
