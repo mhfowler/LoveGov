@@ -80,7 +80,7 @@ if USE_S3:
 
 else:
     # URL prefix for static files.
-    STATIC_URL = '/static'
+    STATIC_URL = '/static/'
     MEDIA_URL =  base_settings.MEDIA_URL
     ADMIN_MEDIA_PREFIX = base_settings.ADMIN_MEDIA_PREFIX
     STATICFILES_DIRS = base_settings.STATICFILES_DIRS

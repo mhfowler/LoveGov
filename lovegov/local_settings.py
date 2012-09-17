@@ -142,8 +142,8 @@ BROKER_URL = base_settings.BROKER_URL
 ########################################################################################################################
 
 # EMAIL DURING DEVELOPMENT
-#EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
-#EMAIL_FILE_PATH = '/log/emails'
+EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
+EMAIL_FILE_PATH = '/log/emails'
 
 #EMAIL_HOST = 'smtpout.secureserver.net'
 #EMAIL_HOST_USER = 'team@lovegov.com'
@@ -186,7 +186,6 @@ STATIC_URL = '/static'
 THUMBNAIL_DUMMY = True
 
 THUMBNAIL_DUMMY_SOURCE = 'http://placekitten.com/%(width)s/%(height)s'
-
 
 
 
