@@ -4,8 +4,8 @@
 {% block content-title %}
 
     {% load customtags %}
-    <a href="{{ content.link }}" class="content-title"> {{ content.getFeedTitle }}</a>
-    <a href="{{ content.link }}" class="feed-news-link news_link" data-n_id="{{ content.id }}">({{ content.link|domain }})</a>
+    <a href="{{ content.link }}"><span class="content-title"> {{ content.getFeedTitle }}
+    <span class="feed-news-link news_link" data-n_id="{{ content.id }}"> {{ content.link|domain }}</span></span></a>
 
 {% endblock %}
 

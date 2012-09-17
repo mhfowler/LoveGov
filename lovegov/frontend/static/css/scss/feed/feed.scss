@@ -607,7 +607,7 @@ div.group-posted-to {
   }
 }
 
-a.content-title {
+span.content-title {
   @include fontSize(24px);
   color:$text-blue;
   line-height:32px;
@@ -615,6 +615,7 @@ a.content-title {
   top:1px;
   width: 100%;
   overflow: hidden;
+  float: left;
   &:hover {
     color:$black;
   }
@@ -624,21 +625,20 @@ a.content-title {
       color:$black;
     }
   }
-}
-
-
-a.feed-news-link {
-  overflow:hidden;
-  position: relative;
-  width:400px;
-  top: -2px;
-  color:$dark-gray;
-  font-size: 13px;
-  //float:left;
-  //width:100%;
-  //margin-top:8px;
-  &:hover {
-    color:$deep-gray;
+  span.feed-news-link {
+    overflow:hidden;
+    position: relative;
+    width:400px;
+    top: -2px;
+    color:$dark-gray;
+    font-size: 13px;
+    margin-left: 8px;
+    //float:left;
+    //width:100%;
+    //margin-top:8px;
+    &:hover {
+      color:$deep-gray;
+    }
   }
 }
 
@@ -839,4 +839,8 @@ div.item-ranking
     &:hover{ @include staticImage('/images/icons/hearts/minusheart-red.png'); }
     &.clicked{ @include staticImage('/images/icons/hearts/minusheart-red.png'); }
   }
+}
+
+div.news-wrapper {
+  float: left;
 }
