@@ -5070,9 +5070,10 @@ class PageAccess(LGModel):
     page = models.CharField(max_length=5000)
     action = models.CharField(max_length=50, null=True)
     when = models.DateTimeField(auto_now_add=True)
+    type = models.CharField(max_length=4)
+    # deprecated
     left = models.DateTimeField(null=True)
     duration = models.TimeField(null=True)
-    type = models.CharField(max_length=4)
     exit = models.BooleanField(default=False)
     login = models.BooleanField(default=True)
 
@@ -5092,6 +5093,18 @@ class PageAccess(LGModel):
                 if 'action' in request.GET:
                     self.action = request.GET['action']
             self.save()
+
+class ClientAnalytics(LGModel):
+    user = models.ForeignKey(UserProfile)
+    ipaddress = models.IPAddressField(default='255.255.255.255', null=True)
+    page = models.CharField(max_length=500)
+    action = models.CharField(max_length=50, null=True)
+    when = models.DateTimeField(auto_now_add=True)
+    load_time = models.IntegerField()
+    def autoSave(self):
+        self.save()
+    def prettyPrint(self):
+        return self.page + " " + str(self.load_time) + " (" + self.user.get_name() + ")"
 
 class CompatabilityLog(LGModel):
     user = models.ForeignKey("UserProfile", null=True)

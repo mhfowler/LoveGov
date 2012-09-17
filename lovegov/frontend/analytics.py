@@ -9,6 +9,24 @@
 
 from lovegov.modernpolitics.backend import *
 
+#-----------------------------------------------------------------------------------------------------------------------
+# Benchmarking
+#-----------------------------------------------------------------------------------------------------------------------
+
+def apacheBenchmark(domain, page, output_folder, num_requests=100, num_concurrent=1):
+
+    url = domain + page
+
+    output_file = page.replace("/", "_") + "." + str(num_concurrent)
+    output_path = output_folder + "/" + output_file
+
+    command = "ab -n " + str(num_requests) + " -c " + str(num_concurrent) + " " + url + " > " + output_path
+    os.system(command)
+
+#-----------------------------------------------------------------------------------------------------------------------
+# Usage analytics
+#-----------------------------------------------------------------------------------------------------------------------
+
 ANALYTICS_EMAILS = ['max_fowler@brown.edu']
 
 #-----------------------------------------------------------------------------------------------------------------------
