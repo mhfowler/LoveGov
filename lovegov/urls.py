@@ -78,15 +78,8 @@ urlpatterns += patterns('',
     (r'^questions/$', viewWrapper(views.questions, requires_login=True)),
     (r'^discover/$', viewWrapper(views.match, requires_login=True)),
     (r'^match/$', viewWrapper(views.match, requires_login=True)),
-
     (r'^my_groups/$', viewWrapper(views.myGroups, requires_login=True)),
     (r'^my_elections/$', viewWrapper(views.myElections, requires_login=True)),
-
-    # browse-all
-    #(r'^browse_groups/$', viewWrapper(views.browseGroups, requires_login=True)),
-    #(r'^browse_people/$', viewWrapper(views.browsePeople, requires_login=True)),
-    #(r'^browse_friends/$', viewWrapper(views.browseFriends, requires_login=True)),
-    #(r'^browse_politicians/$', viewWrapper(views.browsePoliticians, requires_login=True)),
 
     # other main pages
     (r'^home/$', viewWrapper(views.redirect, requires_login=True)),

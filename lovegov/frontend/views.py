@@ -116,14 +116,18 @@ def viewWrapper(view, requires_login=False):
                 first_login = user.first_login
                 vals['firstLoginStage'] = first_login
 
-                # if not authenticated user, and not lovegov_try cookie, redirect to login page
-                if user.isAnon() and not request.COOKIES.get('lovegov_try'):
-                    # If this action can't be performed without being authenticated
-                    if not request.POST.get('action') in UNAUTHENTICATED_ACTIONS:
-                        # Redirect to login page
-                        return shortcuts.redirect("/login" + request.path)
-                    else: # otherwise action can be done without authentication
-                        return view(request,vals=vals,*args,**kwargs)
+
+# try lovegov without an account
+#                # if not authenticated user, and not lovegov_try cookie, redirect to login page
+#                if user.isAnon() and not request.COOKIES.get('lovegov_try'):
+#                    # If this action can't be performed without being authenticated
+#                    if not request.POST.get('action') in UNAUTHENTICATED_ACTIONS:
+#                        # Redirect to login page
+#                        return shortcuts.redirect("/login" + request.path)
+#                    else: # otherwise action can be done without AUTHENTICATION
+#                        return view(request,vals=vals,*args,**kwargs)
+
+
 
                 # IF NOT DEVELOPER AND IN UPDATE MODE or ON DEV SITE, REDIRECT TO CONSTRUCTION PAGE
                 if UPDATE:
