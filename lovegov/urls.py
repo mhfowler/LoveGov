@@ -137,12 +137,6 @@ urlpatterns += patterns('',
     url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
     url(r'^admin/', include(site.urls)),
 
-    # analytics
-    (r'^analytics/activity/(\d+)/$', viewWrapper(analytics.dailyActivity, requires_login=True)),
-    (r'^analytics/activity/$', viewWrapper(analytics.dailyActivity, requires_login=True)),
-    (r'^analytics/total/(\S+)/$', viewWrapper(analytics.totalActivity, requires_login=True)),
-    (r'^analytics/total/$', viewWrapper(analytics.totalActivity, requires_login=True)),
-
     # api
     (r'^api/(?P<model>\S+)/$', viewWrapper(api.handleRequest)),
 
