@@ -31,13 +31,9 @@ def saveAccess(request):
     page = getSourcePath(request)
     ipaddress = request.META['REMOTE_ADDR']
     type = request.method
-    if type == 'POST' and 'action' in request.POST:
-        action = request.POST['action']
-    elif 'action' in request.GET:
-        action = request.GET['action']
-    else:
-        action = None
+    action = request.REQUEST.get('action')
     when = datetime.datetime.now()
+    # queue it
     queueTask(task=task_saveAccess, args=(user_prof_id, page, ipaddress, type, action, when))
 
 @task

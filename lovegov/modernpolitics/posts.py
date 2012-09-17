@@ -10,6 +10,34 @@
 from lovegov.modernpolitics.modals import *
 from django.core.files.base import ContentFile
 
+### log page load analytics from client side ###
+def clientSideAnalytics(request, vals):
+
+    client_side_data = request.POST['client_side_data']
+    analytics_dict = json.loads(client_side_data)
+
+    viewer = vals['viewer']
+    ipaddress = request.META['REMOTE_ADDR']
+
+    for k,v in analytics_dict.items():
+        start = int(v['start_time'])
+        end = v.get('end_time')
+        if end:
+            end = int(end)
+            load_time = end - start
+            when = pythonTimeFromJavascriptTime(start / 1000)
+            page = v['path']
+            action = v.get('action')
+            a = ClientAnalytics(page=page, action=action, load_time=load_time,
+                when=when, user=viewer, ipaddress=ipaddress)
+            a.autoSave()
+
+    return HttpResponse("logged")
+
+def pythonTimeFromJavascriptTime(timestamp):
+    return datetime.datetime.fromtimestamp(timestamp)
+
+### complete a first login task ###
 def completeTask(request,vals={}):
     """Complete a first login task"""
     task = request.POST['task']
@@ -20,7 +48,7 @@ def completeTask(request,vals={}):
         viewer.save()
     return HttpResponse("completed")
 
-
+### register ###
 def newRegister(request,vals={}):
     """register from login page via form"""
     # get params from post
