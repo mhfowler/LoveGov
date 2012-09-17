@@ -3937,16 +3937,15 @@ function findNewLikeMinded() {
                         $(".computing_result").hide();
                         $(".find_loading").hide();
                         var num_new = returned.num_new_members;
-                        // change total members number
-                        var total_num = $(".total_members").data('num');
+                        // change total found
+                        var total_num = $(".total_found").data('num');
                         total_num += num_new;
-                        $(".total_members").html(total_num);
-                        $(".total_members").data('num', total_num);
-                        // change members/display section
+                        $(".total_found").data('num', total_num);
                         $(".total_found").html(total_num);
+                        // change total processed
                         var total_processed = parseInt($(".total_processed").text());
                         $(".total_processed").html(total_processed + returned.num_processed);
-                        // display num new members
+                        // display num found
                         $('.num_new_found').html(total_num);
                         $('.num_processed').html(total_processed + returned.num_processed);
                         $('.find_result').toggleClass("toggle");
