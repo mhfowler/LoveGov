@@ -166,10 +166,10 @@ BROKER_URL = base_settings.BROKER_URL
 #EMAIL_FILE_PATH = '/log/emails'
 
 #EMAIL DURING LIVE
-EMAIL_HOST = 'smtpout.secureserver.net'
-EMAIL_HOST_USER = 'team@lovegov.com'
-EMAIL_HOST_PASSWORD = 'lglglgLG'
-EMAIL_PORT = '25'
+#EMAIL_HOST = 'smtpout.secureserver.net'
+#EMAIL_HOST_USER = 'team@lovegov.com'
+#EMAIL_HOST_PASSWORD = 'lglglgLG'
+#EMAIL_PORT = '25'
 
 ########################################################################################################################
 #    misc base_settings
@@ -197,4 +197,7 @@ SECRET_KEY = base_settings.SECRET_KEY
 ADMINS = base_settings.ADMINS
 
 MANAGERS = base_settings.MANAGERS
+
+DKIM_DOMAIN = base_settings.DKIM_DOMAIN
+DKIM_PRIVATE_KEY = base_settings.DKIM_PRIVATE_KEY
 

@@ -316,3 +316,5 @@ gem install compass
 pip install cssmin
 
 pip install django_compressor
+
+pip install pydkim

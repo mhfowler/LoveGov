@@ -314,11 +314,11 @@ BROKER_URL = 'librabbitmq://guest:guest@localhost:5672/'
 ########################################################################################################################
 
 #EMAIL DURING LIVE
-EMAIL_USE_TLS = True
-EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_HOST_USER = 'team@lovegov.com'
-EMAIL_HOST_PASSWORD = 'freeGOV2'
-EMAIL_PORT = 587
+#EMAIL_USE_TLS = True
+#EMAIL_HOST = 'smtp.gmail.com'
+#EMAIL_HOST_USER = 'team@lovegov.com'
+#EMAIL_HOST_PASSWORD = 'freeGOV2'
+#EMAIL_PORT = 587
 
 ########################################################################################################################
 #   testing
@@ -360,3 +360,16 @@ import s3_configuration
 AWS_ACCESS_KEY_ID = s3_configuration.AWS_ACCESS_KEY_ID
 AWS_SECRET_ACCESS_KEY = s3_configuration.AWS_SECRET_ACCESS_KEY
 AWS_STORAGE_BUCKET_NAME = s3_configuration.AWS_STORAGE_BUCKET_NAME
+
+DKIM_DOMAIN = 'lovegov.com'
+DKIM_PRIVATE_KEY = '''
+-----BEGIN RSA PRIVATE KEY-----
+MIIBOgIBAAJBAMCBLt2L5O/pVIISdjVJ8rvpaMNnSIjNE0YVt66IMtNPtP/Btn0W
+H9j6RMMfNiNITFD4YVgchW4xsXQCCTRLJikCAwEAAQJAIe3i87t3c22drntQiF3r
+QYGHLIGkwC/dCMpFIKbyxlmEXAuKWBqlf12k+aX6xItzGWwVbBN/kfk2vwZtKvu1
+vQIhAPirY7x3qGdhnVL7Vdit6B8Xcaw0c1BH+SCHHCxuekzDAiEAxi3wfB+aUg19
+P/xVxymTKJLLBB+KXXmI7xEV6Ba2QqMCIQCGIy2xxHo7ChTrZlhwgZ7s5qCS29g4
+PhrMyRURgqbGMQIgFrscM1B4peKwNA+gUxi8rVGxAYcQmsoe37To+1bnjtsCIFUN
+YDLFPU/FWM3/O3pUMUIhobjJuFf7ikY9Vpesv8ed
+-----END RSA PRIVATE KEY-----
+'''
