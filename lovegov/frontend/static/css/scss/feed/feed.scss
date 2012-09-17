@@ -633,6 +633,7 @@ span.content-title {
     color:$dark-gray;
     font-size: 13px;
     margin-left: 8px;
+    display:none;
     //float:left;
     //width:100%;
     //margin-top:8px;
@@ -842,5 +843,6 @@ div.item-ranking
 }
 
 div.news-wrapper {
+  width:100%;
   float: left;
 }
