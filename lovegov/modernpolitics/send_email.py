@@ -24,20 +24,24 @@ def sendHTMLEmail(subject, email_sender, email_recipients, email_html=None, temp
     emailHelper(subject, email_html, email_sender, email_recipients)
 
 def emailHelper(subject, email_html, email_sender, email_recipients):
+    email_html = email_html.encode('ascii', 'ignore')
     headers = {'From':'LoveGov <' + email_sender + '>'}
-    #msg = EmailMessage(subject, email_html, email_sender, email_recipients, headers=headers)
-    msg = EmailMessage(subject, email_html, email_sender, email_recipients)
+    msg = EmailMessage(subject, email_html, email_sender, email_recipients, headers=headers)
+    #msg = EmailMessage(subject, email_html, email_sender, email_recipients)
     msg.content_subtype = "html"
-    try:
-        msg.send()
-    except:
-        errors_logger.error("email error for [" + subject + "] to " + str(email_recipients))
+#    try:
+    msg.send()
+#    except Exception, e:
+#        import traceback, os.path
+#        top = traceback.extract_stack()[-1]
+#        print ", ".join([type(e).__name__, os.path.basename(top[0]), str(top[1])])
+#        errors_logger.error("email error for [" + subject + "] to " + str(email_recipients))
 
 #-----------------------------------------------------------------------------------------------------------------------
 # particular emails
 #-----------------------------------------------------------------------------------------------------------------------
 
-def sendLoveGovEmailHelper(user_profile, subject, email_vals, email_template, email_sender="info@lovegov.com", to_email=None):
+def sendLoveGovEmailHelper(user_profile, subject, email_vals, email_template, email_sender=u'info@lovegov.com', to_email=None):
 
     if not to_email:
         to_email = user_profile.email
@@ -91,7 +95,7 @@ def sendInviteByEmail(inviter, to_email):
     sendLoveGovEmailHelper(None, subject, email_vals, email_template, to_email=to_email)
 
 def sendLaunchEmail(user_profile):
-    subject = "The New LoveGov"
+    subject = u'The New LoveGov'
     email_vals = {}
     email_template = 'emails/lovegov/launch.html'
     sendLoveGovEmailHelper(user_profile, subject, email_vals, email_template)

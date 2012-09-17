@@ -7,4 +7,4 @@ from lovegov.frontend.views import *
 
 #updateGroupView(g)
 
-sendLaunchEmail(getUser("Maximus Fowler"))
+sendLaunchEmail(getUser("Max Fowler"))
