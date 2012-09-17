@@ -39,6 +39,17 @@
         <div style="clear:both"></div>
     </p>
 
+    {% if load_times_html %}
+        <p style="margin-top:50px;border-top:1px solid black;">
+            <br><br>
+        <h2> load times (ms) </h2>
+        <p>
+            {{ load_times_html }}
+        </p>
+        <div style="clear:both"></div>
+    {% endif %}
+
     <p style="border-top:1px solid black;height:10px;width:100%;"> </p>
+
 
 {% endblock %}

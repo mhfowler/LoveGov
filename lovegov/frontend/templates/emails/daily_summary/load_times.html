@@ -1,0 +1,12 @@
+{% if load_times %}
+    <ul>
+        {% for x in load_times %}
+            <li style="width:400px;">
+                {{ x.page }} <span style="float:right;">{{ x.mean }}</span>  <br>
+                - max {{ x.max }} <br>
+                - min {{ x.min }} <br>
+                - recorded {{ x.count }} <br><br>
+            </li>
+        {% endfor %}
+    </ul>
+{% endif %}
