@@ -1,12 +1,18 @@
 {% extends 'site/pages/feed/feed_items/base_item.html' %}
 
 
+{% block content-title %}
+
+    {% load customtags %}
+    <a href="{{ content.link }}" class="content-title"> {{ content.getFeedTitle }}</a>
+    <a href="{{ content.link }}" class="feed-news-link news_link" data-n_id="{{ content.id }}">({{ content.link|domain }})</a>
+
+{% endblock %}
+
 
 {% block item_main %}
 
     <div class="news-wrapper">
-
-        <a href="{{ content.link }}" class="feed-news-link dummy_link news_link" target="_blank" data-n_id="{{ content.id }}"> {{ content.link|truncatechars:50 }} </a>
 
         <div class="news-summary feed-item-summary">
             {{ content.summary }}

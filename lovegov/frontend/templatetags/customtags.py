@@ -1,5 +1,7 @@
 from django import template
+from django.template.defaultfilters import stringfilter
 from django.template.base import TemplateSyntaxError, Node
+import urlparse
 
 from itertools import cycle as itertools_cycle
 
@@ -57,3 +59,8 @@ def media_url(value, media_prefix):
             value = "/media" + value
         value = media_prefix + value
     return value
+
+@register.filter("domain")
+def domain(value):
+    parsed_uri = urlparse.urlparse(value)
+    return parsed_uri.netloc
