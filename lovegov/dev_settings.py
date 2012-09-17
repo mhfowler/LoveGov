@@ -198,6 +198,8 @@ ADMINS = base_settings.ADMINS
 
 MANAGERS = base_settings.MANAGERS
 
+EMAIL_BACKEND = base_settings.EMAIL_BACKEND
+
 DKIM_DOMAIN = base_settings.DKIM_DOMAIN
 DKIM_PRIVATE_KEY = base_settings.DKIM_PRIVATE_KEY
 

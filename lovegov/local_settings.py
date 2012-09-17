@@ -186,6 +186,8 @@ THUMBNAIL_DUMMY = True
 
 THUMBNAIL_DUMMY_SOURCE = 'http://placekitten.com/%(width)s/%(height)s'
 
+EMAIL_BACKEND = base_settings.EMAIL_BACKEND
+
 DKIM_DOMAIN = base_settings.DKIM_DOMAIN
 DKIM_PRIVATE_KEY = base_settings.DKIM_PRIVATE_KEY
 
