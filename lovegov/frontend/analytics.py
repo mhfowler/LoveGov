@@ -215,6 +215,7 @@ def dailySummaryEmail(days_ago=1, days_for=0):
     pa = PageAccess.objects.filter(when__gt=time_start, when__lt=time_end)
 
     accessed = {}
+    anon_access = []
     for x in pa:
         try:
             user = x.user
@@ -223,6 +224,8 @@ def dailySummaryEmail(days_ago=1, days_for=0):
                 if not alias in accessed:
                     accessed[alias] = {'user':user, 'session':Session()}
                 accessed[alias]['session'].pa.append(x)
+            else:
+                anon_access.append(x)
         except UserProfile.DoesNotExist:
             print "user does not exist for page access, " + str(x.id)
 
@@ -242,9 +245,28 @@ def dailySummaryEmail(days_ago=1, days_for=0):
     # load times
     vals['load_times_html'] = dailyLoadTimes(days_ago, days_for)
 
+    # anon access
+    vals['anon_activity'] = dailyAnonymousActivity(anon_access)
 
     context = Context(vals)
     template = loader.get_template('emails/daily_summary/daily_summary.html')
     email = template.render(context)
 
     return email
+
+
+def dailyAnonymousActivity(pa):
+
+    anon_access = {}
+    for x in pa:
+        ipaddress = x.ipaddress
+        if ipaddress not in anon_access:
+            anon_access[ipaddress] = {'ipaddress':ipaddress, 'session':Session()}
+        anon_access[ipaddress]['session'].pa.append(x)
+
+    anon_list = anon_access.values()
+    anon_list.sort(key=lambda item: item['session'].getNumPA())
+    for x in anon_list:
+        x['session'].processPA()
+
+    return anon_list
