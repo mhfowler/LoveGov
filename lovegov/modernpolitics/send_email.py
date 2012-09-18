@@ -41,7 +41,7 @@ def emailHelper(subject, email_html, email_sender, email_recipients):
 # particular emails
 #-----------------------------------------------------------------------------------------------------------------------
 
-def sendLoveGovEmailHelper(user_profile, subject, email_vals, email_template, email_sender=u'info@lovegov.com', to_email=None):
+def sendLoveGovEmailHelper(user_profile, subject, email_vals, email_template, email_sender=u'team@lovegov.com', to_email=None):
 
     if not to_email:
         to_email = user_profile.email
