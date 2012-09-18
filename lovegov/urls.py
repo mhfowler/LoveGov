@@ -46,6 +46,7 @@ urlpatterns += patterns('',
     (r'^confirm/(?P<confirm_link>\S+)/$', viewWrapper(views.confirm)),
     (r'^need_email_confirmation/$', viewWrapper(views.needConfirmation)),
     (r'^claim_your_profile/(?P<claimed_by>\S+)/$', viewWrapper(views.claimYourProfile)),
+    (r'^register/$', viewWrapper(views.register)),
     (r'^hello/$', viewWrapper(views.hello)),
 
     # fb authentication

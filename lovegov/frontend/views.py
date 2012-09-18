@@ -408,11 +408,19 @@ def needConfirmation(request, vals={}):
     vals['state'] = 'need-confirmation'
     return renderToResponseCSRF(template='site/pages/login/login-main.html', vals=vals, request=request)
 
-def claimYourProfile(request, claimed_by, vals={}):
+def claimYourProfile(request, claimed_by="", vals={}):
 
     if request.method == 'GET':
         vals['state'] = 'claimed_by'
         vals['email'] = vals['email2'] = claimed_by
+        return renderToResponseCSRF(template='site/pages/login/login-main.html', vals=vals, request=request)
+    else:
+        return login(request, vals)
+
+
+def register(request, vals={}):
+    if request.method == 'GET':
+        vals['state'] = 'register'
         return renderToResponseCSRF(template='site/pages/login/login-main.html', vals=vals, request=request)
     else:
         return login(request, vals)
