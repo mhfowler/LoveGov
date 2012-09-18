@@ -1253,6 +1253,9 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
         p = getPresidentialElection2012()
         followGroupAction(self, p, True, "PRI")
 
+        self.joinLocationGroups()
+        self.joinLocationElections()
+
     #-------------------------------------------------------------------------------------------------------------------
     # duck typing
     #-------------------------------------------------------------------------------------------------------------------
@@ -1393,6 +1396,20 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
         if self.location:
             self.joinTownGroup(self.location.city, self.location.state)
             self.joinStateGroup(self.location.state)
+
+            
+    def joinLocationElections(self):
+        from lovegov.modernpolitics.actions import followGroupAction
+        if self.location:
+
+            elections = []
+
+            if self.location.state == "MA":
+                e = Election.lg.get_or_none(alias="massachusetts_us_senate")
+                if e: elections.append(e)
+
+            for e in elections:
+                followGroupAction(self, e, True, "PRI")
 
 
     def getRepresentatives(self, location=None):
