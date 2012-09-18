@@ -170,10 +170,10 @@ class PhysicalAddress(LGModel):
 
     def getVerbose(self, verbose=False):
         to_return = ''
-        city = self.city
+        city = str(self.city).capitalize()
         state = self.state
         if state and verbose:
-            state = STATES_DICT[state]
+            state = STATES_DICT[state].capitalize()
         if city and state:
             to_return = city + ", " + state
         elif city:
@@ -4827,14 +4827,14 @@ class StateGroup(Group):
     def makeTitle(self, state=None):
         if not state:
             state = self.location.state
-        state_text = STATES_DICT[state]
+        state_text = STATES_DICT[state].capitalize()
         return state_text
 
 
 class TownGroup(Group):
     
     def autoCreate(self, city, state):
-        city_state = city + ", " + state
+        city_state = str(city).capitalize() + ", " + state
         self.title = self.makeTitle(city_state)
         self.description = "A group for sharing political information relevant to " + city_state + "."
         self.group_type = 'T'
