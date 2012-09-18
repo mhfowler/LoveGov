@@ -812,7 +812,19 @@ ANONYMOUS_PROHIBITED_ACTIONS = [
     'removeScorecard',
     'completeTask',
     'getBillSubjects',
+    'clientSideAnalytics'
     ]
+
+SILENT_FAIL_ACTIONS = [
+    'getNotifications',
+    'updateMatch',
+    'findLikeMinded',
+    'clearLikeMinded',
+    'completeTask',
+    'updateMatch',
+    'updateStats',
+    'clientSideAnalytics'
+]
 
 ###################################### CONTENT TYPES IN FEED ###########################################################
 
