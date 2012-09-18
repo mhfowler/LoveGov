@@ -168,12 +168,18 @@ class PhysicalAddress(LGModel):
         self.district = None
         self.save()
 
-    def getVerbose(self):
+    def getVerbose(self, verbose=False):
         to_return = ''
-        if self.state:
-            to_return = self.state
-            if self.city:
-                to_return += ', ' + self.city
+        city = self.city
+        state = self.state
+        if state and verbose:
+            state = STATES_DICT[state]
+        if city and state:
+            to_return = city + ", " + state
+        elif city:
+            to_return = city
+        elif state:
+            to_return = state
         return to_return
 
 #=======================================================================================================================
@@ -435,9 +441,9 @@ class Content(ActiveModel, Privacy, LocationLevel):
     #-------------------------------------------------------------------------------------------------------------------
     # gets location string, if content has location
     #-------------------------------------------------------------------------------------------------------------------
-    def getLocationVerbose(self):
+    def getLocationVerbose(self, verbose=False):
         if self.location:
-            return self.location.getVerbose()
+            return self.location.getVerbose(verbose=verbose)
         else:
             return ''
 
@@ -1210,9 +1216,9 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
     #-------------------------------------------------------------------------------------------------------------------
     # string representation of location
     #-------------------------------------------------------------------------------------------------------------------
-    def getLocationVerbose(self):
+    def getLocationVerbose(self, verbose=False):
         if self.location:
-            return self.location.getVerbose()
+            return self.location.getVerbose(verbose=verbose)
         else:
             return ''
 
@@ -1253,8 +1259,13 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
         p = getPresidentialElection2012()
         followGroupAction(self, p, True, "PRI")
 
-        self.joinLocationGroups()
-        self.followLocationElections()
+        self.locationSubscribe()
+
+    def locationSubscribe(self, location=None):
+        if not location:
+            location = self.location
+        self.joinLocationGroups(location=location)
+        self.followLocationElections(location=location)
 
     #-------------------------------------------------------------------------------------------------------------------
     # duck typing
@@ -1392,25 +1403,24 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
                 if not self in already.members.all():
                     already.joinMember(self)
 
-    def joinLocationGroups(self):
-        if self.location:
-            self.joinTownGroup(self.location.city, self.location.state)
-            self.joinStateGroup(self.location.state)
+    def joinLocationGroups(self, location=None):
+        if not location:
+            location = self.location
+        if location:
+            self.joinTownGroup(location.city, location.state)
+            self.joinStateGroup(location.state)
 
-
-    def followLocationElections(self):
+    def followLocationElections(self, location=None):
         from lovegov.modernpolitics.actions import followGroupAction
-        if self.location:
-
+        if not location:
+            location = self.location
+        if location:
             elections = []
-
-            if self.location.state == "MA":
+            if location.state == "MA":
                 e = Election.lg.get_or_none(alias="massachusetts_us_senate")
                 if e: elections.append(e)
-
             for e in elections:
                 followGroupAction(self, e, True, "PRI")
-
 
     def getRepresentatives(self, location=None):
         from lovegov.modernpolitics.initialize import getSensFromState, getRepsFromLocation
@@ -1520,11 +1530,11 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
             self.old_locations.add(self.location)
         self.location = location
         self.save()
+        self.locationSubscribe()
 
     def setNewTempLocation(self, location):
         if not self.location:
             self.setNewLocation(location)
-            self.joinLocationGroups()
         if self.temp_location:
             self.old_locations.add(self.temp_location)
         self.temp_location = location
@@ -4796,11 +4806,11 @@ class Network(Group):
 #
 #=======================================================================================================================
 class StateGroup(Group):
-    
     pass
+
     def autoCreate(self, state):
         state_text = STATES_DICT[state]
-        self.title = state_text + " State Group"
+        self.title = self.makeTitle(state)
         self.description = "A group for sharing political information relevant to the state of " + state_text + "."
         self.group_type = 'S'
         self.autogen = True
@@ -4814,11 +4824,18 @@ class StateGroup(Group):
         setStateGroupText(self)
         return self
 
+    def makeTitle(self, state=None):
+        if not state:
+            state = self.location.state
+        state_text = STATES_DICT[state]
+        return state_text
+
+
 class TownGroup(Group):
     
     def autoCreate(self, city, state):
         city_state = city + ", " + state
-        self.title = city_state + " Group"
+        self.title = self.makeTitle(city_state)
         self.description = "A group for sharing political information relevant to " + city_state + "."
         self.group_type = 'T'
         self.autogen = True
@@ -4831,6 +4848,11 @@ class TownGroup(Group):
         from lovegov.modernpolitics.recalculate import setCityGroupText
         setCityGroupText(self)
         return self
+
+    def makeTitle(self, city_state=None):
+        if not city_state:
+            city_state = self.getLocationVerbose()
+        return city_state
 
 #=======================================================================================================================
 # Politician group, is a sytem group for organizing politicians
