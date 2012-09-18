@@ -170,7 +170,9 @@ class PhysicalAddress(LGModel):
 
     def getVerbose(self, verbose=False):
         to_return = ''
-        city = str(self.city).capitalize()
+        city = self.city
+        if city:
+            city = str(city).capitalize()
         state = self.state
         if state and verbose:
             state = STATES_DICT[state].capitalize()
