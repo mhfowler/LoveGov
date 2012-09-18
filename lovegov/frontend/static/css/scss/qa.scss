@@ -342,6 +342,9 @@ div.question_stub {
   div.question-header {
     padding:5px;
     background-color:$light-gray;
+    td.question-column {
+      width:30px;
+    }
     a.question-title {
       @include inline-block;
       margin-left:8px;
