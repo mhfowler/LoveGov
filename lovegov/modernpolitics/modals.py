@@ -166,8 +166,11 @@ def getFullImageModal(request, vals):
     return ajaxRender("site/pages/profile/full_profile_image.html",vals,request)
 
 
-
-
+### get modal with full bio text for profile ###
+def getBioModal(request, vals):
+    profile = UserProfile.objects.get(id=request.POST['p_id'])
+    vals['profile'] = profile
+    return ajaxRender("site/pages/profile/bio_modal.html",vals,request)
 
 
 

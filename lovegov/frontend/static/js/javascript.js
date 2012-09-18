@@ -1104,6 +1104,11 @@ var feed_rank = 'H';
 var feed_topic = null;
 var question_rank = "R";
 function getFeed(container) {
+
+    var feed_nonce_pre_request = container.data('feed_nonce');
+    feed_nonce_pre_request += 1;
+    container.data('feed_nonce', feed_nonce_pre_request);
+
     var feed_start = container.data('feed_start');
     var replace = (feed_start==0);
     if (replace) {
@@ -1112,6 +1117,7 @@ function getFeed(container) {
         container.find(".feed_content").empty();
         container.find(".load_more").show();
         container.find(".everything_loaded_wrapper").hide();
+        // feed nonce increases when you replace content
     }
     var feed_types_json = JSON.stringify(feed_types);
     var feed = container.data('feed');
@@ -1246,6 +1252,12 @@ function getFeed(container) {
             data: data,
             success: function(data) {
                 var returned = eval('(' + data + ')');
+
+                var feed_nonce_post_request = container.data('feed_nonce');
+                if (feed_nonce_pre_request != feed_nonce_post_request) {
+                    return;
+                }
+
                 if (replace) {
                     container.find(".feed_content").html(returned.html);
                 }
@@ -1852,6 +1864,12 @@ bind(".group_invited_modal" , 'click' , null , function(event)
     getModal('group_invited_modal');
 });
 
+
+
+bind(".see_all_bio" , 'click' , null , function(event)
+{
+    getModal('see_all_bio', {'p_id':$(this).data('p_id')});
+});
 
 /***********************************************************************************************************************
  *

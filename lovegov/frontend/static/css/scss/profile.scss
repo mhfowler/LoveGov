@@ -287,6 +287,7 @@ div.profile-page {
             }
             div.profile-office {
               margin-top:15px;
+              float:left;
               div.office-title {
                 width:100%;
                 @include fontSize(16px);
@@ -318,7 +319,7 @@ div.profile-page {
               //padding-left:10px;
               width:100%;
               margin-top:6px;
-              max-height:150px;
+              max-height:250px;
               div.inline-div {
                 width:100%;
               }

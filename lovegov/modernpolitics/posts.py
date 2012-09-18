@@ -3014,6 +3014,10 @@ def getModal(request,vals={}):
     elif modal_name == "get_full_image_modal":
         modal_html = getFullImageModal(request,vals)
 
+    ## see all bio ##
+    elif modal_name == 'see_all_bio':
+        modal_html = getBioModal(request, vals)
+
     ## If a modal was successfully made, return it ##
     if modal_html:
         return HttpResponse( json.dumps({'modal_html':modal_html}) )
