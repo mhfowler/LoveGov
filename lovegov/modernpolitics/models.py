@@ -1254,7 +1254,7 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
         followGroupAction(self, p, True, "PRI")
 
         self.joinLocationGroups()
-        self.joinLocationElections()
+        self.followLocationElections()
 
     #-------------------------------------------------------------------------------------------------------------------
     # duck typing
@@ -1397,8 +1397,8 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
             self.joinTownGroup(self.location.city, self.location.state)
             self.joinStateGroup(self.location.state)
 
-            
-    def joinLocationElections(self):
+
+    def followLocationElections(self):
         from lovegov.modernpolitics.actions import followGroupAction
         if self.location:
 
