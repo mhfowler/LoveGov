@@ -24,6 +24,21 @@ def apacheBenchmark(domain, page, output_folder, num_requests=100, num_concurren
     command = "ab -n " + str(num_requests) + " -c " + str(num_concurrent) + " " + url + " > " + output_path
     os.system(command)
 
+
+def benchmarkPage(page, output_folder):
+
+    domain = "http://lovegov.com"
+
+    num_requests = 1000
+    concurrencies = reversed([1, 10, 20, 50, 100, 200])
+
+    url = domain + page
+    print "*** RUNNING APACHE BENCHMARK FOR " + url + " ***"
+
+    for num_concurrent in concurrencies:
+        print "concurrency " + str(num_concurrent)
+        apacheBenchmark(domain, page, output_folder, num_requests, num_concurrent)
+
 #-----------------------------------------------------------------------------------------------------------------------
 # Creates a summary of a users daily use.
 #-----------------------------------------------------------------------------------------------------------------------
@@ -203,10 +218,11 @@ def dailySummaryEmail(days_ago=1, days_for=0):
     for x in pa:
         try:
             user = x.user
-            alias = user.alias
-            if not alias in accessed:
-                accessed[alias] = {'user':user, 'session':Session()}
-            accessed[alias]['session'].pa.append(x)
+            if not user.isAnon():
+                alias = user.alias
+                if not alias in accessed:
+                    accessed[alias] = {'user':user, 'session':Session()}
+                accessed[alias]['session'].pa.append(x)
         except UserProfile.DoesNotExist:
             print "user does not exist for page access, " + str(x.id)
 

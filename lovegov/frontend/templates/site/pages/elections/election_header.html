@@ -24,9 +24,21 @@
             {% endif %}
         </span>
 
-
-        <span class="group-scale"> {{ group.getLocationVerbose }} </span>
+        {% with location=group.getLocationVerbose %}
+            {% if location %}
+                <span class="group-scale"> {{ location }} </span>
+            {% endif %}
+        {% endwith %}
         <span class="group-num-members"> {{ group.num_followers }} follower{{ group.num_followers|pluralize }} </span>
+
+        {% if info.running %}
+            {% with leader=info.running.0 %}
+                <div class="election-leader">
+                    <span class="leader-name"> {{ leader.get_name }} </span> is currently leading with
+                    <span class="leader-num">  {{ leader.num_supporters }} </span> supporters.
+                </div>
+            {% endwith %}
+        {% endif %}
 
     </div>
 
@@ -50,16 +62,8 @@
             </div>
 
             <div class="election-description-wrapper">
-                {% if info.running %}
-                    {% with leader=info.running.0 %}
-                        <div class="election-leader">
-                            <span class="leader-name"> {{ leader.get_name }} </span> is currently leading with
-                            <span class="leader-num">  {{ leader.num_supporters }} </span> supporters.
-                        </div>
-                    {% endwith %}
-                {% endif %}
                 <div class="election-description">
-                    {{ info.election.full_text }}
+                    {{ info.election.full_text|truncatechars:300|urlize|linebreaksbr }}
                 </div>
             </div>
 
@@ -83,7 +87,7 @@
 
         <div class="running">
             {% for user in info.running %}
-                <div class="election-card-wrapper {% if forloop.last %} last {% endif %}">
+                <div class="election-card-wrapper {% if forloop.last %} last {% endif %} {% if forloop.counter < 4 %} first-row {% endif %}">
                     {% include 'site/pages/elections/election_card.html'  %}
                 </div>
             {% empty %}

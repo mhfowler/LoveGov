@@ -7,7 +7,8 @@
         {% if i_created %}
             <a class="action-button finalize_button dummy_link" data-p_id="{{ petition.id }}"> finalize </a>
         {% endif %}
-        <div class="not-finalized">
+        <div class="not-finalized {% if in_feed_sign %} tooltip-top {% endif %}"
+             {% if in_feed_sign %}title="Before a petition is finalized by its author it cannot be signed."{% endif %}>
             {% if not in_feed_sign %}
                 This petition has not been finalized by its author. Before it's finalized a petition can be discussed and edited by
                 its author, but no one can sign it.

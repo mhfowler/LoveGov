@@ -16,7 +16,7 @@ div.election-card-wrapper.last {
 
 div.election-card {
   margin-right:30px;
-  margin-bottom:50px;
+  //margin-bottom:50px;
 
   div.card-top {
 
@@ -100,7 +100,8 @@ div.election-card {
 div.election-info {
   width:100%;
   display:block;
-  margin-bottom:20px;
+  //margin-bottom:20px;
+  height:120px;
   div.election-info-left {
     float:left;
     div.election-date {
@@ -115,26 +116,11 @@ div.election-info {
   }
   div.election-description-wrapper {
     float:left;
-    margin-left:10px;
     width: 500px;
-    div.election-leader {
-      color:$gray;
-      margin-top: 15px;
-      margin-left: 30px;
-      span.leader-name {
-        color:$black;
-        font-weight:bold;
-      }
-      span.leader-num {
-        color:$red;
-      }
-    }
     div.election-description {
       margin-top:5px;
       width: 500px;
-      padding-top: 12px;
-      padding-bottom: 12px;
-      padding-left: 30px;
+      padding-top: 5px;
     }
   }
   div.election-buttons {
@@ -150,9 +136,23 @@ div.running {
     width:100%;
     text-align:center;
     font-size:48px;
+    margin-bottom:30px;
   }
 }
 
+div.election-leader {
+  color:$gray;
+  float:left;
+  margin-left:10px;
+  margin-top:1px;
+  span.leader-name {
+    color:$black;
+    font-weight:bold;
+  }
+  span.leader-num {
+    color:$red;
+  }
+}
 
 /* election feed */
 div.election-feed-item-wrapper {
