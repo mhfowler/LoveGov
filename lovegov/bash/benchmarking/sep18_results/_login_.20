@@ -1,0 +1,44 @@
+This is ApacheBench, Version 2.3 <$Revision: 655654 $>
+Copyright 1996 Adam Twiss, Zeus Technology Ltd, http://www.zeustech.net/
+Licensed to The Apache Software Foundation, http://www.apache.org/
+
+Benchmarking lovegov.com (be patient)
+
+
+Server Software:        Apache/2.2.20
+Server Hostname:        lovegov.com
+Server Port:            80
+
+Document Path:          /login/
+Document Length:        37816 bytes
+
+Concurrency Level:      20
+Time taken for tests:   58.818 seconds
+Complete requests:      1000
+Failed requests:        87
+   (Connect: 0, Receive: 0, Length: 87, Exceptions: 0)
+Write errors:           0
+Total transferred:      38343323 bytes
+HTML transferred:       37911518 bytes
+Requests per second:    17.00 [#/sec] (mean)
+Time per request:       1176.352 [ms] (mean)
+Time per request:       58.818 [ms] (mean, across all concurrent requests)
+Transfer rate:          636.62 [Kbytes/sec] received
+
+Connection Times (ms)
+              min  mean[+/-sd] median   max
+Connect:       24   90  56.5     78     759
+Processing:   270 1077 325.2   1078    2097
+Waiting:      186  864 285.6    877    1770
+Total:        417 1168 333.5   1160    2288
+
+Percentage of the requests served within a certain time (ms)
+  50%   1160
+  66%   1304
+  75%   1387
+  80%   1422
+  90%   1587
+  95%   1721
+  98%   1961
+  99%   2107
+ 100%   2288 (longest request)
