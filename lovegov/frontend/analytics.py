@@ -24,6 +24,21 @@ def apacheBenchmark(domain, page, output_folder, num_requests=100, num_concurren
     command = "ab -n " + str(num_requests) + " -c " + str(num_concurrent) + " " + url + " > " + output_path
     os.system(command)
 
+
+def benchmarkPage(page, output_folder):
+
+    domain = "http://lovegov.com"
+
+    num_requests = 1000
+    concurrencies = reversed([1, 10, 20, 50, 100, 200])
+
+    url = domain + page
+    print "*** RUNNING APACHE BENCHMARK FOR " + url + " ***"
+
+    for num_concurrent in concurrencies:
+        print "concurrency " + str(num_concurrent)
+        apacheBenchmark(domain, page, output_folder, num_requests, num_concurrent)
+
 #-----------------------------------------------------------------------------------------------------------------------
 # Creates a summary of a users daily use.
 #-----------------------------------------------------------------------------------------------------------------------
