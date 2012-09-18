@@ -213,7 +213,10 @@ function action(dict, in_background, analyze) {
     var error_fun = function(jqXHR, textStatus, errorThrown) {
         if (pre_page_nonce == current_page_nonce) {
             if(jqXHR.status==403) {
-                //launch403Modal(jqXHR.responseText);
+                var result = $.parseJSON(jqXHR.responseText);
+                if(result['silent']=='false') {
+                    getModal("forbidden_modal");
+                }
                 return;
             }
             var super_error = dict['error'];

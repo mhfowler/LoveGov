@@ -2862,10 +2862,13 @@ def actionPOST(request, vals={}):
     if action not in ACTIONS:
         return HttpResponseBadRequest('The specified action ("%s") is not valid.' % (action))
     elif action in vals['prohibited_actions']:
+        response = {}
         if action in SILENT_FAIL_ACTIONS:
-            return HttpResponseForbidden("nothing happened.")
+            response['silent'] = 'true'
         else:
-            return HttpResponseForbidden("You are not permitted to perform the action \"%s\"." % action)
+            response['silent'] = 'false'
+            response['msg'] = "You are not permitted to perform the action \"%s\"." % action
+        return HttpResponseForbidden(json.dumps(response))
     else:
         action_func = action + '(request, vals)'
         return eval(action_func)
@@ -3017,6 +3020,10 @@ def getModal(request,vals={}):
     ## see all bio ##
     elif modal_name == 'see_all_bio':
         modal_html = getBioModal(request, vals)
+
+    ## forbidden modal ##
+    elif modal_name == "forbidden_modal":
+        modal_html = getForbiddenModal(request,vals)
 
     ## If a modal was successfully made, return it ##
     if modal_html:

@@ -782,7 +782,7 @@ ANONYMOUS_PROHIBITED_ACTIONS = [
     #'getElections',
     'hoverWebComparison',
     #'newRegister',
-    #'saveAnswer',
+    'saveAnswer',
     'signPetition',
     'finalizePetition',
     'supportPolitician',
