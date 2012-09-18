@@ -15,7 +15,7 @@ for x in c:
             incompatible[i][1].add(x)
 
 incompatible_list = incompatible.items()
-incompatible_list.sort(key=lambda x:x[1][0])
+incompatible_list.sort(key=lambda x:x[1][0], reverse=True)
 
 print "INCOMPATABILITY LOG"
 for x in incompatible_list:
