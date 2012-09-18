@@ -284,10 +284,14 @@ def login(request, to_page='home/', message="", vals={}):
     return response
 
 def loginRedirect(request, viewer, to_page):
+    if "login" in to_page or to_page in OUTSIDE_LOGIN or (to_page + '/') in OUTSIDE_LOGIN or 'password_recovery' in to_page:
+        to_page = '/home/'
+
     num_logins = viewer.num_logins
     if not num_logins:
         to_page = '/welcome/'
     viewer.incrementNumLogins()
+
     return shortcuts.redirect(to_page)
 
 def loginAuthenticate(request,user,to_page='home/'):

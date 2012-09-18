@@ -19,6 +19,10 @@ import os
 
 LOCAL = settings.LOCAL
 
+########################################## OUTSIDE LOGIN PAGES #########################################################
+
+OUTSIDE_LOGIN = ['/hello/', '/blog/']
+
 ########################################## BACKGROUND TASKS ############################################################
 
 BACKGROUND_TASKS=['L', # calculate like minded group
