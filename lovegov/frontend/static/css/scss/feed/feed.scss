@@ -325,7 +325,7 @@ div.feed-main
           }
           div.filter-by-state {
             float:left;
-            padding-top: 3px;
+            padding-top: 0px;
             margin-left:25px;
             display:inline;
             width:100px;
@@ -336,6 +336,15 @@ div.feed-main
             .select2-container .select2-choice span {
               position:relative;
               top:3px;
+            }
+            &.groups {
+              padding-top:2px;
+              a.select2-choice {
+                height:25px;
+                span {
+                  top:2px;
+                }
+              }
             }
           }
           div.filter-by-city {
@@ -419,6 +428,9 @@ div.feed-item-wrapper.no-top-comment {
       width:900px;
     }
   }
+  div.feed-petition-bar-wrapper {
+    width: 675px;
+  }
 }
 
 /* feed items */
@@ -466,7 +478,7 @@ div.feed-item-wrapper {
     }
 
     div.top-comment {
-      margin-top: 35px;
+      margin-top: 5px;
       margin-left: 45px;
       width:300px;
       border:1px solid $gray;
@@ -576,7 +588,7 @@ div.item-bottom {
   // float left
   a.created-avatar {
     float:left;
-    margin-top:4px;
+    margin-top:2px;
   }
   div.name-and-submitted {
     margin-left:8px;
@@ -648,8 +660,8 @@ span.content-title {
 /* petition bar */
 div.feed-petition-bar-wrapper {
   margin-top:10px;
-  max-width: 400px;
-  position:relative;
+  float:left;
+  width:310px;
   div.petition-bar-wrapper {
     div.petition-bar {
       border: 1px solid $gray;
@@ -665,40 +677,39 @@ div.feed-petition-bar-wrapper {
       color:$dark-gray;
     }
   }
+}
 
-  div.in-feed-sign {
-    //position:absolute;
-    //top: -24px;
-    //left: 90%;
-    position:relative;
-    left:100px;
-    top: -40px;
-    float: right;
-    div.sign-area {
-      a.action-button {
-        height: 18px;
-        font-size: 12px;
-        margin-bottom: 0px;
-        padding-top: 0px;
-        position: absolute;
-        left: -109px;
-        width: 100px;
-      }
-      div.signed {
-        width: 200px;
-        position: absolute;
-        left: -154px;
-        margin-bottom:0px;
-        margin-top:0px;
-      }
-      div.not-finalized {
-        font-style: italic;
-        margin-top: 3px;
-        margin-right:20px;
-      }
+div.in-feed-sign {
+  float: right;
+  position: relative;
+  padding-right: 13px;
+  top: 9px;
+
+  div.sign-area {
+    width: 150px;
+    a.action-button {
+      float:right;
+      font-size: 18px;
+      margin-bottom: 0px;
+      padding-top: 0px;
+      padding: 1px;
+      width: 150px;
+      position: relative;
+      top: -1px;
+    }
+    div.signed {
+      width: 200px;
+      margin-bottom:0px;
+      margin-top:0px;
+    }
+    div.not-finalized {
+      font-style: italic;
+      text-align: right;
+      margin-top:3px;
+      width:100px;
+      float: right;
     }
   }
-
 }
 
 

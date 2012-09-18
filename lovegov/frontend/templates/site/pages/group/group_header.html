@@ -25,10 +25,14 @@
             {% endif %}
         </span>
 
+        {% with location=group.getLocationVerbose %}
+            {% if location %}
+                <span class="group-scale"> {{ group.getLocationVerbose }} </span>
+            {% endif %}
+        {% endwith %}
 
-        <span class="group-scale"> {{ group.getLocationVerbose }} </span>
         <span class="group-num-members"> {{ group.num_members }} member{{ group.num_members|pluralize }} </span>
-        <span class="ampersand"> , </span>
+        {% comment %}<span class="ampersand"> , </span> {% endcomment %}
         <span class="group-num-followers"> {{ group.num_followers }} follower{{ group.num_followers|pluralize }} </span>
 
     </div>
@@ -122,10 +126,10 @@
                 <div class="group-full-text inline_editable" data-model="Content" data-id="{{ group.id }}">
                     <div class="inline-div being_edited not_editing_display">
                         <div class="text_unexpanded">
-                            {{ group.full_text|truncate_chars:200|linebreaksbr }}
+                            {{ group.full_text|urlize|truncate_chars:200|linebreaksbr }}
                         </div>
                         <div class="text_expanded">
-                            {{ group.full_text|linebreaksbr }}
+                            {{ group.full_text|urlize|linebreaksbr }}
                         </div>
                     </div>
                     {% if info.is_user_admin %}
