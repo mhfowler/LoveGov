@@ -308,7 +308,7 @@ def setStateGroupText(state_group):
 
 def setCityGroupText(city_group):
 
-    text = "This is an auto-generated group for people from " + city_group.getLocationVerbose() + ". " \
+    text = "This is an auto-generated group for people from " + city_group.getLocationVerbose(verbose=True) + ". " \
            "Use this group to stay up to date, share news, have discussions" \
            " and poll the community to find out where everyone stands. " \
            "If you have something specific you are working on, this is the place to generate awareness."
@@ -372,7 +372,23 @@ def recalculateAutoGenDescriptions():
 
     setLoveGovPollText()
 
+    setStateGroupTitles()
+    setTownGroupTitles()
 
+
+def setStateGroupTitles():
+    print "setting state group titles"
+    for s in StateGroup.objects.all():
+        s.title = s.makeTitle()
+        s.save()
+        print s.get_name()
+
+def setTownGroupTitles():
+    print "setting town group titles"
+    for t in TownGroup.objects.all():
+        t.title = t.makeTitle()
+        t.save()
+        print t.get_name()
 
 
 #### POLITCIIAN STUFF ####
