@@ -165,7 +165,9 @@ def getFullImageModal(request, vals):
         vals['viewee'] = UserProfile.lg.get_or_none(id=uid)
     return ajaxRender("site/pages/profile/full_profile_image.html",vals,request)
 
-
+def getForbiddenModal(request, vals):
+    vals['action'] = request.POST.get('action')
+    return ajaxRender("site/pages/modals/forbidden_modal.html",vals,request)
 
 
 

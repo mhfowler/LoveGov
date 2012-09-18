@@ -3011,6 +3011,9 @@ def getModal(request,vals={}):
     elif modal_name == "get_full_image_modal":
         modal_html = getFullImageModal(request,vals)
 
+    elif modal_name == "forbidden_modal":
+        modal_html = getForbiddenModal(request,vals)
+
     ## If a modal was successfully made, return it ##
     if modal_html:
         return HttpResponse( json.dumps({'modal_html':modal_html}) )

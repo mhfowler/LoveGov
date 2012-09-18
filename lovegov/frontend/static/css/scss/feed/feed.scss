@@ -837,10 +837,8 @@ div.item-ranking
 
   div.heart-plus
   {
-    @include staticImage('/images/icons/hearts/plusheart-gray.png');
-    background-repeat: no-repeat;
-    height: 18px;
-    width: 18px;
+    @extend .icon-sprite;
+    @extend .sprite-plusheart-gray-png;
     margin: 8px auto 4px auto;
     cursor: pointer;
 
