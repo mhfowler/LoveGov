@@ -9,7 +9,7 @@ incompatible = {}
 for x in c:
     for i in x.incompatible:
         if i not in incompatible:
-            incompatible[i] = (1, {x})
+            incompatible[i] = [1, {x}]
         else:
             incompatible[i][0] += 1
             incompatible[i][1].add(x)
