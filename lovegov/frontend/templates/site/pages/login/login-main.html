@@ -66,6 +66,10 @@
                 $(".state-div").hide();
                 $("#register-div").show();
             }
+            if (register_state == 'register') {
+                $(".state-div").hide();
+                $("#sign-up-div").show();
+            }
 
             if (login_state == 'login_error') {
                 $(".sign_in_dialogue").show();
