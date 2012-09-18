@@ -23,7 +23,7 @@
                     <div style="clear:both;"></div>
                 </div>
                 <div class="content-detail-description being_edited not_editing_display">
-                    {{ content.full_text|linebreaksbr }}
+                    {{ content.full_text|urlize|linebreaksbr }}
                 </div>
                 {% if iown and not petition.finalized %}
                     <div class="inline-edit-input inline_edit doing_editing_display">
