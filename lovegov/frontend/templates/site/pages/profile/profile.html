@@ -231,7 +231,7 @@
                 {% include 'site/pages/feed/feed.html' %}
             </div>
             <div class="activity_focus profile_focus">
-                {% include 'site/pages/profile/profile_activity.html' with p_id=profile.id %}
+                {% include 'site/pages/profile/feed_activity.html' with profile_id=profile.id special_feed="getUserActivity" %}
             </div>
         </div>
     </div>
