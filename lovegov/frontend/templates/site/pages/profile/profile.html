@@ -40,7 +40,7 @@
                                                 {{ primary_role.office.title }}
                                             </div>
                                             <div class="office-description">
-                                                {{ primary_role.office.summary }}
+                                                {{ primary_role.office.summary|truncatechars:200 }}
                                             </div>
                                         </div>
                                     {% elif primary_role.confirmed and not primary_role.current %}
@@ -79,9 +79,26 @@
                             {% endcomment %}
                     {% endif %}
                     <div class="bio-text inline-editable" data-model="UserProfile" data-id="{{ profile.id }}">
+
+                        <!-- case where office is above -->
+                        {% if not profile.politician %}
                         <div class="inline-div being_edited not_editing_display">
-                            {{ profile.bio|linebreaksbr }}
+                            {{ profile.bio|truncatechars:465|linebreaksbr }}
+                            {% if profile.bio|length > 465 %}
+                                <a class="see_all_bio see-all-bio" data-p_id="{{ profile.id }}"> see all </a>
+                            {% endif %}
                         </div>
+                          <!-- case where office is above -->
+                         {% else %}
+                            <div class="inline-div being_edited not_editing_display small-bio">
+                                {{ profile.bio|truncatechars:225|linebreaksbr }}
+                                {% if profile.bio|length > 225 %}
+                                    <a class="see_all_bio see-all-bio" data-p_id="{{ profile.id }}"> see all </a>
+                                {% endif %}
+                            </div>
+                        {% endif %}
+
+
                         {% if viewer.id == profile.id %}
                             <div class="doing_editing_display">
                                 <div class="inline-edit-input inline_edit">

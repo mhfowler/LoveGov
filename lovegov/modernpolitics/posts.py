@@ -3017,6 +3017,11 @@ def getModal(request,vals={}):
     elif modal_name == "get_full_image_modal":
         modal_html = getFullImageModal(request,vals)
 
+    ## see all bio ##
+    elif modal_name == 'see_all_bio':
+        modal_html = getBioModal(request, vals)
+
+    ## forbidden modal ##
     elif modal_name == "forbidden_modal":
         modal_html = getForbiddenModal(request,vals)
 

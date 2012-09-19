@@ -1,4 +1,6 @@
 <div class="has-answered-text match_object" data-to_compare_alias="{{ to_compare.alias }}" data-display="has_answered">
+
+    {% comment %}
     <div class="has-answered">
         <div class="unbold">
             {{ to_compare.first_name }} has answered
@@ -7,6 +9,8 @@
             {{ to_compare.num_answers }} questions
         </div>
     </div>
+    {% endcomment %}
+
     <div class="has-answered">
         <div class="unbold">
             You and {{ to_compare.first_name }} share

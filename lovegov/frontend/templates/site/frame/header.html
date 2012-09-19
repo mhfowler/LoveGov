@@ -2,38 +2,46 @@
 
 <header>
 
-    <!-- float right -->
-    <div class="triangle-area">
-        {% include 'site/frame/user_menu.html' %}
-        <div class="triangle-wrapper user_menu_toggle">
-            <span class="head-triangle"></span>
+    {% if not i_am_anonymous %}
+
+        <!-- float right -->
+        <div class="triangle-area">
+            {% include 'site/frame/user_menu.html' %}
+            <div class="triangle-wrapper user_menu_toggle">
+                <span class="head-triangle"></span>
+            </div>
         </div>
-    </div>
 
-    <span class="head-avatar">
-        <a href="{{ user.get_url }}">
-            {% include 'site/pieces/avatar.html' with user=user height='30' width='30' hoveroff=1 %}
-        </a>
-    </span>
+        <span class="head-avatar">
+            <a href="{{ user.get_url }}">
+                {% include 'site/pieces/avatar.html' with user=user height='30' width='30' hoveroff=1 %}
+            </a>
+        </span>
 
-    <div class="notifications-wrapper">
-        {% include 'site/frame/notifications/notifications_button.html'%}
+        <div class="notifications-wrapper">
+            {% include 'site/frame/notifications/notifications_button.html'%}
 
-        <span class="triangle"></span>
-        <div class="notifications-dropdown notifications_dropdown">
-            {% include 'site/frame/notifications/notification_dropdown.html' %}
+            <span class="triangle"></span>
+            <div class="notifications-dropdown notifications_dropdown">
+                {% include 'site/frame/notifications/notification_dropdown.html' %}
+            </div>
+            <div class="notifications-dropdown notifications_dropdown_loading">
+                {% include 'site/frame/notifications/notification_dropdown.html' with loading=1 %}
+            </div>
+            <div style="clear:both;"></div>
         </div>
-        <div class="notifications-dropdown notifications_dropdown_loading">
-            {% include 'site/frame/notifications/notification_dropdown.html' with loading=1 %}
-        </div>
-        <div style="clear:both;"></div>
-    </div>
 
-    <span class="header-privacy change_privacy_mode public_mode_button public-icon"  title="You are in public mode." data-mode="PUB"
-            {% if anonymous_mode %} style="display:none;" {% endif %}></span>
+        <span class="header-privacy change_privacy_mode public_mode_button public-icon"  title="You are in public mode." data-mode="PUB"
+                {% if anonymous_mode %} style="display:none;" {% endif %}></span>
 
-   <span class="header-privacy change_privacy_mode private_mode_button private-icon"  title="You are in private mode." data-mode="PRI"
-           {% if not anonymous_mode %} style="display:none;" {% endif %}></span>
+       <span class="header-privacy change_privacy_mode private_mode_button private-icon"  title="You are in private mode." data-mode="PRI"
+               {% if not anonymous_mode %} style="display:none;" {% endif %}></span>
+
+    {% else %}
+
+        <a href="/register/" class="red-btn">Sign up</a>
+
+    {% endif %}
 
     <div class="search">
         <input type="text">

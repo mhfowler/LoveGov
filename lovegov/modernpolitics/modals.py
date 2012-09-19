@@ -165,12 +165,16 @@ def getFullImageModal(request, vals):
         vals['viewee'] = UserProfile.lg.get_or_none(id=uid)
     return ajaxRender("site/pages/profile/full_profile_image.html",vals,request)
 
+### get modal with full bio text for profile ###
+def getBioModal(request, vals):
+    profile = UserProfile.objects.get(id=request.POST['p_id'])
+    vals['profile'] = profile
+    return ajaxRender("site/pages/profile/bio_modal.html",vals,request)
+
+### forbidden modal ###
 def getForbiddenModal(request, vals):
     vals['action'] = request.POST.get('action')
     return ajaxRender("site/pages/modals/forbidden_modal.html",vals,request)
-
-
-
 
 
 

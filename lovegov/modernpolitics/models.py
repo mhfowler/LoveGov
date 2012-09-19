@@ -1006,7 +1006,7 @@ class BasicInfo(models.Model):
     political_role = models.CharField(max_length=1, choices=ROLE_CHOICES, blank=True, null=True)
     invite_message = models.CharField(max_length=10000, blank=True, default="default")
     invite_subject = models.CharField(max_length=1000, blank=True, default="default")
-    bio = models.CharField(max_length=500, blank=True, null=True)
+    bio = models.CharField(max_length=5000, blank=True, null=True)
     phone_number = models.CharField(max_length=40, blank=True, null=True)
 
     class Meta:
