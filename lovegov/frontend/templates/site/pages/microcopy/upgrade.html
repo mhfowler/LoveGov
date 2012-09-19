@@ -1,11 +1,16 @@
+<!DOCTYPE html>
 <html>
 
 <head>
 <meta charset="utf-8">
 
-<title>LoveGov Upgrade your Browser</title>
+<title>LoveGov - Upgrade your Browser</title>
 
-<link rel="stylesheet" href="{{ STATIC_URL }}/css/compiled/master.css">
+<style>
+body {
+    font-family: Helvetica,Arial;
+}
+</style>
 
 </head>
 
@@ -17,28 +22,37 @@
 	<img src="http://dev.lovegov.com/static/images/login/splashlogo.png">
 </div>
 
-<div style="margin-top: 20px; width:600px; text-align:center; ">
-	<h3>Welcome to LoveGov</h3>
-	<h3>Unfortunately, we don't support your browser at this time. <br> To use LoveGov, please download one of the following browsers:</h3>
+<div style="margin-top: 20px; width:600px;">
+	<h3><p>Welcome to LoveGov.</p>
+	<p>Unfortunately, the browser you are using is either known to have issues with our website or is an older version
+        that has not been tested.</p>
+        <p> We recommend upgrading to the latest version of one of the browsers below.</p></h3>
 </div>
 
-<div style="margin-left: 100px; margin-right:auto; text-align:center; width: 600px;">
-	
-	<div style="float:left;  text-align:center;width: 250px;">
-		
-		<a style="float:left;margin-left: 15px;" href="http://www.mozilla.org/en-US/firefox/new/">
-			<img style="" src="http://www.mozilla.org/img/covehead/firefox/brand-toolkit/download/logo-only-preview.png"><p style="margin:none;">
-			Download Firefox</p></a>
-	</div>
-	<div style="float:left; text-align:center;width: 250px;">
-		
-		<a style="float:left;margin-left: 15px;" href="https://www.google.com/intl/en/chrome/browser/">
-			<img style="" src="{{ STATIC_URL }}/images/icons/chrome_logo.png">
-			<p style="margin:none;">Download Chrome</p></a>
- 	</div>
+<div style="margin-left: auto; margin-right:auto; width: 600px;">
 
-    <a href='/continue' class="continue" style="margin-top:100px;">
-        or continue at your own risk.
+    <div style='text-align: center'><img src="{{ STATIC_URL }}/images/browsers.png"></div>
+
+    <p>The following browsers are recommended for use by LoveGov:</p>
+
+    <ul style="float: left">
+        <li>Chrome 13+ (or Chromium)</li>
+        <li>Firefox 7+</li>
+        <li>Opera 10.5+</li>
+        <li>Safari 4.0+</li>
+        <li>IE 9, or preferably IE 10</li>
+     </ul>
+
+    <ul style="float: left">
+        <li><a href="http://www.google.com/chrome">Get latest Chrome version</a></li>
+        <li><a href="http://www.mozilla.org/en-US/firefox/new/">Get latest Firefox version</a></li>
+        <li><a href="http://www.opera.com/">Get latest Opera version</a></li>
+        <li><a href="http://www.apple.com/safari/">Get latest Safari version</a></li>
+        <li><a href="http://windows.microsoft.com/en-us/internet-explorer/products/ie/home">Get latest IE version</a></li>
+    </ul>
+
+    <a href='/continue' style="margin-top:200px; clear: both; display: block; text-align: center; ">
+        or continue at your own risk
     </a>
 </div>
 

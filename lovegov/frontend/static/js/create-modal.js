@@ -268,7 +268,7 @@ function getLinkInfo(link, input) {
         data: {'action':'getLinkInfo','remote_url':link},
         success: function(data)
         {
-            var obj = eval('(' + data + ')');
+            var obj = $.parseJSON(data);
             link_image.fadeIn(200);
             link_image.children("div.field").html(obj.html);
             input.closest('div.form').find('input.title').val(obj.link_title);

@@ -64,7 +64,7 @@ function loadBillSelect2() {
                 }
             },
             results: function(data, page) {
-                var returned = eval('(' + data + ')');
+                var returned = $.parseJSON(data);
                 return {'results': returned.subjects};
             }
         },

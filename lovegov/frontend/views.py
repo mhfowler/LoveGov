@@ -170,7 +170,7 @@ def underConstruction(request):
     return render_to_response('site/pages/microcopy/construction.html')
 
 def upgrade(request):
-    return render_to_response('site/pages/microcopy/upgrade.html')
+    return render_to_response('site/pages/microcopy/upgrade.html', {'STATIC_URL': settings.STATIC_URL})
 
 def continueAtOwnRisk(request):
     response = shortcuts.redirect("/web/")

@@ -91,7 +91,7 @@ function search(str) {
         {
             // ensure desired search hasn't changed
             if(lastSearch!=str) return;
-            var obj = eval('(' + data + ')');
+            var obj = $.parseJSON(data);
             var dropdown = $("div.search div.search-dropdown");
             dropdown.html(obj.html);
             dropdown.fadeIn(100);

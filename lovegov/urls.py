@@ -67,6 +67,7 @@ urlpatterns += patterns('',
     (r'^unsubscribe/(\S+)/$', views.unsubscribe),
     (r'^underconstruction/$', views.underConstruction),
     (r'^500/$', 'django.views.generic.simple.direct_to_template', {'template': '500.html', 'extra_context': {'STATIC_URL': settings.STATIC_URL}}),
+    (r'^robots.txt', 'django.views.generic.simple.direct_to_template', {'template': 'robots.txt'}),
 
     # home pages
     (r'^welcome/$', viewWrapper(views.welcome, requires_login=True)),

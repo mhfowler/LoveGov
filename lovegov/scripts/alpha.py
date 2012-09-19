@@ -12,6 +12,7 @@ from lovegov.scripts.createPresidentialCandidates import answerQuestions
 from lovegov.scripts.createPresidentialCandidates import createPoliticianProfiles
 from lovegov.modernpolitics.backend import *
 from lovegov.base_settings import PROJECT_PATH
+from django.template.loader import render_to_string
 
 
 # python
@@ -301,3 +302,18 @@ def scriptCreateResponses(args=None):
 #                    response.save()
 
                 print "+II+ Successfully answered question for " + politician_name[0]
+
+def sendStudentGroupInviteEmail():
+    path = os.path.join(PROJECT_PATH, 'frontend/excel/AcademiaBundle_RI.xls')
+    wb = open_workbook(path)
+    sheet = wb.sheet_by_index(0)
+    num = 0
+    for row in range(1,sheet.nrows):
+        student_name = sheet.cell(row,0).value
+        student_affiliation = sheet.cell(row,1).value
+        student_email = sheet.cell(row,2).value
+        email_message = render_to_string('emails/lovegov/student_group_invite.html',{'student_name': student_name, 'student_affiliation': student_affiliation})
+        send_mail('LoveGov', email_message, 'joschka@lovegov.com', [student_email])
+        print 'Name: %s, Affiliation: %s, Email: %s' % (student_name, student_affiliation, student_email)
+        num += 1
+    return num
