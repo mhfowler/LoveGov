@@ -1163,7 +1163,7 @@ function getFeed(container) {
     }
     else if (feed == 'getUserActivity')
     {
-        var p_id = container.data('p_id');
+        var p_id = getValueFromKey(container, 'profile_id');
         data = { 'action': 'getUserActivity', 'feed_start':feed_start, 'p_id':p_id };
     }
     else if (feed == 'getElections')

@@ -2015,7 +2015,7 @@ def getUserActivity(request, vals={}):
     if 'feed_start' in request.POST:
         num_actions = int(request.POST['feed_start'])
 
-    actions = user_prof.getActivity(num=NOTIFICATION_INCREMENT,start=num_actions)
+    actions = user_prof.getActivity(num=10,start=num_actions)
 
     num_actions += len(actions)
 
