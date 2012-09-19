@@ -9,21 +9,13 @@ class Migration(SchemaMigration):
 
     def forwards(self, orm):
 
-        # Changing field 'UserProfile.first_login_tasks'
-        db.alter_column('modernpolitics_userprofile', 'first_login_tasks', self.gf('django.db.models.fields.CharField')(max_length=50))
-        # Adding field 'News.link_title'
-        db.add_column('modernpolitics_news', 'link_title',
-                      self.gf('django.db.models.fields.TextField')(default='No title'),
-                      keep_default=False)
-
+        # Changing field 'UserProfile.bio'
+        db.alter_column('modernpolitics_userprofile', 'bio', self.gf('django.db.models.fields.CharField')(max_length=5000, null=True))
 
     def backwards(self, orm):
 
-        # Changing field 'UserProfile.first_login_tasks'
-        db.alter_column('modernpolitics_userprofile', 'first_login_tasks', self.gf('django.db.models.fields.CharField')(max_length=10))
-        # Deleting field 'News.link_title'
-        db.delete_column('modernpolitics_news', 'link_title')
-
+        # Changing field 'UserProfile.bio'
+        db.alter_column('modernpolitics_userprofile', 'bio', self.gf('django.db.models.fields.CharField')(max_length=500, null=True))
 
     models = {
         'auth.group': {
@@ -132,6 +124,16 @@ class Migration(SchemaMigration):
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'politician': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'claimers'", 'to': "orm['modernpolitics.UserProfile']"}),
             'user': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'claims'", 'to': "orm['modernpolitics.UserProfile']"})
+        },
+        'modernpolitics.clientanalytics': {
+            'Meta': {'object_name': 'ClientAnalytics'},
+            'action': ('django.db.models.fields.CharField', [], {'max_length': '50', 'null': 'True'}),
+            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'ipaddress': ('django.db.models.fields.IPAddressField', [], {'default': "'255.255.255.255'", 'max_length': '15', 'null': 'True'}),
+            'load_time': ('django.db.models.fields.IntegerField', [], {}),
+            'page': ('django.db.models.fields.CharField', [], {'max_length': '500'}),
+            'user': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['modernpolitics.UserProfile']"}),
+            'when': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'})
         },
         'modernpolitics.comment': {
             'Meta': {'object_name': 'Comment', '_ormbases': ['modernpolitics.Content']},
@@ -842,7 +844,7 @@ class Migration(SchemaMigration):
             'alias': ('django.db.models.fields.CharField', [], {'max_length': '200', 'blank': 'True'}),
             'anonymous': ('django.db.models.fields.related.ManyToManyField', [], {'to': "orm['modernpolitics.AnonID']", 'symmetrical': 'False'}),
             'background_tasks': ('django.db.models.fields.CharField', [], {'default': "''", 'max_length': '10', 'blank': 'True'}),
-            'bio': ('django.db.models.fields.CharField', [], {'max_length': '500', 'null': 'True', 'blank': 'True'}),
+            'bio': ('django.db.models.fields.CharField', [], {'max_length': '5000', 'null': 'True', 'blank': 'True'}),
             'blog_url': ('django.db.models.fields.TextField', [], {'blank': 'True'}),
             'confirmation_link': ('django.db.models.fields.CharField', [], {'max_length': '500'}),
             'confirmed': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
