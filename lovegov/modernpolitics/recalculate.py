@@ -1,5 +1,39 @@
 from lovegov.modernpolitics.initialize import *
 
+### recalculate anon user stuff ###
+def recalculateAnonUserStuff():
+    from lovegov.modernpolitics.actions import followGroupAction
+    anon = getAnonUser()
+
+    for g in anon.getRealGroups():
+        g.removeMember(anon)
+
+    for g in anon.getSubscriptions():
+        followGroupAction(anon, g, False, "PRI")
+
+    for p in Party.objects.all():
+        p.joinMember(anon)
+
+    anon.autoSubscribe()
+
+    e = Election.lg.get_or_none(alias="massachusetts_us_senate")
+    if e: followGroupAction(anon, e, True, "PRI")
+
+    anon.location = None
+    anon.bio = "If you're just visiting, " \
+               "and haven't decided to join our community yet, then you are logged in as the anonymous user. "\
+                "Until you register, you can browse what's happening on LoveGov but you can't post, answer questions " \
+                "or vote on content. " \
+               "We require registration to help avoid spam, bots and destructive activity. "\
+                "\n\n" \
+                "If you wish to continue using the site as anonymous after you sign up, you can always switch to anonymous mode. " \
+                "When you are in anonymous mode, anything you do will appear to other users as though the anonymous user did it. " \
+                "Just because you don't feel comfortable tying your activity to your personal identity doesn't mean your voice " \
+                "shouldn't be heard. The anonymous user represents the views and activity of everyone using LoveGov anonymously. "
+
+    anon.save()
+
+
 
 ### recalculate user aliases ###
 def recalculateUserAliases():

@@ -580,12 +580,14 @@ div.profile-questions {
 
   div.breakdown-wrapper {
     float:left;
-    width:800px;
+    width:750px;
   }
 
   div.has-answered-text {
     @include fontSize(16px);
     float:left;
+    width:200px;
+    margin-top:35px;
   }
 
   div.questions-feed-wrapper {
