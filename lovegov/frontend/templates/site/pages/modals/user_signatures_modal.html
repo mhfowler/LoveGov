@@ -1,0 +1,16 @@
+<div class="signatures-modal-wrapper">
+
+	<div class="modal-header"> Petitions signed by <a href="{{ u.get_url }}"> {{ u.get_name }} </a> </div>
+
+
+    <div class="signatures-wrapper">
+    	<ul>
+        {% for x in petitions %}
+
+            <li><a href="{{x.get_url}}">{{x.title}}</a></li>
+
+        {% endfor %}
+    	</ul>
+    </div>
+
+</div>

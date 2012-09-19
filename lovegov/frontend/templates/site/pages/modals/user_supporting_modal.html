@@ -1,0 +1,14 @@
+<div class="supporting-modal-wrapper">
+
+	<div class="modal-header"> Politicians supported by <a href="{{ u.get_url }}"> {{ u.get_name }} </a> </div>
+
+
+    <div class="supporting-wrapper">
+        {% for x in u.getPoliticians %}
+
+            {% include 'site/pieces/avatar_href.html' with user=x width="50" height="50" %}
+
+        {% endfor %}
+    </div>
+
+</div>

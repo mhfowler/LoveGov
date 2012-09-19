@@ -155,6 +155,7 @@ div.profile-page {
             height:60px;
             border: 1px solid $gray;
             text-align:center;
+            cursor: pointer;
             div.num {
               margin-top:14px;
               @include fontSize(36px);
@@ -394,7 +395,6 @@ div.profile-page {
                 float:right;
                 margin-top:3px;
                 margin-right:3px;
-                display:none;
               }
             }
 

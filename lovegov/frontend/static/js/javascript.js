@@ -3114,6 +3114,43 @@ function updateStatsObject(stats) {
     });
 }
 
+bind('div.stats-box.following_user_modal_link', 'click', function(e) {
+    var p_id = $('div.stats_object').data('p_id');
+    getModal('following_user_modal', {'user': p_id});
+});
+
+bind('div.stats-box.user_following_modal_link', 'click', function(e) {
+    var p_id = $('div.stats_object').data('p_id');
+    getModal('user_following_modal', {'user': p_id});
+});
+
+bind('div.stats-box.posts_link', 'click', function(e) {
+    var posts_tab = $('a.profile_tab.posts_tab')
+    posts_tab.click();
+    $('body').animate({
+        scrollTop: posts_tab.offset().top
+    }, 1000);
+});
+
+bind('div.stats-box.answers_link', 'click', function(e) {
+    window.location.href = 'worldview';
+});
+
+bind('div.stats-box.signatures_link', 'click', function(e) {
+    var p_id = $('div.stats_object').data('p_id');
+    getModal('user_signatures_modal', {'user': p_id});
+});
+
+bind('div.stats-box.groups_link, span.profile-groups.breakdown-box a.link-all', 'click', function(e) {
+    var p_id = $('div.stats_object').data('p_id');
+    getModal('user_groups_modal', {'user': p_id});
+});
+
+bind('span.profile-politicians.breakdown-box a.link-all', 'click', function(e) {
+    var p_id = $('div.stats_object').data('p_id');
+    getModal('user_supporting_modal', {'user': p_id});
+});
+
 /***********************************************************************************************************************
  *
  *     ~Histogram

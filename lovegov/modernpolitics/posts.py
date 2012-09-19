@@ -3025,6 +3025,21 @@ def getModal(request,vals={}):
     elif modal_name == "forbidden_modal":
         modal_html = getForbiddenModal(request,vals)
 
+    elif modal_name == "user_following_modal":
+        modal_html = getUserFollowingModal(request,vals)
+
+    elif modal_name == "following_user_modal":
+        modal_html = getFollowingUserModal(request,vals)
+
+    elif modal_name == "user_signatures_modal":
+        modal_html = getUserSignaturesModal(request,vals)
+
+    elif modal_name == "user_groups_modal":
+        modal_html = getUserGroupsModal(request,vals)
+
+    elif modal_name == "user_supporting_modal":
+        modal_html = getUserSupportingModal(request,vals)
+
     ## If a modal was successfully made, return it ##
     if modal_html:
         return HttpResponse( json.dumps({'modal_html':modal_html}) )

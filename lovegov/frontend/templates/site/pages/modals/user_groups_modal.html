@@ -1,0 +1,16 @@
+<div class="groups-modal-wrapper">
+
+	<div class="modal-header"> Groups <a href="{{ u.get_url }}"> {{ u.get_name }} </a> has joined</div>
+
+
+    <div class="groups-wrapper">
+    	<ul>
+        {% for x in u.getRealGroups %}
+
+            <li><a href="{{x.get_url}}">{{x.title}}</a></li>
+
+        {% endfor %}
+    	</ul>
+    </div>
+
+</div>

@@ -1,0 +1,14 @@
+<div class="following-modal-wrapper">
+
+	<div class="modal-header"> People <a href="{{ u.get_url }}"> {{ u.get_name }} </a> is following </div>
+
+
+    <div class="following-wrapper">
+        {% for x in u.getIFollow %}
+
+            {% include 'site/pieces/avatar_href.html' with user=x width="50" height="50" %}
+
+        {% endfor %}
+    </div>
+
+</div>

@@ -2,7 +2,7 @@
 
     <div class="stats-row first">
         {% if not profile.politician %}
-            <div class="stats-box white-box left-box">
+            <div class="stats-box white-box left-box following_user_modal_link">
                 <div class="num">
                     {{ profile.num_followme}}
                 </div>
@@ -10,7 +10,7 @@
                     follower{{ profile.num_followme|pluralize }}
                 </div>
             </div>
-            <div class="stats-box gray-box right-box">
+            <div class="stats-box gray-box right-box user_following_modal_link">
                 <div class="num">
                     {{ profile.num_ifollow }}
                 </div>
@@ -32,7 +32,7 @@
     </div>
 
     <div class="stats-row">
-        <div class="stats-box gray-box left-box">
+        <div class="stats-box gray-box left-box groups_link">
             <div class="num">
                 {{ profile.num_groups}}
             </div>
@@ -40,7 +40,7 @@
                 group{{ profile.num_groups|pluralize }}
             </div>
         </div>
-        <div class="stats-box gray-box  right-box">
+        <div class="stats-box gray-box  right-box posts_link">
             <div class="num">
                 {{ profile.num_posts}}
             </div>
@@ -51,15 +51,15 @@
         <div style="clear:both;"></div>
     </div>
     <div class="stats-row">
-        <div class="stats-box gray-box left-box">
+        <div class="stats-box gray-box left-box answers_link">
             <div class="num">
                 {{ profile.num_answers }}
             </div>
             <div class="label">
                 answer{{ profile.num_answers|pluralize }}
             </div>
-        </div>
-        <div class="stats-box gray-box right-box">
+        </div></a>
+        <div class="stats-box gray-box right-box signatures_link">
             <div class="num">
                 {{ profile.num_signatures }}
             </div>
@@ -67,6 +67,7 @@
                 signature{{ profile.num_signatures|pluralize }}
             </div>
         </div>
+        <div style="clear:both;"></div>
     </div>
 
 </div>

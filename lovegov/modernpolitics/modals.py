@@ -176,6 +176,41 @@ def getForbiddenModal(request, vals):
     vals['action'] = request.POST.get('action')
     return ajaxRender("site/pages/modals/forbidden_modal.html",vals,request)
 
+def getUserFollowingModal(request,vals):
+    uid = request.POST.get('user')
+    vals['u'] = UserProfile.lg.get_or_none(id=uid)
+    return ajaxRender("site/pages/modals/user_following_modal.html",vals,request)
+
+def getFollowingUserModal(request,vals):
+    uid = request.POST.get('user')
+    vals['u'] = UserProfile.lg.get_or_none(id=uid)
+    return ajaxRender("site/pages/modals/following_user_modal.html",vals,request)
+
+def getUserGroupsModal(request,vals):
+    uid = request.POST.get('user')
+    vals['u'] = UserProfile.lg.get_or_none(id=uid)
+    return ajaxRender("site/pages/modals/user_groups_modal.html",vals,request)
+
+def getUserSignaturesModal(request,vals):
+    uid = request.POST.get('user')
+    u = UserProfile.lg.get_or_none(id=uid)
+    vals['u'] = u
+    vals['petitions'] = u.petitions.all()
+    return ajaxRender("site/pages/modals/user_signatures_modal.html",vals,request)
+
+def getUserSupportingModal(request,vals):
+    uid = request.POST.get('user')
+    vals['u'] = UserProfile.lg.get_or_none(id=uid)
+    return ajaxRender("site/pages/modals/user_supporting_modal.html",vals,request)
+
+
+
+
+
+
+
+
+
 
 
 
