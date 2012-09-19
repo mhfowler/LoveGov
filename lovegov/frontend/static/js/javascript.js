@@ -279,7 +279,7 @@ function updatePage() {
         'data': {'action':'updatePage', 'log-ignore':true},
         success: function(data)
         {
-            var obj = eval('(' + data + ')');
+            var obj = $.parseJSON(data);
 
             // update notifications num
             if (obj.notifications_num == 0) {
@@ -330,7 +330,7 @@ function ajaxReload(theurl, loadimg)
         success: function(data)
         {
             if (pre_page_nonce == current_page_nonce) {
-                var returned = eval('(' + data + ')');
+                var returned = $.parseJSON(data);
                 History.pushState( {k:1}, "LoveGov: Beta", returned.url);
                 $('body').css("overflow","scroll");
                 $('.main_content').css("top","0px");
@@ -495,7 +495,7 @@ function homeReload(theurl) {
             {
                 if (pre_page_nonce == current_page_nonce) {
                     $(".home_reloading").hide();
-                    var returned = eval('(' + data + ')');
+                    var returned = $.parseJSON(data);
                     History.pushState( {k:1}, "LoveGov: Beta", returned.url);
                     path = returned.url;
                     $(".home_focus").html(returned.focus_html);
@@ -539,7 +539,7 @@ function getFBInviteFriends() {
             data: {'action':'getFBInviteFriends', 'log-ignore':true },
             success: function(data)
             {
-                var returned = eval('(' + data + ')');
+                var returned = $.parseJSON(data);
                 invite_wrapper.html(returned.html)
             }
         });
@@ -917,7 +917,7 @@ function vote(wrapper, content_id, v)
         data: {'action':'vote','c_id':content_id, 'vote':v },
         success: function(data)
         {
-            var returned = eval('(' + data + ')');
+            var returned = $.parseJSON(data);
             var my_vote = parseInt( returned.my_vote );
             var status = returned.status;
 
@@ -960,7 +960,7 @@ function nextPollQuestion(sample_question, direction) {
     action({
         data:data,
         success:function(data) {
-            var returned = eval('(' + data + ')');
+            var returned = $.parseJSON(data);
             sample_question.replaceWith(returned.html);
         }
     });
@@ -1254,7 +1254,7 @@ function getFeed(container) {
     action({
             data: data,
             success: function(data) {
-                var returned = eval('(' + data + ')');
+                var returned = $.parseJSON(data);
 
                 var feed_nonce_post_request = container.data('feed_nonce');
                 if (feed_nonce_pre_request != feed_nonce_post_request) {
@@ -1528,7 +1528,7 @@ function editUserProfile(info,being_edited, not_editing_display)
         'data': prof_data,
         success: function(data)
         {
-            var obj = eval('(' + data + ')');
+            var obj = $.parseJSON(data);
             being_edited.text(obj.value);
             not_editing_display.show();
         }
@@ -1547,7 +1547,7 @@ function editContent( c_id , info , being_edited, not_editing_display )
 
         success: function(data)
         {
-            var obj = eval('(' + data + ')');
+            var obj = $.parseJSON(data);
             being_edited.html(obj.value);
             not_editing_display.show();
         }
@@ -1562,7 +1562,7 @@ function editExplanation(r_id, q_id, explanation, being_edited, not_editing_disp
         'data': {'action':'editExplanation', 'q_id':q_id, 'r_id':r_id, 'explanation':explanation},
         success: function(data)
         {
-            var obj = eval('(' + data + ')');
+            var obj = $.parseJSON(data);
             being_edited.html('"' + obj.explanation + '"');
             not_editing_display.show();
         }
@@ -1577,7 +1577,7 @@ function editPetitionFullText(p_id, full_text, being_edited, not_editing_display
 
         success: function(data)
         {
-            var obj = eval('(' + data + ')');
+            var obj = $.parseJSON(data);
             being_edited.html(obj.value);
             not_editing_display.show();
         }
@@ -1766,7 +1766,7 @@ bind(".r_register", 'click', null, function(event) {
         success: function(data)
         {
             form.find(".register_gif").hide();
-            var returned = eval('(' + data + ')');
+            var returned = $.parseJSON(data);
 
             if (returned.success) {
                 window.location.href = "/hello/";
@@ -1915,7 +1915,7 @@ function userFollow(event,div,follow,p_id)
             },
             success: function(data)
             {
-                var returned = eval('(' + data + ')');
+                var returned = $.parseJSON(data);
                 var response = returned.response;
 
                 if( response == "followed")
@@ -1974,7 +1974,7 @@ function supportPolitician(div,support,p_id)
             },
             success: function(data)
             {
-                var returned = eval('(' + data + ')');
+                var returned = $.parseJSON(data);
                 div.replaceWith(returned.html);
                 updateStats();
             }
@@ -2014,7 +2014,7 @@ function groupJoin(event,div,follow,g_id)
             },
             success: function(data)
             {
-                var returned = eval('(' + data + ')');
+                var returned = $.parseJSON(data);
                 if (follow) {
                     var follow_button = div.siblings(".group_follow_button");
                     followGroup(follow_button, follow, g_id);
@@ -2161,7 +2161,7 @@ function followGroup(div,follow,g_id)
             },
             success: function(data)
             {
-                var returned = eval('(' + data + ')');
+                var returned = $.parseJSON(data);
                 if (div.length!=0) {
                     div.replaceWith(returned.html);
                 }
@@ -2361,7 +2361,7 @@ bind( 'div.notifications_dropdown_button' , 'click' , null , function(event)
                 'dropdown':'true'},
             success: function(data)
             {
-                var obj = eval('(' + data + ')');
+                var obj = $.parseJSON(data);
                 dropdown.html(obj.html);
                 $(".notifications_dropdown_button").text(obj.num_still_new);
                 loading.hide();
@@ -2395,7 +2395,7 @@ bind( ".notification_user_follow" , 'click' , null , function(event)
         },
         success: function(data)
         {
-            var returned = eval('(' + data + ')');
+            var returned = $.parseJSON(data);
             var response = returned.response;
 
             if( response == "followed")
@@ -2508,7 +2508,7 @@ bind('#edit_admin_submit' , 'click' , null , function(e)
             data: {'action': 'addAdmins', 'admins': JSON.stringify(new_admins), 'g_id':g_id},
             success: function(data)
             {
-                var returned = eval('(' + data + ')');
+                var returned = $.parseJSON(data);
                 $('#edit_admin_submit_message').html('Administrator Added');
                 $('#edit_admin_submit_message').show();
                 $('#edit_admin_submit_message').fadeOut(3000);
@@ -2532,7 +2532,7 @@ bind('#members_remove_submit' , 'click' , null , function(e)
             data: {'action': 'removeMembers', 'members': JSON.stringify(members), 'g_id':g_id},
             success: function(data)
             {
-                var returned = eval('(' + data + ')');
+                var returned = $.parseJSON(data);
                 var return_message = $('#members_remove_submit_message');
                 return_message.html('Members Removed');
                 return_message.show();
@@ -2661,7 +2661,7 @@ function loadHoverComparison()
                         'data': {'action':'hoverWebComparison','href':href},
                         'success': function(data)
                         {
-                            var obj = eval('(' + data + ')');
+                            var obj = $.parseJSON(data);
                             $('#comparison-hover-loading-img').hide();
                             $('#comparison-hover').visualComparison(obj,true);
                         },
@@ -2751,7 +2751,7 @@ function loadHoverComparison()
  'data': {'action':'hoverComparison','href':href},
  'success': function(data)
  {
- var obj = eval('(' + data + ')');
+ var obj = $.parseJSON(data);
  $('#comparison-hover-loading-img').hide();
  $('#comparison-hover').html(obj.html);
  },
@@ -2864,7 +2864,7 @@ bind('.change_answer_privacy' , 'click' , null , function(event)
     action({
         data: {'action':'changeAnswerPrivacy', 'r_id':r_id, 'q_id':q_id},
         success: function(data) {
-            var returned = eval('(' + data + ')');
+            var returned = $.parseJSON(data);
             wrapper.replaceWith(returned.html);
             stub.data("privacy", returned.privacy);
         }
@@ -2930,7 +2930,7 @@ function saveAnswer(stub) {
     action({
         data: data,
         success: function(data) {
-            var returned = eval('(' + data + ')');
+            var returned = $.parseJSON(data);
             if (default_display=='responses') {
                 var new_element = $(returned.html);
                 var old_height = stub.height();
@@ -3061,7 +3061,7 @@ function updateMatch(match) {
     action({
         data: {'action':'updateMatch', 'to_compare_alias':to_compare_alias, 'display':display, 'log-ignore':true},
         success: function(data) {
-            var returned = eval('(' + data + ')');
+            var returned = $.parseJSON(data);
             var new_element = $(returned.html);
             match.replaceWith(new_element);
             if (display=='comparison_web') {
@@ -3107,7 +3107,7 @@ function updateStatsObject(stats) {
     action({
         data: data,
         success: function(data) {
-            var returned = eval('(' + data + ')');
+            var returned = $.parseJSON(data);
             var new_element = $(returned.html);
             stats.replaceWith(new_element);
         }
@@ -3373,7 +3373,7 @@ function updateHistogram(histogram_wrapper, recursive) {
             },
             success: function(data)
             {
-                var returned =  eval('(' + data + ')');
+                var returned =  $.parseJSON(data);
                 refreshHistogramData(histogram_wrapper, returned);
                 renderHistogram(histogram_wrapper);
                 getHistogramMembers(histogram_wrapper);
@@ -3473,7 +3473,7 @@ function getHistogramMembersHelper(histogram_wrapper, identical) {
                 data: post_data,
                 success: function(data)
                 {
-                    var returned =  eval('(' + data + ')');
+                    var returned =  $.parseJSON(data);
                     appendHistogramMembersHTML(histogram_wrapper, returned.html, returned.num, identical, replace);
                 }
             }
@@ -3548,7 +3548,7 @@ function getHistogramGroupMembers(histogram_wrapper) {
         },
         success: function(data)
         {
-            var returned =  eval('(' + data + ')');
+            var returned =  $.parseJSON(data);
 
             var $wrapper = $(".members-avatars");
             histogram_metadata.members_displayed += returned.num;
@@ -3718,7 +3718,7 @@ bind( '.pin_to_group' , 'click' , null , function(e)
         },
         success: function(data)
         {
-            var returned =  eval('(' + data + ')');
+            var returned =  $.parseJSON(data);
         }
     });
 });
@@ -3736,7 +3736,7 @@ bind('.pin_it' , 'click' , null , function(e)
         },
         success: function(data)
         {
-            var returned =  eval('(' + data + ')');
+            var returned =  $.parseJSON(data);
             $(".was_pinned").html(returned.html);
             $(".was_pinned").fadeIn(500);
         }
@@ -3775,7 +3775,7 @@ bind('.sign_button' , 'click' , null , function(e)
     action({
             data: {'action': 'signPetition', 'p_id':p_id},
             success: function(data) {
-                var returned = eval('(' + data + ')');
+                var returned = $.parseJSON(data);
                 sign_areas.replaceWith(returned.sign_area);
                 signers_sidebar.replaceWith(returned.signers_sidebar);
                 updateStats();
@@ -3791,7 +3791,7 @@ bind('.finalize_button' , 'click' , null , function(e)
     action({
             data: {'action': 'finalizePetition', 'p_id':p_id},
             success: function(data) {
-                var returned = eval('(' + data + ')');
+                var returned = $.parseJSON(data);
                 sign_areas.replaceWith(returned.sign_area);
                 signers_sidebar.replaceWith(returned.signers_sidebar);
             }}
@@ -3888,7 +3888,7 @@ bind('.find_address_button' , 'click' , null , function(e)
             data: {'action': 'submitTempAddress', 'address': address, 'city':city, 'state':state,
                 'zip':zip},
             success: function(data) {
-                var returned = eval('(' + data + ')');
+                var returned = $.parseJSON(data);
                 if (returned.success == -1) {
                     error_message.fadeIn();
                 }
@@ -3928,7 +3928,7 @@ bind('.ask_to_join' , 'click' , null , function(e)
     action({
             data: {'action': 'askToJoin', 'p_id':p_id},
             success: function(data) {
-                var returned = eval('(' + data + ')');
+                var returned = $.parseJSON(data);
                 $(".asked_message").replaceWith(returned.html);
             }}
     );
@@ -3950,7 +3950,7 @@ function findNewLikeMinded() {
                 data: {'action': 'findLikeMinded'},
                 success: function(data) {
 
-                    var returned = eval('(' + data + ')');
+                    var returned = $.parseJSON(data);
 
                     var like_minded_header = $(".like_minded_header");
                     // if on like minded page, update stuff visually
@@ -4076,7 +4076,7 @@ bind('.run_for' , 'click' , null , function(e)
     action({
         data: {'action': 'runForElection', 'e_id':e_id, 'run':1},
         success: function(data) {
-            var returned = eval('(' + data + ')');
+            var returned = $.parseJSON(data);
             button.replaceWith(returned.html);
         }
     });
@@ -4089,7 +4089,7 @@ bind('.stop_running_for' , 'click' , null , function(e)
     action({
         data: {'action': 'runForElection', 'e_id':e_id, 'run':0},
         success: function(data) {
-            var returned = eval('(' + data + ')');
+            var returned = $.parseJSON(data);
             button.replaceWith(returned.html);
         }
     });
@@ -4432,7 +4432,7 @@ bind('div.content-admin-actions span.content-admin-action-delete', 'click', func
                 'c_id': c_id,
             },
             success: function(data) {
-                var obj = eval('(' + data + ')');
+                var obj = $.parseJSON(data);
                 homeReload(obj.url);
             },
         });

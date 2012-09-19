@@ -24,7 +24,7 @@ bind("div.reply .tab-button.save", "click", function(event) {
             action({
                 'data': {'action':'comment', 'c_id': content_id, 'comment':text, 'depth': depth},
                 'success': function(data) {
-                    var returned = eval('(' + data + ')');
+                    var returned = $.parseJSON(data);
                     var html = returned['html'];
                     var cid = returned['cid'];
                     if(depth > 0) {
@@ -152,7 +152,7 @@ bind('div.load-more-comments', 'click', function(e) {
                 data: {'action': 'ajaxThread', 'c_id': cid, 'limit': num_to_load, 'start': next_start, 'new_comments': JSON.stringify(new_comments)},
                 success: function(data)
                 {
-                    var returned = eval('(' + data + ')');
+                    var returned = $.parseJSON(data);
                     var top_count = returned.top_count;
                     if(top_count==0) {
                         div_load_more.addClass('disabled');
