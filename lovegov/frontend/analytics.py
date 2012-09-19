@@ -11,6 +11,21 @@ from lovegov.modernpolitics.backend import *
 from operator import itemgetter
 
 #-----------------------------------------------------------------------------------------------------------------------
+# email logging
+#-----------------------------------------------------------------------------------------------------------------------
+def logEmails(file_path, which):
+    print "saving emails sent (" + file_path + ", " + which + ")"
+    f = open(file_path, 'r')
+    lines = f.readlines()
+    for x in lines:
+        try:
+            email = x.replace("\n", "")
+            EmailSent(email=email, which=which).save()
+            print "saved " + email
+        except:
+            print "+WW+ failed " + x
+
+#-----------------------------------------------------------------------------------------------------------------------
 # Benchmarking
 #-----------------------------------------------------------------------------------------------------------------------
 
