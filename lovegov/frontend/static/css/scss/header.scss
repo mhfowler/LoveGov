@@ -201,6 +201,23 @@ header
   span.head-triangle {
     @include triangle('down', $red, 6px);
   }
+
+
+  a.red-btn {
+    float: right;
+    margin-left: 29px;
+    margin-top: 13px;
+    font-size: 16px;
+    padding: 4px 30px;
+    padding-top: 7px;
+    height:auto;
+    /*
+    &:hover {
+      background-color:$red-light;
+      text-decoration:none;
+    }
+    */
+  }
 }
 
 

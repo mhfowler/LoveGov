@@ -106,6 +106,7 @@ def viewWrapper(view, requires_login=False):
                     vals['prohibited_actions'] = controlling_user.prohibited_actions
                 else:
                     user = getAnonUser()
+                    vals['i_am_anonymous'] = True
                     vals['prohibited_actions'] = ANONYMOUS_PROHIBITED_ACTIONS
 
                 # get user profile associated with controlling user

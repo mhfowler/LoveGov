@@ -25,7 +25,7 @@ def recalculateAnonUserStuff():
                 "Until you register, you can browse what's happening on LoveGov but you can't post, answer questions " \
                 "or vote on content. " \
                "We require registration to help avoid spam, bots and destructive activity. "\
-                "\n\n" \
+                "\n" \
                 "If you wish to continue using the site as anonymous after you sign up, you can always switch to anonymous mode. " \
                 "When you are in anonymous mode, anything you do will appear to other users as though the anonymous user did it. " \
                 "Just because you don't feel comfortable tying your activity to your personal identity doesn't mean your voice " \

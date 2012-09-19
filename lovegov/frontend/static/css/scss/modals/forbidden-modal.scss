@@ -3,15 +3,18 @@
 div.forbidden_modal {
     font-size:18px;
 	padding: 40px;
-	a.btn {
-		margin: 50px;
-		padding: 10px 30px;
-		background-color: $red;
-		color: white;
-	}
+    a.red-btn {
+      margin: 50px;
+    }
 	p {
 
 		margin-top: 50px;
 		text-align: center;
 	}
+}
+
+a.red-btn {
+  padding: 10px 30px;
+  background-color: $red;
+  color: white;
 }
