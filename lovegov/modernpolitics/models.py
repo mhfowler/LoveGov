@@ -5230,6 +5230,15 @@ class EmailList(LGModel):
     email = models.EmailField()
     when = models.DateTimeField(auto_now_add=True)
 
+def addEmailToEmailList(email):
+    if not EmailList.objects.filter(email=email):
+        EmailList(email=email).save()
+
+class EmailSent(LGModel):
+    email = models.EmailField()
+    which = models.CharField(max_length=50)
+    when = models.DateField(auto_now_add=True)
+
 #=======================================================================================================================
 # Stores an error message, for when a 500 server-error happens.
 #
