@@ -10,7 +10,7 @@
         <h6 style="margin-bottom:5px">Author</h6>
         <div class="blog_creator">
             {% load thumbnail %}
-            {% thumbnail blogPost.creator.getProfileImage.image "35x35" crop="center" format="PNG" as img %}
+            {% thumbnail blogPost.creator.getProfileImage.image "40x40" crop="center" format="PNG" as img %}
                 <img src="{{ img.url }}"/>
             {% endthumbnail %}
                 <div style="display:inline-block">
