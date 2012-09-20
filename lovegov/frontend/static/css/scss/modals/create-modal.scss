@@ -173,7 +173,32 @@ div.create-modal {
       div.question-answers {
         padding: 5px;
         background-color: white;
-
+        &.model {
+          display: none;
+        }
+        span.remove-answer {
+          float: right;
+          color: $red-light;
+          cursor: pointer;
+          margin: 10px;
+          font-size: 14px;
+          &:hover {
+            color: $red;
+          }
+        }
+      }
+      div.add-answer {
+        text-align: center;
+        background-color: white;
+        font-size: 14px;
+        padding: 4px 0;
+        cursor: pointer;
+        &:hover {
+          background-color: $light-gray;
+        }
+        &:active {
+          background-color: $red;
+        }
       }
       div.question-source {
         padding: 5px;
