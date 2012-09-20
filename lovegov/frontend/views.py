@@ -1332,5 +1332,5 @@ def state(request, state, vals={}):
 
 # for use by popups - popup will close and redirect to given redirect page
 def popupRedirect(request, vals={}):
-    redirect = request.REQUEST.get('redirect') or '/legislation/'
+    redirect = request.REQUEST.get('redirect') or '/home/'
     return HttpResponse("<script>window.opener.location.href = \""+redirect+"\"; window.close();</script>");
