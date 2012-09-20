@@ -3146,9 +3146,19 @@ bind('div.stats-box.groups_link, span.profile-groups.breakdown-box a.link-all', 
     getModal('user_groups_modal', {'user': p_id});
 });
 
+bind('div.stats-box.groups_link, span.profile-groups.breakdown-box a.link-all', 'click', function(e) {
+    var p_id = $('div.stats_object').data('p_id');
+    getModal('user_groups_modal', {'user': p_id});
+});
+
 bind('span.profile-politicians.breakdown-box a.link-all', 'click', function(e) {
     var p_id = $('div.stats_object').data('p_id');
     getModal('user_supporting_modal', {'user': p_id});
+});
+
+bind('div.stats-box.supporter-box', 'click', function(e) {
+    var p_id = $('div.stats_object').data('p_id');
+    getModal('supporting_user_modal', {'user': p_id});
 });
 
 /***********************************************************************************************************************
@@ -3688,7 +3698,7 @@ bind( '.facebook_share_button' , 'click' , null , function(e)
     var fb_share_id = $(this).data('fb_share_id');
 
     // open share modal in new window
-    window.open('http://www.facebook.com/dialog/feed?app_id='+FACEBOOK_APP_ID+'&to='+fb_share_id+'&display=popup&name=LoveGov&link=http://www.lovegov.com&redirect_uri=http://www.lovegov.com/popup_redirect&description='+
+    window.open('http://www.facebook.com/dialog/feed?app_id='+FACEBOOK_APP_ID+'&to='+fb_share_id+'&display=popup&name=LoveGov&link=http://lovegov.com&redirect_uri=http://lovegov.com/popup_redirect&description='+
         'LoveGov is a political social network that personalizes politics. We are making it easy to stay informed and get involved.',
         '_blank','width=450,height=300');
 });
@@ -3702,31 +3712,38 @@ bind( '.facebook_share_button' , 'click' , null , function(e)
  ***********************************************************************************************************************/
 bind( '.facebook_share_content_button' , 'click' , null , function(e)
 {
-    var data = {
-        'c_id' : $(this).data('c_id')
-    };
 
-    getModal('facebook_share_content_modal' , data);
+    var c_id = $(this).data('c_id');
+    var url = $(this).data('url');
+    var img = $(this).data('img');
+    var title= $(this).data('title');
+    var description = $(this).data('description');
+
+    window.open('http://www.facebook.com/dialog/feed?app_id='+FACEBOOK_APP_ID+'&link=http://lovegov.com/'+url+
+        '&picture=http://lovegov.com/'+img+'&name=' + title +
+        '&description= '+description+
+        '&redirect_uri=http://lovegov.com/popup_redirect&display=popup',
+        '_blank','width=450,height=300');
 });
 
 
-bind( '.facebook_share_content_submit' , 'click' , null , function(e)
-{
-    e.preventDefault();
-
-    var share_message = $(this).parents('.facebook_share_form').find('textarea[name="facebook_share_message"]').val();
-    var link = $(this).data('fb_link');
-
-    var url = "/fb/action/?fb_action=share";
-    url += "&message=" + share_message;
-
-    if( link != null ) { url += "&fb_link=" + link; }
-
-    url += "&action_to_page=" + window.location.pathname;
-
-    window.location.href = url
-
-});
+//bind( '.facebook_share_content_submit' , 'click' , null , function(e)
+//{
+//    e.preventDefault();
+//
+//    var share_message = $(this).parents('.facebook_share_form').find('textarea[name="facebook_share_message"]').val();
+//    var link = $(this).data('fb_link');
+//
+//    var url = "/fb/action/?fb_action=share";
+//    url += "&message=" + share_message;
+//
+//    if( link != null ) { url += "&fb_link=" + link; }
+//
+//    url += "&action_to_page=" + window.location.pathname;
+//
+//    window.location.href = url
+//
+//});
 
 
 /***********************************************************************************************************************
@@ -3852,6 +3869,11 @@ bind('.dismissible_x' , 'click' , null , function(e)
     $(this).parents(".dismissible_header").hide();
 });
 
+bind('.anon_x' , 'click' , null , function(e)
+{
+    $(this).parents(".anon_welcome").hide();
+    $.cookie('closed_anon', 1);
+});
 
 var reps_longitude;
 var reps_latitude;

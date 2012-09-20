@@ -6,6 +6,85 @@
 
 header
 {
+/* anonymous welcome dialogue */
+  a.anonymous-register {
+    position:relative;
+    float: right;
+    margin-left: 29px;
+    margin-top: 12px;
+    font-size: 16px;
+    padding-top: 8px;
+    height: 35px;
+  }
+
+  div.anon-welcome {
+    position:absolute;
+    z-index:1;
+    background-color:white;
+    border:1px solid $black;
+    padding:30px;
+    padding-bottom:15px;
+    font-size:18px;
+    width: 675px;
+    top: 73px;
+    left: 5px;
+    @include border-radius(20px);
+    box-shadow: 15px 15px 50px $gray;
+
+    a.anon-x {
+      font-size:30px;
+      font-size: 26px;
+      color:$dark-gray;
+      float:right;
+      position: relative;
+      left: 8px;
+      top: -15px;
+      &:hover {
+        text-decoration:none;
+        color:$red;
+      }
+    }
+
+    div.lovegov-robot {
+      float:left;
+      margin-right:20px;
+      margin-bottom:15px;
+      width: 40px;
+      height: 40px;
+      background-size: 40px 40px;
+    }
+
+    div.anonymous-welcome-header {
+      font-size:26px;
+      margin-left: 1px;
+      padding-top: 5px;
+      float: left;
+      color: $black;
+    }
+
+
+    $triangle-size: 20px;
+    span.triangle-wrapper {
+      position:relative;
+      left: 118px;
+      top: -29px;
+      span.triangle {
+        @include triangle('up', $white, $triangle-size + -1px);
+        position: absolute;
+        top:-$triangle-size + 1px;
+        right:20px;
+      }
+      span.triangle-border {
+        @extend span.triangle;
+        @include triangle('up', black, $triangle-size);
+        top:-21px;
+        right:19px;
+      }
+    }
+  }
+
+
+/* normal header */
   ul {
     padding-left:10px;
   }
@@ -14,8 +93,11 @@ header
   padding: 3px 5px;
   font-family: Sonus-Light;
   padding-top:5px;
+
+
   div.header-logo
   {
+    position:relative;
     @include staticImage('/images/icons/logo/logo.png');
     float:left;
     @include clearfix;
@@ -200,23 +282,6 @@ header
   }
   span.head-triangle {
     @include triangle('down', $red, 6px);
-  }
-
-
-  a.red-btn {
-    float: right;
-    margin-left: 29px;
-    margin-top: 13px;
-    font-size: 16px;
-    padding: 4px 30px;
-    padding-top: 7px;
-    height:auto;
-    /*
-    &:hover {
-      background-color:$red-light;
-      text-decoration:none;
-    }
-    */
   }
 }
 

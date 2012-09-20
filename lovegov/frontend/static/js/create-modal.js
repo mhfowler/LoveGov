@@ -86,11 +86,31 @@ bind("div.create-modal div.add-question", "click", function(e) {
         $('div.create-modal div.create-section.poll input:radio[value="p"]').click();
     }
     $(this).data('num-questions', num_questions+1);
-   var newQuestion = $('div.create-modal div.question.model').clone();
+    var newQuestion = $('div.create-modal div.question.model').clone();
     $('div.add-question').before(newQuestion);
     newQuestion.removeClass("model");
     bindTooltips();
 });
+
+
+// Add answers to create poll
+bind("div.create-modal div.add-answer", "click", function(e) {
+    var newAnswer = $(this).siblings('div.create-modal div.question-answers.model').clone();
+    $(this).before(newAnswer);
+    newAnswer.removeClass('model');
+    // remove model class of textarea so it becomes required
+    newAnswer.find('textarea').removeClass('model');
+});
+
+bind("div.create-modal span.remove-answer", "click", function(e) {
+    var inputval = $(this).siblings('textarea').val();
+    if(inputval!='') {
+        if(!confirm("Are you sure you want to delete this answer?")) 
+            return;
+    }
+    $(this).parent().parent().remove();
+});
+
 
 function getNumQuestions() {
     return $("div.create-modal div.add-question").data('num-questions');
@@ -121,7 +141,7 @@ function isEmptyQuestion(question) {
 function isFilledQuestion(question) {
     var is_filled = true;
     question.find("input,textarea").each(function(i,e) {
-        if(!$(this).hasClass('optional') && $(this).val()=='') {
+        if(!$(this).hasClass('optional') && !$(this).hasClass('model') && $(this).val()=='') {
             // break loop
             is_filled = false;
         }
@@ -245,7 +265,9 @@ function extractQuestions() {
        q['question'] = $(this).find('div.question-title input').val();
        q['answers'] = [];
        $(this).find('div.question-answers textarea').each(function() {
-          q['answers'].push($(this).val());
+            if(!$(this).hasClass('model')) {
+                q['answers'].push($(this).val());
+            }
        });
        q['source'] = $(this).find('div.question-source input').val();
        q['topic'] = $(this).find('span.topic_button.chosen').data('t_alias');
@@ -308,12 +330,12 @@ bind("div.create-modal div.field span.topic_button", "click", function(e) {
 });
 
 bind("div.create-modal div.questions span.topic_button", "click", function(e) {
-   $(this).siblings('div.qt-select').fadeToggle(200);
+   $(this).parent().siblings('div.qt-select').fadeToggle(200);
 });
 
 bind("div.create-modal div.qt-select span.topic_button", "click", function(e) {
     var qtselect = $(this).closest('div.qt-select');
-    qtselect.siblings('span.topic_button').replaceWith($(this).clone().addClass('chosen'));
+    qtselect.siblings('span.choose-topic-tip').children('span.topic_button').replaceWith($(this).clone().addClass('chosen'));
     qtselect.fadeOut(200);
     bindTooltips();
 });

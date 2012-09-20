@@ -48,7 +48,12 @@
                         {{ content.num_comments }} comment {{ content.num_comments|pluralize }}
                     </a>
                     {% if viewer.facebook_id %}
-                        <a class="share-button facebook_share_content_button" data-c_id="{{ content.id }}">
+                        <a class="share-button facebook_share_content_button"
+                           data-c_id="{{ content.id }}"
+                           data-url="{{ content.get_url }}"
+                           data-img="{{ content.getImageURL }}"
+                           data-title="{{ content.title }}"
+                           data-description="{{ content.summary }}">
                             share +
                         </a>
                     {% endif %}

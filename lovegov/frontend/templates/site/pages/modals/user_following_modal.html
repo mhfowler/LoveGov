@@ -8,6 +8,10 @@
 
             {% include 'site/pieces/avatar_href.html' with user=x width="50" height="50" %}
 
+        {% empty %}
+
+        	{{u.get_name}} isn't following anyone.
+
         {% endfor %}
     </div>
 

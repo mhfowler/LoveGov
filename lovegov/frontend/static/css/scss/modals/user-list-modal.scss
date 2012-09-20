@@ -36,10 +36,25 @@ div.following-modal-wrapper {
   }
 }
 
-div.supporting-modal-wrapper {
+div.user-supporting-modal-wrapper {
   padding: 20px;
 
-  div.supporting-wrapper {
+  div.user-supporting-wrapper {
+    width:400px;
+    padding-bottom:20px;
+
+    a.href-avatar {
+      float:left;
+      margin-bottom:15px;
+      margin-right:15px;
+    }
+  }
+}
+
+div.supporting-user-modal-wrapper {
+  padding: 20px;
+
+  div.supporting-user-wrapper {
     width:400px;
     padding-bottom:20px;
 

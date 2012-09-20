@@ -1,0 +1,18 @@
+<div class="supporting-user-modal-wrapper">
+
+	<div class="modal-header"> Supporters of <a href="{{ u.get_url }}"> {{ u.get_name }} </a> </div>
+
+
+    <div class="supporting-user-wrapper">
+        {% for x in u.getSupporters %}
+
+            {% include 'site/pieces/avatar_href.html' with user=x width="50" height="50" %}
+
+        {% empty %}
+
+        	{{u.get_name}} doesn't have any supporters yet.
+
+        {% endfor %}
+    </div>
+
+</div>

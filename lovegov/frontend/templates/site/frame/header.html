@@ -34,12 +34,14 @@
         <span class="header-privacy change_privacy_mode public_mode_button public-icon"  title="You are in public mode." data-mode="PUB"
                 {% if anonymous_mode %} style="display:none;" {% endif %}></span>
 
-       <span class="header-privacy change_privacy_mode private_mode_button private-icon"  title="You are in private mode." data-mode="PRI"
-               {% if not anonymous_mode %} style="display:none;" {% endif %}></span>
+        <span class="header-privacy change_privacy_mode private_mode_button private-icon"  title="You are in private mode." data-mode="PRI"
+                {% if not anonymous_mode %} style="display:none;" {% endif %}></span>
 
     {% else %}
 
-        <a href="/register/" class="red-btn">Sign up</a>
+        <a href="/register/" class="red-btn anonymous-register">
+            Sign up
+        </a>
 
     {% endif %}
 
@@ -57,9 +59,16 @@
             {% endcomment %}
 
     <!-- float left -->
-    <a href="/home/"><div class="header-logo"></div></a>
-    <ul>
+    <a href="/home/">
+        <div class="header-logo">
+        </div>
+    </a>
 
+    {% if anonymous_welcome %}
+        {% include 'site/frame/anonymous_welcome.html' %}
+    {% endif %}
+
+    <ul>
         {% comment %}
             <a href="/match/" class=" dummy_link header_link home_link {% if request.path == '/match/' %} clicked {% endif %}"><li>match</li></a>
         {% endcomment %}
