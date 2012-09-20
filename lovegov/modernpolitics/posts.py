@@ -3040,6 +3040,9 @@ def getModal(request,vals={}):
     elif modal_name == "user_supporting_modal":
         modal_html = getUserSupportingModal(request,vals)
 
+    elif modal_name == "supporting_user_modal":
+        modal_html = getSupportingUserModal(request,vals)
+
     ## If a modal was successfully made, return it ##
     if modal_html:
         return HttpResponse( json.dumps({'modal_html':modal_html}) )

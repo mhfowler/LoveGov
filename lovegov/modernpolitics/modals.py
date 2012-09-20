@@ -203,7 +203,10 @@ def getUserSupportingModal(request,vals):
     vals['u'] = UserProfile.lg.get_or_none(id=uid)
     return ajaxRender("site/pages/modals/user_supporting_modal.html",vals,request)
 
-
+def getSupportingUserModal(request,vals):
+    uid = request.POST.get('user')
+    vals['u'] = UserProfile.lg.get_or_none(id=uid)
+    return ajaxRender("site/pages/modals/supporting_user_modal.html",vals,request)
 
 
 

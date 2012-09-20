@@ -9,6 +9,10 @@
 
             <li><a href="{{x.get_url}}">{{x.title}}</a></li>
 
+        {% empty %}
+
+        	{{u.get_name}} hasn't joined any groups.
+
         {% endfor %}
     	</ul>
     </div>

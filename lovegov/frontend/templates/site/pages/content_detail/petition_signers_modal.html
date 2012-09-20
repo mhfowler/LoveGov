@@ -9,7 +9,11 @@
 
             {% include 'site/pieces/avatar_href.html' with user=x width="50" height="50" %}
 
-        {% endfor %}
+        {% empty %}
+
+        	Nobody has signed this petition.
+
+        {% endfor}
     </div>
 
 </div>
