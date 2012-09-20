@@ -330,13 +330,12 @@ bind("div.create-modal div.field span.topic_button", "click", function(e) {
 });
 
 bind("div.create-modal div.questions span.topic_button", "click", function(e) {
-   $(this).siblings('div.qt-select').fadeToggle(200);
+   $(this).parent().siblings('div.qt-select').fadeToggle(200);
 });
 
 bind("div.create-modal div.qt-select span.topic_button", "click", function(e) {
-    alert('here');
     var qtselect = $(this).closest('div.qt-select');
-    qtselect.siblings('span.topic_button').replaceWith($(this).clone().addClass('chosen'));
+    qtselect.siblings('span.choose-topic-tip').children('span.topic_button').replaceWith($(this).clone().addClass('chosen'));
     qtselect.fadeOut(200);
     bindTooltips();
 });
