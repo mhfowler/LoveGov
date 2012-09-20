@@ -1237,7 +1237,7 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
 
     def completeTask(self, task):
         completed = self.first_login_tasks
-        if not task in completed:
+        if not task in completed and not self.isAnon():
             self.first_login_tasks += task
             self.save()
 

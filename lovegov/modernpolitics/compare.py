@@ -422,8 +422,9 @@ def fastCompare(viewA,viewB,topics=None):
         rA = responsesA[a_index]
         rB = responsesB[b_index]
         # If the question IDs match, compare their answers and save it!
+        question = rA.question
         if rA.question_id == rB.question_id:
-            if rA.most_chosen_answer_id and rB.most_chosen_answer_id:
+            if rA.most_chosen_answer_id and rB.most_chosen_answer_id and question.answers.count() == 2:
                 similar = rB.getPercent(rA.most_chosen_answer_id)
                 weight = rA.weight
                 comparison.getTotalBucket().update(similar, weight)

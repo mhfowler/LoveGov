@@ -108,6 +108,7 @@ def viewWrapper(view, requires_login=False):
                     user = getAnonUser()
                     vals['i_am_anonymous'] = True
                     vals['prohibited_actions'] = ANONYMOUS_PROHIBITED_ACTIONS
+                    vals['anonymous_welcome'] = not request.COOKIES.get("closed_anon")
 
                 # get user profile associated with controlling user
                 vals['user'] = user

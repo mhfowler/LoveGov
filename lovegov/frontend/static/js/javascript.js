@@ -3852,6 +3852,11 @@ bind('.dismissible_x' , 'click' , null , function(e)
     $(this).parents(".dismissible_header").hide();
 });
 
+bind('.anon_x' , 'click' , null , function(e)
+{
+    $(this).parents(".anon_welcome").hide();
+    $.cookie('closed_anon', 1);
+});
 
 var reps_longitude;
 var reps_latitude;
