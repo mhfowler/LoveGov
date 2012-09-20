@@ -632,42 +632,49 @@ div.group-posted-to {
   }
 }
 
-span.content-title {
-  @include fontSize(24px);
-  color:$text-blue;
+a.feed-link-wrapper {
+  &:hover {
+    text-decoration:none;
+  }
+  float: left;
+  width: 100%;
+  overflow: hidden;
   line-height:32px;
   position:relative;
   top:1px;
-  width: 100%;
-  overflow: hidden;
-  float: left;
-  &:hover {
-    color:$black;
-  }
-  &:visited {
-    color:purple;
+  span.content-title {
+    @include fontSize(24px);
+    color:$text-blue;
     &:hover {
+      text-decoration:none;
       color:$black;
     }
+    span.feed-news-link {
+      overflow:hidden;
+      position: relative;
+      width:400px;
+      top: -2px;
+      color:$dark-gray;
+      font-size: 13px;
+      margin-left: 8px;
+      display:none;
+      //float:left;
+      //width:100%;
+      //margin-top:8px;
+      &:hover {
+        color:$deep-gray;
+      }
+    }
   }
-  span.feed-news-link {
-    overflow:hidden;
-    position: relative;
-    width:400px;
-    top: -2px;
-    color:$dark-gray;
-    font-size: 13px;
-    margin-left: 8px;
-    display:none;
-    //float:left;
-    //width:100%;
-    //margin-top:8px;
-    &:hover {
-      color:$deep-gray;
+  &:visited {
+    span.content-title {
+      color:purple;
+      &:hover {
+        color:$black;
+      }
     }
   }
 }
-
 
 
 /* petition bar */

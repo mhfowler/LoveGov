@@ -6,12 +6,11 @@
 
         <div class="news-link-wrapper">
             {% comment %}<span class="link-label"> Link: </span> {% endcomment %}
-            <a class="news-link news_link dummy_link" href="{{ news.getAbsoluteLink }}" data-n_id="{{ news.id }}"> {{ news.link }}</a>
+            <a class="news-link news_link" href="{{ news.getAbsoluteLink }}" data-n_id="{{ news.id }}" target="_blank"> {{ news.link }}</a>
 
             {% if news.link_clicks %}
                 <span class="link-clicks"> ( {{ news.link_clicks }} click{{ news.link_clicks|pluralize }} )</span>
             {% endif %}
-        
         </div>
 
         <div class="content-detail-description">

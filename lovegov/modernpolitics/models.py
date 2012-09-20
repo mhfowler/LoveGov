@@ -3320,6 +3320,9 @@ class News(Content):
         link = str.replace(str(self.link), 'http://', '')
         return "http://" + link
 
+    def getLinkRedirectURL(self):
+            return "/link/" + str(self.id) + '/'
+
     def getImage(self):
         return self.link_screenshot
 
