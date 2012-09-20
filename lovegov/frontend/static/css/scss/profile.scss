@@ -155,7 +155,6 @@ div.profile-page {
             height:60px;
             border: 1px solid $gray;
             text-align:center;
-            cursor: pointer;
             div.num {
               margin-top:14px;
               @include fontSize(36px);
@@ -166,8 +165,8 @@ div.profile-page {
               margin-top:5px;
             }
             &:hover {
-              //cursor:pointer;
-              //background-color:$dark-gray;
+              cursor:pointer;
+              background-color:$dark-gray;
             }
           }
           div.stats-box.supporter-box {
