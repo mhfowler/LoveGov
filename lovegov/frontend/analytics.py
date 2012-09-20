@@ -261,7 +261,8 @@ def dailySummaryEmail(days_ago=1, days_for=0):
     vals['load_times_html'] = dailyLoadTimes(days_ago, days_for)
 
     # anon access
-    vals['anon_activity'] = dailyAnonymousActivity(anon_access)
+    anon = dailyAnonymousActivity(anon_access)
+    vals['anon_activity'] = anon
 
     context = Context(vals)
     template = loader.get_template('emails/daily_summary/daily_summary.html')
