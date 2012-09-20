@@ -1774,7 +1774,7 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
     #-------------------------------------------------------------------------------------------------------------------
     def getSupporters(self):
         support = Supported.objects.filter(to_user=self, confirmed=True)
-        supporter_ids = support.values_list('to_user', flat=True)
+        supporter_ids = support.values_list('user', flat=True)
         return UserProfile.objects.filter(id__in=supporter_ids)
 
     def support(self, politician):

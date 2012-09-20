@@ -3146,9 +3146,19 @@ bind('div.stats-box.groups_link, span.profile-groups.breakdown-box a.link-all', 
     getModal('user_groups_modal', {'user': p_id});
 });
 
+bind('div.stats-box.groups_link, span.profile-groups.breakdown-box a.link-all', 'click', function(e) {
+    var p_id = $('div.stats_object').data('p_id');
+    getModal('user_groups_modal', {'user': p_id});
+});
+
 bind('span.profile-politicians.breakdown-box a.link-all', 'click', function(e) {
     var p_id = $('div.stats_object').data('p_id');
     getModal('user_supporting_modal', {'user': p_id});
+});
+
+bind('div.stats-box.supporter-box', 'click', function(e) {
+    var p_id = $('div.stats_object').data('p_id');
+    getModal('supporting_user_modal', {'user': p_id});
 });
 
 /***********************************************************************************************************************
