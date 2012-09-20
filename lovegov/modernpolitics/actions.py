@@ -33,6 +33,8 @@ def answerAction(user, question, privacy, answer_id, weight=-1, explanation=None
             weight = 50
         if not explanation:
             explanation = ""
+        if question.answers.count() != 2:
+            weight = 0
         response = Response( question = question,
             most_chosen_answer = chosen_answer,
             weight = weight
