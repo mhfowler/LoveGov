@@ -5,11 +5,17 @@
     <div class="news-detail-wrapper">
 
         <div class="news-link-wrapper">
-            <span class="link-label"> Link: </span> <a class="news-link" href="{{ news.link }}"> {{ news.link }}</a>
+            {% comment %}<span class="link-label"> Link: </span> {% endcomment %}
+            <a class="news-link news_link dummy_link" href="{{ news.getAbsoluteLink }}" data-n_id="{{ news.id }}"> {{ news.link }}</a>
+
+            {% if news.link_clicks %}
+                <span class="link-clicks"> ( {{ news.link_clicks }} click{{ news.link_clicks|pluralize }} )</span>
+            {% endif %}
+        
         </div>
 
         <div class="content-detail-description">
-            {{ news.link_summary}}
+            {{ news.summary}}
         </div>
 
     </div>

@@ -3342,11 +3342,13 @@ class News(Content):
 #
 #=======================================================================================================================
 class Discussion(Content):
-    
     user_post = models.TextField(blank=True)
     def autoSave(self, creator=None, privacy="PUB"):
         self.in_feed = True
         self.type = "D"
+        if not self.summary:
+            self.summary = self.user_post[:400]
+            if len(self.user_post) > 400: self.summary += "..."
         super(Discussion, self).autoSave(creator=creator, privacy=privacy)
 
     def getTypeIconClass(self):
