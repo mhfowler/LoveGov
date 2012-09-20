@@ -137,8 +137,11 @@ div.content-detail-wrapper {
             @include fontSize(20px);
           }
           a.news-link {
-            margin-left:10px;
+            margin-left:20px;
             @include fontSize(18px);
+          }
+          span.link-clicks {
+            margin-left:10px;
           }
         }
       }
