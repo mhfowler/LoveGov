@@ -2480,6 +2480,9 @@ def createContent(request, vals={}):
                 if ref != 'undefined':
                     newc.saveScreenShot(ref)
             newc.autoSave(creator=viewer, privacy=privacy)
+            if full_text:
+                newComment = Comment(root_content=newc, on_content=newc, text=full_text)
+                newComment.autoSave(creator=viewer,privacy=privacy)
         else:
             return HttpResponseBadRequest("A required field was not included.")
     elif section=='poll':
@@ -2497,7 +2500,6 @@ def createContent(request, vals={}):
                     newQ.posted_to = group
                 newQ.autoSave(creator=viewer, privacy=privacy)
                 newQ.setMainTopic(qtopic)
-                newComment = Comment()
                 for a in q['answers']:
                     newA = Answer(answer_text=a, value=-1)
                     newA.save()
