@@ -308,7 +308,7 @@ class Content(ActiveModel, Privacy, LocationLevel):
     last_answered = models.DateTimeField(auto_now_add=True, null=True)          # last time answer question, or have answers calculated
     # RANK, VOTES
     status = models.IntegerField(default=STATUS_CREATION)
-    rank = models.DecimalField(default="0.0", max_digits=4, decimal_places=2)
+    rank = models.DecimalField(default="0.0", max_digits=4, decimal_places=2)       # deprecated
     hot_score = models.IntegerField(default=0)                                  # for hot feed
     upvotes = models.IntegerField(default=0)
     downvotes = models.IntegerField(default=0)
@@ -1037,6 +1037,16 @@ class FeedItem(LGModel):
     content = models.ForeignKey(Content)
     rank = models.IntegerField()
 
+
+class RankedContent(LGModel):
+    content = models.ForeignKey("Content", related_name="ranked_by")
+    user = models.ForeignKey("UserProfile", related_name="ranked_it")
+    score = models.IntegerField(default=0)
+
+class SeenContent(LGModel):
+    content = models.ForeignKey("Content", related_name="ranked_by")
+    seen = models.IntegerField(default=0)
+
 #=======================================================================================================================
 # For storing a user's settings for sending them email alerts about notifications for particular user or content..
 # user_id and content... but only use one field
@@ -1159,6 +1169,11 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
     # my groups and feeds
     group_subscriptions = models.ManyToManyField("Group")
     group_views = models.ManyToManyField("GroupView")
+    # hot feed
+    hot_feed = models.ManyToManyField("Content", through="RankedContent", related_name="ranker")
+    last_updated_hot_feed = models.DateTimeField(auto_now_add=True)
+    seen_content = models.ManyToManyField("SeenContent")
+    stale_content = models.ManyToManyField(Content)
     # SETTINGS
     private_follow = models.BooleanField(default=False)
     user_notification_setting = custom_fields.ListField()               # list of allowed types
@@ -1191,6 +1206,41 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
 
     def __unicode__(self):
         return self.get_name()
+
+    #-------------------------------------------------------------------------------------------------------------------
+    # Get hot feed, paginated
+    #-------------------------------------------------------------------------------------------------------------------
+    def getHotFeed(self, start=0, end=0):
+        content = Content.objects.filter(ranked_by__user=self).order_by("-ranked_by__score")
+        if start:
+            content = content[start:]
+        if end:
+            content = content[:end]
+        return content
+
+    def updateHotFeed(self):
+        self.hot_feed.clear()
+
+    def seeContents(self, contents):
+        for content in contents:
+            self.seeContent(content)
+
+    def seeContent(self, content):
+        i_saw = self.seen_content.filter(content=x)
+        if i_saw:
+            i_saw = i_saw[0]
+            i_saw.seen += 1
+            if i_saw.seen > SEEN_THRESHOLD:
+                self.makeStale(content)
+            i_saw.save()
+        else:
+            i_saw = SeenContent(content=content)
+            i_saw.save()
+            self.seen_content.add(i_saw)
+
+    def makeStale(self, content):
+        if not content in self.stale_content:
+            self.stale_content.add(content)
 
     #-------------------------------------------------------------------------------------------------------------------
     # background tasks
