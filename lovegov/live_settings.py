@@ -5,6 +5,8 @@ import base_settings
 DEBUG = False
 TEMPLATE_DEBUG = False
 THUMBNAIL_DEBUG = False
+SHOW_TOOLBAR = False
+PROFILE = False
 
 ############################### DIFFERENCE BETWEEN LIVE AND DEV ########################################################
 

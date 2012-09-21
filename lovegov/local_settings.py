@@ -3,9 +3,11 @@ from lovegov import base_settings
 
 LOCAL = True
 DEBUG = True
-SHOW_TOOLBAR = False
-TEMPLATE_DEBUG = DEBUG
+TEMPLATE_DEBUG = True
 THUMBNAIL_DEBUG = False
+SHOW_TOOLBAR = False
+PROFILE = True
+
 PROJECT_PATH = base_settings.PROJECT_PATH
 
 DATABASES = {

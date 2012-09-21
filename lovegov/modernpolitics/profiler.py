@@ -1,7 +1,7 @@
 import hotshot
 import os
 import time
-import settings
+from django.conf import settings
 
 try:
     PROFILE_LOG_BASE = settings.PROFILE_LOG_BASE
@@ -23,23 +23,28 @@ def profile(log_file):
     multiple trials.
     """
 
-    if not os.path.isabs(log_file):
-        log_file = os.path.join(PROFILE_LOG_BASE, log_file)
+    if settings.PROFILE:
+        if not os.path.isabs(log_file):
+            log_file = os.path.join(PROFILE_LOG_BASE, log_file)
 
-    def _outer(f):
-        def _inner(*args, **kwargs):
-            # Add a timestamp to the profile output when the callable
-            # is actually called.
-            (base, ext) = os.path.splitext(log_file)
-            base = base + "-" + time.strftime("%Y%m%dT%H%M%S", time.gmtime())
-            final_log_file = base + ext
+        def _outer(f):
+            def _inner(*args, **kwargs):
+                # Add a timestamp to the profile output when the callable
+                # is actually called.
+                (base, ext) = os.path.splitext(log_file)
+                base = base + "-" + time.strftime("%Y%m%dT%H%M%S", time.gmtime())
+                final_log_file = base + ext
 
-            prof = hotshot.Profile(final_log_file)
-            try:
-                ret = prof.runcall(f, *args, **kwargs)
-            finally:
-                prof.close()
-            return ret
+                prof = hotshot.Profile(final_log_file)
+                try:
+                    ret = prof.runcall(f, *args, **kwargs)
+                finally:
+                    prof.close()
+                return ret
 
-        return _inner
-    return _outer
+            return _inner
+        return _outer
+    else:
+        def nothing(function):
+            return function
+        return nothing

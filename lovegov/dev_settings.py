@@ -2,8 +2,10 @@ import base_settings
 
 LOCAL = False
 DEBUG = True
-TEMPLATE_DEBUG = DEBUG
+TEMPLATE_DEBUG = True
 THUMBNAIL_DEBUG = False
+SHOW_TOOLBAR = False
+PROFILE = True
 
 ############################### DIFFERENCE BETWEEN LIVE AND DEV ########################################################
 
