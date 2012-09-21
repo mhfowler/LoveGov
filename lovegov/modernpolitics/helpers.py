@@ -353,6 +353,12 @@ def ajaxRender(template, vals, request):
     template = loader.get_template(template)
     return template.render(context)
 
+def renderHelper(template, vals):
+    context = Context(vals)
+    template = loader.get_template(template)
+    html = template.render(context)
+    return html
+
 #-----------------------------------------------------------------------------------------------------------------------
 # Gets a user profile from a request or id.
 #-----------------------------------------------------------------------------------------------------------------------

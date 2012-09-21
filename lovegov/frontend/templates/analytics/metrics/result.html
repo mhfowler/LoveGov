@@ -1,0 +1,15 @@
+<span class="m-result" style="
+        color:{{which_color}};
+        margin-left:5px;
+        float:left;
+        width:50px;">
+            {{ result }}
+            </span>
+{% if not forloop.last %}
+    <span class="m-separator" style="
+                 margin-left:5px;
+                    float:left;
+                    width:40px;">
+               /
+            </span>
+{% endif %}
