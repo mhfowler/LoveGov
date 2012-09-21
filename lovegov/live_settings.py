@@ -24,6 +24,7 @@ DATABASES = {
 STATIC_ROOT = '/static/live/'
 MEDIA_ROOT = '/media/live/'
 LOG_ROOT = "/log/live/"
+PROFILE_LOG_BASE = "/log/live/profiles/"
 LOGGING = base_settings.setLogging(LOG_ROOT)
 
 ADMIN_MEDIA_PREFIX = STATIC_ROOT + "admin/"

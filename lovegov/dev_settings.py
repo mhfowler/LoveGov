@@ -31,6 +31,7 @@ DATABASES = {
 STATIC_ROOT = '/static/dev/'
 MEDIA_ROOT = '/media/dev/'
 LOG_ROOT = "/log/dev/"
+PROFILE_LOG_BASE = "/log/dev/profiles/"
 LOGGING = base_settings.setLogging(LOG_ROOT)
 
 ############################### EVERYTHING BELOW THE SAME ##############################################################
