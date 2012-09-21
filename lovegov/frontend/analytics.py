@@ -480,7 +480,12 @@ def summaryEmail(time_start, time_end):
 
     vals['accessed'] = accessed_list
 
-    registered = UserProfile.objects.filter(created_when__gt=time_start).order_by("created_when")
+    registered = UserProfile.objects.all()
+    if time_start:
+        registered = UserProfile.objects.filter(created_when__gt=time_start)
+    if time_end:
+        registered = UserProfile.objects.filter(created_when__lt=time_end)
+    registered.order_by("created_when")
     vals['registered'] = registered
 
     # load times
