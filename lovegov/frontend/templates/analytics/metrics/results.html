@@ -1,0 +1,21 @@
+<div class="results-and-normalized-wrapper" style="
+    float:left;
+    margin-left:10px;">
+
+    <div class="m-results-wrapper">
+        {% for r in results %}
+            {% with result=r.result which_color=r.which_color%}
+                {% include 'analytics/metrics/result.html' %}
+            {% endwith %}
+        {% endfor %}
+    </div>
+
+    <div class="m-normalized-wrapper">
+        {% for r in results %}
+            {% with result=r.normalized which_color=r.which_color%}
+                {% include 'analytics/metrics/result.html' %}
+            {% endwith %}
+        {% endfor %}
+    </div>
+
+</div>

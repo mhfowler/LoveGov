@@ -1,0 +1,31 @@
+<div class="metrics-header" style="margin-bottom:40px">
+
+    <div class="metrics-header-description">
+        {% for x in user_groups %}
+            {% with which_color=x.which_color %}
+                <span class="user-group-description"
+                      style="
+                              color:{{which_color}};
+                              float:left;
+                              margin-right:10px;">
+                    {{ x.description }} ({{ x.users.count }})
+                </span>
+            {% endwith %}
+            {% if not forloop.last %}
+                <span class="user-group-separator"
+                      style="
+                      float:left;
+                      margin-right:10px;">
+                    /
+                </span>
+            {% endif %}
+        {% endfor %}
+        <div style="clear:both;"></div>
+    </div>
+
+    <p>
+        <div class="normalized"> normalized by number of users in each demographic </div>
+        <div class="normalized"> total </div>
+    </p>
+
+</div>

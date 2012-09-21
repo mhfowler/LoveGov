@@ -19,6 +19,10 @@ import os
 
 LOCAL = settings.LOCAL
 
+########################################## COLORS FOR STUFF ############################################################
+
+USER_GROUP_COLORS = ['blue', 'red', 'blue', 'purple']
+
 ########################################## OUTSIDE LOGIN PAGES #########################################################
 
 OUTSIDE_LOGIN = ['/hello/', '/blog/']
@@ -114,6 +118,8 @@ TEAM_EMAILS =  ['max_fowler@brown.edu','loweth.g@gmail.com',
                 'marcus330@gmail.com']
 YAY_EMAILS = TEAM_EMAILS
 DAILY_SUMMARY_EMAILS = TEAM_EMAILS
+
+DAILY_SUMMARY_EMAILS = ['max_fowler@brown.edu']
 
 ########################################## KEYS ########################################################################
 
