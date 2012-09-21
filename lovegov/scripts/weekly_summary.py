@@ -27,7 +27,7 @@ time_start = today_now - delta
 time_end = today_now
 for x in range(1,days+1):
     print "sending usage summary for " + str(x) + " days ago"
-    sendHTMLEmail(subject="LoveGov Weekly Summary By Day [summary]", email_html=summaryEmail(time_start, time_end),
+    sendHTMLEmail(subject="LoveGov Weekly-By-Day Summary [summary]", email_html=summaryEmail(time_start, time_end),
         email_sender="info@lovegov.com", email_recipients=email_recipients)
     time_start -= delta
     time_end -= delta
