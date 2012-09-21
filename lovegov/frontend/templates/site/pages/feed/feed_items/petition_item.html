@@ -5,7 +5,7 @@
     <div class="feed-petition-wrapper">
 
         <div class="petition-summary feed-item-summary">
-            {{ content.summary|urlize|truncatechars:375 }}
+            {{ content.getSummary|urlize|truncatechars:375 }}
         </div>
 
         <div class="in-feed-sign">

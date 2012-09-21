@@ -2,8 +2,10 @@ import base_settings
 
 LOCAL = False
 DEBUG = True
-TEMPLATE_DEBUG = DEBUG
+TEMPLATE_DEBUG = True
 THUMBNAIL_DEBUG = False
+SHOW_TOOLBAR = False
+PROFILE = True
 
 ############################### DIFFERENCE BETWEEN LIVE AND DEV ########################################################
 
@@ -29,6 +31,7 @@ DATABASES = {
 STATIC_ROOT = '/static/dev/'
 MEDIA_ROOT = '/media/dev/'
 LOG_ROOT = "/log/dev/"
+PROFILE_LOG_BASE = "/log/dev/profiles/"
 LOGGING = base_settings.setLogging(LOG_ROOT)
 
 ############################### EVERYTHING BELOW THE SAME ##############################################################
