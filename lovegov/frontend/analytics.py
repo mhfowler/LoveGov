@@ -20,8 +20,8 @@ def getMetricsHTMLFromTimeAndDemographics(time_start, time_end, demographics=[])
     user_groups = getUserGroupsFromDemographics(time_start, time_end, demographics)
 
     which_metrics = [
-#        {'metric_label':'page views', 'which':'page_views'},
-#        {'metric_label':'time on site', 'which':'session_length'},
+        {'metric_label':'page views', 'which':'page_views'},
+        {'metric_label':'time on site', 'which':'session_length'},
         {'metric_label':'answers', 'which':'num_answers'},
         {'metric_label':'upvotes', 'which':'activity', 'type':'upvotes'},
         {'metric_label':'downvotes', 'which':'activity', 'type':'downvotes'},
@@ -61,16 +61,36 @@ def getUserGroupsFromDemographics(time_start, time_end, demographics):
 
     count = 0
 
-    all_users = UserProfile.objects.filter(ghost=False)
-    all_users_dict = {'time_start':time_start,
-                      'time_end':time_end,
-                      'users':  all_users,
-                      'description': 'all real users',
-                      'which_color': USER_GROUP_COLORS[count]}
-    user_groups.append(all_users_dict)
+    if 'all_users' in demographics:
+        all_users = UserProfile.objects.filter(ghost=False)
+        all_users_dict = {'time_start':time_start,
+                          'time_end':time_end,
+                          'users':  all_users,
+                          'description': 'all real users',
+                          'which_color': USER_GROUP_COLORS[count]}
+        user_groups.append(all_users_dict)
+        count += 1
+
+    if 'logged_on' in demographics:
+        pa = PageAccess.objects.all()
+        if time_start:
+            pa = pa.filter(when__gt=time_start)
+        if time_end:
+            pa = pa.filter(when__lt=time_end)
+        logged_on_users = []
+        for x in pa:
+            user = x.user
+            if not user in logged_on_users:
+                logged_on_users.append(user)
+        logged_on_dict = {'time_start':time_start,
+                          'time_end':time_end,
+                          'users':  logged_on_users,
+                          'description': 'logged on',
+                          'which_color': USER_GROUP_COLORS[count]}
+        user_groups.append(logged_on_dict)
+        count += 1
 
     if 'new_users' in demographics:
-        count += 1
         new_users = UserProfile.objects.filter(ghost=False, created_when__gt=time_start)
         new_users_dict = {'time_start':time_start,
                           'time_end':time_end,
@@ -78,6 +98,7 @@ def getUserGroupsFromDemographics(time_start, time_end, demographics):
                           'description': 'new users',
                           'which_color': USER_GROUP_COLORS[count]}
         user_groups.append(new_users_dict)
+        count += 1
 
     return user_groups
 
@@ -473,7 +494,7 @@ def dailySummaryEmail(days_ago=1, days_for=0):
     vals['anon_activity'] = anon
 
     # metrics
-    demographics = ['new_users']
+    demographics = ['logged_on', 'new_users']
     vals['metrics_html'] = getMetricsHTMLFromTimeAndDemographics(time_start, time_end, demographics)
 
     context = Context(vals)
