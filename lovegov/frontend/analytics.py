@@ -20,8 +20,8 @@ def getMetricsHTMLFromTimeAndDemographics(time_start, time_end, demographics=[])
     user_groups = getUserGroupsFromDemographics(time_start, time_end, demographics)
 
     which_metrics = [
-#        {'metric_label':'page views', 'which':'page_views'},
-#        {'metric_label':'time on site', 'which':'session_length'},
+        {'metric_label':'page views', 'which':'page_views'},
+        {'metric_label':'time on site', 'which':'session_length'},
         {'metric_label':'answers', 'which':'num_answers'},
         {'metric_label':'upvotes', 'which':'activity', 'type':'upvotes'},
         {'metric_label':'downvotes', 'which':'activity', 'type':'downvotes'},
@@ -61,16 +61,36 @@ def getUserGroupsFromDemographics(time_start, time_end, demographics):
 
     count = 0
 
-    all_users = UserProfile.objects.filter(ghost=False)
-    all_users_dict = {'time_start':time_start,
-                      'time_end':time_end,
-                      'users':  all_users,
-                      'description': 'all real users',
-                      'which_color': USER_GROUP_COLORS[count]}
-    user_groups.append(all_users_dict)
+    if 'all_users' in demographics:
+        all_users = UserProfile.objects.filter(ghost=False)
+        all_users_dict = {'time_start':time_start,
+                          'time_end':time_end,
+                          'users':  all_users,
+                          'description': 'all real users',
+                          'which_color': USER_GROUP_COLORS[count]}
+        user_groups.append(all_users_dict)
+        count += 1
+
+    if 'logged_on' in demographics:
+        pa = PageAccess.objects.all()
+        if time_start:
+            pa = pa.filter(when__gt=time_start)
+        if time_end:
+            pa = pa.filter(when__lt=time_end)
+        logged_on_users = []
+        for x in pa:
+            user = x.user
+            if not user in logged_on_users:
+                logged_on_users.append(user)
+        logged_on_dict = {'time_start':time_start,
+                          'time_end':time_end,
+                          'users':  logged_on_users,
+                          'description': 'logged on',
+                          'which_color': USER_GROUP_COLORS[count]}
+        user_groups.append(logged_on_dict)
+        count += 1
 
     if 'new_users' in demographics:
-        count += 1
         new_users = UserProfile.objects.filter(ghost=False, created_when__gt=time_start)
         new_users_dict = {'time_start':time_start,
                           'time_end':time_end,
@@ -78,6 +98,7 @@ def getUserGroupsFromDemographics(time_start, time_end, demographics):
                           'description': 'new users',
                           'which_color': USER_GROUP_COLORS[count]}
         user_groups.append(new_users_dict)
+        count += 1
 
     return user_groups
 
@@ -115,7 +136,7 @@ def metricsResult(args_dict, time_start=None, time_end=None, users=None):
     if not users:
         num_users = float(UserProfile.objects.all().count())
     else:
-        num_users = float(users.count())
+        num_users = len(users)
 
     if which == 'num_posts':
         posts = metricsGetPostsHelper(time_start, time_end, users)
@@ -183,7 +204,7 @@ def metricsResult(args_dict, time_start=None, time_end=None, users=None):
         if time_end:
             pa = pa.filter(when__lt=time_end)
         if users:
-            pa = pa.filter(user=users)
+            pa = pa.filter(user__in=users)
 
         page = args_dict.get('page')
         if page:
@@ -204,13 +225,13 @@ def metricsResult(args_dict, time_start=None, time_end=None, users=None):
                 total_time += time_on_site
                 total_logged_on += 1
         result = int(total_time.total_seconds())
-        normalized = total_time.total_seconds() / float(total_logged_on)
+        if total_logged_on:
+            normalized = total_time.total_seconds() / float(total_logged_on)
 
     normalized = str(normalized)
     normalized = normalized[:5]
 
     return result, normalized
-
 
 def metricsGetResponsesHelper(time_start, time_end, users):
     lg = getLoveGovUser()
@@ -341,18 +362,9 @@ def allUserActivity(file, min=None, max=None):
 
 ################################################# LOAD TIMES ###########################################################
 
-def dailyLoadTimes(days_ago=1, days_for=0):
+def loadTimes(time_start, time_end):
 
     vals = {}
-
-    now = datetime.datetime.now()
-    time_start = now - datetime.timedelta(days=days_ago)
-    if not days_for:
-        time_end = now
-    else:
-        time_end = now + datetime.timedelta(days=days_for)
-    vals['time_start'] = time_start
-    vals['time_end'] = time_end
 
     ca = ClientAnalytics.objects.filter(when__gt=time_start, when__lt=time_end)
 
@@ -424,18 +436,24 @@ class Session:
         return self.pa
 
 def dailySummaryEmail(days_ago=1, days_for=0):
-    vals = {}
-
     now = datetime.datetime.now()
     time_start = now - datetime.timedelta(days=days_ago)
     if not days_for:
         time_end = now
     else:
         time_end = now + datetime.timedelta(days=days_for)
-    vals['time_start'] = time_start
-    vals['time_end'] = time_end
+    return summaryEmail(time_start, time_end)
 
-    pa = PageAccess.objects.filter(when__gt=time_start, when__lt=time_end)
+def summaryEmail(time_start, time_end):
+
+    vals = {'time_start':time_start,
+            'time_end':time_end}
+
+    pa = PageAccess.objects.all()
+    if time_start:
+        pa = pa.filter(when__gt=time_start)
+    if time_end:
+        pa = pa.filter(when__lt=time_end)
 
     accessed = {}
     anon_access = []
@@ -466,14 +484,14 @@ def dailySummaryEmail(days_ago=1, days_for=0):
     vals['registered'] = registered
 
     # load times
-    vals['load_times_html'] = dailyLoadTimes(days_ago, days_for)
+    vals['load_times_html'] = loadTimes(time_start, time_end)
 
     # anon access
     anon = dailyAnonymousActivity(anon_access)
     vals['anon_activity'] = anon
 
     # metrics
-    demographics = ['new_users']
+    demographics = ['logged_on', 'new_users']
     vals['metrics_html'] = getMetricsHTMLFromTimeAndDemographics(time_start, time_end, demographics)
 
     context = Context(vals)
@@ -498,6 +516,11 @@ def dailyAnonymousActivity(pa):
         x['session'].processPA()
 
     return anon_list
+
+
+def sendSummaryEmail(time_start, time_end, email_recipients):
+    sendHTMLEmail(subject="LoveGov Summary [summary]", email_html=summaryEmail(time_start, time_end),
+        email_sender="info@lovegov.com", email_recipients=email_recipients)
 
 
 #-----------------------------------------------------------------------------------------------------------------------
