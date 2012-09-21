@@ -8,7 +8,7 @@
                               color:{{which_color}};
                               float:left;
                               margin-right:10px;">
-                    {{ x.description }} ({{ x.users.count }})
+                    {{ x.description }} ({{ x.users|length }})
                 </span>
             {% endwith %}
             {% if not forloop.last %}
