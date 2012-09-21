@@ -8,7 +8,7 @@
 ########################################################################################################################
 
 from lovegov.frontend.views_helpers import *
-
+from modernpolitics.profiler import profile
 from pprint import pprint
 from collections import OrderedDict
 
@@ -499,6 +499,7 @@ def welcome(request, vals):
     url = request.path
     return homeResponse(request, focus_html, url, vals)
 
+@profile("home.prof")
 def home(request, vals={}):
 
     viewer = vals['viewer']
