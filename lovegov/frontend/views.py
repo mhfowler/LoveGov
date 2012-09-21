@@ -8,7 +8,6 @@
 ########################################################################################################################
 
 from lovegov.frontend.views_helpers import *
-from modernpolitics.profiler import profile
 from pprint import pprint
 from collections import OrderedDict
 

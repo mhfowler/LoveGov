@@ -1,0 +1,107 @@
+------------------ PROFILING SUITE CONSTANTS ------------------ 
+
+
+optimizing_constants.py
+
+BENCHMARK_PAGES = ['/home/', '/groups/', '/elections/, '/questions/']
+
+BENCHMARK_AJAX = [
+	('/home/', 'getFeed')
+	('/groups/', 'getGroups')
+]	
+
+CURRENT_TEST_RUN = 0
+
+------------------ AJAX TEST ------------------ 
+
+
+# output of print functions is either excel or text file, should be in a analytics folder, and then in a # time stamped folder… don't delete old results
+def storeAjaxAnalytics():
+	# call printAjaxAnalytics
+	# redirect output, or pass file name, to put output into correctly labeled timestamped folders
+	
+
+def printAjaxAnalytics(page, action):
+	vals = {}
+	vals['ajax_analytics'] = ajax_analytics = []
+	for x in BENCHMARK_AJAX:
+		result = ajaxAnalytic(x)		# make use of data from client analytics
+		ajax_analytics.append(x, result)
+	
+	# logic for printing (to excel)
+
+	# columns are (page, action) tuples
+
+	# top three rows
+	## average load
+	## median load
+	## max load
+	## min load
+	# empty line
+	# all sample data
+	
+	
+
+------------------------    BENCHMARK TEST  ---------------------
+
+
+# output of print functions is either excel or text file, should be in a analytics folder, and then in a # time stamped folder… don't delete old results
+def storeBenchmarkAnalytics():
+	# call printPageAnalytics
+	# redirect output, or pass file name, to put output into correctly labeled timestamped folders
+
+def printPageAnalytics(page):	
+	vals = {}	
+	vals['benchmark_pages'] = benchmark_pages = {}
+	for page in BENCHMARK_PAGES:
+		results = pageAnalytic(page)		# make use of apache benchmark
+		benchmark_pages[page] = results 
+
+	# logic for printing (to excel)
+	
+	# rows are concurrency
+	# columns are different pages
+
+
+----------------------   AJAX TEST    ---------------------- 
+
+~ ajax test
+1. grab database from live
+2. increase CURRENT_TEST_RUN in constants.py
+3. click around site doing the actions you are supposed to test… use reasonable behavior, get reasonable sample size
+4. run storeAjaxAnalytics()
+
+ajax test -> make changes -> ajax test -> run dif script
+
+~~~ in the future ~~~ design crawler which performs actions automatically (rather than clicking around)
+
+----------------------   BENCHMARK TEST    ------------------
+
+~ benchmark test
+1. push changes to dev, devupdate
+2. run storeBenchmarkAnalytics()
+
+benchmark test -> make changes -> benchmark test -> run dif script
+
+
+----------------------  DIF SCRIPT   ---------------------- 
+
+
+excelDif(file1, file2)
+
+
+----------------------  DIRECTORIES --------------------
+
+lovegov/logging/benchmarking/<time_stamp>.xls
+lovegov/logging/ajaxing/<time_stamp>.xls
+
+
+----------------------  INSPIRATION --------------------
+
+kcachegrind
+django debug toolbar
+research on the internet
+introspection
+
+
+

@@ -1836,6 +1836,7 @@ def everythingLoadedHelper(request, vals, feed_items):
 #-----------------------------------------------------------------------------------------------------------------------
 # get groups
 #-----------------------------------------------------------------------------------------------------------------------
+@profile("getGroups.prof")
 def getGroups(request, vals={}):
     from lovegov.frontend.views_helpers import valsGroup
     viewer = vals['viewer']

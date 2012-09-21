@@ -5,8 +5,8 @@ LOCAL = True
 DEBUG = True
 TEMPLATE_DEBUG = True
 THUMBNAIL_DEBUG = False
-SHOW_TOOLBAR = False
-PROFILE = True
+SHOW_TOOLBAR = True
+PROFILE = False
 
 PROJECT_PATH = base_settings.PROJECT_PATH
 
@@ -105,13 +105,7 @@ HAYSTACK_CONNECTIONS = base_settings.HAYSTACK_CONNECTIONS
 
 # for django-debug-toolbar
 def show_toolbar(request):
-    from lovegov.modernpolitics.helpers import getUserProfile
-    if DEBUG and SHOW_TOOLBAR:
-        user_prof = getUserProfile(request)
-        if user_prof:
-            if user_prof.developer:
-                return True
-    return False
+    return SHOW_TOOLBAR
 
 DEBUG_TOOLBAR_CONFIG = {
     'SHOW_TOOLBAR_CALLBACK': show_toolbar,
