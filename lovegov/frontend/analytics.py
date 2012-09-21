@@ -20,8 +20,8 @@ def getMetricsHTMLFromTimeAndDemographics(time_start, time_end, demographics=[])
     user_groups = getUserGroupsFromDemographics(time_start, time_end, demographics)
 
     which_metrics = [
-        {'metric_label':'page views', 'which':'page_views'},
-        {'metric_label':'time on site', 'which':'session_length'},
+#        {'metric_label':'page views', 'which':'page_views'},
+#        {'metric_label':'time on site', 'which':'session_length'},
         {'metric_label':'answers', 'which':'num_answers'},
         {'metric_label':'upvotes', 'which':'activity', 'type':'upvotes'},
         {'metric_label':'downvotes', 'which':'activity', 'type':'downvotes'},
@@ -42,10 +42,10 @@ def getMetricsHTMLFromTimeAndDemographics(time_start, time_end, demographics=[])
         {'metric_label':'% anon comments', 'which':'anon_percent', 'type':'comments'},
     ]
 
-    metric_pages = ['/home/', '/questions/', '/groups/', '/elections/', '/legislation/', '/about/', '/blog/']
-    for page in metric_pages:
-        args_dict = {'metric_label':page, 'which':'page_views', 'page':page}
-        which_metrics.append(args_dict)
+#    metric_pages = ['/home/', '/questions/', '/groups/', '/elections/', '/legislation/', '/about/', '/blog/']
+#    for page in metric_pages:
+#        args_dict = {'metric_label':page, 'which':'page_views', 'page':page}
+#        which_metrics.append(args_dict)
 
     html = getMultipleMetricsHTML(which_metrics, user_groups)
     return html
