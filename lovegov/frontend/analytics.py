@@ -135,9 +135,9 @@ def metricsResult(args_dict, time_start=None, time_end=None, users=None):
     elif which == 'activity':
         type = args_dict.get('type')
         if type == 'upvotes':
-            activity =  VotedAction.objects.filter(value=1)
+            activity =  VotedAction.objects.filter(value=1).exclude(content__type="R")
         elif type == 'downvotes':
-            activity =  VotedAction.objects.filter(value=-1)
+            activity =  VotedAction.objects.filter(value=-1).exclude(content__type="R")
         elif type == 'users_followed':
             activity =  UserFollowAction.objects.all()
         elif type == 'politicians_supported':
@@ -169,7 +169,7 @@ def metricsResult(args_dict, time_start=None, time_end=None, users=None):
         num_stuff = stuff.count()
         num_anon = stuff.filter(privacy="PRI").count()
         if num_anon:
-            result = num_stuff / float(num_anon) * 100
+            result = num_anon / float(num_stuff) * 100
         else:
             result = 0
         result = str(result) + "%"
