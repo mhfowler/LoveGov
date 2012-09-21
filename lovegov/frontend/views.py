@@ -165,8 +165,8 @@ def viewWrapper(view, requires_login=False):
 #-----------------------------------------------------------------------------------------------------------------------
 # basic pages
 #-----------------------------------------------------------------------------------------------------------------------
-def redirect(request, vals={}):
-    return shortcuts.redirect('/home/')
+def redirect(request, page='/home', vals={}):
+    return shortcuts.redirect(page)
 
 def linkRedirect(request, n_id, vals={}):
     news = News.objects.get(id=n_id)
