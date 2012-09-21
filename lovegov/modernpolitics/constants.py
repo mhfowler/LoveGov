@@ -19,6 +19,10 @@ import os
 
 LOCAL = settings.LOCAL
 
+########################################## COLORS FOR STUFF ############################################################
+
+USER_GROUP_COLORS = ['blue', 'red', 'blue', 'purple']
+
 ########################################## OUTSIDE LOGIN PAGES #########################################################
 
 OUTSIDE_LOGIN = ['/hello/', '/blog/']

@@ -1,0 +1,1 @@
+nohup ./weekly_summary.py > /log/weekly_summary.txt &

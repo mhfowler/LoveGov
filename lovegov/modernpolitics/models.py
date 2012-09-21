@@ -1481,6 +1481,25 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
                 last = x.when
         return sessions
 
+    def getTimeOnSite(self, time_start=None, time_end=None):
+
+        pa = PageAccess.objects.filter(user=self).order_by("when")
+        if time_start:
+            pa = pa.filter(when__gt=time_start)
+        if time_end:
+            pa = pa.filter(when__lt=time_end)
+        total_time = datetime.timedelta(seconds=0)
+        logged_on = pa.count() > 0
+
+        if logged_on:
+            last=pa[0].when
+            for x in pa:
+                delta = x.when - last
+                if delta.total_seconds() < (60*5):
+                    total_time += delta
+
+        return total_time, logged_on
+
     #-------------------------------------------------------------------------------------------------------------------
     # returns all content this user has created in public mode
     #-------------------------------------------------------------------------------------------------------------------
@@ -3320,6 +3339,9 @@ class News(Content):
         link = str.replace(str(self.link), 'http://', '')
         return "http://" + link
 
+    def getLinkRedirectURL(self):
+            return "/link/" + str(self.id) + '/'
+
     def getImage(self):
         return self.link_screenshot
 
@@ -3342,11 +3364,13 @@ class News(Content):
 #
 #=======================================================================================================================
 class Discussion(Content):
-    
     user_post = models.TextField(blank=True)
     def autoSave(self, creator=None, privacy="PUB"):
         self.in_feed = True
         self.type = "D"
+        if not self.summary:
+            self.summary = self.user_post[:400]
+            if len(self.user_post) > 400: self.summary += "..."
         super(Discussion, self).autoSave(creator=creator, privacy=privacy)
 
     def getTypeIconClass(self):

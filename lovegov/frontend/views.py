@@ -168,6 +168,12 @@ def viewWrapper(view, requires_login=False):
 def redirect(request, vals={}):
     return shortcuts.redirect('/home/')
 
+def linkRedirect(request, n_id, vals={}):
+    news = News.objects.get(id=n_id)
+    news.link_clicks += 1
+    news.save()
+    return shortcuts.redirect(news.getAbsoluteLink())
+
 def underConstruction(request):
     return render_to_response('site/pages/microcopy/construction.html')
 
