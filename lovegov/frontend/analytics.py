@@ -11,6 +11,31 @@ from lovegov.modernpolitics.backend import *
 from operator import itemgetter
 
 #-----------------------------------------------------------------------------------------------------------------------
+# def filter by time
+#-----------------------------------------------------------------------------------------------------------------------
+
+def filterByCreatedWhen(stuff, time_start, time_end):
+    if time_start:
+        stuff = stuff.filter(created_when__gt=time_start)
+    if time_end:
+        stuff = stuff.filter(created_when__lt=time_end)
+    return stuff
+
+def filterByEditedWhen(stuff, time_start, time_end):
+    if time_start:
+        stuff = stuff.filter(edited_when__gt=time_start)
+    if time_end:
+        stuff = stuff.filter(edited_when__lt=time_end)
+    return stuff
+
+def filterByWhen(stuff, time_start, time_end):
+    if time_start:
+        stuff = stuff.filter(when__gt=time_start)
+    if time_end:
+        stuff = stuff.filter(when__lt=time_end)
+    return stuff
+
+#-----------------------------------------------------------------------------------------------------------------------
 # METRICS
 #-----------------------------------------------------------------------------------------------------------------------
 
@@ -73,10 +98,7 @@ def getUserGroupsFromDemographics(time_start, time_end, demographics):
 
     if 'logged_on' in demographics:
         pa = PageAccess.objects.all()
-        if time_start:
-            pa = pa.filter(when__gt=time_start)
-        if time_end:
-            pa = pa.filter(when__lt=time_end)
+        pa = filterByWhen(pa, time_start, time_end)
         logged_on_users = []
         for x in pa:
             user = x.user
@@ -92,10 +114,7 @@ def getUserGroupsFromDemographics(time_start, time_end, demographics):
 
     if 'new_users' in demographics:
         new_users = UserProfile.objects.filter(ghost=False)
-        if time_start:
-            new_users = UserProfile.objects.filter(created_when__gt=time_start)
-        if time_end:
-            new_users = UserProfile.objects.filter(created_when__lt=time_end)
+        new_users = filterByCreatedWhen(new_users, time_start, time_end)
         new_users_dict = {'time_start':time_start,
                           'time_end':time_end,
                           'users': new_users,
@@ -173,10 +192,7 @@ def metricsResult(args_dict, time_start=None, time_end=None, users=None):
             activity = GroupFollowAction.objects.all()
         elif type == 'signatures':
             activity = SignedAction.objects.all()
-        if time_start:
-            activity = activity.filter(when__gt=time_start)
-        if time_end:
-            activity = activity.filter(when__lt=time_end)
+        activity = filterByWhen(activity, time_start, time_end)
         if users:
             activity = activity.filter(creator__in=users)
         result = activity.count()
@@ -204,10 +220,7 @@ def metricsResult(args_dict, time_start=None, time_end=None, users=None):
 
         anon = getAnonUser()
         pa = PageAccess.objects.exclude(user=anon)
-        if time_start:
-            pa = pa.filter(when__gt=time_start)
-        if time_end:
-            pa = pa.filter(when__lt=time_end)
+        pa = filterByWhen(pa, time_start, time_end)
         if users:
             pa = pa.filter(user__in=users)
 
@@ -242,20 +255,14 @@ def metricsResult(args_dict, time_start=None, time_end=None, users=None):
 def metricsGetResponsesHelper(time_start, time_end, users):
     lg = getLoveGovUser()
     responses = Response.objects.exclude(creator=lg)
-    if time_start:
-        responses = responses.filter(edited_when__gt=time_start)
-    if time_end:
-        responses = responses.filter(edited_when__lt=time_end)
+    responses = filterByEditedWhen(responses, time_start, time_end)
     if users:
         responses = responses.filter(creator__in=users)
     return responses
 
 def metricsGetPostsHelper(time_start, time_end, users):
     posts = Content.objects.filter(type__in=IN_FEED)
-    if time_start:
-        posts = posts.filter(created_when__gt=time_start)
-    if time_end:
-        posts = posts.filter(created_when__lt=time_end)
+    posts = filterByCreatedWhen(posts, time_start, time_end)
     if users:
         posts = posts.filter(creator__in=users)
     return posts
@@ -297,10 +304,7 @@ def loadTimes(time_start, time_end):
     vals = {}
 
     ca = ClientAnalytics.objects.all()
-    if time_start:
-        ca = ca.filter(when__gt=time_start)
-    if time_end:
-        ca = ca.filter(when__lt=time_end)
+    ca = filterByWhen(ca, time_start, time_end)
 
     pages = {}
     for x in ca:
@@ -384,10 +388,7 @@ def summaryEmail(time_start, time_end):
             'time_end':time_end}
 
     pa = PageAccess.objects.all()
-    if time_start:
-        pa = pa.filter(when__gt=time_start)
-    if time_end:
-        pa = pa.filter(when__lt=time_end)
+    pa = filterByWhen(pa, time_start, time_end)
 
     accessed = {}
     anon_access = []
@@ -415,10 +416,7 @@ def summaryEmail(time_start, time_end):
     vals['accessed'] = accessed_list
 
     registered = UserProfile.objects.all()
-    if time_start:
-        registered = registered.filter(created_when__gt=time_start)
-    if time_end:
-        registered = registered.filter(created_when__lt=time_end)
+    registered = filterByCreatedWhen(registered, time_start, time_end)
     registered.order_by("created_when")
     vals['registered'] = registered
 
@@ -426,7 +424,7 @@ def summaryEmail(time_start, time_end):
     vals['load_times_html'] = loadTimes(time_start, time_end)
 
     # anon access
-    anon = dailyAnonymousActivity(anon_access)
+    anon = anonymousActivity(anon_access)
     vals['anon_activity'] = anon
 
     # metrics
@@ -440,7 +438,7 @@ def summaryEmail(time_start, time_end):
     return email
 
 
-def dailyAnonymousActivity(pa):
+def anonymousActivity(pa):
 
     anon_access = {}
     for x in pa:
