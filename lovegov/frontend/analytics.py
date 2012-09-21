@@ -172,7 +172,7 @@ def metricsResult(args_dict, time_start=None, time_end=None, users=None):
             result = num_anon / float(num_stuff) * 100
         else:
             result = 0
-        result = str(result) + "%"
+        result = str(result)[:2] + "%"
         normalized = result
 
     elif which == 'page_views':
