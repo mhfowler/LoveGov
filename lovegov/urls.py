@@ -153,6 +153,6 @@ urlpatterns += patterns('',
     (r'^popup_redirect/$', views.popupRedirect),
     (r'(?P<alias>\w+)/$', views.aliasDowncast),
     (r'.*/$', views.redirect),
-    (r'^$', views.redirect)
+    (r'^$', views.redirect, {'page':"/login/"})
 
 )

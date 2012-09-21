@@ -11,6 +11,31 @@ from lovegov.modernpolitics.backend import *
 from operator import itemgetter
 
 #-----------------------------------------------------------------------------------------------------------------------
+# def filter by time
+#-----------------------------------------------------------------------------------------------------------------------
+
+def filterByCreatedWhen(stuff, time_start, time_end):
+    if time_start:
+        stuff = stuff.filter(created_when__gt=time_start)
+    if time_end:
+        stuff = stuff.filter(created_when__lt=time_end)
+    return stuff
+
+def filterByEditedWhen(stuff, time_start, time_end):
+    if time_start:
+        stuff = stuff.filter(edited_when__gt=time_start)
+    if time_end:
+        stuff = stuff.filter(edited_when__lt=time_end)
+    return stuff
+
+def filterByWhen(stuff, time_start, time_end):
+    if time_start:
+        stuff = stuff.filter(when__gt=time_start)
+    if time_end:
+        stuff = stuff.filter(when__lt=time_end)
+    return stuff
+
+#-----------------------------------------------------------------------------------------------------------------------
 # METRICS
 #-----------------------------------------------------------------------------------------------------------------------
 
@@ -73,10 +98,7 @@ def getUserGroupsFromDemographics(time_start, time_end, demographics):
 
     if 'logged_on' in demographics:
         pa = PageAccess.objects.all()
-        if time_start:
-            pa = pa.filter(when__gt=time_start)
-        if time_end:
-            pa = pa.filter(when__lt=time_end)
+        pa = filterByWhen(pa, time_start, time_end)
         logged_on_users = []
         for x in pa:
             user = x.user
@@ -91,7 +113,8 @@ def getUserGroupsFromDemographics(time_start, time_end, demographics):
         count += 1
 
     if 'new_users' in demographics:
-        new_users = UserProfile.objects.filter(ghost=False, created_when__gt=time_start)
+        new_users = UserProfile.objects.filter(ghost=False)
+        new_users = filterByCreatedWhen(new_users, time_start, time_end)
         new_users_dict = {'time_start':time_start,
                           'time_end':time_end,
                           'users': new_users,
@@ -169,10 +192,7 @@ def metricsResult(args_dict, time_start=None, time_end=None, users=None):
             activity = GroupFollowAction.objects.all()
         elif type == 'signatures':
             activity = SignedAction.objects.all()
-        if time_start:
-            activity = activity.filter(when__gt=time_start)
-        if time_end:
-            activity = activity.filter(when__lt=time_end)
+        activity = filterByWhen(activity, time_start, time_end)
         if users:
             activity = activity.filter(creator__in=users)
         result = activity.count()
@@ -198,11 +218,9 @@ def metricsResult(args_dict, time_start=None, time_end=None, users=None):
 
     elif which == 'page_views':
 
-        pa = PageAccess.objects.all()
-        if time_start:
-            pa = pa.filter(when__gt=time_start)
-        if time_end:
-            pa = pa.filter(when__lt=time_end)
+        anon = getAnonUser()
+        pa = PageAccess.objects.exclude(user=anon)
+        pa = filterByWhen(pa, time_start, time_end)
         if users:
             pa = pa.filter(user__in=users)
 
@@ -215,8 +233,9 @@ def metricsResult(args_dict, time_start=None, time_end=None, users=None):
             normalized = result / num_users
 
     elif which == 'session_length':
+        anon_id = getAnonUser().id
         if not users:
-            users = UserProfile.objects.filter(ghost=False)
+            users = UserProfile.objects.filter(ghost=False).exclude(id=anon_id)
         total_time = datetime.timedelta(seconds=0)
         total_logged_on = 0
         for u in users:
@@ -236,20 +255,14 @@ def metricsResult(args_dict, time_start=None, time_end=None, users=None):
 def metricsGetResponsesHelper(time_start, time_end, users):
     lg = getLoveGovUser()
     responses = Response.objects.exclude(creator=lg)
-    if time_start:
-        responses = responses.filter(edited_when__gt=time_start)
-    if time_end:
-        responses = responses.filter(edited_when__lt=time_end)
+    responses = filterByEditedWhen(responses, time_start, time_end)
     if users:
         responses = responses.filter(creator__in=users)
     return responses
 
 def metricsGetPostsHelper(time_start, time_end, users):
     posts = Content.objects.filter(type__in=IN_FEED)
-    if time_start:
-        posts = posts.filter(created_when__gt=time_start)
-    if time_end:
-        posts = posts.filter(created_when__lt=time_end)
+    posts = filterByCreatedWhen(posts, time_start, time_end)
     if users:
         posts = posts.filter(creator__in=users)
     return posts
@@ -283,82 +296,6 @@ def benchmarkPage(page, output_folder):
         print "concurrency " + str(num_concurrent)
         apacheBenchmark(domain, page, output_folder, num_requests, num_concurrent)
 
-#-----------------------------------------------------------------------------------------------------------------------
-# Creates a summary of a users daily use.
-#-----------------------------------------------------------------------------------------------------------------------
-def userSummary(user, request, days=None):
-    if days:
-        today = datetime.datetime.now() - datetime.timedelta(days=int(days))
-        pa = PageAccess.objects.filter(user=user, when__gt=today).order_by("when")
-    else:
-        pa = PageAccess.objects.filter(user=user)
-    if pa:
-        access = {}
-        for x in pa:
-            page = x.page
-            if page in access:
-                access[page] += 1
-            else:
-                access[page] = 1
-        vals = {'access':access, 'pa':pa, 'u':user}
-        return ajaxRender('analytics/user_summary.html', vals, request)
-    else:
-        return ""
-
-#-----------------------------------------------------------------------------------------------------------------------
-# convenience method to see user activity summary
-#-----------------------------------------------------------------------------------------------------------------------
-def userSum(name):
-    user = getUser(name)
-    if user:
-        userActivity(user)
-    else:
-        print "no user with inputted name."
-
-#-----------------------------------------------------------------------------------------------------------------------
-# new user
-#-----------------------------------------------------------------------------------------------------------------------
-def userActivity(user, file=None,  min=None, max=None):
-
-    pa = PageAccess.objects.filter(user=user).exclude(page="/answer/").order_by("when")
-    if min:
-        pa.filter(when__gt=min)
-    if max:
-        pa.filter(when__lt=max)
-
-    when = datetime.datetime.min
-    to_return = "\n\nUser Summary for " + user.get_name() + ": \n"
-
-    for x in pa:
-
-        delta = x.when - when
-        when = x.when
-
-        if delta.total_seconds() > (60*60):
-            to_return += "\n---------------------------------  " + str(when) + "\n"  # if new session page break
-        else:
-            to_return += " (" + str(delta.total_seconds()) + ")\n"               # else print time delta from last page
-
-        to_return += x.page
-        if x.action:
-            to_return += ":" + x.action
-
-
-    if file:
-        with open(file, 'a') as f:
-            try:
-                f.write(to_return)
-            except UnicodeEncodeError:
-                print "unicode encode error for " + user.get_name()
-
-    print to_return
-    return to_return
-
-def allUserActivity(file, min=None, max=None):
-    u = UserProfile.objects.filter(ghost=False)
-    for x in u:
-        userActivity(x, file, min, max)
-
 
 ################################################# LOAD TIMES ###########################################################
 
@@ -366,7 +303,8 @@ def loadTimes(time_start, time_end):
 
     vals = {}
 
-    ca = ClientAnalytics.objects.filter(when__gt=time_start, when__lt=time_end)
+    ca = ClientAnalytics.objects.all()
+    ca = filterByWhen(ca, time_start, time_end)
 
     pages = {}
     for x in ca:
@@ -450,10 +388,7 @@ def summaryEmail(time_start, time_end):
             'time_end':time_end}
 
     pa = PageAccess.objects.all()
-    if time_start:
-        pa = pa.filter(when__gt=time_start)
-    if time_end:
-        pa = pa.filter(when__lt=time_end)
+    pa = filterByWhen(pa, time_start, time_end)
 
     accessed = {}
     anon_access = []
@@ -481,10 +416,7 @@ def summaryEmail(time_start, time_end):
     vals['accessed'] = accessed_list
 
     registered = UserProfile.objects.all()
-    if time_start:
-        registered = UserProfile.objects.filter(created_when__gt=time_start)
-    if time_end:
-        registered = UserProfile.objects.filter(created_when__lt=time_end)
+    registered = filterByCreatedWhen(registered, time_start, time_end)
     registered.order_by("created_when")
     vals['registered'] = registered
 
@@ -492,7 +424,7 @@ def summaryEmail(time_start, time_end):
     vals['load_times_html'] = loadTimes(time_start, time_end)
 
     # anon access
-    anon = dailyAnonymousActivity(anon_access)
+    anon = anonymousActivity(anon_access)
     vals['anon_activity'] = anon
 
     # metrics
@@ -506,7 +438,7 @@ def summaryEmail(time_start, time_end):
     return email
 
 
-def dailyAnonymousActivity(pa):
+def anonymousActivity(pa):
 
     anon_access = {}
     for x in pa:
@@ -542,3 +474,81 @@ def logEmails(file_path, which):
             print "saved " + email
         except:
             print "+WW+ failed " + x
+
+
+#-----------------------------------------------------------------------------------------------------------------------
+# convenience method to see user activity summary
+#-----------------------------------------------------------------------------------------------------------------------
+def userSum(name):
+    user = getUser(name)
+    if user:
+        userActivity(user)
+    else:
+        print "no user with inputted name."
+
+#-----------------------------------------------------------------------------------------------------------------------
+# new user
+#-----------------------------------------------------------------------------------------------------------------------
+def userActivity(user, file=None,  min=None, max=None):
+
+    pa = PageAccess.objects.filter(user=user).exclude(page="/answer/").order_by("when")
+    if min:
+        pa.filter(when__gt=min)
+    if max:
+        pa.filter(when__lt=max)
+
+    when = datetime.datetime.min
+    to_return = "\n\nUser Summary for " + user.get_name() + ": \n"
+
+    for x in pa:
+
+        delta = x.when - when
+        when = x.when
+
+        if delta.total_seconds() > (60*60):
+            to_return += "\n---------------------------------  " + str(when) + "\n"  # if new session page break
+        else:
+            to_return += " (" + str(delta.total_seconds()) + ")\n"               # else print time delta from last page
+
+        to_return += x.page
+        if x.action:
+            to_return += ":" + x.action
+
+
+    if file:
+        with open(file, 'a') as f:
+            try:
+                f.write(to_return)
+            except UnicodeEncodeError:
+                print "unicode encode error for " + user.get_name()
+
+    print to_return
+    return to_return
+
+def allUserActivity(file, min=None, max=None):
+    u = UserProfile.objects.filter(ghost=False)
+    for x in u:
+        userActivity(x, file, min, max)
+
+
+#-----------------------------------------------------------------------------------------------------------------------
+# Creates a summary of a users daily use.
+#-----------------------------------------------------------------------------------------------------------------------
+def userSummary(user, request, days=None):
+    if days:
+        today = datetime.datetime.now() - datetime.timedelta(days=int(days))
+        pa = PageAccess.objects.filter(user=user, when__gt=today).order_by("when")
+    else:
+        pa = PageAccess.objects.filter(user=user)
+    if pa:
+        access = {}
+        for x in pa:
+            page = x.page
+            if page in access:
+                access[page] += 1
+            else:
+                access[page] = 1
+        vals = {'access':access, 'pa':pa, 'u':user}
+        return ajaxRender('analytics/user_summary.html', vals, request)
+    else:
+        return ""
