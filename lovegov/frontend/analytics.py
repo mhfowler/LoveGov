@@ -416,9 +416,9 @@ def summaryEmail(time_start, time_end):
 
     registered = UserProfile.objects.all()
     if time_start:
-        registered = UserProfile.objects.filter(created_when__gt=time_start)
+        registered = registered.filter(created_when__gt=time_start)
     if time_end:
-        registered = UserProfile.objects.filter(created_when__lt=time_end)
+        registered = registered.filter(created_when__lt=time_end)
     registered.order_by("created_when")
     vals['registered'] = registered
 
