@@ -119,8 +119,6 @@ TEAM_EMAILS =  ['max_fowler@brown.edu','loweth.g@gmail.com',
 YAY_EMAILS = TEAM_EMAILS
 DAILY_SUMMARY_EMAILS = TEAM_EMAILS
 
-DAILY_SUMMARY_EMAILS = ['max_fowler@brown.edu']
-
 ########################################## KEYS ########################################################################
 
 # for lovegov
