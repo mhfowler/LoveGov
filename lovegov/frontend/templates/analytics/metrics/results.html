@@ -12,7 +12,7 @@
 
     <div class="m-normalized-wrapper">
         {% for r in results %}
-            {% with result=r.normalized which_color=r.which_color%}
+            {% with result=r.normalized which_color='gray'%}
                 {% include 'analytics/metrics/result.html' %}
             {% endwith %}
         {% endfor %}
