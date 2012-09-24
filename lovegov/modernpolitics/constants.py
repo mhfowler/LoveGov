@@ -19,17 +19,6 @@ import os
 
 LOCAL = settings.LOCAL
 
-########################################## ANALYTICS CONSTANTS #########################################################
-
-
-CURRENT_TEST_RUN = 0
-
-BENCHMARK_PAGES = ['/home/', '/groups/', '/elections/', '/questions/']
-
-BENCHMARK_AJAX = [
-        ('/home/', 'getFeed'),
-        ('/groups/', 'getGroups')
-]
 
 
 ########################################## COLORS FOR STUFF ############################################################

@@ -246,7 +246,7 @@ function action(dict, in_background, analyze) {
 // wrapper which has if case for client side analytics
 function ajaxWrapper(ajax_dict, url, action, analyze) {
 
-    if (client_side_analytics && analyze) {
+    if (CLIENT_SIDE_ANALYTICS && analyze) {
         var super_success = ajax_dict['success'];
         ajax_dict['success'] = analyzeFunction(super_success, url, action);
     }
@@ -4532,26 +4532,26 @@ bind('div.profile-page div.profile-image', 'click', function(e) {
  *
  ***********************************************************************************************************************/
 
-var client_side_analytics = true;
+var CLIENT_SIDE_ANALYTICS = true;
 
-var analytics_dict = {};
-var analytics_nonce_id = 0;
+var ANALYTICS_DICT = {};
+var ANALYTICS_NONCE_ID = 0;
 function startPageAnalytic(path, action) {
     var nonce_id = -1;
-    if (client_side_analytics) {
+    if (CLIENT_SIDE_ANALYTICS) {
         var now = new Date().getTime();
         var analytics_object = {'path':path, 'action':action, 'start_time':now};
-        analytics_nonce_id += 1;
-        nonce_id = analytics_nonce_id;
-        analytics_dict[nonce_id] = analytics_object;
+        ANALYTICS_NONCE_ID += 1;
+        nonce_id = ANALYTICS_NONCE_ID;
+        ANALYTICS_DICT[nonce_id] = analytics_object;
     }
     return nonce_id;
 }
 
 function finishPageAnalytic(nonce_id) {
-    if (client_side_analytics) {
+    if (CLIENT_SIDE_ANALYTICS) {
         var now = new Date().getTime();
-        var analytics_object = analytics_dict[nonce_id];
+        var analytics_object = ANALYTICS_DICT[nonce_id];
         if (typeof(analytics_object) != 'undefined') {
             analytics_object.end_time = now;
         }
@@ -4560,9 +4560,9 @@ function finishPageAnalytic(nonce_id) {
 
 // post client side analytics data to server
 function postPageAnalytics() {
-    if (client_side_analytics) {
-        var client_side_data = JSON.stringify(analytics_dict);
-        analytics_dict = {};
+    if (CLIENT_SIDE_ANALYTICS) {
+        var client_side_data = JSON.stringify(ANALYTICS_DICT);
+        ANALYTICS_DICT = {};
         if (client_side_data != "{}") {
             action({
                 'data': {'action':'clientSideAnalytics', 'client_side_data':client_side_data, 'log-ignore':true},
