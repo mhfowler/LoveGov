@@ -3,7 +3,7 @@
 {% load macros %}
 
 <div class="feed-item-wrapper{% if first_item %} feedtut_tutorial_item {% endif %}
-{% comment %}{% if not content.num_comments and content.type != 'Q' %} no-top-comment {% endif %} {% endcomment %}
+{% if not content.num_comments and content.type != 'Q' %} no-top-comment {% endif %}
 {% if content.type == 'Q' %}
     question_stub
 {% endif %}"
