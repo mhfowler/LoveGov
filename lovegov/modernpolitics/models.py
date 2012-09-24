@@ -1225,23 +1225,37 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
         return content
 
     def updateHotFeed(self):
-
         self.hot_feed.clear()
+        hot_feed_content = self.calculateHotFeedContent()
+        for score, content in enumerate(hot_feed_content):
+            r = RankedContent(content=content, score=score, user=self)
+            r.save()
+
+    def calculateHotFeedContent(self):
         self.updateStale()
         content = self.getUnstaleContent()
         content_ids = content.values_list("id", flat=True)
 
         petitions = content.filter(type="P").order_by("-status")
-        news = content.filter(type="N").order_by("-created_when").order_by("-hot_score")
+
+        now = datetime.datetime.now()
+        delta = datetime.timedelta(days=OLDEST_HOT_NEWS)
+        oldest_news = now - delta
+        news = content.filter(type="N").filter(created_when__gt=oldest_news).order_by("-created_when")
+
         discussions = content.filter(type="D").order_by("-status").order_by("-num_comments")
+
         questions = Question.objects.filter(id__in=content_ids).order_by("-status").order_by("-questions_hot_score")
+
+        if not (petitions or news or discussions or questions):
+            return list(Content.objects.filter(in_feed=True).order_by("-hot_score"))
 
         hot_feed_stacks = {
             'P': {'stack':petitions, 'position':0, 'length':len(petitions)},
             'N': {'stack':news, 'position':0, 'length':len(news)},
             'Q': {'stack':questions, 'position':0, 'length':len(questions)},
             'D': {'stack':discussions, 'position':0, 'length':len(discussions)}
-            }
+        }
 
         hot_feed_content = []
         for i in range(1, min(HOT_FEED_SIZE, len(content))):
@@ -1254,10 +1268,7 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
                 item = stack[position]
                 hot_feed_content.append(item)
                 which['position'] += 1
-
-        for score, content in enumerate(hot_feed_content):
-            r = RankedContent(content=content, score=score, user=self)
-            r.save()
+        return hot_feed_content
 
 
     def seeContents(self, contents):
