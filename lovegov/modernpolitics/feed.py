@@ -38,11 +38,14 @@ def getFeedItems(viewer, alias, feed_ranking, feed_types, feed_start, num, like_
 
     # filter
     if feed_types:
-        content = content.filter(type__in=feed_types)
+        feed_type = feed_types[0]
+        content = content.filter(type=feed_type)
+    else:
+        feed_type = None
 
     # sort
     if not home_hot_feed:
-        content = sortHelper(content, feed_ranking)
+        content = sortHelper(content, feed_ranking, feed_type)
 
     # paginate
     content = content[feed_start:feed_start+num]
@@ -170,7 +173,7 @@ def getQuestionItems(viewer, feed_ranking, feed_topic=None, only_unanswered=Fals
         questions = questions.exclude(id__in=q_ids)
 
     # sort & append
-    questions = sortHelper(questions, feed_ranking, questions=True)
+    questions = questionsSortHelper(questions, feed_ranking)
     for q in questions:
         your_response = getResponseHelper(you_responses, q)
         q_item = getQuestionItem(question=q,
@@ -193,23 +196,29 @@ def getResponseHelper(responses, question):
     else:
         return None
 
-def sortHelper(content, feed_ranking, questions=False):
-    if not questions:
-        if feed_ranking == 'N':
-            content = content.order_by("-created_when")
-        elif feed_ranking == 'H':
-            content = content.order_by("-hot_score")
-        elif feed_ranking == 'B':
-            content = content.order_by("-status")
-    else:
-        if feed_ranking == 'N':
-            content = content.order_by("-created_when")
-        elif feed_ranking == 'H':
-            content = content.order_by("-questions_hot_score")
-        elif feed_ranking == 'B':
-            content = content.order_by("-num_responses")
+def sortHelper(content, feed_ranking, feed_type=None):
+    if feed_ranking == 'N':
+        content = content.order_by("-created_when")
+    elif feed_ranking == 'H' and feed_type == "Q":
+        content_ids = content.values_list("id", flat=True)
+        content = Question.objects.filter(id__in=content_ids).order_by("-questions_hot_score")
+    elif feed_ranking == 'H':
+        content = content.order_by("-hot_score")
+    elif feed_ranking == 'B' and feed_type == "Q":
+        content_ids = content.values_list("id", flat=True)
+        content = Question.objects.filter(id__in=content_ids).order_by("-num_responses")
+    elif feed_ranking == 'B':
+        content = content.order_by("-status")
     return content
 
+def questionsSortHelper(questions, feed_ranking):
+    if feed_ranking == 'N':
+        questions = questions.order_by("-created_when")
+    elif feed_ranking == 'H':
+        questions = questions.order_by("-questions_hot_score")
+    elif feed_ranking == 'B':
+        questions = questions.order_by("-num_responses")
+    return questions
 
 def responsesSortHelper(question_items, ranking):
     if ranking == 'B':
