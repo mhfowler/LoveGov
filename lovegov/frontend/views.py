@@ -8,7 +8,6 @@
 ########################################################################################################################
 
 from lovegov.frontend.views_helpers import *
-from modernpolitics.profiler import profile
 from pprint import pprint
 from collections import OrderedDict
 
@@ -105,10 +104,12 @@ def viewWrapper(view, requires_login=False):
                     user = controlling_user.user_profile
                     vals['prohibited_actions'] = controlling_user.prohibited_actions
                 else:
-                    user = getAnonUser()
-                    vals['i_am_anonymous'] = True
-                    vals['prohibited_actions'] = ANONYMOUS_PROHIBITED_ACTIONS
-                    vals['anonymous_welcome'] = not request.COOKIES.get("closed_anon")
+                    to_page = vals['to_page']
+                    return shortcuts.redirect('/login' + to_page)
+#                    user = getAnonUser()
+#                    vals['i_am_anonymous'] = True
+#                    vals['prohibited_actions'] = ANONYMOUS_PROHIBITED_ACTIONS
+#                    vals['anonymous_welcome'] = not request.COOKIES.get("closed_anon")
 
                 # get user profile associated with controlling user
                 vals['user'] = user

@@ -1721,6 +1721,9 @@ def getFeed(request, vals):
     viewer = vals['viewer']
     content = getFeedItems(viewer=viewer, alias=alias, feed_ranking=feed_ranking,
         feed_types=feed_types, feed_start=feed_start, num=10, like_minded=like_minded)
+
+    viewer.seeContents(content)     # count which content is seen
+
     feed_items = contentToFeedItems(content, vals['viewer'])
     vals['feed_items'] = feed_items
 

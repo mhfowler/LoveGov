@@ -6,7 +6,7 @@ DEBUG = True
 TEMPLATE_DEBUG = True
 THUMBNAIL_DEBUG = False
 SHOW_TOOLBAR = False
-PROFILE = True
+PROFILE = False
 
 PROJECT_PATH = base_settings.PROJECT_PATH
 
@@ -105,13 +105,7 @@ HAYSTACK_CONNECTIONS = base_settings.HAYSTACK_CONNECTIONS
 
 # for django-debug-toolbar
 def show_toolbar(request):
-    from lovegov.modernpolitics.helpers import getUserProfile
-    if DEBUG and SHOW_TOOLBAR:
-        user_prof = getUserProfile(request)
-        if user_prof:
-            if user_prof.developer:
-                return True
-    return False
+    return SHOW_TOOLBAR
 
 DEBUG_TOOLBAR_CONFIG = {
     'SHOW_TOOLBAR_CALLBACK': show_toolbar,
@@ -144,13 +138,13 @@ BROKER_URL = base_settings.BROKER_URL
 ########################################################################################################################
 
 # EMAIL DURING DEVELOPMENT
-#EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
-#EMAIL_FILE_PATH = '/log/emails'
+EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
+EMAIL_FILE_PATH = '/log/emails'
 
-EMAIL_HOST = 'smtpout.secureserver.net'
-EMAIL_HOST_USER = 'team@lovegov.com'
-EMAIL_HOST_PASSWORD = 'lglglgLG'
-EMAIL_PORT = '25'
+#EMAIL_HOST = 'smtpout.secureserver.net'
+#EMAIL_HOST_USER = 'team@lovegov.com'
+#EMAIL_HOST_PASSWORD = 'lglglgLG'
+#EMAIL_PORT = '25'
 
 
 ########################################################################################################################

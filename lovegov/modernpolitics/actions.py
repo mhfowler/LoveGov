@@ -51,6 +51,7 @@ def answerAction(user, question, privacy, answer_id, weight=-1, explanation=None
         user.num_answers += 1
         user.upvotes += 1
         user.save()
+        user.makeStale(question)
         question = response.question
         question.num_responses += 1
         question.save()

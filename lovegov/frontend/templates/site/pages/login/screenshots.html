@@ -5,13 +5,11 @@
 
     <div class="bottom-box get-started-container-left">
         <div class="screenshot qa_screenshot">
-            <a href="" class="no_login_link" data-link="/try/web/">
-                {% with full_url='/static/images/screenshots/questions_screen.png'|media_url:MEDIA_PREFIX %}
-                    {% thumbnail full_url "300x300" as im %}
-                        <img src="{{ im.url }}"/>
-                    {% endthumbnail %}
-                {% endwith %}
-            </a>
+            {% with full_url='/static/images/screenshots/questions_screen.png'|media_url:MEDIA_PREFIX %}
+                {% thumbnail full_url "300x300" as im %}
+                    <img src="{{ im.url }}"/>
+                {% endthumbnail %}
+            {% endwith %}
         </div>
         <h4 class="explanation-header"> 1. Q&A </h4>
         <p class="explanation">
@@ -22,13 +20,11 @@
 
     <div class="bottom-box get-started-container-center">
         <div class="screenshot match_screenshot">
-            <a href="" class="no_login_link" data-link="/try/match/">
-                {% with full_url='/static/images/screenshots/presidential_screen.png'|media_url:MEDIA_PREFIX %}
-                    {% thumbnail full_url "300x300" as im %}
-                        <img src="{{ im.url }}"/>
-                    {% endthumbnail %}
-                {% endwith %}
-            </a>
+            {% with full_url='/static/images/screenshots/presidential_screen.png'|media_url:MEDIA_PREFIX %}
+                {% thumbnail full_url "300x300" as im %}
+                    <img src="{{ im.url }}"/>
+                {% endthumbnail %}
+            {% endwith %}
         </div>
         <h4 class="explanation-header"> 2. Match </h4>
         <p class="explanation">
@@ -39,13 +35,11 @@
 
     <div class="bottom-box get-started-container-right">
         <div class="screenshot discuss_screenshot">
-            <a href="" class="no_login_link" data-link="/try/home/">
-                {% with full_url='/static/images/screenshots/feed_screen.png'|media_url:MEDIA_PREFIX %}
-                    {% thumbnail full_url "300x300" as im %}
-                        <img src="{{ im.url }}"/>
-                    {% endthumbnail %}
-                {% endwith %}
-            </a>
+            {% with full_url='/static/images/screenshots/feed_screen.png'|media_url:MEDIA_PREFIX %}
+                {% thumbnail full_url "300x300" as im %}
+                    <img src="{{ im.url }}"/>
+                {% endthumbnail %}
+            {% endwith %}
         </div>
         <h4 class="explanation-header"> 3. Take Action </h4>
         <p class="explanation">
