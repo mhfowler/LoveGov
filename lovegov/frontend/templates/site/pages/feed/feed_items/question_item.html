@@ -1,10 +1,12 @@
 {% extends 'site/pages/feed/feed_items/base_item.html' %}
 
-{% block item_main %}
-
+{% block posted-to %}
+    <div class="group-posted-to feedtut_posted_to_parent">
+        {% with posted_to=content.getTopPoll %}
+            <a href="{{ posted_to.get_url }}" class="posted-to-link"> {{ posted_to.get_name }} </a>
+        {% endwith %}
+    </div>
 {% endblock %}
 
-
-
-{% block right_part %}
+{% block item_main %}
 {% endblock %}
