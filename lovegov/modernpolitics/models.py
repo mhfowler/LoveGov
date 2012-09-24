@@ -106,7 +106,10 @@ class Privacy(LGModel):
             creator = self.creator
         except UserProfile.DoesNotExist:
             from lovegov.modernpolitics.backend import getLoveGovUser
-            return getLoveGovUser() 
+            return getLoveGovUser()
+        if not creator:
+            from lovegov.modernpolitics.backend import getLoveGovUser
+            return getLoveGovUser()
         return creator
 
     def getCreatorDisplay(self, viewer=None):
@@ -1212,6 +1215,9 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
     #-------------------------------------------------------------------------------------------------------------------
     def getHotFeedContent(self, start=0, end=0):
         content = Content.objects.filter(in_feed=True, ranked_by__user=self).order_by("ranked_by__score")
+        if not content:
+            self.updateHotFeed()
+            return self.getHotFeedContent(start, end)
         if start:
             content = content[start:]
         if end:
@@ -1270,7 +1276,7 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
             self.seen_content.add(i_saw)
 
     def makeStale(self, content):
-        if not content in self.stale_content:
+        if not content in self.stale_content.all():
             self.stale_content.add(content)
 
     def updateStale(self):
@@ -4067,7 +4073,8 @@ class Answer(LGModel):
 #
 #=======================================================================================================================
 class Question(Content):
-    
+
+    top_poll = models.ForeignKey("Poll", null=True)
     question_text = models.TextField(max_length=500)
     question_type = models.CharField(max_length=2, default="D")
     relevant_info = models.TextField(max_length=1000, blank=True, null=True)
@@ -4079,6 +4086,14 @@ class Question(Content):
     # scores for questions feed
     num_responses = models.IntegerField(default=0)
     questions_hot_score = models.IntegerField(default=0)
+
+    def updateTopPoll(self):
+        polls = Poll.objects.filter(questions=self).order_by("-status")
+        if polls:
+            top_poll = polls[0]
+            self.top_poll = top_poll
+            print top_poll.get_name()
+            self.save()
 
     class Admin:
         pass

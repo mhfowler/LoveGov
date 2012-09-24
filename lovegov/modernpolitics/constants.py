@@ -35,15 +35,15 @@ HOT_FEED_WEIGHTS = {
 
 HOT_FEED_WEIGHTS_LIST = []
 total_weight = 0
-for type,weight in HOT_FEED_WEIGHTS.items():
+for c_type,weight in HOT_FEED_WEIGHTS.items():
     total_weight += weight
-    HOT_FEED_WEIGHTS_LIST.append((type, total_weight))
+    HOT_FEED_WEIGHTS_LIST.append((c_type, total_weight))
 
 def getWeightedType():
     rand_weight = random.randint(1, 99)
-    for type,weight in HOT_FEED_WEIGHTS_LIST:
+    for c_type,weight in HOT_FEED_WEIGHTS_LIST:
         if rand_weight < weight:
-            return type
+            return c_type
 
 ########################################## ANALYTICS CONSTANTS #########################################################
 

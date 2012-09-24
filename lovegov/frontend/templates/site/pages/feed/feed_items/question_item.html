@@ -2,7 +2,7 @@
 
 {% block posted-to %}
     <div class="group-posted-to feedtut_posted_to_parent">
-        {% with posted_to=content.getTopPoll %}
+        {% with posted_to=content.top_poll %}
             <a href="{{ posted_to.get_url }}" class="posted-to-link"> {{ posted_to.get_name }} </a>
         {% endwith %}
     </div>
