@@ -1306,7 +1306,7 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
         for x in self.seen_content.all():
             if x.seen > SEEN_THRESHOLD:
                 content = x.content
-                print content.get_name()
+                #print content.get_name()
                 self.makeStale(content)
 
     def recalculateStaleContent(self):
@@ -1314,7 +1314,7 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
         self.updateStale()
         for r in self.getView().responses.all():
             question = r.question
-            print question.get_name()
+            #print question.get_name()
             self.makeStale(question)
 
     def getUnstaleContent(self):
