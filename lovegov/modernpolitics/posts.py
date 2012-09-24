@@ -992,7 +992,11 @@ def saveAnswer(request, vals={}):
     start_like_minded = your_response.most_chosen_answer and viewer.num_answers == QUESTIONS_THRESHOLD
 
     html = ajaxRender('site/pages/qa/question_stub.html', vals, request)
-    return HttpResponse(json.dumps({'html':html, 'num_responses':question.num_responses, 'start_like_minded':start_like_minded}))
+    to_return = {'html':html, 'num_responses':question.num_responses, 'start_like_minded':start_like_minded}
+    from lovegov.frontend.views_helpers import valsQuestionMetrics
+    valsQuestionMetrics(viewer=viewer, question=question, response=your_response, vals=to_return)
+
+    return HttpResponse(json.dumps(to_return))
 
 def saveScorecardAnswer(request, vals):
     question = Question.objects.get(id=request.POST['q_id'])
@@ -1066,7 +1070,9 @@ def editExplanation(request, vals):
     if viewer == response.creator:
         response.editExplanation(explanation)
         response.save()
-        return HttpResponse(json.dumps({'explanation':explanation}))
+        vals['stuff'] = explanation
+        explanation_html = ajaxRender('site/pieces/urlize.html', vals, request)
+        return HttpResponse(json.dumps({'explanation_html':explanation_html}))
     else:
         LGException("trying to edit explanation of response that was not their own. u_id:" + str(viewer.id))
         return HttpResponse("didn't work")
@@ -1166,6 +1172,28 @@ def updateStats(request, vals={}):
         vals['poll_progress'] = poll.getPollProgress(viewer)
         html = ajaxRender('site/pages/qa/poll_completed_num.html', vals, request)
     return HttpResponse(json.dumps({'html':html}))
+
+#-----------------------------------------------------------------------------------------------------------------------
+# get html for agreement bargraph
+#-----------------------------------------------------------------------------------------------------------------------
+def getAgreementBarGraphHTML(request, vals={}):
+
+    from lovegov.frontend.views_helpers import getAgreementBarGraphHTMLHelper
+
+    viewer = vals['viewer']
+    r_id = request.POST.get('r_id')
+    if not r_id:
+        q_id = request.POST['q_id']
+        question = Question.objects.get(id=q_id)
+        response = viewer.getResponseToQuestion(question)
+    else:
+        response = Response.objects.get(id=r_id)
+        question = response.question
+    in_feed = request.POST.get('in_feed')
+
+    html = getAgreementBarGraphHTMLHelper(viewer, question, response, in_feed)
+    return HttpResponse(json.dumps({'html':html}))
+
 
 #----------------------------------------------------------------------------------------------------------------------
 # gets html for next poll question

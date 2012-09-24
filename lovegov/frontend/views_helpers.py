@@ -5,6 +5,57 @@ from lovegov.modernpolitics.backend import *
 from lovegov.base_settings import UPDATE
 
 #-----------------------------------------------------------------------------------------------------------------------
+# get vals for displaying info about who chose what about question
+#-----------------------------------------------------------------------------------------------------------------------
+def valsQuestionMetrics(viewer, question, response, vals, in_feed=True):
+
+    percents_chosen_dict = {}
+    lg_group = getLoveGovGroup()
+    lg_response = lg_group.getResponseToQuestion(question)
+    if lg_response:
+        for a in question.answers.all():
+            a_id = a.id
+            percents_chosen_dict[a_id] = {'percent_agreed':lg_response.getPercent(a_id), 'a_id':a_id}
+
+    percents_chosen_list = percents_chosen_dict.values()
+    for bubble_vals in percents_chosen_list:
+        bubble_html = renderHelper('site/pages/feed/feed_items/question_item_percent_agreed.html', bubble_vals)
+        bubble_vals['html'] = bubble_html
+    vals['lg_percent_agreed_bubbles'] = percents_chosen_list
+
+def getAgreementBarGraphHTMLHelper(viewer, question, response, in_feed=True):
+
+    groups = []
+
+    if in_feed:
+        lg_group = getLoveGovGroup()
+        groups.append(lg_group)
+        i_follow_group = viewer.i_follow
+        groups.append(i_follow_group)
+        democrats = getDemocraticParty()
+        if democrats: groups.append(democrats)
+        republicans = getRepublicanParty()
+        if republicans: groups.append(republicans)
+
+        groups = [lg_group, lg_group, lg_group, lg_group]
+
+    groups_dict_list = []
+    for g in groups:
+        g_response = g.getResponseToQuestion(question)
+        if g_response:
+            percent_agreed = g_response.getPercent(response.most_chosen_answer_id)
+            percent_agreed = random.randint(0, 100)
+            total_num = g_response.total_num
+        else:
+            percent_agreed = 50
+            total_num = 0
+        g_vals = {'group':g, 'percent_agreed': percent_agreed, 'percent_disagreed':100-percent_agreed, 'total_num':total_num}
+        groups_dict_list.append(g_vals)
+
+    to_render = {'groups_dict_list': groups_dict_list}
+    return renderHelper('site/pages/feed/feed_items/agreement_bargraph.html', to_render)
+
+#-----------------------------------------------------------------------------------------------------------------------
 # vals for likeminded filter
 #-----------------------------------------------------------------------------------------------------------------------
 def valsLikeMinded(vals):

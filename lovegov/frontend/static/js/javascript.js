@@ -108,6 +108,9 @@ function bindOnNewElements() {
 
     // tool tips
     bindTooltips();
+
+    // initialize self initializing elements
+    initializeDomElements();
 }
 
 
@@ -1563,8 +1566,10 @@ function editExplanation(r_id, q_id, explanation, being_edited, not_editing_disp
         success: function(data)
         {
             var obj = $.parseJSON(data);
-            being_edited.html('"' + obj.explanation + '"');
+            being_edited.html(obj.explanation_html);
             not_editing_display.show();
+            var wrapper = not_editing_display.parents(".inline_editable");
+            smoothTransition(wrapper, function(){ wrapper.css({'min-height':'0px'})}, 400);
         }
     });
 }
@@ -1622,6 +1627,8 @@ bind( ".submit_inline_edit" , 'click' , null , function(event)
     var being_edited = wrapper.find('.being_edited');
     var not_editing_display = wrapper.find(".not_editing_display");
     var doing_editing_display = wrapper.find(".doing_editing_display");
+    var old_height = wrapper.height();
+    wrapper.css({'min-height':old_height});
     doing_editing_display.hide();
 
     /* which edit are we calling */
@@ -2846,10 +2853,14 @@ bind('.answer_choice' , 'click' , null , function(event)
     var stub = $(this).parents(".question_stub");
     if ($(this).hasClass("clicked")) {
         $(this).removeClass("clicked");
+        $(this).parents(".answer_wrapper").removeClass("clicked");
     }
     else {
+        stub.data('answer_changed', true);
         stub.find(".answer_choice").removeClass("clicked");
+        stub.find(".answer_wrapper").removeClass("clicked");
         $(this).addClass("clicked");
+        $(this).parents(".answer_wrapper").addClass("clicked");
     }
     saveAnswer(stub);
 });
@@ -2884,6 +2895,7 @@ function saveAnswer(stub) {
     var q_id = stub.data('q_id');
     var default_display = stub.data("default_display");
     var your_response = stub.data("your_response");
+    var answer_changed = stub.data('answer_changed');
     var privacy = stub.data("privacy");
     var importance = stub.find('.importance_bar').data('weight');
 
@@ -2940,12 +2952,37 @@ function saveAnswer(stub) {
                 var new_height = new_element.height();
                 new_element.css('height', old_height);
                 new_element.animate({"height":new_height}, {"duration":200, "complete":function(){new_element.css("height", "auto");}});
-                bindOnNewElements();
             }
             stub.find(".num_responses span.num").html(returned.num_responses);
             var saved_message = stub.find(".saved_message");
             saved_message.show();
             saved_message.fadeOut(5000);
+
+            if (answer_changed) {
+                stub.data("answer_changed", false);
+                var percent_agreed_bubbles = returned.lg_percent_agreed_bubbles;
+                //$(".percent_agreed_wrapper").fadeOut(1000);
+                $.each(percent_agreed_bubbles, function(i,e) {
+                    var this_a_id = e.a_id;
+                    var this_html = e.html;
+                    var this_wrapper = stub.find('.answer_wrapper[data-a_id="' + this_a_id + '"]').find('.percent_agreed_wrapper');
+                    this_wrapper.html(this_html);
+                    this_wrapper.fadeIn(200);
+                });
+                setTimeout(function() {
+                    //stub.find(".percent_agreed_wrapper").fadeOut(1000);
+                }, 3000);
+
+                var agreement_bargraph = stub.find(".agreement_bargraph_seed");
+                initializeDomElement(agreement_bargraph);
+
+                if (your_response == 0) {
+                    var q_bottom = stub.find(".question_item_bottom_wrapper");
+                    smoothTransition(q_bottom, function(){q_bottom.css({"height":'auto'})}, 200);
+                }
+            }
+
+            bindOnNewElements();
             updateMatches();
             updateStats();
 
@@ -2957,6 +2994,12 @@ function saveAnswer(stub) {
         }
     });
 }
+
+// hide percent agreed bubbles
+bind('.percent_agreed_wrapper' , 'click' , null , function(event)
+{
+    $(this).hide();
+});
 
 // answer in feed
 bind('.poll_answer' , 'click' , null , function(event)
@@ -3162,6 +3205,26 @@ bind('div.stats-box.supporter-box', 'click', function(e) {
     var p_id = $('div.stats_object').data('p_id');
     getModal('supporting_user_modal', {'user': p_id});
 });
+
+
+function initializeDomElement(element) {
+    var data = element.data();
+    action({
+        data: data,
+        success: function(data) {
+            var returned = $.parseJSON(data);
+            element.html(returned.html);
+            element.removeClass("initialize_self");
+            bindOnNewElements();
+        }
+    });
+}
+
+function initializeDomElements() {
+    $(".initialize_self").each(function(i,e) {
+        initializeDomElement($(this));
+    });
+}
 
 /***********************************************************************************************************************
  *

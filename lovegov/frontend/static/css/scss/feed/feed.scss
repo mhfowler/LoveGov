@@ -846,34 +846,218 @@ div.feed-item-wrapper {
 div.feed-item-wrapper {
 
   div.question-item-main {
-    display:none;
     float:left;
     width:100%;
-    div.question-item-answers-wrapper {
-      width:80%;
-      margin-top:3px;
-      float:left;
-      margin-bottom:10px;
-      max-width:600px;
-      div.question-item-answer {
-        font-size:16px;
-        padding:10px;
-        min-height:30px;
-        @include valignable();
-        @include border-radius(8px);
-        &:hover {
-          background-color:$awesome-blue;
-          cursor:pointer;
+    div.question-item-top {
+      div.question-item-answers-wrapper {
+        width:80%;
+        margin-top:3px;
+        float:left;
+        margin-bottom:10px;
+        max-width:600px;
+        div.question-item-answer-wrapper {
+          position:relative;
+          div.question-item-answer {
+            font-size:16px;
+            padding:10px;
+            min-height:30px;
+            @include valignable();
+            @include border-radius(8px);
+            &:hover {
+              background-color:$awesome-blue;
+              cursor:pointer;
+            }
+            &.clicked {
+              background-color:$awesome-blue;
+            }
+          }
+          div.percent_agreed_wrapper {
+            display:none;
+            div.percent-agreed-bubble {
+              position:absolute;
+              padding: 4px 12px;
+              background-color:$red;
+              color:white;
+              z-index:1;
+              left: -42%;
+              top: 11%;
+              width: 189px;
+              //@include border-radius(10px);
+              span.percent-agreed-arrow {
+                @include triangle('right', $red, 15px);
+                margin-left:100%;
+                position: absolute;
+                top: 0px;
+                left: 0px;
+              }
+              span.percent-agreed-x {
+                float:left;
+                color:white;
+                margin-right: 15px;
+                padding-top: 1px;
+              }
+              &:hover {
+                cursor:pointer;
+                span.percent-agreed-x {
+                  color:black;
+                }
+              }
+            }
+          }
+        }
+      }
+      div.question-item-right {
+        float:left;
+        margin-left: 10px;
+        div.question-importance {
+          div.importance-top {
+            div.feed-importance-bar {
+              margin-left: 40px;
+              width:9px;
+              @include border-radius(0px);
+              margin-top: 10px;
+              height: 110px;
+              float:left;
+              a.ui-slider-handle {
+                background:none;
+                background-color:white;
+                border-color:$black;
+                width: 26px;
+                height: 9px;
+                position: absolute;
+                left:-8px;
+                @include border-radius(0px);
+                margin-bottom:-.5px;
+                &:focus {
+                  outline:none;
+                }
+              }
+            }
+          }
+          div.question-importance-header {
+            margin-top:5px;
+            font-style:italic;
+            //color:$gray;
+            span.importance-header-text {
+              float:left;
+            }
+            span.question-importance-percent {
+              float:left;
+              margin-left:5px;
+              line-height: 12px;
+              margin-top:5px;
+            }
+          }
         }
       }
     }
-    div.question-item-right {
+    div.question-item-bottom {
+      border-top:1px solid $light-gray;
+      padding-top: 15px;
+      margin-top: 10px;
+      width:100%;
+      div.answer-explanation {
+        width:100%;
+        div.top-of-question-bottom {
+          width:100%;
+          div.click-to-edit-explanation {
+            float:left;
+            font-size:18px;
+            color:$black;
+            span.click-to-edit-text {
+              float:left;
+            }
+            div.pencil-button {
+              float:left;
+              margin-left:5px;
+              margin-top: 2px;
+            }
+          }
+          div.question-item-privacy-wrapper {
+            float:right;
+            div.answer-privacy {
+              font-size:18px;
+              &:hover {
+                text-decoration:underline;
+                cursor:pointer;
+              }
+              span.privacy-icon {
+                width: 15px;
+                height: 15px;
+                float: left;
+                margin-right: 10px;
+                margin-top: 5px;
+              }
+            }
+          }
+        }
+        div.bottom-of-question-bottom {
+          width:100%;
+          textarea.explanation-inline {
+            width: 100%;
+            margin-top: 15px;
+            margin-bottom: 15px;
+            height: 200px;
+          }
+          div.edit-links {
+            float:right;
+          }
+          div.the-explanation {
+            margin-top:10px;
+            float:left;
+            font-size:16px;
+            color:$dark-gray;
+          }
+        }
+      }
+    }
+  }
+
+  div.agreement-bargraph {
+    width:190px;
+    height: 120px;
+    //border-right: 1px solid $black;
+    border-bottom: 1px solid $black;
+    margin-top: 90px;
+    margin-left: 55px;
+    position:relative;
+    div.graph-title {
+      position: absolute;
+      font-size: 18px;
+      top: -47px;
+      left: 10px;
+      color: gray;
+    }
+    div.agreed-bar-wrapper {
       float:left;
-      margin-left: 40px;
+      margin-right: 22px;
+      width: 31px;
+      height:100%;
+      position:relative;
+      &.last {
+        margin-right:0px;
+      }
+      div.agreed-bar {
+        background-color:$awesome-blue;
+        border:1px dotted $gray;
+        position:relative;
+      }
+      a.agreed-bar-label {
+        color:$black;
+        position:absolute;
+        top: 165%;
+        left: -12px;
+        width: 250px;
+        @include transform(rotate(36deg));
+        &:hover {
+          color:black;
+        }
+      }
     }
   }
 
 }
+
 
 /* feed item hearts */
 div.item-ranking

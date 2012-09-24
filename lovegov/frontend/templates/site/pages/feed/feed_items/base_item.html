@@ -8,10 +8,11 @@
     question_stub
 {% endif %}"
         {% if content.type == 'Q' %}
-            {% with my_response=content.my_response %}
-                 data-weight="{% if my_response %}{{ my_response.weight }}{% else %}50{% endif %}"
-                 data-privacy="{% if my_response %}{{ my_response.privacy }}{% else %}{{ anonymous_mode }}{% endif %}"
-                 data-q_id="{{ content.id }}"
+            {% with your_response=content.my_response %}
+     data-weight="{% if your_response %}{{ your_response.weight }}{% else %}50{% endif %}"
+     data-privacy="{% if your_response %}{{ your_response.privacy }}{% else %}{{ anonymous_mode }}{% endif %}"
+     data-q_id="{{ content.id }}"
+     data-your_response="{% if your_response %}1{% else %}0{% endif %}"
             {% endwith %}
         {% endif %}
         >
@@ -95,17 +96,23 @@
 
     <div class="right-part">
         {% block right_part %}
+
             {% if content.num_comments %}
                 {% with top_comment=content.getTopComment %}
                     {% include 'site/pages/feed/feed_items/top_comment.html' %}
                 {% endwith %}
-            {% elif content.main_image or content.link_screenshot %}
-                {% comment %}
-                <div class="right-image-wrapper">
-                    {% include 'site/pieces/avatar.html' with user=content height="100" width="100" hoveroff=1 %}
-                </div>
-                {% endcomment %}
             {% endif %}
+
+            {% if content.type == 'Q' %}
+                <div class="agreement_bargraph_seed
+                     {% if content.my_response %} initialize_self {% endif %}"
+                     data-action="getAgreementBarGraphHTML"
+                     data-in_feed="1"
+                     data-r_id="{{ content.my_response.id }}"
+                     data-q_id="{{ content.id }}">
+                </div>
+            {% endif %}
+
         {% endblock %}
     </div>
 

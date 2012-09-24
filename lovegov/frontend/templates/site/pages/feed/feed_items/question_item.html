@@ -1,38 +1,110 @@
 {% extends 'site/pages/feed/feed_items/base_item.html' %}
 
+
 {% block posted-to %}
-    <div class="group-posted-to feedtut_posted_to_parent">
-        {% with posted_to=content.posted_to %}
-            <a href="{{ posted_to.get_url }}" class="posted-to-link"> {{ posted_to.get_name }} </a>
-        {% endwith %}
-        {% if content.top_poll %}
-            <span class="from-top-poll"> from poll </span>
-            {% with posted_to=content.top_poll %}
-                <a href="{{ posted_to.get_url }}" class="top-poll-link"> {{ posted_to.get_name }} </a>
+
+    {% with your_response=content.my_response %}
+
+        <div class="group-posted-to feedtut_posted_to_parent">
+            {% with posted_to=content.posted_to %}
+                <a href="{{ posted_to.get_url }}" class="posted-to-link"> {{ posted_to.get_name }} </a>
             {% endwith %}
-        {% endif %}
-    </div>
+            {% if content.top_poll %}
+                <span class="from-top-poll"> from poll </span>
+                {% with posted_to=content.top_poll %}
+                    <a href="{{ posted_to.get_url }}" class="top-poll-link"> {{ posted_to.get_name }} </a>
+                {% endwith %}
+            {% endif %}
+        </div>
+
+    {% endwith %}
+
 {% endblock %}
 
 {% block item_main %}
 
-    <div class="question-item-main">
-        <div class="question-item-answers-wrapper">
-            {% for a in content.answers.all %}
-                <div class="question-item-answer answer_choice
-                {% if content.my_response.id == a.id %} clicked {% endif %}"
-                     data-a_id="{{ a.id }}">
-                    {{ a.answer_text }}
+    {% with your_response=content.my_response %}
+
+        <div class="question-item-main">
+            <div class="question-item-top">
+                <div class="question-item-answers-wrapper">
+                    {% for a in content.answers.all %}
+                        <div class="question-item-answer-wrapper answer_wrapper" data-a_id="{{ a.id }}">
+                            <div class="question-item-answer answer_choice
+                        {% if your_response.most_chosen_answer_id == a.id %} clicked {% endif %}"
+                                 data-a_id="{{ a.id }}">
+                                {{ a.answer_text }}
+                            </div>
+                            <div class="percent_agreed_wrapper"></div>
+                        </div>
+                    {% endfor %}
                 </div>
-            {% endfor %}
-        </div>
-        <div class="question-item-right">
-            <div class="question-importance">
-                <div class="feed-importance-bar importance_bar"
-                        {% if your_response %} data-weight="{{ your_response.weight }}"
-                {% else %} data-weight="50" {% endif %}></div>
+                <div class="question-item-right">
+                    <div class="question-importance importance_wrapper">
+                        <div class="importance-top">
+                            <div class="feed-importance-bar importance_bar"
+                                    {% if your_response %} data-weight="{{ your_response.weight }}"
+                                    {% else %} data-weight="50" {% endif %}></div>
+                            <div style="clear:both;"></div>
+                        </div>
+                        <div class="question-importance-header">
+                    <span class="importance-header-text">
+                        importance
+                    </span>
+                    <span class="question-importance-percent importance_percent">
+                        {% if your_response %}{{ your_response.weight }}%{% else %}50%{% endif %}
+                    </span>
+                        </div>
+                    </div>
+                </div>
+                <div style="clear:both;"></div>
+            </div>
+            <div class="question_item_bottom_wrapper" {% if not your_response %} style="height:0px;overflow:hidden;" {% endif %}>
+                <div class='question-item-bottom'>
+
+                    <div class="answer-explanation inline-editable inline_editable"
+                         data-model="Explanation" data-r_id="{{ your_response.id }}" data-q_id="{{ content.id }}">
+
+                        <div class="top-of-question-bottom">
+                            <div class="click-to-edit-explanation edit_button">
+                            <span class="click-to-edit-text">
+                            {% if your_response.explanation %}YOUR EXPLANATION{% else %}add an explanation{% endif %}
+                            </span>
+                                <div class="edit-link pencil-button"></div>
+                            </div>
+
+                            <div class="question-item-privacy-wrapper">
+                                {% include 'site/pages/feed/feed_items/question_item_privacy.html' %}
+                            </div>
+
+                            <div style="clear:both;"></div>
+                        </div>
+
+                        <div class="bottom-of-question-bottom">
+                            <div class="not_editing_display">
+                                <div class="inline-div being_edited the-explanation">
+                                    {{ your_response.explanation|urlize|linebreaks }}
+                                </div>
+                                <div style="clear:both;"></div>
+                            </div>
+                            <div class="inline-edit-input doing_editing_display">
+                                <textarea type="text" maxlength="1000" class="edit_input explanation-inline" name="explanation">{{ your_response.explanation }}</textarea>
+                                <div class="edit-links edit_links">
+                                    <a href="" class="edit-link cancel_inline_edit dummy_link">cancel</a>
+                                    <a href="" class="edit-link submit_inline_edit dummy_link">save</a>
+                                </div>
+                            </div>
+                            <div style="clear:both;"></div>
+                        </div>
+
+                    </div>
+
+
+                </div>
             </div>
         </div>
-    </div>
+
+    {% endwith %}
+
 
 {% endblock %}

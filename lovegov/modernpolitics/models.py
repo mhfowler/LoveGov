@@ -4235,6 +4235,12 @@ class Response(Content):
             self.explanation_comment.save()
         self.save()
 
+    def getQuotedExplanation(self):
+        if self.explanation:
+            return '"' + self.explanation + '"'
+        else:
+            return ''
+
     #-------------------------------------------------------------------------------------------------------------------
     # Autosaves by adding picture and topic from question.
     #-------------------------------------------------------------------------------------------------------------------
@@ -4492,6 +4498,17 @@ class Group(Content):
     participation_threshold = models.IntegerField(default=30)   # % of group which must upvote on motion to pass
     agreement_threshold = models.IntegerField(default=50)       # % of group which most agree with motion to pass
     motion_expiration = models.IntegerField(default=7)          # number of days before motion expires and vote close
+
+    #-------------------------------------------------------------------------------------------------------------------
+    # get groupview response to question
+    #-------------------------------------------------------------------------------------------------------------------
+    def getResponseToQuestion(self, question):
+        response = self.group_view.responses.filter(question=question)
+        if response:
+            response = response[0]
+            return response
+        else:
+            return None
 
     #-------------------------------------------------------------------------------------------------------------------
     # gets content posted to group, for feed

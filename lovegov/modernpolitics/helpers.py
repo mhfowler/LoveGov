@@ -177,6 +177,18 @@ def getUser(name):
     return users
 
 #-----------------------------------------------------------------------------------------------------------------------
+# convenience methods to get some common things
+#-----------------------------------------------------------------------------------------------------------------------
+def getDemocraticParty():
+    getParty(alias="democrats")
+
+def getRepublicanParty():
+    getParty(alias="republicans")
+
+def getParty(alias):
+    return Party.lg.get_or_none(alias=alias)
+
+#-----------------------------------------------------------------------------------------------------------------------
 # takes in a request and returns the path to the source of the request. This is request.path if normal request, and this
 # is the referer if it is an ajax request.
 #-----------------------------------------------------------------------------------------------------------------------

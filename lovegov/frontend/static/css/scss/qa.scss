@@ -588,6 +588,9 @@ div.question_stub {
             margin-left: -2.3px;
             height: 23px;
             @include border-radius(0px);
+            &:focus {
+              outline:none;
+            }
           }
         }
         div.importance-axis {
