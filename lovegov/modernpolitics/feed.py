@@ -334,21 +334,23 @@ def getLegislationFromCongressmen(congressmen):
 
 
 ### update hot scores for all content ###
-def updateHotScores():
+def updateHotScores(debug=False):
     for c in Content.objects.filter(in_feed=True):
+        if debug: print c.get_name()
         c.calculateHotScore()
     for q in Question.objects.all():
+        if debug: print q.get_name()
         q.recalculateQuestionHotScore()
 
 
 ### update hot feed of a particular user ###
-def updateHotFeeds():
+def updateHotFeeds(debug=False):
     real_users = UserProfile.objects.filter(ghost=False)
     for u in real_users:
-        print "+II+ updating " + u.get_name()
+        if debug: print "+II+ updating " + u.get_name()
         u.updateHotFeed()
 
 ### update hot scores then update hot feeds ###
-def updateHot():
-    updateHotScores()
-    updateHotFeeds()
+def updateHot(debug=False):
+    updateHotScores(debug)
+    updateHotFeeds(debug)
