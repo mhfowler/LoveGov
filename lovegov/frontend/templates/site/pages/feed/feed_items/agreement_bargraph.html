@@ -1,0 +1,20 @@
+<div class="agreement-bargraph">
+
+    <div class="graph-title"> % who agree with you </div>
+
+    {% for g in groups_dict_list %}
+        {% if g.total_num %}
+            <div class="agreed-bar-wrapper {% if forloop.last %} last {% endif %}">
+                {% with group=g.group percent_agreed=g.percent_agreed percent_disagreed=g.percent_disagreed total_num=g.total_num %}
+                    <div class="agreed-bar tooltip-top" style="
+                            height:{{ percent_agreed }}%;
+                            top:{{ percent_disagreed }}%;"
+                         title="{{ percent_agreed }}% of {{ total_num }} responders"></div>
+
+                    <a href="{{ group.get_url }}" class="agreed-bar-label"> {{ group.get_name }} </a>
+                {% endwith %}
+            </div>
+        {% endif %}
+    {% endfor %}
+
+</div>
