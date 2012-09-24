@@ -1721,6 +1721,9 @@ def getFeed(request, vals):
     viewer = vals['viewer']
     content = getFeedItems(viewer=viewer, alias=alias, feed_ranking=feed_ranking,
         feed_types=feed_types, feed_start=feed_start, num=10, like_minded=like_minded)
+
+    viewer.seeContents(content)     # count which content is seen
+
     feed_items = contentToFeedItems(content, vals['viewer'])
     vals['feed_items'] = feed_items
 
@@ -1745,6 +1748,8 @@ def contentToFeedItems(content, user):
         if c.type == 'P':
             i_signed = user in c.getSigners()
             c.i_signed = i_signed
+        if c.type == 'Q':
+            c.my_response = user.getResponseToQuestion(c)
         list.append((c,my_vote))    # content, my_vote
     return list
 
@@ -1836,7 +1841,6 @@ def everythingLoadedHelper(request, vals, feed_items):
 #-----------------------------------------------------------------------------------------------------------------------
 # get groups
 #-----------------------------------------------------------------------------------------------------------------------
-@profile("getGroups.prof")
 def getGroups(request, vals={}):
     from lovegov.frontend.views_helpers import valsGroup
     viewer = vals['viewer']
@@ -1943,6 +1947,8 @@ def updatePage(request, vals={}):
 
     viewer = vals['viewer']
     to_return = {}
+
+    viewer.updateHotFeedIfOld()
 
     new_notifications = viewer.getNotifications(new=True)
     to_return['notifications_num'] = new_notifications.count()

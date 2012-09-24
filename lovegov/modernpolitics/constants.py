@@ -16,10 +16,51 @@ import sunlight
 import os.path
 import datetime
 import os
+import random
 
 LOCAL = settings.LOCAL
 
+########################################## HOT FEED ####################################################################
 
+HOT_FEED_GOES_STALE_IN_THIS_MANY_SECONDS = 90
+
+SEEN_THRESHOLD = 3
+
+HOT_VOTE_MAX_DAYS = 2
+
+OLDEST_HOT_NEWS_IS_THIS_MANY_DAYS_OLD = 14
+
+HOT_FEED_SIZE = 100
+
+HOT_FEED_WEIGHTS = {
+     'N':55,
+     'Q':25,
+     'P':10,
+     'D':10
+}
+
+HOT_FEED_WEIGHTS_LIST = []
+total_weight = 0
+for c_type,weight in HOT_FEED_WEIGHTS.items():
+    total_weight += weight
+    HOT_FEED_WEIGHTS_LIST.append((c_type, total_weight))
+
+def getWeightedType():
+    rand_weight = random.randint(1, 99)
+    for c_type,weight in HOT_FEED_WEIGHTS_LIST:
+        if rand_weight < weight:
+            return c_type
+
+########################################## ANALYTICS CONSTANTS #########################################################
+
+CURRENT_TEST_RUN = 0
+
+BENCHMARK_PAGES = ['/home/', '/groups/', '/elections/', '/questions/']
+
+BENCHMARK_AJAX = [
+        ('/home/', 'getFeed'),
+        ('/groups/', 'getGroups')
+]
 
 ########################################## COLORS FOR STUFF ############################################################
 
@@ -145,7 +186,7 @@ BILL_TYPES = {
     'hj': 'House of Representatives Joint Resolution',
 }
 
-########################################## FOR RANKING & FILTERING #####################################################
+########################################## OLD RANKING & FILTERING #####################################################
 
 # systems of ranking... each implies a different filter_setting
 RANKING_CHOICES = (
@@ -169,9 +210,6 @@ FEED_MAX = 100              # feed max (for sitewide feeds)
 
 # constants for new filter
 NEWFILTER_DAYS = 14
-
-# constants for hot filter
-HOT_VOTE_MAX_DAYS = 10
 
 ########################################### DEFAULT SETTINGS ###########################################################
 
@@ -835,7 +873,7 @@ SILENT_FAIL_ACTIONS = [
 ###################################### CONTENT TYPES IN FEED ###########################################################
 
 HAS_HOT_SCORE = ['P', 'N', 'B', 'D', 'Q']
-IN_FEED = ['P', 'N', 'B', 'D', 'Q']
+IN_FEED = ['P', 'N', 'D', 'Q']
 
 ###################################### DATA #########################################################################
 

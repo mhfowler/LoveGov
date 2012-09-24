@@ -18,7 +18,6 @@ from django.template.loader import render_to_string
 from django import shortcuts
 
 # python
-import random
 import thread
 import json
 import time
@@ -107,7 +106,10 @@ class Privacy(LGModel):
             creator = self.creator
         except UserProfile.DoesNotExist:
             from lovegov.modernpolitics.backend import getLoveGovUser
-            return getLoveGovUser() 
+            return getLoveGovUser()
+        if not creator:
+            from lovegov.modernpolitics.backend import getLoveGovUser
+            return getLoveGovUser()
         return creator
 
     def getCreatorDisplay(self, viewer=None):
@@ -308,7 +310,7 @@ class Content(ActiveModel, Privacy, LocationLevel):
     last_answered = models.DateTimeField(auto_now_add=True, null=True)          # last time answer question, or have answers calculated
     # RANK, VOTES
     status = models.IntegerField(default=STATUS_CREATION)
-    rank = models.DecimalField(default="0.0", max_digits=4, decimal_places=2)
+    rank = models.DecimalField(default="0.0", max_digits=4, decimal_places=2)       # deprecated
     hot_score = models.IntegerField(default=0)                                  # for hot feed
     upvotes = models.IntegerField(default=0)
     downvotes = models.IntegerField(default=0)
@@ -400,7 +402,7 @@ class Content(ActiveModel, Privacy, LocationLevel):
         elif self.type =='S':
             return "Scorecard: " + self.get_name()
         elif self.type=='Q':
-            return self.get_name()
+            return "Question: " + self.get_name()
         elif self.type=='D':
             return "Discussion: " + self.get_name()
         elif self.type=='L':
@@ -844,6 +846,8 @@ class Content(ActiveModel, Privacy, LocationLevel):
         action.autoSave()
         self.getCreator().notify(action)
 
+        user.makeStale(self)
+
         return my_vote.value
 
     def unvote(self, user, privacy):
@@ -1037,6 +1041,15 @@ class FeedItem(LGModel):
     content = models.ForeignKey(Content)
     rank = models.IntegerField()
 
+class RankedContent(LGModel):
+    content = models.ForeignKey("Content", related_name="ranked_by")
+    user = models.ForeignKey("UserProfile", related_name="ranked_it")
+    score = models.IntegerField(default=0)
+
+class SeenContent(LGModel):
+    content = models.ForeignKey("Content", related_name="seen_by")
+    seen = models.IntegerField(default=0)
+
 #=======================================================================================================================
 # For storing a user's settings for sending them email alerts about notifications for particular user or content..
 # user_id and content... but only use one field
@@ -1159,6 +1172,11 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
     # my groups and feeds
     group_subscriptions = models.ManyToManyField("Group")
     group_views = models.ManyToManyField("GroupView")
+    # hot feed
+    hot_feed = models.ManyToManyField("Content", through="RankedContent", related_name="ranker")
+    last_updated_hot_feed = models.DateTimeField(auto_now_add=True, null=True)
+    seen_content = models.ManyToManyField("SeenContent", related_name="seeing_users")
+    stale_content = models.ManyToManyField(Content, related_name="stale_users")
     # SETTINGS
     private_follow = models.BooleanField(default=False)
     user_notification_setting = custom_fields.ListField()               # list of allowed types
@@ -1191,6 +1209,118 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
 
     def __unicode__(self):
         return self.get_name()
+
+    #-------------------------------------------------------------------------------------------------------------------
+    # Get hot feed, paginated
+    #-------------------------------------------------------------------------------------------------------------------
+    def getHotFeedContent(self, start=0, end=0):
+        content = Content.objects.filter(in_feed=True, ranked_by__user=self).order_by("ranked_by__score")
+        if not content:
+            self.updateHotFeed()
+            return self.getHotFeedContent(start, end)
+        if start:
+            content = content[start:]
+        if end:
+            content = content[:end]
+        return content
+
+    def updateHotFeedIfOld(self):
+        now = datetime.datetime.now()
+        delta = datetime.timedelta(seconds=HOT_FEED_GOES_STALE_IN_THIS_MANY_SECONDS)
+        if self.last_updated_hot_feed + delta < now:
+            self.updateHotFeed()
+
+    def updateHotFeed(self):
+        self.hot_feed.clear()
+        hot_feed_content = self.calculateHotFeedContent()
+        for score, content in enumerate(hot_feed_content):
+            r = RankedContent(content=content, score=score, user=self)
+            r.save()
+        self.last_updated_hot_feed = datetime.datetime.now()
+        self.save()
+
+    def calculateHotFeedContent(self):
+        self.updateStale()
+        content = self.getUnstaleContent()
+        content_ids = content.values_list("id", flat=True)
+
+        petitions = content.filter(type="P").order_by("-status")
+
+        now = datetime.datetime.now()
+        delta = datetime.timedelta(days=OLDEST_HOT_NEWS_IS_THIS_MANY_DAYS_OLD)
+        oldest_news = now - delta
+        news = content.filter(type="N").filter(created_when__gt=oldest_news).order_by("-created_when")
+
+        discussions = content.filter(type="D").order_by("-status").order_by("-num_comments")
+
+        questions = Question.objects.filter(id__in=content_ids).order_by("-status").order_by("-questions_hot_score")
+
+        if not (petitions or news or discussions or questions):
+            return list(Content.objects.filter(in_feed=True).order_by("-hot_score"))
+
+        hot_feed_stacks = {
+            'P': {'stack':petitions, 'position':0, 'length':len(petitions)},
+            'N': {'stack':news, 'position':0, 'length':len(news)},
+            'Q': {'stack':questions, 'position':0, 'length':len(questions)},
+            'D': {'stack':discussions, 'position':0, 'length':len(discussions)}
+        }
+
+        hot_feed_content = []
+        for i in range(1, min(HOT_FEED_SIZE, len(content))):
+            which_type = getWeightedType()
+            which = hot_feed_stacks[which_type]
+            stack = which['stack']
+            position = which['position']
+            length = which['length']
+            if position < length:
+                item = stack[position]
+                hot_feed_content.append(item)
+                which['position'] += 1
+        return hot_feed_content
+
+
+    def seeContents(self, contents):
+        for content in contents:
+            self.seeContent(content)
+
+    def seeContent(self, content):
+        i_saw = self.seen_content.filter(content=content)
+        if i_saw:
+            i_saw = i_saw[0]
+            i_saw.seen += 1
+            i_saw.save()
+        else:
+            i_saw = SeenContent(content=content)
+            i_saw.save()
+            self.seen_content.add(i_saw)
+
+    def clearSeen(self):
+        self.seen_content.clear()
+        self.recalculateStaleContent()
+
+    def makeStale(self, content):
+        if not content in self.stale_content.all():
+            self.stale_content.add(content)
+
+    def updateStale(self):
+        for x in self.seen_content.all():
+            if x.seen > SEEN_THRESHOLD:
+                content = x.content
+                #print content.get_name()
+                self.makeStale(content)
+
+    def recalculateStaleContent(self):
+        self.stale_content.clear()
+        self.updateStale()
+        for r in self.getView().responses.all():
+            question = r.question
+            #print question.get_name()
+            self.makeStale(question)
+
+    def getUnstaleContent(self):
+        stale_ids = self.stale_content.values_list("id", flat=True)
+        return Content.objects.filter(in_feed=True).exclude(id__in=stale_ids)
+        #return Content.objects.filter(in_feed=True)
 
     #-------------------------------------------------------------------------------------------------------------------
     # background tasks
@@ -3258,7 +3388,6 @@ class Petition(Content):
                 return False
             else:
                 self.signers.add(user)
-
                 signed = Signed(user=user, content=self)
                 signed.autoSave()
                 action = SignedAction(petition=self,user=user)
@@ -3273,6 +3402,7 @@ class Petition(Content):
 
                 user.num_signatures += 1
                 user.save()
+                user.makeStale(self)
 
                 # if you signed then you liked it
                 self.like(user, "PRI")
@@ -3976,7 +4106,8 @@ class Answer(LGModel):
 #
 #=======================================================================================================================
 class Question(Content):
-    
+
+    top_poll = models.ForeignKey("Poll", null=True)
     question_text = models.TextField(max_length=500)
     question_type = models.CharField(max_length=2, default="D")
     relevant_info = models.TextField(max_length=1000, blank=True, null=True)
@@ -3988,6 +4119,14 @@ class Question(Content):
     # scores for questions feed
     num_responses = models.IntegerField(default=0)
     questions_hot_score = models.IntegerField(default=0)
+
+    def updateTopPoll(self):
+        polls = Poll.objects.filter(questions=self).order_by("-status")
+        if polls:
+            top_poll = polls[0]
+            self.top_poll = top_poll
+            print top_poll.get_name()
+            self.save()
 
     class Admin:
         pass

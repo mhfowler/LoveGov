@@ -5,7 +5,7 @@ LOCAL = True
 DEBUG = True
 TEMPLATE_DEBUG = True
 THUMBNAIL_DEBUG = False
-SHOW_TOOLBAR = True
+SHOW_TOOLBAR = False
 PROFILE = False
 
 DATABASES = {
@@ -58,8 +58,6 @@ CACHES = {
 ########################################################################################################################
 import djcelery
 djcelery.setup_loader()
-
-
 
 from compressor_settings import *
 COMPRESS_ENABLED = False

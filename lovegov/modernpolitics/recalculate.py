@@ -1,5 +1,17 @@
 from lovegov.modernpolitics.initialize import *
 
+### recalculate stale ###
+def recalculateStaleContent():
+    for u in UserProfile.objects.filter(ghost=False):
+        print u.get_name()
+        u.recalculateStaleContent()
+
+### recalculate top polls for questions ###
+def recalculateTopPolls():
+    for q in Question.objects.all():
+        q.updateTopPoll()
+        print "+II+ " + q.get_name()
+
 ### recalculate anon user stuff ###
 def recalculateAnonUserStuff():
     from lovegov.modernpolitics.actions import followGroupAction

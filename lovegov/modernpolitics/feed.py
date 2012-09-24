@@ -18,9 +18,19 @@ from operator import itemgetter
 #-----------------------------------------------------------------------------------------------------------------------
 def getFeedItems(viewer, alias, feed_ranking, feed_types, feed_start, num, like_minded=False):
 
+    # special feed
+    home_hot_feed = (feed_ranking == 'H' and alias == 'home')
+
     # get all content in the running
-    if like_minded:
+    if home_hot_feed:
+        content = viewer.getHotFeedContent()
+        if like_minded:
+            like_content_ids = viewer.getLikeMindedGroup().getContent().values_list("id", flat=True)
+            content = content.filter(id__in=like_content_ids)
+    # if like minded, we do it special like dat
+    elif like_minded:
         content = viewer.getLikeMindedGroup().getContent()
+    # else we do it normal
     else:
         content = getContentFromAlias(alias, viewer)
         if not content:
@@ -28,10 +38,14 @@ def getFeedItems(viewer, alias, feed_ranking, feed_types, feed_start, num, like_
 
     # filter
     if feed_types:
-        content = content.filter(type__in=feed_types)
+        feed_type = feed_types[0]
+        content = content.filter(type=feed_type)
+    else:
+        feed_type = None
 
     # sort
-    content = sortHelper(content, feed_ranking)
+    if not home_hot_feed:
+        content = sortHelper(content, feed_ranking, feed_type)
 
     # paginate
     content = content[feed_start:feed_start+num]
@@ -159,7 +173,7 @@ def getQuestionItems(viewer, feed_ranking, feed_topic=None, only_unanswered=Fals
         questions = questions.exclude(id__in=q_ids)
 
     # sort & append
-    questions = sortHelper(questions, feed_ranking, questions=True)
+    questions = questionsSortHelper(questions, feed_ranking)
     for q in questions:
         your_response = getResponseHelper(you_responses, q)
         q_item = getQuestionItem(question=q,
@@ -182,23 +196,29 @@ def getResponseHelper(responses, question):
     else:
         return None
 
-def sortHelper(content, feed_ranking, questions=False):
-    if not questions:
-        if feed_ranking == 'N':
-            content = content.order_by("-created_when")
-        elif feed_ranking == 'H':
-            content = content.order_by("-hot_score")
-        elif feed_ranking == 'B':
-            content = content.order_by("-status")
-    else:
-        if feed_ranking == 'N':
-            content = content.order_by("-created_when")
-        elif feed_ranking == 'H':
-            content = content.order_by("-questions_hot_score")
-        elif feed_ranking == 'B':
-            content = content.order_by("-num_responses")
+def sortHelper(content, feed_ranking, feed_type=None):
+    if feed_ranking == 'N':
+        content = content.order_by("-created_when")
+    elif feed_ranking == 'H' and feed_type == "Q":
+        content_ids = content.values_list("id", flat=True)
+        content = Question.objects.filter(id__in=content_ids).order_by("-questions_hot_score")
+    elif feed_ranking == 'H':
+        content = content.order_by("-hot_score")
+    elif feed_ranking == 'B' and feed_type == "Q":
+        content_ids = content.values_list("id", flat=True)
+        content = Question.objects.filter(id__in=content_ids).order_by("-num_responses")
+    elif feed_ranking == 'B':
+        content = content.order_by("-status")
     return content
 
+def questionsSortHelper(questions, feed_ranking):
+    if feed_ranking == 'N':
+        questions = questions.order_by("-created_when")
+    elif feed_ranking == 'H':
+        questions = questions.order_by("-questions_hot_score")
+    elif feed_ranking == 'B':
+        questions = questions.order_by("-num_responses")
+    return questions
 
 def responsesSortHelper(question_items, ranking):
     if ranking == 'B':
@@ -308,14 +328,6 @@ def getLegislationItems(session_set, type_set, subject_set, committee_set, intro
 
     return legislation_items
 
-### update hot scores for all content ###
-def updateHotScores():
-    for c in Content.objects.filter(in_feed=True):
-        c.calculateHotScore()
-    for q in Question.objects.all():
-        q.recalculateQuestionHotScore()
-
-
 ### gets legislation from representatives, all things they sponsored (or cosponsored?) ##
 def getLegislationFromCongressmen(congressmen):
 
@@ -328,3 +340,26 @@ def getLegislationFromCongressmen(congressmen):
     sponsored = Legislation.objects.filter(sponsor_id__in=congressmen_ids)
 
     return sponsored
+
+
+### update hot scores for all content ###
+def updateHotScores(debug=False):
+    for c in Content.objects.filter(in_feed=True):
+        if debug: print c.get_name()
+        c.calculateHotScore()
+    for q in Question.objects.all():
+        if debug: print q.get_name()
+        q.recalculateQuestionHotScore()
+
+
+### update hot feed of a particular user ###
+def updateHotFeeds(debug=False):
+    real_users = UserProfile.objects.filter(ghost=False)
+    for u in real_users:
+        if debug: print "+II+ updating " + u.get_name()
+        u.updateHotFeed()
+
+### update hot scores then update hot feeds ###
+def updateHot(debug=False):
+    updateHotScores(debug)
+    updateHotFeeds(debug)

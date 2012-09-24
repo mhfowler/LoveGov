@@ -325,9 +325,10 @@ div.explanation-wrapper {
 
 
 div.question_stub {
-  border:1px solid $light-gray;
-  margin-top:10px;
-
+  &.question-stub {
+    border:1px solid $light-gray;
+    margin-top:10px;
+  }
   div.question_expanded_choose {
     display:none;
   }
@@ -734,7 +735,7 @@ div#comparison-hover {
 
 /* questions header */
 div.questions-header {
-  margin-bottom:10px;
+  margin-bottom:20px;
   div.questions-left {
     float:left;
     div.header-title {

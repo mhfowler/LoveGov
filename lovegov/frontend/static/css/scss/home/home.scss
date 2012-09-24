@@ -243,6 +243,7 @@ div.expand-info
   padding-top: 5px;
   margin-top: 5px;
   overflow: hidden;
+  margin-bottom: 20px;
   &:hover {
     cursor:pointer;
     background-color:$gray;
@@ -254,6 +255,7 @@ div.expand-info
     width:105%;
     margin-top: 10px;
     float: left;
+    margin-bottom: 10px;
   }
 }
 

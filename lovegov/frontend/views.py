@@ -104,10 +104,12 @@ def viewWrapper(view, requires_login=False):
                     user = controlling_user.user_profile
                     vals['prohibited_actions'] = controlling_user.prohibited_actions
                 else:
-                    user = getAnonUser()
-                    vals['i_am_anonymous'] = True
-                    vals['prohibited_actions'] = ANONYMOUS_PROHIBITED_ACTIONS
-                    vals['anonymous_welcome'] = not request.COOKIES.get("closed_anon")
+                    # if not unauthenticated action, redirect to login page
+                    if not request.POST.get('action') in UNAUTHENTICATED_ACTIONS:
+                        to_page = vals['to_page']
+                        return shortcuts.redirect("/login" + to_page)
+                    else: # otherwise action can be done without AUTHENTICATION
+                        return view(request,vals=vals,*args,**kwargs)
 
                 # get user profile associated with controlling user
                 vals['user'] = user
@@ -298,6 +300,8 @@ def loginRedirect(request, viewer, to_page):
     if not num_logins:
         to_page = '/welcome/'
     viewer.incrementNumLogins()
+
+    viewer.updateHotFeedIfOld()
 
     return shortcuts.redirect(to_page)
 
