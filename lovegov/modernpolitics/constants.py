@@ -206,7 +206,7 @@ FEED_MAX = 100              # feed max (for sitewide feeds)
 NEWFILTER_DAYS = 14
 
 # constants for hot filter
-HOT_VOTE_MAX_DAYS = 10
+HOT_VOTE_MAX_DAYS = 2
 
 ########################################### DEFAULT SETTINGS ###########################################################
 
