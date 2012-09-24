@@ -1277,8 +1277,9 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
                 self.makeStale(x)
 
     def getUnstaleContent(self):
-        stale_ids = self.stale_content.values_list("id", flat=True)
-        return Content.objects.filter(in_feed=True).exclude(id__in=stale_ids)
+        #stale_ids = self.stale_content.values_list("id", flat=True)
+        #return Content.objects.filter(in_feed=True).exclude(id__in=stale_ids)
+        return Content.objects.filter(in_feed=True)
 
     #-------------------------------------------------------------------------------------------------------------------
     # background tasks
