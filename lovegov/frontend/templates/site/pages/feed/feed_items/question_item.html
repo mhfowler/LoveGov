@@ -2,9 +2,15 @@
 
 {% block posted-to %}
     <div class="group-posted-to feedtut_posted_to_parent">
-        {% with posted_to=content.top_poll %}
-            <a href="{{ posted_to.get_url }}" class="posted-to-link"> {{ posted_to.get_name }} </a>
-        {% endwith %}
+        {% if not content.posted_to %}
+            {% with posted_to=content.top_poll %}
+                <a href="{{ posted_to.get_url }}" class="posted-to-link"> {{ posted_to.get_name }} </a>
+            {% endwith %}
+        {% else %}
+            {% with posted_to=content.posted_to %}
+                <a href="{{ posted_to.get_url }}" class="posted-to-link"> {{ posted_to.get_name }} </a>
+            {% endwith %}
+        {% endif %}
     </div>
 {% endblock %}
 
