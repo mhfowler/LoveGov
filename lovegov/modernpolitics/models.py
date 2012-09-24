@@ -1227,7 +1227,7 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
     def updateHotFeed(self):
 
         self.hot_feed.clear()
-
+        self.updateStale()
         content = self.getUnstaleContent()
         content_ids = content.values_list("id", flat=True)
 
