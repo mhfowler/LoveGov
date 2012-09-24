@@ -1275,6 +1275,9 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
             i_saw.save()
             self.seen_content.add(i_saw)
 
+    def clearSeen(self):
+        self.seen_content.clear()
+
     def makeStale(self, content):
         if not content in self.stale_content.all():
             self.stale_content.add(content)

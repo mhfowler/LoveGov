@@ -22,7 +22,7 @@ LOCAL = settings.LOCAL
 
 ########################################## HOT FEED ####################################################################
 
-SEEN_THRESHOLD = 50
+SEEN_THRESHOLD = 3
 
 HOT_FEED_SIZE = 100
 
