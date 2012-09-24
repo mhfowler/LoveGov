@@ -348,3 +348,7 @@ def updateHotFeeds():
         print "+II+ updating " + u.get_name()
         u.updateHotFeed()
 
+### update hot scores then update hot feeds ###
+def updateHot():
+    updateHotScores()
+    updateHotFeeds()

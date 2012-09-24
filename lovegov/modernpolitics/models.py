@@ -843,6 +843,8 @@ class Content(ActiveModel, Privacy, LocationLevel):
         action.autoSave()
         self.getCreator().notify(action)
 
+        user.makeStale(self)
+
         return my_vote.value
 
     def unvote(self, user, privacy):
@@ -1169,7 +1171,7 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
     group_views = models.ManyToManyField("GroupView")
     # hot feed
     hot_feed = models.ManyToManyField("Content", through="RankedContent", related_name="ranker")
-    last_updated_hot_feed = models.DateTimeField(auto_now_add=True)
+    last_updated_hot_feed = models.DateTimeField(auto_now_add=True, null=True)
     seen_content = models.ManyToManyField("SeenContent", related_name="seeing_users")
     stale_content = models.ManyToManyField(Content, related_name="stale_users")
     # SETTINGS
@@ -3347,7 +3349,6 @@ class Petition(Content):
                 return False
             else:
                 self.signers.add(user)
-
                 signed = Signed(user=user, content=self)
                 signed.autoSave()
                 action = SignedAction(petition=self,user=user)
@@ -3362,6 +3363,7 @@ class Petition(Content):
 
                 user.num_signatures += 1
                 user.save()
+                user.makeStale(self)
 
                 # if you signed then you liked it
                 self.like(user, "PRI")
