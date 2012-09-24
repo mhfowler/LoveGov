@@ -436,13 +436,6 @@ div.feed-main
 
 div.feed-item-wrapper.no-top-comment {
 
-  padding-bottom: 20px;
-  margin-top: 40px;
-  border-top: 1px dotted gray;
-  border-left: 1px dotted gray;
-  border-right: 1px dotted gray;
-  padding-top: 30px;
-
   div.above-rule-line {
     width:1000px;
     div.main-part {
@@ -457,8 +450,17 @@ div.feed-item-wrapper.no-top-comment {
 /* feed items */
 div.feed-item-wrapper {
   width:100%;
-  margin-bottom:20px;
+  //margin-bottom:20px;
   margin-top:25px;
+
+  padding-bottom: 20px;
+  margin-top: 40px;
+  border-top: 1px dotted gray;
+  border-left: 1px dotted gray;
+  border-right: 1px dotted gray;
+  padding-top: 30px;
+
+
   //margin-bottom:15px;
   //padding-bottom: 25px;
   //padding-top: 10px;
