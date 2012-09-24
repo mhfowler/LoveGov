@@ -1277,6 +1277,7 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
 
     def clearSeen(self):
         self.seen_content.clear()
+        self.recalculateStaleContent()
 
     def makeStale(self, content):
         if not content in self.stale_content.all():
@@ -1290,6 +1291,8 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
                 self.makeStale(content)
 
     def recalculateStaleContent(self):
+        self.stale_content.clear()
+        self.updateStale()
         for r in self.getView().responses.all():
             question = r.question
             print question.get_name()
