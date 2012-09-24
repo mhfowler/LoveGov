@@ -18,9 +18,19 @@ from operator import itemgetter
 #-----------------------------------------------------------------------------------------------------------------------
 def getFeedItems(viewer, alias, feed_ranking, feed_types, feed_start, num, like_minded=False):
 
+    # special feed
+    home_hot_feed = (feed_ranking == 'H' and alias == 'home')
+
     # get all content in the running
-    if like_minded:
+    if home_hot_feed:
+        content = viewer.getHotFeedContent()
+        if like_minded:
+            like_content_ids = viewer.getLikeMindedGroup().getContent().values_list("id", flat=True)
+            content = content.filter(id__in=like_content_ids)
+    # if like minded, we do it special like dat
+    elif like_minded:
         content = viewer.getLikeMindedGroup().getContent()
+    # else we do it normal
     else:
         content = getContentFromAlias(alias, viewer)
         if not content:
@@ -31,7 +41,8 @@ def getFeedItems(viewer, alias, feed_ranking, feed_types, feed_start, num, like_
         content = content.filter(type__in=feed_types)
 
     # sort
-    content = sortHelper(content, feed_ranking)
+    if not home_hot_feed:
+        content = sortHelper(content, feed_ranking)
 
     # paginate
     content = content[feed_start:feed_start+num]
@@ -308,14 +319,6 @@ def getLegislationItems(session_set, type_set, subject_set, committee_set, intro
 
     return legislation_items
 
-### update hot scores for all content ###
-def updateHotScores():
-    for c in Content.objects.filter(in_feed=True):
-        c.calculateHotScore()
-    for q in Question.objects.all():
-        q.recalculateQuestionHotScore()
-
-
 ### gets legislation from representatives, all things they sponsored (or cosponsored?) ##
 def getLegislationFromCongressmen(congressmen):
 
@@ -328,3 +331,20 @@ def getLegislationFromCongressmen(congressmen):
     sponsored = Legislation.objects.filter(sponsor_id__in=congressmen_ids)
 
     return sponsored
+
+
+### update hot scores for all content ###
+def updateHotScores():
+    for c in Content.objects.filter(in_feed=True):
+        c.calculateHotScore()
+    for q in Question.objects.all():
+        q.recalculateQuestionHotScore()
+
+
+### update hot feed of a particular user ###
+def updateHotFeeds():
+    real_users = UserProfile.objects.filter(ghost=False)
+    for u in real_users:
+        print "+II+ updating " + u.get_name()
+        u.updateHotFeed()
+

@@ -18,7 +18,6 @@ from django.template.loader import render_to_string
 from django import shortcuts
 
 # python
-import random
 import thread
 import json
 import time
@@ -400,7 +399,7 @@ class Content(ActiveModel, Privacy, LocationLevel):
         elif self.type =='S':
             return "Scorecard: " + self.get_name()
         elif self.type=='Q':
-            return self.get_name()
+            return "Question: " + self.get_name()
         elif self.type=='D':
             return "Discussion: " + self.get_name()
         elif self.type=='L':
@@ -1037,14 +1036,13 @@ class FeedItem(LGModel):
     content = models.ForeignKey(Content)
     rank = models.IntegerField()
 
-
 class RankedContent(LGModel):
     content = models.ForeignKey("Content", related_name="ranked_by")
     user = models.ForeignKey("UserProfile", related_name="ranked_it")
     score = models.IntegerField(default=0)
 
 class SeenContent(LGModel):
-    content = models.ForeignKey("Content", related_name="ranked_by")
+    content = models.ForeignKey("Content", related_name="seen_by")
     seen = models.IntegerField(default=0)
 
 #=======================================================================================================================
@@ -1172,8 +1170,8 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
     # hot feed
     hot_feed = models.ManyToManyField("Content", through="RankedContent", related_name="ranker")
     last_updated_hot_feed = models.DateTimeField(auto_now_add=True)
-    seen_content = models.ManyToManyField("SeenContent")
-    stale_content = models.ManyToManyField(Content)
+    seen_content = models.ManyToManyField("SeenContent", related_name="seeing_users")
+    stale_content = models.ManyToManyField(Content, related_name="stale_users")
     # SETTINGS
     private_follow = models.BooleanField(default=False)
     user_notification_setting = custom_fields.ListField()               # list of allowed types
@@ -1210,8 +1208,8 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
     #-------------------------------------------------------------------------------------------------------------------
     # Get hot feed, paginated
     #-------------------------------------------------------------------------------------------------------------------
-    def getHotFeed(self, start=0, end=0):
-        content = Content.objects.filter(ranked_by__user=self).order_by("-ranked_by__score")
+    def getHotFeedContent(self, start=0, end=0):
+        content = Content.objects.filter(in_feed=True, ranked_by__user=self).order_by("ranked_by__score")
         if start:
             content = content[start:]
         if end:
@@ -1219,19 +1217,50 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
         return content
 
     def updateHotFeed(self):
+
         self.hot_feed.clear()
+
+        content = self.getUnstaleContent()
+        content_ids = content.values_list("id", flat=True)
+
+        petitions = content.filter(type="P").order_by("-hot_score")
+        news = content.filter(type="N").order_by("-hot_score")
+        discussions = content.filter(type="D").order_by("-hot_score")
+        questions = Question.objects.filter(id__in=content_ids).order_by("-questions_hot_score")
+
+        hot_feed_stacks = {
+            'P': {'stack':petitions, 'position':0, 'length':len(petitions)},
+            'N': {'stack':news, 'position':0, 'length':len(news)},
+            'Q': {'stack':questions, 'position':0, 'length':len(questions)},
+            'D': {'stack':discussions, 'position':0, 'length':len(discussions)}
+            }
+
+        hot_feed_content = []
+        for i in range(1, min(HOT_FEED_SIZE, len(content))):
+            which_type = getWeightedType()
+            which = hot_feed_stacks[which_type]
+            stack = which['stack']
+            position = which['position']
+            length = which['length']
+            if position < length:
+                item = stack[position]
+                hot_feed_content.append(item)
+                which['position'] += 1
+
+        for score, content in enumerate(hot_feed_content):
+            r = RankedContent(content=content, score=score, user=self)
+            r.save()
+
 
     def seeContents(self, contents):
         for content in contents:
             self.seeContent(content)
 
     def seeContent(self, content):
-        i_saw = self.seen_content.filter(content=x)
+        i_saw = self.seen_content.filter(content=content)
         if i_saw:
             i_saw = i_saw[0]
             i_saw.seen += 1
-            if i_saw.seen > SEEN_THRESHOLD:
-                self.makeStale(content)
             i_saw.save()
         else:
             i_saw = SeenContent(content=content)
@@ -1241,6 +1270,15 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
     def makeStale(self, content):
         if not content in self.stale_content:
             self.stale_content.add(content)
+
+    def updateStale(self):
+        for x in self.seen_content:
+            if x.seen > SEEN_THRESHOLD:
+                self.makeStale(x)
+
+    def getUnstaleContent(self):
+        stale_ids = self.stale_content.values_list("id", flat=True)
+        return Content.objects.filter(in_feed=True).exclude(id__in=stale_ids)
 
     #-------------------------------------------------------------------------------------------------------------------
     # background tasks

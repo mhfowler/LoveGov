@@ -257,7 +257,7 @@ div.feed-main
         a.like-minded-text {
           float:left;
           margin-top: 8px;
-          margin-left:35px;
+          margin-left:21px;
           font-size: 16px;
         }
         input.like-minded-checkbox {
@@ -311,7 +311,7 @@ div.feed-main
 
         a.help-link {
           float: left;
-          margin-left: 34px;
+          margin-left: 23px;
           margin-top: 8px;
           font-size: 16px;
           font-style: italic;
@@ -491,7 +491,7 @@ div.feed-item-wrapper {
     }
 
     div.top-comment {
-      margin-top: 5px;
+      margin-top: 25px;
       margin-left: 45px;
       width:300px;
       border:1px solid $gray;
@@ -523,7 +523,7 @@ div.feed-item-wrapper {
       span.triangle-wrapper {
         position:relative;
         left: 0px;
-        top: 36px;
+        top: 28px;
         span.triangle {
           @include triangle('left', $white, $triangle-size + -1px);
           position: absolute;
