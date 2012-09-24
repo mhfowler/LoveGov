@@ -22,11 +22,13 @@ LOCAL = settings.LOCAL
 
 ########################################## HOT FEED ####################################################################
 
+HOT_FEED_GOES_STALE_IN_THIS_MANY_SECONDS = 90
+
 SEEN_THRESHOLD = 3
 
 HOT_VOTE_MAX_DAYS = 2
 
-OLDEST_HOT_NEWS = 14
+OLDEST_HOT_NEWS_IS_THIS_MANY_DAYS_OLD = 14
 
 HOT_FEED_SIZE = 100
 

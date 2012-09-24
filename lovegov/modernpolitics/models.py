@@ -1224,12 +1224,20 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
             content = content[:end]
         return content
 
+    def updateHotFeedIfOld(self):
+        now = datetime.datetime.now()
+        delta = datetime.timedelta(seconds=HOT_FEED_GOES_STALE_IN_THIS_MANY_SECONDS)
+        if self.last_updated_hot_feed + delta < now:
+            self.updateHotFeed()
+
     def updateHotFeed(self):
         self.hot_feed.clear()
         hot_feed_content = self.calculateHotFeedContent()
         for score, content in enumerate(hot_feed_content):
             r = RankedContent(content=content, score=score, user=self)
             r.save()
+        self.last_updated_hot_feed = datetime.datetime.now()
+        self.save()
 
     def calculateHotFeedContent(self):
         self.updateStale()
@@ -1239,7 +1247,7 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
         petitions = content.filter(type="P").order_by("-status")
 
         now = datetime.datetime.now()
-        delta = datetime.timedelta(days=OLDEST_HOT_NEWS)
+        delta = datetime.timedelta(days=OLDEST_HOT_NEWS_IS_THIS_MANY_DAYS_OLD)
         oldest_news = now - delta
         news = content.filter(type="N").filter(created_when__gt=oldest_news).order_by("-created_when")
 

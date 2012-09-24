@@ -1946,6 +1946,8 @@ def updatePage(request, vals={}):
     viewer = vals['viewer']
     to_return = {}
 
+    viewer.updateHotFeedIfOld()
+
     new_notifications = viewer.getNotifications(new=True)
     to_return['notifications_num'] = new_notifications.count()
 

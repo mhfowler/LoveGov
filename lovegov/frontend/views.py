@@ -301,6 +301,8 @@ def loginRedirect(request, viewer, to_page):
         to_page = '/welcome/'
     viewer.incrementNumLogins()
 
+    viewer.updateHotFeedIfOld()
+
     return shortcuts.redirect(to_page)
 
 def loginAuthenticate(request,user,to_page='home/'):
