@@ -523,7 +523,7 @@ div.feed-item-wrapper {
       span.triangle-wrapper {
         position:relative;
         left: 0px;
-        top: 28px;
+        top: 27px;
         span.triangle {
           @include triangle('left', $white, $triangle-size + -1px);
           position: absolute;
