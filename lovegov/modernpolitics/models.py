@@ -1284,10 +1284,17 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
             if x.seen > SEEN_THRESHOLD:
                 self.makeStale(x)
 
+    def recalculateStaleContent(self):
+        self.updateStale()
+        for r in self.getView().responses.all():
+            question = r.question
+            print question.get_name()
+            self.makeStale(question)
+
     def getUnstaleContent(self):
-        #stale_ids = self.stale_content.values_list("id", flat=True)
-        #return Content.objects.filter(in_feed=True).exclude(id__in=stale_ids)
-        return Content.objects.filter(in_feed=True)
+        stale_ids = self.stale_content.values_list("id", flat=True)
+        return Content.objects.filter(in_feed=True).exclude(id__in=stale_ids)
+        #return Content.objects.filter(in_feed=True)
 
     #-------------------------------------------------------------------------------------------------------------------
     # background tasks
