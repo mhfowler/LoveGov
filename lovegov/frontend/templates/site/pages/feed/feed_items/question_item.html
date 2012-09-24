@@ -2,17 +2,37 @@
 
 {% block posted-to %}
     <div class="group-posted-to feedtut_posted_to_parent">
-        {% if not content.posted_to %}
+        {% with posted_to=content.posted_to %}
+            <a href="{{ posted_to.get_url }}" class="posted-to-link"> {{ posted_to.get_name }} </a>
+        {% endwith %}
+        {% if content.top_poll %}
+            <span class="from-top-poll"> from poll </span>
             {% with posted_to=content.top_poll %}
-                <a href="{{ posted_to.get_url }}" class="posted-to-link"> {{ posted_to.get_name }} </a>
-            {% endwith %}
-        {% else %}
-            {% with posted_to=content.posted_to %}
-                <a href="{{ posted_to.get_url }}" class="posted-to-link"> {{ posted_to.get_name }} </a>
+                <a href="{{ posted_to.get_url }}" class="top-poll-link"> {{ posted_to.get_name }} </a>
             {% endwith %}
         {% endif %}
     </div>
 {% endblock %}
 
 {% block item_main %}
+
+    <div class="question-item-main">
+        <div class="question-item-answers-wrapper">
+            {% for a in content.answers.all %}
+                <div class="question-item-answer answer_choice
+                {% if content.my_response.id == a.id %} clicked {% endif %}"
+                     data-a_id="{{ a.id }}">
+                    {{ a.answer_text }}
+                </div>
+            {% endfor %}
+        </div>
+        <div class="question-item-right">
+            <div class="question-importance">
+                <div class="feed-importance-bar importance_bar"
+                        {% if your_response %} data-weight="{{ your_response.weight }}"
+                {% else %} data-weight="50" {% endif %}></div>
+            </div>
+        </div>
+    </div>
+
 {% endblock %}

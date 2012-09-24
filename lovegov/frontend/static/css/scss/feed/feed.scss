@@ -459,7 +459,7 @@ div.feed-item-wrapper {
   //border-top:1px solid $light-gray;
 
   div.above-rule-line {
-    width:600px;
+    width:700px;
     //border-bottom:1px solid $light-gray;
     float:left;
   }
@@ -471,7 +471,7 @@ div.feed-item-wrapper {
 
   div.main-part {
     float:left;
-    width:500px;
+    width:650px;
 
     div.item-main-wrapper {
       width:100%;
@@ -491,9 +491,9 @@ div.feed-item-wrapper {
     }
 
     div.top-comment {
-      margin-top: 5%;
+      margin-top: 26px;
       margin-left: 45px;
-      width:300px;
+      width:200px;
       border:1px solid $gray;
       padding:20px;
       @include border-radius(10px);
@@ -629,6 +629,10 @@ div.group-posted-to {
     &:hover {
       color:$green;
     }
+  }
+  span.from-top-poll {
+    margin-left: 5px;
+    margin-right: 3px;
   }
 }
 
@@ -838,7 +842,37 @@ div.feed-item-wrapper {
   }
 }
 
+/*  question item */
+div.feed-item-wrapper {
 
+  div.question-item-main {
+    float:left;
+    width:100%;
+    div.question-item-answers-wrapper {
+      width:80%;
+      margin-top:3px;
+      float:left;
+      margin-bottom:10px;
+      max-width:600px;
+      div.question-item-answer {
+        font-size:16px;
+        padding:10px;
+        min-height:30px;
+        @include valignable();
+        @include border-radius(8px);
+        &:hover {
+          background-color:$awesome-blue;
+          cursor:pointer;
+        }
+      }
+    }
+    div.question-item-right {
+      float:left;
+      margin-left: 40px;
+    }
+  }
+
+}
 
 /* feed item hearts */
 div.item-ranking

@@ -325,9 +325,10 @@ div.explanation-wrapper {
 
 
 div.question_stub {
-  border:1px solid $light-gray;
-  margin-top:10px;
-
+  &.question-stub {
+    border:1px solid $light-gray;
+    margin-top:10px;
+  }
   div.question_expanded_choose {
     display:none;
   }

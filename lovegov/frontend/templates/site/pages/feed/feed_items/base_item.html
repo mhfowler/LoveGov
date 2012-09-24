@@ -2,7 +2,19 @@
 {% load customtags %}
 {% load macros %}
 
-<div class="feed-item-wrapper{% if first_item %} feedtut_tutorial_item {% endif %}{% if not content.num_comments %} no-top-comment {% endif %}">
+<div class="feed-item-wrapper{% if first_item %} feedtut_tutorial_item {% endif %}
+{% comment %}{% if not content.num_comments and content.type != 'Q' %} no-top-comment {% endif %} {% endcomment %}
+{% if content.type == 'Q' %}
+    question_stub
+{% endif %}"
+        {% if content.type == 'Q' %}
+            {% with my_response=content.my_response %}
+                 data-weight="{% if my_response %}{{ my_response.weight }}{% else %}50{% endif %}"
+                 data-privacy="{% if my_response %}{{ my_response.privacy }}{% else %}{{ anonymous_mode }}{% endif %}"
+                 data-q_id="{{ content.id }}"
+            {% endwith %}
+        {% endif %}
+        >
 
     <div class="above-rule-line feedtut_feed_item_parent ">
 
@@ -20,11 +32,11 @@
         <div class="main-part">
             {% macro feed_title content %}
                 {% block posted-to %}
-                <div class="group-posted-to feedtut_posted_to_parent">
-                    {% with posted_to=content.posted_to %}
-                        <a href="{{ posted_to.get_url }}" class="posted-to-link"> {{ posted_to.get_name }} </a>
-                    {% endwith %}
-                </div>
+                    <div class="group-posted-to feedtut_posted_to_parent">
+                        {% with posted_to=content.posted_to %}
+                            <a href="{{ posted_to.get_url }}" class="posted-to-link"> {{ posted_to.get_name }} </a>
+                        {% endwith %}
+                    </div>
                 {% endblock %}
                 {% block content-title %}
                     <a href="{{ content.get_url }}" class="feed-link-wrapper"><span class="content-title"> {{ content.getFeedTitle }}</span></a>
@@ -33,12 +45,7 @@
             {% usemacro feed_title content %}
             <div class="item-main-wrapper">
                 {% block item_main %}
-                    This is a group of all the people on LoveGov who answered questions similarly to you.
-                    Below is a feed of only the content created by those people.
-                    Your like-minded group currently has 1 member.
-                    To find more like-minded people,
-                    click the find button to the left and it will search LoveGov for other
-                    people who share over 20 questions with you and are atleast 80% similar.
+
                 {% endblock %}
             </div>
 

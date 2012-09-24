@@ -1748,6 +1748,8 @@ def contentToFeedItems(content, user):
         if c.type == 'P':
             i_signed = user in c.getSigners()
             c.i_signed = i_signed
+        if c.type == 'Q':
+            c.my_response = user.getResponseToQuestion(c)
         list.append((c,my_vote))    # content, my_vote
     return list
 

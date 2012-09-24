@@ -3014,7 +3014,7 @@ function bindImportanceSliders() {
 function bindImportanceSlider(div) {
     var stub = div.parents(".question_stub");
     var weight = div.data('weight');
-    div.slider({'min':0,
+    var slider_dict = {'min':0,
         'max':100,
         'step':1,
         'value':weight,
@@ -3026,10 +3026,12 @@ function bindImportanceSlider(div) {
         stop: function(event, ui) {
             saveAnswer(stub);
         }
-    });
+    };
+    if (div.hasClass("feed-importance-bar")) {
+        slider_dict['orientation'] = 'vertical';
+    }
+    div.slider(slider_dict);
 }
-
-
 
 
 /***********************************************************************************************************************
