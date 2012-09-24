@@ -435,6 +435,14 @@ div.feed-main
 
 
 div.feed-item-wrapper.no-top-comment {
+
+  padding-bottom: 20px;
+  margin-top: 40px;
+  border-top: 1px dotted gray;
+  border-left: 1px dotted gray;
+  border-right: 1px dotted gray;
+  padding-top: 30px;
+
   div.above-rule-line {
     width:1000px;
     div.main-part {
@@ -888,7 +896,7 @@ div.feed-item-wrapper {
                 margin-left:100%;
                 position: absolute;
                 top: 0px;
-                left: 0px;
+                left: -1px;
               }
               span.percent-agreed-x {
                 float:left;
@@ -1018,10 +1026,11 @@ div.feed-item-wrapper {
     height: 120px;
     //border-right: 1px solid $black;
     border-bottom: 1px solid $black;
-    margin-top: 90px;
+    margin-top: 15px;
     margin-left: 55px;
     position:relative;
     div.graph-title {
+      display:none;
       position: absolute;
       font-size: 18px;
       top: -47px;
