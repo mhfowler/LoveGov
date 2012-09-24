@@ -2897,6 +2897,12 @@ function saveAnswer(stub) {
     var your_response = stub.data("your_response");
     var answer_changed = stub.data('answer_changed');
     var privacy = stub.data("privacy");
+    if (privacy == 'False') {
+        privacy = 'PUB';
+    }
+    if (privacy == 'True') {
+        privacy = 'PRI';
+    }
     var importance = stub.find('.importance_bar').data('weight');
 
     var data = {'action':'saveAnswer', 'q_id':q_id,
