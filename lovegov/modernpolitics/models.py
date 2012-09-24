@@ -1287,7 +1287,6 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
                 self.makeStale(content)
 
     def recalculateStaleContent(self):
-        self.updateStale()
         for r in self.getView().responses.all():
             question = r.question
             print question.get_name()
