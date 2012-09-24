@@ -24,6 +24,8 @@ LOCAL = settings.LOCAL
 
 SEEN_THRESHOLD = 3
 
+HOT_VOTE_MAX_DAYS = 2
+
 HOT_FEED_SIZE = 100
 
 HOT_FEED_WEIGHTS = {
@@ -204,9 +206,6 @@ FEED_MAX = 100              # feed max (for sitewide feeds)
 
 # constants for new filter
 NEWFILTER_DAYS = 14
-
-# constants for hot filter
-HOT_VOTE_MAX_DAYS = 2
 
 ########################################### DEFAULT SETTINGS ###########################################################
 

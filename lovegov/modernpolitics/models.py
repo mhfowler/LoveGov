@@ -1232,9 +1232,9 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
         content_ids = content.values_list("id", flat=True)
 
         petitions = content.filter(type="P").order_by("-status")
-        news = content.filter(type="N").order_by("-hot_score")
-        discussions = content.filter(type="D").order_by("-num_comments")
-        questions = Question.objects.filter(id__in=content_ids).order_by("-questions_hot_score")
+        news = content.filter(type="N").order_by("-status").order_by("-hot_score")
+        discussions = content.filter(type="D").order_by("-status").order_by("-num_comments")
+        questions = Question.objects.filter(id__in=content_ids).order_by("-status").order_by("-questions_hot_score")
 
         hot_feed_stacks = {
             'P': {'stack':petitions, 'position':0, 'length':len(petitions)},
