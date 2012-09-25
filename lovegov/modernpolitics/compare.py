@@ -35,7 +35,7 @@ def updateGroupViews(debug=False, fast=True):
     count = 0
     groups = Group.objects.filter(hidden=False).exclude(group_type="C").exclude(alias="congress").exclude(alias="lovegov_group")
     for g in groups:
-        print g.title
+        print enc(g.title)
         updateGroupView(g, debug=debug)
         count += 1
     print "updated: " + str(count)
