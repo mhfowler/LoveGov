@@ -19,9 +19,13 @@
 
     <div class="news-wrapper">
 
-        <div class="news-summary feed-item-summary">
-            {{ content.getSummary }}
-        </div>
+        {% with summary=content.getSummary %}
+            {% if summary %}
+                <div class="news-summary feed-item-summary">
+                    {{ summary }}
+                </div>
+            {% endif %}
+        {% endwith %}
 
     </div>
 
