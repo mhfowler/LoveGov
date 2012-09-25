@@ -97,13 +97,11 @@
     <div class="right-part">
         {% block right_part %}
 
-            <div class="top-comment-wrapper">
-                {% if content.num_comments %}
-                    {% with top_comment=content.getTopComment %}
-                        {% include 'site/pages/feed/feed_items/top_comment.html' %}
-                    {% endwith %}
-                {% endif %}
-            </div>
+            {% if content.num_comments %}
+                {% with top_comment=content.getTopComment %}
+                    {% include 'site/pages/feed/feed_items/top_comment.html' %}
+                {% endwith %}
+            {% endif %}
 
             {% if content.type == 'Q' %}
                 <div class="agreement_bargraph_seed

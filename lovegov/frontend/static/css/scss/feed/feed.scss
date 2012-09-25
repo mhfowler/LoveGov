@@ -493,33 +493,32 @@ div.feed-item-wrapper {
   div.right-part {
     float:left;
     //margin-left:20px;
-    margin-lefet:15px;
+    //margin-left:15px;
+    position:relative;
     div.right-image-wrapper {
       float: left;
       margin-left: 140px;
       margin-top: 20px;
     }
 
-    div.top-comment-wrapper {
-      height:165px;
-      div.top-comment {
-        margin-top: 26px;
-        margin-left: 45px;
-        width:200px;
-        border:1px solid $gray;
-        padding:20px;
-        @include border-radius(10px);
-        position:relative;
-        &:hover {
-          border-color:$black;
-          cursor:pointer;
-          span.triangle-wrapper {
-            span.triangle-border {
-              border-right-color:black;
-            }
+    div.top-comment {
+      margin-top: 26px;
+      margin-left: 45px;
+      width:200px;
+      border:1px solid $gray;
+      padding:20px;
+      @include border-radius(10px);
+      position:relative;
+      &:hover {
+        border-color:$black;
+        cursor:pointer;
+        span.triangle-wrapper {
+          span.triangle-border {
+            border-right-color:black;
           }
         }
       }
+
 
       div.triangle-image {
         @include staticImage("/images/icons/arrows/comments_arrow.png");
@@ -1033,7 +1032,8 @@ div.feed-item-wrapper {
     border-bottom: 1px solid $black;
     margin-top: 15px;
     margin-left: 33px;
-    position:relative;
+    position:absolute;
+    top:183px;
     div.graph-title {
       display:none;
       position: absolute;
