@@ -362,3 +362,15 @@ AWS_SECRET_ACCESS_KEY = s3_configuration.AWS_SECRET_ACCESS_KEY
 AWS_STORAGE_BUCKET_NAME = s3_configuration.AWS_STORAGE_BUCKET_NAME
 
 EMAIL_BACKEND = 'django_ses.SESBackend'
+
+########################################## ANALYTICS SETTINGS #########################################################
+
+
+CURRENT_TEST_RUN = 0
+
+BENCHMARK_PAGES = ['/home/', '/groups/', '/elections/', '/questions/']
+
+BENCHMARK_AJAX = [
+    ('/home/', 'getFeed'),
+    ('/groups/', 'getGroups')
+]

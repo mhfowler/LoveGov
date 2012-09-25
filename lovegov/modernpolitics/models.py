@@ -1305,18 +1305,25 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
 
     def updateStale(self):
         for x in self.seen_content.all():
-            if x.seen > SEEN_THRESHOLD:
+            if x.seen > SEEN_THRESHOLD and x.type != "N":
                 content = x.content
                 #print content.get_name()
                 self.makeStale(content)
 
     def recalculateStaleContent(self):
         self.stale_content.clear()
+
         self.updateStale()
+
         for r in self.getView().responses.all():
             question = r.question
-            #print question.get_name()
+
             self.makeStale(question)
+
+        signed = Signed.objects.filter(user=self)
+        for x in signed:
+            self.makeStale(x.content)
+
 
     def getUnstaleContent(self):
         stale_ids = self.stale_content.values_list("id", flat=True)
@@ -5340,7 +5347,7 @@ class ClientAnalytics(LGModel):
     action = models.CharField(max_length=50, null=True)
     when = models.DateTimeField(auto_now_add=True)
     load_time = models.IntegerField()
-    test_run = models.IntegerField(default=CURRENT_TEST_RUN)
+    test_run = models.IntegerField(default=settings.CURRENT_TEST_RUN)
     def autoSave(self):
         self.save()
     def prettyPrint(self):

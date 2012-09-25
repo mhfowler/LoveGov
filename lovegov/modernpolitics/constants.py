@@ -53,17 +53,6 @@ def getWeightedType():
         if rand_weight < weight:
             return c_type
 
-########################################## ANALYTICS CONSTANTS #########################################################
-
-CURRENT_TEST_RUN = 0
-
-BENCHMARK_PAGES = ['/home/', '/groups/', '/elections/', '/questions/']
-
-BENCHMARK_AJAX = [
-        ('/home/', 'getFeed'),
-        ('/groups/', 'getGroups')
-]
-
 ########################################## COLORS FOR STUFF ############################################################
 
 USER_GROUP_COLORS = ['blue', 'red', 'blue', 'purple']
