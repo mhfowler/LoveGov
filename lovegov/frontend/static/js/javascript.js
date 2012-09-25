@@ -1294,8 +1294,8 @@ function getFeed(container) {
     }
 
     // save in memory
-    feed_memory[PATH] = data;
-    $.cookie('feed_memory', JSON.stringify(feed_memory));
+    //feed_memory[PATH] = data;
+    //$.cookie('feed_memory', JSON.stringify(feed_memory));
 
     var action_dict = {
         data: data,
