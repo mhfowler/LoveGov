@@ -451,10 +451,10 @@ div.feed-item-wrapper.no-top-comment {
 div.feed-item-wrapper {
   width:100%;
   //margin-bottom:20px;
-  margin-top:25px;
+  //margin-top:25px;
 
   padding-bottom: 20px;
-  margin-top: 40px;
+  //margin-top: 40px;
   border-top: 1px dotted gray;
   border-left: 1px dotted gray;
   border-right: 1px dotted gray;
@@ -500,20 +500,23 @@ div.feed-item-wrapper {
       margin-top: 20px;
     }
 
-    div.top-comment {
-      margin-top: 26px;
-      margin-left: 45px;
-      width:200px;
-      border:1px solid $gray;
-      padding:20px;
-      @include border-radius(10px);
-      position:relative;
-      &:hover {
-        border-color:$black;
-        cursor:pointer;
-        span.triangle-wrapper {
-          span.triangle-border {
-            border-right-color:black;
+    div.top-comment-wrapper {
+      height:165px;
+      div.top-comment {
+        margin-top: 26px;
+        margin-left: 45px;
+        width:200px;
+        border:1px solid $gray;
+        padding:20px;
+        @include border-radius(10px);
+        position:relative;
+        &:hover {
+          border-color:$black;
+          cursor:pointer;
+          span.triangle-wrapper {
+            span.triangle-border {
+              border-right-color:black;
+            }
           }
         }
       }
@@ -1029,7 +1032,7 @@ div.feed-item-wrapper {
     //border-right: 1px solid $black;
     border-bottom: 1px solid $black;
     margin-top: 15px;
-    margin-left: 55px;
+    margin-left: 33px;
     position:relative;
     div.graph-title {
       display:none;
@@ -1056,10 +1059,10 @@ div.feed-item-wrapper {
       a.agreed-bar-label {
         color:$black;
         position:absolute;
-        top: 165%;
-        left: -12px;
+        top: 207%;
+        left: -110px;
         width: 250px;
-        @include transform(rotate(36deg));
+        @include transform(rotate(90deg));
         &:hover {
           color:black;
         }
