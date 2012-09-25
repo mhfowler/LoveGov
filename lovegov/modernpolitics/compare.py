@@ -47,7 +47,7 @@ def updateFriendsGroupViews(debug=False):
         if friends_group:
             updateGroupView(friends_group)
             count += 1
-            print u.get_name() + " Friend Group"
+            print enc(u.get_name()) + " Friend Group"
     print "updated: " + str(count)
 
 #-----------------------------------------------------------------------------------------------------------------------
