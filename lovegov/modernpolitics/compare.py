@@ -32,10 +32,13 @@ def updateGroupViews(debug=False, fast=True):
 
     updateFriendsGroupViews(debug=debug)
 
+    count = 0
     groups = Group.objects.filter(hidden=False).exclude(group_type="C").exclude(alias="congress").exclude(alias="lovegov_group")
     for g in groups:
         print g.title
         updateGroupView(g, debug=debug)
+        count += 1
+    print "updated: " + str(count)
 
 def updateFriendsGroupViews(debug=False):
     count = 0
@@ -44,7 +47,7 @@ def updateFriendsGroupViews(debug=False):
         if friends_group:
             updateGroupView(friends_group)
             count += 1
-            if debug: print u.get_name()
+            print u.get_name() + " Friend Group"
     print "updated: " + str(count)
 
 #-----------------------------------------------------------------------------------------------------------------------

@@ -5020,7 +5020,7 @@ class StateGroup(Group):
     def makeTitle(self, state=None):
         if not state:
             state = self.location.state
-        state_text = STATES_DICT[state].capitalize()
+        state_text = STATES_DICT[state]
         return state_text
 
 
