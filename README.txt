@@ -256,6 +256,9 @@ xlrd
 http://pypi.python.org/pypi/xlrd
 pip install xlrd
 
+xlwt
+pip install xlwt
+
 haystack (v2.X)
 http://haystacksearch.org/
 https://github.com/toastdriven/django-haystack/
@@ -318,3 +321,5 @@ pip install cssmin
 pip install django_compressor
 
 pip install django-ses
+
+pip install numpy

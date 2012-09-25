@@ -5347,7 +5347,7 @@ class ClientAnalytics(LGModel):
     action = models.CharField(max_length=50, null=True)
     when = models.DateTimeField(auto_now_add=True)
     load_time = models.IntegerField()
-    test_run = models.IntegerField(default=CURRENT_TEST_RUN)
+    test_run = models.IntegerField(default=settings.CURRENT_TEST_RUN)
     def autoSave(self):
         self.save()
     def prettyPrint(self):
