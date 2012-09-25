@@ -112,7 +112,7 @@ div.load-more {
   color:$black;
   text-align:center;
   padding:6px;
-  margin-top:15px;
+  //margin-top:15px;
 
   //margin-top:20px;
 
@@ -437,9 +437,9 @@ div.feed-main
 div.feed-item-wrapper.no-top-comment {
 
   div.above-rule-line {
-    width:1000px;
+    width:925px;
     div.main-part {
-      width:900px;
+      width:875px;
     }
   }
   div.feed-petition-bar-wrapper {
@@ -453,12 +453,13 @@ div.feed-item-wrapper {
   //margin-bottom:20px;
   //margin-top:25px;
 
-  padding-bottom: 20px;
+  padding-bottom: 15px;
   //margin-top: 40px;
   border-top: 1px dotted gray;
   border-left: 1px dotted gray;
   border-right: 1px dotted gray;
-  padding-top: 30px;
+  padding-top: 20px;
+  padding-left:5px;
 
 
   //margin-bottom:15px;
@@ -502,13 +503,15 @@ div.feed-item-wrapper {
     }
 
     div.top-comment {
-      margin-top: 26px;
-      margin-left: 45px;
+      //margin-top: 26px;
+      margin-left: 20px;
       width:200px;
-      border:1px solid $gray;
-      padding:20px;
+      //border:1px solid $gray;
+      padding:10px;
+      padding-bottom:5px;
       @include border-radius(10px);
       position:relative;
+      /*
       &:hover {
         border-color:$black;
         cursor:pointer;
@@ -518,6 +521,7 @@ div.feed-item-wrapper {
           }
         }
       }
+      */
 
 
       div.triangle-image {
@@ -533,6 +537,7 @@ div.feed-item-wrapper {
 
       $triangle-size: 32px;
       span.triangle-wrapper {
+        display:none;
         position:relative;
         left: 0px;
         top: 27px;
@@ -566,6 +571,10 @@ div.feed-item-wrapper {
         color:$dark-gray;
         overflow:hidden;
         font-size:$body-fonts;
+        &:hover {
+          text-decoration:underline;
+          cursor:pointer;
+        }
       }
     }
   }
@@ -578,7 +587,9 @@ div.item-bottom {
   //margin-top:10px;
   width:100%;
   display:block;
-  padding-bottom:20px;
+  //padding-top: 10px;
+  //padding-bottom: 5px;
+  float: left;
 
   // float right
   a.pin-button {
