@@ -30,6 +30,8 @@ def updateGroupViews(debug=False, fast=True):
 
     scheduled_logger.debug("UPDATE GROUP VIEWS")
 
+    updateFriendsGroupViews(debug=debug)
+
     groups = Group.objects.filter(hidden=False).exclude(group_type="C").exclude(alias="congress").exclude(alias="lovegov_group")
     for g in groups:
         print g.title
