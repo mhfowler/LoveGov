@@ -410,6 +410,27 @@ function initFeedParameters() {
         feed_rank = 'N';
     }
 
+    /*
+    var feed_data = feed_memory[PATH];
+    if (!feed_data) {
+        var cookie_feed_memory = $.cookie('feed_memory');
+        if (cookie_feed_memory) {
+            cookie_feed_memory = $.parseJSON(cookie_feed_memory);
+            feed_data = cookie_feed_memory[PATH];
+        }
+    }
+    if (feed_data) {
+        var saved_feed_rank = feed_data['feed_rank'];
+        if (saved_feed_rank) {
+            feed_rank = saved_feed_rank;
+        }
+        var saved_question_rank = feed_data['question_rank'];
+        if (saved_question_rank) {
+            question_rank = saved_question_rank;
+        }
+    }
+    */
+
     selectRank(feed_rank);
     selectQuestionRank(question_rank);
     selectFeedTopic();
@@ -1121,6 +1142,7 @@ function refreshFeed(container) {
     getFeed(container);
 }
 
+var feed_memory = {};
 var feed_types = [];
 var feed_rank = 'H';
 var feed_topic = null;
@@ -1270,6 +1292,10 @@ function getFeed(container) {
             'introduced_set':introduced_json, 'sponsor_body_set':sponsor_body_json,
             'sponsor_name_set':sponsor_name_json, 'sponsor_party':sponsor_party_json};
     }
+
+    // save in memory
+    feed_memory[PATH] = data;
+    $.cookie('feed_memory', JSON.stringify(feed_memory));
 
     var action_dict = {
         data: data,
@@ -2968,9 +2994,9 @@ function saveAnswer(stub) {
     if (answer_changed && your_response == 0 ) {
         var q_bottom = stub.find(".question_item_bottom_wrapper");
         /*
-        smoothTransition(q_bottom, function(){
-            q_bottom.css({"height":'auto'});
-        }, 200);*/
+         smoothTransition(q_bottom, function(){
+         q_bottom.css({"height":'auto'});
+         }, 200);*/
         q_bottom.css({"height":'auto',"overflow":"visible"});
         //q_bottom.fadeIn();
     }

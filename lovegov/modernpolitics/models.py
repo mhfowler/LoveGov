@@ -1305,8 +1305,8 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
 
     def updateStale(self):
         for x in self.seen_content.all():
-            if x.seen > SEEN_THRESHOLD and x.type != "N":
-                content = x.content
+            content = x.content
+            if x.seen > SEEN_THRESHOLD and content.type != "N":
                 #print content.get_name()
                 self.makeStale(content)
 
