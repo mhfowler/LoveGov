@@ -563,3 +563,5 @@ def updatePoliticianImages():
     im_ref = os.path.join(PROJECT_PATH, 'frontend/static/images/presidentialCandidates/cicilline.jpeg')
     im = open(im_ref)
     cicilline.setProfileImage(im)
+
+
