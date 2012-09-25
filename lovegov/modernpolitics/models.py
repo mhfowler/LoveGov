@@ -1224,12 +1224,10 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
             content = content[:end]
         return content
 
-    def updateHotFeedIfOld(self, really_old=False):
-        now = datetime.datetime.now()
-        if not really_old:
+    def updateHotFeedIfOld(self, delta=None):
+        if not delta:
             delta = datetime.timedelta(seconds=HOT_FEED_GOES_STALE_IN_THIS_MANY_SECONDS)
-        else:
-            delta = HOT_FEED_GOES_REALLY_STALE_IN_THIS_MUCH_TIME
+        now = datetime.datetime.now()
         if self.last_updated_hot_feed + delta < now:
             self.updateHotFeed()
 
