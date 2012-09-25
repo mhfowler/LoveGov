@@ -29,27 +29,37 @@ def getAgreementBarGraphHTMLHelper(viewer, question, response, in_feed=True):
 
     if in_feed:
         lg_group = getLoveGovGroup()
-        groups.append(lg_group)
-        i_follow_group = viewer.i_follow
-        groups.append(i_follow_group)
-        democrats = getDemocraticParty()
-        if democrats: groups.append(democrats)
-        republicans = getRepublicanParty()
-        if republicans: groups.append(republicans)
+        groups.append((lg_group, 'LoveGov'))
 
-        groups = [lg_group, lg_group, lg_group, lg_group]
+        if question.official:
+            congress = getCongressGroup()
+            groups.append((congress, 'Congress'))
+
+        i_follow_group = viewer.i_follow
+        if i_follow_group.num_members:
+            groups.append((i_follow_group, 'Friends'))
+
+        if viewer.location and viewer.location.state:
+            state = viewer.location.state
+            state_group = getStateGroupFromState(state)
+            groups.append((state_group, state))
+
+        if len(groups) < 4:
+            num_parties_to_select = 4 - len(groups)
+            parties = Party.objects.all()
+            for x in random.sample(parties, num_parties_to_select):
+                groups.append((x, x.getCasualName()))
 
     groups_dict_list = []
-    for g in groups:
+    for g, g_title in groups:
         g_response = g.getResponseToQuestion(question)
         if g_response:
             percent_agreed = g_response.getPercent(response.most_chosen_answer_id)
-            percent_agreed = random.randint(0, 100)
             total_num = g_response.total_num
         else:
-            percent_agreed = 50
+            percent_agreed = 0
             total_num = 0
-        g_vals = {'group':g, 'percent_agreed': percent_agreed, 'percent_disagreed':100-percent_agreed, 'total_num':total_num}
+        g_vals = {'g_title': g_title,'group':g, 'percent_agreed': percent_agreed, 'percent_disagreed':100-percent_agreed, 'total_num':total_num}
         groups_dict_list.append(g_vals)
 
     to_render = {'groups_dict_list': groups_dict_list}

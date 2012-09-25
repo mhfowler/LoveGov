@@ -485,6 +485,10 @@ PARTY_TYPE = (
     ('T', 'tea')
 )
 
+PARTY_DICT = {}
+for k,v in PARTY_TYPE:
+    PARTY_DICT[k] = v
+
 MOTION_CHOICES = (
     ('other', 'Other'),
     ('charity', 'Charity'),

@@ -103,16 +103,6 @@
                 {% endwith %}
             {% endif %}
 
-            {% if content.type == 'Q' %}
-                <div class="agreement_bargraph_seed
-                     {% if content.my_response %} initialize_self {% endif %}"
-                     data-action="getAgreementBarGraphHTML"
-                     data-in_feed="1"
-                     data-r_id="{{ content.my_response.id }}"
-                     data-q_id="{{ content.id }}">
-                </div>
-            {% endif %}
-
         {% endblock %}
     </div>
 

@@ -59,8 +59,18 @@
                 </div>
                 <div style="clear:both;"></div>
             </div>
-            <div class="question_item_bottom_wrapper" {% if not your_response %} style="height:0px;overflow:hidden;" {% endif %}>
+            <div class="question_item_bottom_wrapper" {% comment %}{% if not your_response %} style="height:0px;overflow:hidden;" {% endif %}{% endcomment %}>
                 <div class='question-item-bottom'>
+
+                    <div class="agreement_bargraph_seed
+                     {% if content.my_response %} initialize_self {% endif %}"
+                         data-action="getAgreementBarGraphHTML"
+                         data-in_feed="1"
+                         data-r_id="{{ content.my_response.id }}"
+                         data-q_id="{{ content.id }}">
+
+                        <div class="loading-metrics initialize_loading"> loading metrics... </div>
+                    </div>
 
                     <div class="answer-explanation inline-editable inline_editable"
                          data-model="Explanation" data-r_id="{{ your_response.id }}" data-q_id="{{ content.id }}">
@@ -74,7 +84,17 @@
                             </div>
 
                             <div class="question-item-privacy-wrapper">
-                                {% include 'site/pages/feed/feed_items/question_item_privacy.html' %}
+                                {% with q_id=content.id %}
+                                    {% if your_response %}
+                                        {% with private_response=your_response.getPrivate %}
+                                            {% include 'site/pages/feed/feed_items/question_item_privacy.html' %}
+                                        {% endwith %}
+                                    {% else %}
+                                        {% with private_response=anonymous_mode %}
+                                            {% include 'site/pages/feed/feed_items/question_item_privacy.html' %}
+                                        {% endwith %}
+                                    {% endif %}
+                                {% endwith %}
                             </div>
 
                             <div style="clear:both;"></div>

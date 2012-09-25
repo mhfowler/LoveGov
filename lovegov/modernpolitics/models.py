@@ -5169,6 +5169,10 @@ class Party(Group):
         user.save()
         super(Party, self).removeMember(user, privacy)
 
+    def getCasualName(self):
+        to_return = PARTY_DICT[self.party_type] + 's'
+        return to_return.capitalize()
+
 #=======================================================================================================================
 # User Group
 #

@@ -2945,6 +2945,17 @@ function saveAnswer(stub) {
             showBubbles();
         }
     }
+
+    if (answer_changed && your_response == 0 ) {
+        var q_bottom = stub.find(".question_item_bottom_wrapper");
+        /*
+        smoothTransition(q_bottom, function(){
+            q_bottom.css({"height":'auto'});
+        }, 200);*/
+        q_bottom.css({"height":'auto',"overflow":"visible"});
+        //q_bottom.fadeIn();
+    }
+
     action({
         data: data,
         success: function(data) {
@@ -2981,11 +2992,6 @@ function saveAnswer(stub) {
 
                 var agreement_bargraph = stub.find(".agreement_bargraph_seed");
                 initializeDomElement(agreement_bargraph);
-
-                if (your_response == 0) {
-                    var q_bottom = stub.find(".question_item_bottom_wrapper");
-                    smoothTransition(q_bottom, function(){q_bottom.css({"height":'auto'})}, 200);
-                }
             }
 
             bindOnNewElements();
@@ -3213,24 +3219,55 @@ bind('div.stats-box.supporter-box', 'click', function(e) {
 });
 
 
+function initializeDomElements() {
+    $(".initialize_self").each(function(i,e) {
+        $(this).find(".initialize_loading").show();
+        initializeDomElement($(this));
+    });
+}
+
 function initializeDomElement(element) {
     var data = element.data();
+    element.removeClass("initialize_self");
     action({
         data: data,
         success: function(data) {
             var returned = $.parseJSON(data);
             element.html(returned.html);
-            element.removeClass("initialize_self");
-            bindOnNewElements();
+            postInitialize(element);
         }
     });
 }
 
-function initializeDomElements() {
-    $(".initialize_self").each(function(i,e) {
-        initializeDomElement($(this));
-    });
+function postInitialize(element) {
+
+    if (element.hasClass("agreement_bargraph_seed")) {
+        element.find(".agreement_bargraph").fadeIn();
+    }
+
+    bindOnNewElements();
+
 }
+
+
+/*
+ // position absolute relatively to parent
+ var stub = element.parents(".question_stub");
+ var min_stub_height = 450;
+ stub.animate({'min-height':String(min_stub_height) + "px"}, 200);
+ var stub_height = stub.height();
+ var bargraph = element.find('.agreement_bargraph');
+ var bargraph_height = bargraph.height();
+ var bottom_padding = 105;
+ var min_above = 200;
+ var bargraph_top = stub_height - bargraph_height - bottom_padding;
+ if (bargraph_top > min_above) {
+ bargraph.css("top", String(bargraph_top) + "px");
+ }
+ else {
+ bargraph.css("top", String(bargraph_top) + "px");
+ //bargraph.hide();
+ }*/
 
 /***********************************************************************************************************************
  *
@@ -4385,6 +4422,20 @@ bind(".change_privacy_mode", "click", function(e) {
                 $(".public_mode_button").hide();
                 $(".private_mode_button").show();
             }
+        }
+    });
+});
+
+bind(".privacy_option", "click", function(e) {
+    var sibling = $(this).siblings();
+    $(this).hide();
+    sibling.show();
+    var wrapper = $(this).parents(".answer_privacy_wrapper");
+    var r_id = wrapper.data("r_id");
+    var q_id = wrapper.data("q_id");
+    action({
+        data: {'action':'changeAnswerPrivacy', 'r_id':r_id, 'q_id':q_id},
+        success: function(data) {
         }
     });
 });
