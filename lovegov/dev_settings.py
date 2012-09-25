@@ -32,9 +32,9 @@ STATIC_ROOT = '/static/dev/'
 MEDIA_ROOT = '/media/dev/'
 LOG_ROOT = "/log/dev/"
 PROFILE_LOG_BASE = "/log/dev/profiles/"
-LOGGING = base_settings.setLogging(LOG_ROOT)
+LOGGING = setLogging(LOG_ROOT)
 
-INSTALLED_APPS = base_settings.INSTALLED_APPS.__add__(('south',
+INSTALLED_APPS = INSTALLED_APPS.__add__(('south',
                                                   'storages',
                                                   's3_folder_storage',
                                                   'djcelery',))
@@ -65,7 +65,7 @@ if USE_S3:
 else:
     # URL prefix for static files.
     STATIC_URL = '/static/'
-    MEDIA_URL =  base_settings.MEDIA_URL
+    MEDIA_URL =  MEDIA_URL
     from compressor_settings import *
     COMPRESS_URL = "/fake/"
     COMPRESS_ENABLED = False
@@ -77,7 +77,7 @@ else:
 ########################################################################################################################
 
 DEBUG_TOOLBAR_CONFIG = {
-'SHOW_TOOLBAR_CALLBACK': base_settings.show_toolbar,
+'SHOW_TOOLBAR_CALLBACK': show_toolbar,
 }
 
 ########################################################################################################################
@@ -98,6 +98,4 @@ CACHES = {
 ########################################################################################################################
 import djcelery
 djcelery.setup_loader()
-
-BROKER_URL = base_settings.BROKER_URL
 
