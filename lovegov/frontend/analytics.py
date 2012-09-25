@@ -585,3 +585,4 @@ def ajaxAnalyticsToExcel():
         col += 1
     wb.save(filename)
     print filename
+

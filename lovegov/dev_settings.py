@@ -1,4 +1,4 @@
-import base_settings
+from lovegov.base_settings import *
 
 LOCAL = False
 DEBUG = True
