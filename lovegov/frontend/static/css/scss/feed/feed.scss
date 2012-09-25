@@ -4,6 +4,11 @@
 
 @import "compass";
 
+/* initialize self */
+.initialize_loading {
+  display:none;
+}
+
 /* feedtut tutorial */
 div.feedtut_start_tutorial_parent {
   div.feedtut_start_tutorial {
@@ -112,7 +117,7 @@ div.load-more {
   color:$black;
   text-align:center;
   padding:6px;
-  margin-top:15px;
+  //margin-top:15px;
 
   //margin-top:20px;
 
@@ -259,6 +264,7 @@ div.feed-main
           margin-top: 8px;
           margin-left:21px;
           font-size: 16px;
+          color:$black;
         }
         input.like-minded-checkbox {
           float: left;
@@ -435,28 +441,45 @@ div.feed-main
 
 
 div.feed-item-wrapper.no-top-comment {
+
   div.above-rule-line {
-    width:1000px;
+    width:970px;
     div.main-part {
-      width:900px;
+      width:94%;
     }
   }
   div.feed-petition-bar-wrapper {
     width: 675px;
+  }
+  div.item-bottom a.num-comments {
+    margin-right:20px;
   }
 }
 
 /* feed items */
 div.feed-item-wrapper {
   width:100%;
-  margin-bottom:20px;
-  margin-top:25px;
+  //margin-bottom:20px;
+  //margin-top:25px;
+
+  padding-bottom: 20px;
+  //margin-top: 40px;
+  //border-top: 1px dotted gray;
+  //border-left: 1px dotted gray;
+  //border-right: 1px dotted gray;
+  padding-top: 25px;
+  //padding-left:5px;
+
+
   //margin-bottom:15px;
   //padding-bottom: 25px;
   //padding-top: 10px;
   //padding-top:20px;
   //padding-left:50px;
   //border-top:1px solid $light-gray;
+
+  border-top:1px solid $light-gray;
+  //border-bottom:1px solid $light-gray;
 
   div.above-rule-line {
     width:700px;
@@ -482,8 +505,10 @@ div.feed-item-wrapper {
 
   div.right-part {
     float:left;
-    //margin-left:20px;
-    margin-lefet:15px;
+    margin-left:20px;
+    //margin-left:15px;
+    position:relative;
+    height:100%;
     div.right-image-wrapper {
       float: left;
       margin-left: 140px;
@@ -491,13 +516,15 @@ div.feed-item-wrapper {
     }
 
     div.top-comment {
-      margin-top: 26px;
-      margin-left: 45px;
-      width:200px;
-      border:1px solid $gray;
-      padding:20px;
+      //margin-top: 26px;
+      margin-left: 20px;
+      width: 220px;
+      //border:1px solid $gray;
+      padding:10px;
+      padding-bottom:5px;
       @include border-radius(10px);
       position:relative;
+      /*
       &:hover {
         border-color:$black;
         cursor:pointer;
@@ -507,6 +534,8 @@ div.feed-item-wrapper {
           }
         }
       }
+      */
+
 
       div.triangle-image {
         @include staticImage("/images/icons/arrows/comments_arrow.png");
@@ -521,6 +550,7 @@ div.feed-item-wrapper {
 
       $triangle-size: 32px;
       span.triangle-wrapper {
+        display:none;
         position:relative;
         left: 0px;
         top: 27px;
@@ -550,10 +580,14 @@ div.feed-item-wrapper {
         }
       }
       div.the-comment {
-        margin-top:10px;
+        margin-top:5px;
         color:$dark-gray;
         overflow:hidden;
         font-size:$body-fonts;
+        &:hover {
+          color:$gray;
+          cursor:pointer;
+        }
       }
     }
   }
@@ -566,7 +600,9 @@ div.item-bottom {
   //margin-top:10px;
   width:100%;
   display:block;
-  padding-bottom:20px;
+  //padding-top: 10px;
+  //padding-bottom: 5px;
+  float: left;
 
   // float right
   a.pin-button {
@@ -579,7 +615,7 @@ div.item-bottom {
     }
   }
   a.num-comments {
-    margin-right:20px;
+    //margin-right:20px;
     float:right;
     //color:$red;
     color:$dark-gray;
@@ -848,31 +884,238 @@ div.feed-item-wrapper {
   div.question-item-main {
     float:left;
     width:100%;
-    div.question-item-answers-wrapper {
-      width:80%;
-      margin-top:3px;
-      float:left;
-      margin-bottom:10px;
-      max-width:600px;
-      div.question-item-answer {
-        font-size:16px;
-        padding:10px;
-        min-height:30px;
-        @include valignable();
-        @include border-radius(8px);
-        &:hover {
-          background-color:$awesome-blue;
-          cursor:pointer;
+    div.question-item-top {
+      min-height:150px;
+      div.question-item-answers-wrapper {
+        width:80%;
+        margin-top:3px;
+        float:left;
+        margin-bottom:10px;
+        max-width:600px;
+        div.question-item-answer-wrapper {
+          position:relative;
+          div.question-item-answer {
+            font-size:16px;
+            padding:10px;
+            min-height:30px;
+            @include valignable();
+            @include border-radius(8px);
+            &:hover {
+              background-color:$awesome-blue;
+              cursor:pointer;
+            }
+            &.clicked {
+              background-color:$awesome-blue;
+            }
+          }
+          div.percent_agreed_wrapper {
+            display:none;
+            div.percent-agreed-bubble {
+              position:absolute;
+              padding: 4px 12px;
+              background-color:$red;
+              color:white;
+              z-index:1;
+              left: -42%;
+              top: 11%;
+              width: 189px;
+              //@include border-radius(10px);
+              span.percent-agreed-arrow {
+                @include triangle('right', $red, 15px);
+                margin-left:100%;
+                position: absolute;
+                top: 0px;
+                left: -1px;
+              }
+              span.percent-agreed-x {
+                float:left;
+                color:white;
+                margin-right: 15px;
+                padding-top: 1px;
+              }
+              &:hover {
+                cursor:pointer;
+                span.percent-agreed-x {
+                  color:black;
+                }
+              }
+            }
+          }
+        }
+      }
+      div.question-item-right {
+        float:left;
+        margin-left: 10px;
+        div.question-importance {
+          div.importance-top {
+            div.feed-importance-bar {
+              margin-left: 40px;
+              width:9px;
+              @include border-radius(0px);
+              margin-top: 10px;
+              height: 110px;
+              float:left;
+              position: relative;
+              top: -7px;
+              a.ui-slider-handle {
+                background:none;
+                background-color:white;
+                border-color:$black;
+                width: 26px;
+                height: 9px;
+                position: absolute;
+                left:-8px;
+                @include border-radius(0px);
+                margin-bottom:-.5px;
+                &:focus {
+                  outline:none;
+                }
+              }
+            }
+          }
+          div.question-importance-header {
+            margin-top:5px;
+            font-style:italic;
+            //color:$gray;
+            span.importance-header-text {
+              float:left;
+            }
+            span.question-importance-percent {
+              float:left;
+              margin-left:5px;
+              line-height: 12px;
+              margin-top:5px;
+            }
+          }
         }
       }
     }
-    div.question-item-right {
-      float:left;
-      margin-left: 40px;
+
+    div.question-item-bottom {
+      border-top:1px solid $light-gray;
+      padding-top: 15px;
+      margin-top: 10px;
+      width:100%;
+      position:relative;
+
+      div.agreement_bargraph_seed {
+        div.loading-metrics {
+          width:200px;
+          text-align:center;
+          position:absolute;
+          top:5px;
+          left:200px;
+        }
+      }
+
+      div.agreement-bargraph {
+        width:190px;
+        height: 120px;
+        display:none;
+        //border-right: 1px solid $black;
+        border-bottom: 1px solid $black;
+        position:absolute;
+        top: -90px;
+        left: 108%;
+        a.more-info {
+          position:absolute;
+          width:100px;
+          display:none;
+        }
+        div.graph-title {
+          display:none;
+          position: absolute;
+          font-size: 18px;
+          top: -47px;
+          left: 10px;
+          color: gray;
+        }
+        div.agreed-bar-wrapper {
+          float:left;
+          margin-right: 22px;
+          width: 31px;
+          height:100%;
+          position:relative;
+          &.last {
+            margin-right:0px;
+          }
+          div.agreed-bar {
+            background-color:$awesome-blue;
+            border:1px dotted $gray;
+            position:relative;
+          }
+          a.agreed-bar-label {
+            color:$black;
+            position:absolute;
+            top: 207%;
+            left: -110px;
+            width: 250px;
+            @include transform(rotate(90deg));
+            &:hover {
+              color:black;
+            }
+          }
+        }
+      }
+
+      div.answer-explanation {
+        width:100%;
+        div.top-of-question-bottom {
+          width:100%;
+          div.click-to-edit-explanation {
+            float:left;
+            font-size:18px;
+            color:$black;
+            span.click-to-edit-text {
+              float:left;
+            }
+            div.pencil-button {
+              float:left;
+              margin-left:5px;
+              margin-top: 2px;
+            }
+          }
+          div.question-item-privacy-wrapper {
+            float:right;
+            div.answer-privacy {
+              font-size:18px;
+              &:hover {
+                text-decoration:underline;
+                cursor:pointer;
+              }
+              span.privacy-icon {
+                width: 15px;
+                height: 15px;
+                float: left;
+                margin-right: 10px;
+                margin-top: 5px;
+              }
+            }
+          }
+        }
+        div.bottom-of-question-bottom {
+          width:100%;
+          textarea.explanation-inline {
+            width: 100%;
+            margin-top: 15px;
+            margin-bottom: 15px;
+            height: 200px;
+          }
+          div.edit-links {
+            float:right;
+          }
+          div.the-explanation {
+            margin-top:10px;
+            float:left;
+            font-size:16px;
+            color:$dark-gray;
+          }
+        }
+      }
     }
   }
-
 }
+
 
 /* feed item hearts */
 div.item-ranking

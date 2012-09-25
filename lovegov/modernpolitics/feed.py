@@ -23,6 +23,7 @@ def getFeedItems(viewer, alias, feed_ranking, feed_types, feed_start, num, like_
 
     # get all content in the running
     if home_hot_feed:
+        viewer.updateHotFeedIfOld(delta=HOT_FEED_GOES_REALLY_STALE_IN_THIS_MUCH_TIME)
         content = viewer.getHotFeedContent()
         if like_minded:
             like_content_ids = viewer.getLikeMindedGroup().getContent().values_list("id", flat=True)

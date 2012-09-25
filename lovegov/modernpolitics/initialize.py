@@ -1756,6 +1756,8 @@ def initializeStateGroups():
         print "+II+ joining " + u.get_name()
         u.joinLocationGroups()
 
+def getStateGroupFromState(state):
+    return StateGroup.objects.get(location__state=state)
 
 #-----------------------------------------------------------------------------------------------------------------------
 # optimizations for retrieving reps and senators

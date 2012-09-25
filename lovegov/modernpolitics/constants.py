@@ -22,6 +22,8 @@ LOCAL = settings.LOCAL
 
 ########################################## HOT FEED ####################################################################
 
+HOT_FEED_GOES_REALLY_STALE_IN_THIS_MUCH_TIME = datetime.timedelta(minutes=5)
+
 HOT_FEED_GOES_STALE_IN_THIS_MANY_SECONDS = 90
 
 SEEN_THRESHOLD = 3
@@ -474,6 +476,10 @@ PARTY_TYPE = (
     ('T', 'tea')
 )
 
+PARTY_DICT = {}
+for k,v in PARTY_TYPE:
+    PARTY_DICT[k] = v
+
 MOTION_CHOICES = (
     ('other', 'Other'),
     ('charity', 'Charity'),
@@ -723,7 +729,8 @@ ACTIONS = [
     'completeTask',
     'getBillSubjects',
     'addEmailList',
-    'clientSideAnalytics'
+    'clientSideAnalytics',
+    'getAgreementBarGraphHTML'
 ]
 
 UNAUTHENTICATED_ACTIONS = [

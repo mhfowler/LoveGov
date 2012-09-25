@@ -1224,9 +1224,10 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
             content = content[:end]
         return content
 
-    def updateHotFeedIfOld(self):
+    def updateHotFeedIfOld(self, delta=None):
+        if not delta:
+            delta = datetime.timedelta(seconds=HOT_FEED_GOES_STALE_IN_THIS_MANY_SECONDS)
         now = datetime.datetime.now()
-        delta = datetime.timedelta(seconds=HOT_FEED_GOES_STALE_IN_THIS_MANY_SECONDS)
         if self.last_updated_hot_feed + delta < now:
             self.updateHotFeed()
 
@@ -4235,6 +4236,12 @@ class Response(Content):
             self.explanation_comment.save()
         self.save()
 
+    def getQuotedExplanation(self):
+        if self.explanation:
+            return '"' + self.explanation + '"'
+        else:
+            return ''
+
     #-------------------------------------------------------------------------------------------------------------------
     # Autosaves by adding picture and topic from question.
     #-------------------------------------------------------------------------------------------------------------------
@@ -4492,6 +4499,17 @@ class Group(Content):
     participation_threshold = models.IntegerField(default=30)   # % of group which must upvote on motion to pass
     agreement_threshold = models.IntegerField(default=50)       # % of group which most agree with motion to pass
     motion_expiration = models.IntegerField(default=7)          # number of days before motion expires and vote close
+
+    #-------------------------------------------------------------------------------------------------------------------
+    # get groupview response to question
+    #-------------------------------------------------------------------------------------------------------------------
+    def getResponseToQuestion(self, question):
+        response = self.group_view.responses.filter(question=question)
+        if response:
+            response = response[0]
+            return response
+        else:
+            return None
 
     #-------------------------------------------------------------------------------------------------------------------
     # gets content posted to group, for feed
@@ -5151,6 +5169,10 @@ class Party(Group):
         user.parties.remove(self)
         user.save()
         super(Party, self).removeMember(user, privacy)
+
+    def getCasualName(self):
+        to_return = PARTY_DICT[self.party_type] + 's'
+        return to_return.capitalize()
 
 #=======================================================================================================================
 # User Group

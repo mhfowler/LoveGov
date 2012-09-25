@@ -1,0 +1,18 @@
+<div class="answer-privacy a-action first answer_privacy_wrapper tooltip-top"
+     data-r_id="{{ your_response.id }}" data-q_id="{{ q_id }}" title="click to change">
+
+    <div class="privacy_option" {% if private_response %} style="display:none;" {% endif %} data-privacy='PUB'>
+        <span class="privacy-icon public-icon"></span>
+        <span class="action-text">
+               Your answer is public
+        </span>
+    </div>
+
+    <div class="privacy_option" {% if not private_response %} style="display:none;" {% endif %} data-privacy='PRI'>
+        <span class="privacy-icon private-icon"></span>
+        <span class="privacy-text">
+                Your answer is private
+        </span>
+    </div>
+
+</div>

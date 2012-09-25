@@ -110,6 +110,9 @@ function bindOnNewElements() {
 
     // tool tips
     bindTooltips();
+
+    // initialize self initializing elements
+    initializeDomElements();
 }
 
 
@@ -1582,8 +1585,10 @@ function editExplanation(r_id, q_id, explanation, being_edited, not_editing_disp
         success: function(data)
         {
             var obj = $.parseJSON(data);
-            being_edited.html('"' + obj.explanation + '"');
+            being_edited.html(obj.explanation_html);
             not_editing_display.show();
+            var wrapper = not_editing_display.parents(".inline_editable");
+            smoothTransition(wrapper, function(){ wrapper.css({'min-height':'0px'})}, 400);
         }
     });
 }
@@ -1641,6 +1646,8 @@ bind( ".submit_inline_edit" , 'click' , null , function(event)
     var being_edited = wrapper.find('.being_edited');
     var not_editing_display = wrapper.find(".not_editing_display");
     var doing_editing_display = wrapper.find(".doing_editing_display");
+    var old_height = wrapper.height();
+    wrapper.css({'min-height':old_height});
     doing_editing_display.hide();
 
     /* which edit are we calling */
@@ -2865,10 +2872,14 @@ bind('.answer_choice' , 'click' , null , function(event)
     var stub = $(this).parents(".question_stub");
     if ($(this).hasClass("clicked")) {
         $(this).removeClass("clicked");
+        $(this).parents(".answer_wrapper").removeClass("clicked");
     }
     else {
+        stub.data('answer_changed', true);
         stub.find(".answer_choice").removeClass("clicked");
+        stub.find(".answer_wrapper").removeClass("clicked");
         $(this).addClass("clicked");
+        $(this).parents(".answer_wrapper").addClass("clicked");
     }
     saveAnswer(stub);
 });
@@ -2903,7 +2914,14 @@ function saveAnswer(stub) {
     var q_id = stub.data('q_id');
     var default_display = stub.data("default_display");
     var your_response = stub.data("your_response");
+    var answer_changed = stub.data('answer_changed');
     var privacy = stub.data("privacy");
+    if (privacy == 'False') {
+        privacy = 'PUB';
+    }
+    if (privacy == 'True') {
+        privacy = 'PRI';
+    }
     var importance = stub.find('.importance_bar').data('weight');
 
     var data = {'action':'saveAnswer', 'q_id':q_id,
@@ -2946,6 +2964,17 @@ function saveAnswer(stub) {
             showBubbles();
         }
     }
+
+    if (answer_changed && your_response == 0 ) {
+        var q_bottom = stub.find(".question_item_bottom_wrapper");
+        /*
+        smoothTransition(q_bottom, function(){
+            q_bottom.css({"height":'auto'});
+        }, 200);*/
+        q_bottom.css({"height":'auto',"overflow":"visible"});
+        //q_bottom.fadeIn();
+    }
+
     action({
         data: data,
         success: function(data) {
@@ -2959,12 +2988,32 @@ function saveAnswer(stub) {
                 var new_height = new_element.height();
                 new_element.css('height', old_height);
                 new_element.animate({"height":new_height}, {"duration":200, "complete":function(){new_element.css("height", "auto");}});
-                bindOnNewElements();
             }
             stub.find(".num_responses span.num").html(returned.num_responses);
             var saved_message = stub.find(".saved_message");
             saved_message.show();
             saved_message.fadeOut(5000);
+
+            if (answer_changed) {
+                stub.data("answer_changed", false);
+                var percent_agreed_bubbles = returned.lg_percent_agreed_bubbles;
+                //$(".percent_agreed_wrapper").fadeOut(1000);
+                $.each(percent_agreed_bubbles, function(i,e) {
+                    var this_a_id = e.a_id;
+                    var this_html = e.html;
+                    var this_wrapper = stub.find('.answer_wrapper[data-a_id="' + this_a_id + '"]').find('.percent_agreed_wrapper');
+                    this_wrapper.html(this_html);
+                    this_wrapper.fadeIn(200);
+                });
+                setTimeout(function() {
+                    //stub.find(".percent_agreed_wrapper").fadeOut(1000);
+                }, 3000);
+
+                var agreement_bargraph = stub.find(".agreement_bargraph_seed");
+                initializeDomElement(agreement_bargraph);
+            }
+
+            bindOnNewElements();
             updateMatches();
             updateStats();
 
@@ -2976,6 +3025,12 @@ function saveAnswer(stub) {
         }
     });
 }
+
+// hide percent agreed bubbles
+bind('.percent_agreed_wrapper' , 'click' , null , function(event)
+{
+    $(".percent_agreed_wrapper").hide();
+});
 
 // answer in feed
 bind('.poll_answer' , 'click' , null , function(event)
@@ -3181,6 +3236,57 @@ bind('div.stats-box.supporter-box', 'click', function(e) {
     var p_id = $('div.stats_object').data('p_id');
     getModal('supporting_user_modal', {'user': p_id});
 });
+
+
+function initializeDomElements() {
+    $(".initialize_self").each(function(i,e) {
+        $(this).find(".initialize_loading").show();
+        initializeDomElement($(this));
+    });
+}
+
+function initializeDomElement(element) {
+    var data = element.data();
+    element.removeClass("initialize_self");
+    action({
+        data: data,
+        success: function(data) {
+            var returned = $.parseJSON(data);
+            element.html(returned.html);
+            postInitialize(element);
+        }
+    });
+}
+
+function postInitialize(element) {
+
+    if (element.hasClass("agreement_bargraph_seed")) {
+        element.find(".agreement_bargraph").fadeIn();
+    }
+
+    bindOnNewElements();
+
+}
+
+
+/*
+ // position absolute relatively to parent
+ var stub = element.parents(".question_stub");
+ var min_stub_height = 450;
+ stub.animate({'min-height':String(min_stub_height) + "px"}, 200);
+ var stub_height = stub.height();
+ var bargraph = element.find('.agreement_bargraph');
+ var bargraph_height = bargraph.height();
+ var bottom_padding = 105;
+ var min_above = 200;
+ var bargraph_top = stub_height - bargraph_height - bottom_padding;
+ if (bargraph_top > min_above) {
+ bargraph.css("top", String(bargraph_top) + "px");
+ }
+ else {
+ bargraph.css("top", String(bargraph_top) + "px");
+ //bargraph.hide();
+ }*/
 
 /***********************************************************************************************************************
  *
@@ -4335,6 +4441,20 @@ bind(".change_privacy_mode", "click", function(e) {
                 $(".public_mode_button").hide();
                 $(".private_mode_button").show();
             }
+        }
+    });
+});
+
+bind(".privacy_option", "click", function(e) {
+    var sibling = $(this).siblings();
+    $(this).hide();
+    sibling.show();
+    var wrapper = $(this).parents(".answer_privacy_wrapper");
+    var r_id = wrapper.data("r_id");
+    var q_id = wrapper.data("q_id");
+    action({
+        data: {'action':'changeAnswerPrivacy', 'r_id':r_id, 'q_id':q_id},
+        success: function(data) {
         }
     });
 });
