@@ -22,6 +22,8 @@ LOCAL = settings.LOCAL
 
 ########################################## HOT FEED ####################################################################
 
+HOT_FEED_GOES_REALLY_STALE_IN_THIS_MUCH_TIME = datetime.timedelta(minutes=5)
+
 HOT_FEED_GOES_STALE_IN_THIS_MANY_SECONDS = 90
 
 SEEN_THRESHOLD = 3
