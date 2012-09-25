@@ -35,6 +35,16 @@ def updateGroupViews(debug=False, fast=True):
         print g.title
         updateGroupView(g, debug=debug)
 
+def updateFriendsGroupViews(debug=False):
+    count = 0
+    for u in UserProfile.objects.filter(ghost=False):
+        friends_group = u.i_follow
+        if friends_group:
+            updateGroupView(friends_group)
+            count += 1
+            if debug: print u.get_name()
+    print "updated: " + str(count)
+
 #-----------------------------------------------------------------------------------------------------------------------
 # Updates aggregate-response for congress.
 #-----------------------------------------------------------------------------------------------------------------------
