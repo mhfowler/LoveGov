@@ -3010,7 +3010,7 @@ function saveAnswer(stub) {
 // hide percent agreed bubbles
 bind('.percent_agreed_wrapper' , 'click' , null , function(event)
 {
-    $(this).hide();
+    $(".percent_agreed_wrapper").hide();
 });
 
 // answer in feed
