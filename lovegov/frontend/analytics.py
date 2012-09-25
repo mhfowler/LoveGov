@@ -556,27 +556,28 @@ def userSummary(user, request, days=None):
 
 
 
-def ajaxAnalytics():
+def ajaxAnalyticsToExcel():
     """
     Uses list of analytics settings
     """
     import datetime
     dt = datetime.datetime.now().strftime('%y%m%d%H%M%s')
-    filename = '/log/profiles/ajax'+dt+'.xls'
+    filename = '/log/profiles/ajax'+settings.CURRENT_TEST_RUN+'.xls'
     wb = xlwt.Workbook()
-    ws = wb.add_sheet('Profiles')
+    ws = wb.add_sheet('Profiles '+dt)
 
     col = 0
     for page, action in settings.BENCHMARK_AJAX:
         label = '('+page+', '+action+')'
         ws.write(0,col,label=label)
-        times = ClientAnalytics.objects.filter(page=page, action=action).order_by('load_time').values_list('load_time',flat=True)
+        times = ClientAnalytics.objects.filter(page=page, action=action, test_run=settings.CURRENT_TEST_RUN).order_by('load_time').values_list('load_time',flat=True)
         if len(times) > 0:
             from numpy import median, mean
             median, mean, minimum = median(times), mean(times), min(times)
             ws.write(1,col,label=median)
             ws.write(2,col,label=mean)
             ws.write(3,col,label=minimum)
+            print label+" mean: "+mean+"ms, median: "+median+"ms"
             for i, time in enumerate(times):
                 row = i + 5
                 ws.write(row,col,label=time)
@@ -584,4 +585,3 @@ def ajaxAnalytics():
         col += 1
     wb.save(filename)
     print filename
-
