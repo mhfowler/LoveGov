@@ -5,6 +5,8 @@
  ***********************************************************************************************************************/
 var rebind;
 var FACEBOOK_APP_ID = 184966154940334;
+
+
 function bindOnReload() {
 
     // things that get bound on items loaded by feeds and such (everything)
@@ -167,7 +169,6 @@ $(document).ready(function()
 
 });
 
-var auto_update_page;
 
 
 /***********************************************************************************************************************
@@ -196,8 +197,9 @@ function analyzeAction(dict) {
 }
 
 var current_page_nonce=0;
-function action(dict, in_background, analyze) {
+function action(dict, in_background) {
     var data = dict['data'];
+    var action = data['action'];
 
     var pre_page_nonce = current_page_nonce;
     var success_fun = function(data) {
@@ -229,9 +231,15 @@ function action(dict, in_background, analyze) {
     };
     var timeout = dict['timeout'];
     var complete_fun = dict['complete'];
-    data['url'] = window.location.href;
+    var url = window.location.href;
+    var path = window.location.pathname;
+    data['url'] = url;
 
-    var ajax_dict = {
+    if(checkAnalyzeAction(action)) {
+        success_fun = analyzeFunction(success_fun, path, action);
+    }
+
+    $.ajax({
         url: '/action/',
         type: 'POST',
         data: data,
@@ -239,20 +247,17 @@ function action(dict, in_background, analyze) {
         error: error_fun,
         complete: complete_fun,
         timeout: timeout
-    };
-    ajaxWrapper(ajax_dict, path, data['action'], analyze);
+    });
+
 }
 
-// wrapper which has if case for client side analytics
-function ajaxWrapper(ajax_dict, url, action, analyze) {
-
-    if (CLIENT_SIDE_ANALYTICS && analyze) {
-        var super_success = ajax_dict['success'];
-        ajax_dict['success'] = analyzeFunction(super_success, url, action);
-    }
-    $.ajax(ajax_dict);
+// Check whether the given action ought to have analytics turned on
+function checkAnalyzeAction(action) {
+    return CLIENT_SIDE_ANALYTICS && AJAX_ANALYTICS_ACTIONS.indexOf(action) >= 0;
 }
 
+
+// Attaches analytic functionality to the given function, fun
 function analyzeFunction(fun, url, action) {
     var analyze_nonce_id = startPageAnalytic(url, action);
     return function(data) {
@@ -312,44 +317,49 @@ bind(".do_ajax_link", 'click', null, function(event) {
 
 function selectHeaderLinks() {
     $(".header_link").removeClass("clicked");
-    var header_link = $('.header_link[href="' + path + '"]');
+    var header_link = $('.header_link[href="' + PATH + '"]');
     header_link.addClass("clicked");
 }
 
-function ajaxReload(theurl, loadimg)
+function ajaxReload(theurl)
 {
     current_page_nonce += 1;
     var pre_page_nonce = current_page_nonce;
     $('#search-dropdown').hide();
     $('.main_content').hide();
 
-    var ajax_dict = {
+    var success_fun = function(data)
+    {
+        if (pre_page_nonce == current_page_nonce) {
+            var returned = $.parseJSON(data);
+            History.pushState( {k:1}, "LoveGov: Beta", returned.url);
+            $('body').css("overflow","scroll");
+            $('.main_content').css("top","0px");
+            $(".main_content").html(returned.html);
+            $('.main_content').show();
+            bindOnReload();
+            rebind = returned.rebind;
+            PATH = returned.url;
+            bindOnReload();
+        }
+    };
+
+    if(checkAnalyzeAction(action)) {
+        success_fun = analyzeFunction(success_fun, theurl, action);
+    }
+
+    $.ajax({
         url: theurl,
         type: 'GET',
         data: {'url':window.location.href},
-        success: function(data)
-        {
-            if (pre_page_nonce == current_page_nonce) {
-                var returned = $.parseJSON(data);
-                History.pushState( {k:1}, "LoveGov: Beta", returned.url);
-                $('body').css("overflow","scroll");
-                $('.main_content').css("top","0px");
-                $(".main_content").html(returned.html);
-                $('.main_content').show();
-                bindOnReload();
-                rebind = returned.rebind;
-                path = returned.url;
-                bindOnReload();
-            }
-        },
+        success: success_fun,
         error: function(jqXHR, textStatus, errorThrown)
         {
             if (pre_page_nonce == current_page_nonce) {
                 $('body').html(jqXHR.responseText);
             }
         }
-    };
-    ajaxWrapper(ajax_dict, theurl, 'ajaxReload', true);
+    });
 }
 
 /***********************************************************************************************************************
@@ -382,7 +392,7 @@ function comparisonWebs() {
 
 /* does some javascript manipulation of home page */
 function initHomePage() {
-    var navlink = getNavLink(path);
+    var navlink = getNavLink(PATH);
     selectNavLink(navlink);
 }
 
@@ -390,7 +400,7 @@ function initHomePage() {
 function initFeedParameters() {
 
     var hot_pages = ['/home/', '/questions/'];
-    if (hot_pages.indexOf(path) != -1) {
+    if (hot_pages.indexOf(PATH) != -1) {
         feed_rank = 'H';
     }
     else {
@@ -485,31 +495,37 @@ function homeReload(theurl) {
     $('#search-dropdown').hide();
     $(".home_reloading").show();
 
+
     // if coming from a home page
     if ($(".home_sidebar").length!=0) {
-        var ajax_dict = {
+
+        var success_fun = function(data) {
+            if (pre_page_nonce == current_page_nonce) {
+                $(".home_reloading").hide();
+                var returned = $.parseJSON(data);
+                History.pushState( {k:1}, "LoveGov: Beta", returned.url);
+                PATH = returned.url;
+                $(".home_focus").html(returned.focus_html);
+                bindOnReload();
+            }
+        };
+
+        if(checkAnalyzeAction(action)) {
+            success_fun = analyzeFunction(success_fun, theurl, action);
+        }
+
+        $.ajax({
             url:theurl,
             type: 'GET',
             data: {'url':window.location.href, 'has_sidebar':1},
-            success: function(data)
-            {
-                if (pre_page_nonce == current_page_nonce) {
-                    $(".home_reloading").hide();
-                    var returned = $.parseJSON(data);
-                    History.pushState( {k:1}, "LoveGov: Beta", returned.url);
-                    path = returned.url;
-                    $(".home_focus").html(returned.focus_html);
-                    bindOnReload();
-                }
-            },
+            success: success_fun,
             error: function(jqXHR, textStatus, errorThrown)
             {
                 if (pre_page_nonce == current_page_nonce) {
                     $('body').html(jqXHR.responseText);
                 }
             }
-        };
-        ajaxWrapper(ajax_dict, theurl, 'homeReload', true);
+        });
     }
     else {
         ajaxReload(theurl, "crazy");
@@ -699,7 +715,7 @@ function navSectionShow(navbar_section, animation_time) {
         navbarlinks.animate({"height":autoHeight}, {"duration":animation_time, "complete":function(){navbarlinks.css("height", "auto");}});
         redtriangle.addClass("clicked");
         // check if currently selected link is in section being hidden
-        var current_link = getNavLink(path);
+        var current_link = getNavLink(PATH);
         if (current_link) {
             var current_wrapper = current_link.parents(".navbar_links_wrapper");
             if (current_wrapper.attr("class") == navbarlinks.attr("class")) {
@@ -1132,7 +1148,7 @@ function getFeed(container) {
     var data;
     if (feed == 'getFeed')
     {
-        data = {'action': 'getFeed', 'path': path, 'feed_rank':feed_rank, 'feed_start':feed_start, 'feed_types':feed_types_json, 'like_minded':like_minded};
+        data = {'action': 'getFeed', 'path': PATH, 'feed_rank':feed_rank, 'feed_start':feed_start, 'feed_types':feed_types_json, 'like_minded':like_minded};
     }
     else if (feed == 'getQuestions')
     {
@@ -1251,43 +1267,46 @@ function getFeed(container) {
             'introduced_set':introduced_json, 'sponsor_body_set':sponsor_body_json,
             'sponsor_name_set':sponsor_name_json, 'sponsor_party':sponsor_party_json};
     }
-    action({
-            data: data,
-            success: function(data) {
-                var returned = $.parseJSON(data);
 
-                var feed_nonce_post_request = container.data('feed_nonce');
-                if (feed_nonce_pre_request != feed_nonce_post_request) {
-                    return;
-                }
+    var action_dict = {
+        data: data,
+        success: function(data) {
+            var returned = $.parseJSON(data);
 
-                if (replace) {
-                    container.find(".feed_content").html(returned.html);
+            var feed_nonce_post_request = container.data('feed_nonce');
+            if (feed_nonce_pre_request != feed_nonce_post_request) {
+                return;
+            }
+
+            if (replace) {
+                container.find(".feed_content").html(returned.html);
+            }
+            else {
+                container.find(".feed_content").append(returned.html);
+            }
+            container.data( 'feed_start' , feed_start + returned.num_items );
+            clearTimeout(feed_timeout);
+            container.find(".feed_fetching").hide();
+            if (returned.num_items == 0) {
+                container.find(".load_more").hide();
+                var everything_loaded = container.find(".everything_loaded_wrapper");
+                everything_loaded.find(".everything_loaded_image_wrapper").html(returned.everything_loaded);
+                everything_loaded.show();
+                everything_loaded.find(".everything_loaded_header").hide();
+                if (feed_start==0) {
+                    everything_loaded.find(".nothing_there").show();
                 }
                 else {
-                    container.find(".feed_content").append(returned.html);
+                    everything_loaded.find(".reached_the_end").show();
                 }
-                container.data( 'feed_start' , feed_start + returned.num_items );
-                clearTimeout(feed_timeout);
-                container.find(".feed_fetching").hide();
-                if (returned.num_items == 0) {
-                    container.find(".load_more").hide();
-                    var everything_loaded = container.find(".everything_loaded_wrapper");
-                    everything_loaded.find(".everything_loaded_image_wrapper").html(returned.everything_loaded);
-                    everything_loaded.show();
-                    everything_loaded.find(".everything_loaded_header").hide();
-                    if (feed_start==0) {
-                        everything_loaded.find(".nothing_there").show();
-                    }
-                    else {
-                        everything_loaded.find(".reached_the_end").show();
-                    }
-                }
-                updateQuestionStubsDisplay();
-                bindOnNewElements();
-                //container.css("min-height", container.height());
-            }}
-    );
+            }
+            updateQuestionStubsDisplay();
+            bindOnNewElements();
+            //container.css("min-height", container.height());
+        }
+    };
+
+    analyzeAction(action_dict);
 }
 
 /* load (more) feed items */
@@ -1303,7 +1322,7 @@ bind(".load_more" , "click" , null , function(event) {
  *
  **********************************************************************************************************************/
 function bindAbout() {
-    var start_page = path;
+    var start_page = PATH;
     var section = $('.about_section[data-url="' + start_page + '"]');
     if (section.length != 0) {
         $(".about_section").hide();
@@ -1388,7 +1407,7 @@ bind('#feedback-submit', 'click', function(event)
     var text = $('#feedback-text').val();
     var name = $('#feedback-name').val();
     action({
-        data: {'action':'feedback','text':text,'path':path,'name':name},
+        data: {'action':'feedback','text':text,'path':PATH,'name':name},
         success: function(data)
         {
             $('#feedback-name').val("");
@@ -4538,6 +4557,12 @@ var CLIENT_SIDE_ANALYTICS = true;
 
 var ANALYTICS_DICT = {};
 var ANALYTICS_NONCE_ID = 0;
+
+var AJAX_ANALYTICS_ACTIONS = [
+    'getFeed',
+    'getGroups',
+]
+
 function startPageAnalytic(path, action) {
     var nonce_id = -1;
     if (CLIENT_SIDE_ANALYTICS) {

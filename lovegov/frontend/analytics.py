@@ -9,6 +9,7 @@
 
 from lovegov.modernpolitics.backend import *
 from operator import itemgetter
+import xlwt
 
 #-----------------------------------------------------------------------------------------------------------------------
 # def filter by time
@@ -552,3 +553,35 @@ def userSummary(user, request, days=None):
         return ajaxRender('analytics/user_summary.html', vals, request)
     else:
         return ""
+
+
+
+def ajaxAnalytics():
+    """
+    Uses list of analytics settings
+    """
+    import datetime
+    dt = datetime.datetime.now().strftime('%y%m%d%H%M%s')
+    filename = '/log/profiles/ajax'+dt+'.xls'
+    wb = xlwt.Workbook()
+    ws = wb.add_sheet('Profiles')
+
+    col = 0
+    for page, action in settings.BENCHMARK_AJAX:
+        label = '('+page+', '+action+')'
+        ws.write(0,col,label=label)
+        times = ClientAnalytics.objects.filter(page=page, action=action).order_by('load_time').values_list('load_time',flat=True)
+        if len(times) > 0:
+            from numpy import median, mean
+            median, mean, minimum = median(times), mean(times), min(times)
+            ws.write(1,col,label=median)
+            ws.write(2,col,label=mean)
+            ws.write(3,col,label=minimum)
+            for i, time in enumerate(times):
+                row = i + 5
+                ws.write(row,col,label=time)
+
+        col += 1
+    wb.save(filename)
+    print filename
+
