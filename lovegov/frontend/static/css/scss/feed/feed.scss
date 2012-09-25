@@ -200,7 +200,7 @@ div.feed-main
   {
     width: 100%;
     //margin-top:15px;
-    //margin-bottom: 15px;
+    margin-bottom: 15px;
 
     td.feed-left-buttons
     {
@@ -477,6 +477,9 @@ div.feed-item-wrapper {
   //padding-top:20px;
   //padding-left:50px;
   //border-top:1px solid $light-gray;
+
+  border-top:1px solid $light-gray;
+  //border-bottom:1px solid $light-gray;
 
   div.above-rule-line {
     width:700px;
