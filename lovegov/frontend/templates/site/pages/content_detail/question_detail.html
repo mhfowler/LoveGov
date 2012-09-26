@@ -23,6 +23,7 @@
         {% endif %}
     {% endcomment %}
 
+    {% comment %}
     {% if content.official %}
         <div class="agreement_people_list_seed
         {% if content.my_response %} initialize_self {% endif %}
@@ -56,6 +57,7 @@
          data-q_id="{{ question.id }}">
         <div class="updating-object initialize_loading"></div>
     </div>
+    {% endcomment %}
 
     <script> rebind="question_detail"; </script>
 
