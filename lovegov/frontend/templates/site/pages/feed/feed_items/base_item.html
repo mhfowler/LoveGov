@@ -94,17 +94,13 @@
 
     </div>
 
-    <div class="right-part">
-        {% block right_part %}
-
-            {% if content.num_comments %}
-                {% with top_comment=content.getTopComment %}
-                    {% include 'site/pages/feed/feed_items/top_comment.html' %}
-                {% endwith %}
-            {% endif %}
-
-        {% endblock %}
-    </div>
+        <div class="right-part">
+            {% block right_part %}
+                {% if content.num_comments %}
+                        {% include 'site/pages/feed/feed_items/top_comment.html' %}
+                {% endif %}
+            {% endblock %}
+        </div>
 
     <div style="clear:both;"></div>
 

@@ -128,3 +128,13 @@
 
 
 {% endblock %}
+
+{% block right_part %}
+    {% if not question_detail %}
+        {% if content.num_comments %}
+            {% include 'site/pages/feed/feed_items/top_comment.html' %}
+        {% endif %}
+    {% else %}
+
+    {% endif %}
+{% endblock %}
