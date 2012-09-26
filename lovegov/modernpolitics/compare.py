@@ -30,10 +30,25 @@ def updateGroupViews(debug=False, fast=True):
 
     scheduled_logger.debug("UPDATE GROUP VIEWS")
 
+    updateFriendsGroupViews(debug=debug)
+
+    count = 0
     groups = Group.objects.filter(hidden=False).exclude(group_type="C").exclude(alias="congress").exclude(alias="lovegov_group")
     for g in groups:
-        print g.title
+        print enc(g.title)
         updateGroupView(g, debug=debug)
+        count += 1
+    print "updated: " + str(count)
+
+def updateFriendsGroupViews(debug=False):
+    count = 0
+    for u in UserProfile.objects.filter(ghost=False):
+        friends_group = u.i_follow
+        if friends_group:
+            updateGroupView(friends_group)
+            count += 1
+            print enc(u.get_name()) + " Friend Group"
+    print "updated: " + str(count)
 
 #-----------------------------------------------------------------------------------------------------------------------
 # Updates aggregate-response for congress.

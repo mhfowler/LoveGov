@@ -189,18 +189,20 @@ div.feed-main
   }
 
 
-  div.feed-content.feed-boxed {
+  div.feed-content.feed-rules {
     //border-left:1px solid $light-gray;
     //border-right:1px solid $light-gray;
-    //border-bottom:1px solid $light-gray;
-    margin-top:30px;
+
+    div.feed-item-wrapper {
+      border-bottom:1px solid $light-gray;
+    }
   }
 
   table.feed-top-bar
   {
     width: 100%;
     //margin-top:15px;
-    margin-bottom: 15px;
+    //margin-bottom: 15px;
 
     td.feed-left-buttons
     {
@@ -478,7 +480,6 @@ div.feed-item-wrapper {
   //padding-left:50px;
   //border-top:1px solid $light-gray;
 
-  border-top:1px solid $light-gray;
   //border-bottom:1px solid $light-gray;
 
   div.above-rule-line {

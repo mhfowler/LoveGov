@@ -1306,18 +1306,25 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
 
     def updateStale(self):
         for x in self.seen_content.all():
-            if x.seen > SEEN_THRESHOLD:
-                content = x.content
+            content = x.content
+            if x.seen > SEEN_THRESHOLD and content.type != "N":
                 #print content.get_name()
                 self.makeStale(content)
 
     def recalculateStaleContent(self):
         self.stale_content.clear()
+
         self.updateStale()
+
         for r in self.getView().responses.all():
             question = r.question
-            #print question.get_name()
+
             self.makeStale(question)
+
+        signed = Signed.objects.filter(user=self)
+        for x in signed:
+            self.makeStale(x.content)
+
 
     def getUnstaleContent(self):
         stale_ids = self.stale_content.values_list("id", flat=True)
@@ -5021,7 +5028,7 @@ class StateGroup(Group):
     def makeTitle(self, state=None):
         if not state:
             state = self.location.state
-        state_text = STATES_DICT[state].capitalize()
+        state_text = STATES_DICT[state]
         return state_text
 
 

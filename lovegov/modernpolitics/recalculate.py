@@ -14,22 +14,17 @@ def recalculateTopPolls():
 
 ### recalculate anon user stuff ###
 def recalculateAnonUserStuff():
-    from lovegov.modernpolitics.actions import followGroupAction
     anon = getAnonUser()
 
-    for g in anon.getRealGroups():
-        g.removeMember(anon)
+    removeAllGroups(anon)
 
-    for g in anon.getSubscriptions():
-        followGroupAction(anon, g, False, "PRI")
-
-    for p in Party.objects.all():
-        p.joinMember(anon)
-
-    anon.autoSubscribe()
-
-    e = Election.lg.get_or_none(alias="massachusetts_us_senate")
-    if e: followGroupAction(anon, e, True, "PRI")
+#    for p in Party.objects.all():
+#        p.joinMember(anon)
+#
+#    anon.autoSubscribe()
+#
+#    e = Election.lg.get_or_none(alias="massachusetts_us_senate")
+#    if e: followGroupAction(anon, e, True, "PRI")
 
     anon.location = None
     anon.bio = "If you're just visiting, " \
@@ -45,6 +40,13 @@ def recalculateAnonUserStuff():
 
     anon.save()
 
+
+def removeAllGroups(user):
+    from lovegov.modernpolitics.actions import followGroupAction
+    for g in user.getRealGroups():
+        g.removeMember(user)
+    for g in user.getSubscriptions():
+        followGroupAction(user, g, False, "PRI")
 
 
 ### recalculate user aliases ###
@@ -563,3 +565,5 @@ def updatePoliticianImages():
     im_ref = os.path.join(PROJECT_PATH, 'frontend/static/images/presidentialCandidates/cicilline.jpeg')
     im = open(im_ref)
     cicilline.setProfileImage(im)
+
+
