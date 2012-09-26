@@ -45,7 +45,7 @@ div.invite-friends-sidebar {
   div.invite-header {
     margin-top:0px;
     margin-bottom: 8px;
-    @include fontSize(20px);
+    font-size: 20px;
   }
   div.fb-invite-card {
     display:block;
