@@ -37,7 +37,7 @@ div.election-card {
           color:$red;
           text-align:center;
           width:100%;
-          @include fontSize(72px);
+          font-size: 72px;
           line-height:48px;
           font-weight:bold;
           padding-top: 2px;
@@ -50,7 +50,7 @@ div.election-card {
           color:$red;
           text-align:center;
           width:100%;
-          @include fontSize(28px);
+          font-size: 28px;
           font-weight:bold;
           line-height:38px;
         }
@@ -86,7 +86,7 @@ div.election-card {
   div.card-bottom {
     a.politician-name {
       float:left;
-      @include fontSize(20px);
+      font-size: 20px;
       color:$black;
       &:hover {
         color:black;
@@ -107,7 +107,7 @@ div.election-info {
     div.election-date {
       width:250px;
       color:gray;
-      @include fontSize(32px);
+      font-size: 32px;
       display:block;
     }
     div.election-created-by {
@@ -164,7 +164,7 @@ div.election-feed-item-wrapper {
 div.invite-to-election-wrapper {
   padding:40px;
   div.invite-to-election-header {
-    @include fontSize(28px);
+    font-size: 28px;
     margin-bottom:25px;
     width:400px;
   }

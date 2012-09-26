@@ -18,7 +18,7 @@ div.profile-page {
 
     span.name {
       float:left;
-      @include fontSize(22px);
+      font-size: 22px;
       @include inline-block;
       color: $black;
       &:hover {
@@ -46,7 +46,7 @@ div.profile-page {
       float:left;
       margin-left:10px;
       margin-top:6px;
-      @include fontSize(16px);
+      font-size: 16px;
       color:$gray;
     }
 
@@ -62,7 +62,7 @@ div.profile-page {
       margin-top:6px;
       margin-right: 15px;
       color:$red;
-      @include fontSize(16px);
+      font-size: 16px;
     }
 
     a.edit-profile-link {
@@ -99,7 +99,7 @@ div.profile-page {
           text-align:center;
           cursor: pointer;
           text-transform:uppercase;
-          @include fontSize(16px);
+          font-size: 16px;
           padding:7px;
         }
 
@@ -157,11 +157,11 @@ div.profile-page {
             text-align:center;
             div.num {
               margin-top:14px;
-              @include fontSize(36px);
+              font-size: 36px;
               line-height:20px;
             }
             div.label {
-              @include fontSize(12px);
+              font-size: 12px;
               margin-top:5px;
             }
             &:hover {
@@ -204,7 +204,7 @@ div.profile-page {
           padding-left:10px;
           background-color:$light-gray;
           text-align:left;
-          @include fontSize(24px);
+          font-size: 24px;
           &:hover {
             background-color:$red;
             color:white;
@@ -218,7 +218,7 @@ div.profile-page {
     }
 
     div.profile-header {
-      @include fontSize(18px);
+      font-size: 18px;
       font-weight:bold;
     }
 
@@ -276,7 +276,7 @@ div.profile-page {
             margin-bottom:15px;
             div.self-politician {
               position:relative;
-              @include fontSize(18px);
+              font-size: 18px;
               color:$green;
               max-height: 115px;
               a.link-to-election {
@@ -290,7 +290,7 @@ div.profile-page {
               float:left;
               div.office-title {
                 width:100%;
-                @include fontSize(16px);
+                font-size: 16px;
                 color:$text-blue;
               }
               div.office-description {
@@ -445,7 +445,7 @@ div.profile-page {
           float: left;
           width: 620px;
           div.ghost-header {
-            @include fontSize(24px);
+            font-size: 24px;
           }
           .claim-button {
             float:right;
@@ -460,7 +460,7 @@ div.profile-page {
           }
           div.are-you-a-politician {
             margin-top: 43px;
-            @include fontSize(14px);
+            font-size: 14px;
             position:relative;
             input.claim-profile {
               width:250px;
@@ -476,7 +476,7 @@ div.profile-page {
               margin-top:26px;
             }
             p.claimed-message {
-              @include fontSize(12px);
+              font-size: 12px;
               position: absolute;
               left: 105px;
               top: 68px;
@@ -488,7 +488,7 @@ div.profile-page {
           div.are-you-concerned {
             margin-top: 100px;
             position:relative;
-            @include fontSize(14px);
+            font-size: 14px;
             p.asked-message {
               position:relative;
               top:20px;
@@ -524,7 +524,7 @@ div.profile-page {
             top:-41px;
             background-color:$light-gray;
             padding:6px 14px;
-            @include fontSize(20px);
+            font-size: 20px;
             color:$black;
             border: 1px solid $gray;
             border-bottom: none;
@@ -583,7 +583,7 @@ div.profile-questions {
   }
 
   div.has-answered-text {
-    @include fontSize(16px);
+    font-size: 16px;
     float:left;
     width:200px;
     margin-top:35px;
@@ -615,13 +615,13 @@ div.message-politician-wrapper {
   div.message-header {
     width:100%;
     text-align:center;
-    @include fontSize(24px);
+    font-size: 24px;
   }
   div.message-wrapper {
     margin-top:20px;
     padding:20px;
     border:1px solid $red;
-    @include fontSize(14px);
+    font-size: 14px;
     textarea.message-textarea {
       width: 100%;
       height: 200px;
@@ -631,7 +631,7 @@ div.message-politician-wrapper {
   a.send-message {
     float:right;
     margin-top:15px;
-    @include fontSize(20px);
+    font-size: 20px;
     color:white;
     padding:8px;
     background-color:$red;
@@ -645,7 +645,7 @@ div.message-politician-wrapper {
     display:none;
     top:50px;
     left:50px;
-    @include fontSize(24px);
+    font-size: 24px;
     top: 170px;
     left: 85px;
     a.close-button {
@@ -670,7 +670,7 @@ div.message-politician-wrapper {
     }
   }
   div.why-phonenumber {
-    @include fontSize(12px);
+    font-size: 12px;
     width:400px;
     color:$dark-gray;
   }

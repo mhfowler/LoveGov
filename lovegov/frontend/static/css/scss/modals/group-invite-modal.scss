@@ -27,19 +27,19 @@ div.invite-modal-container
   div.invite-submit-message
   {
     color: $dark-gray;
-    @include fontSize(14px);
+    font-size: 14px;
     display: none;
   }
 
   div.invite-explanation
   {
     color: $dark-gray;
-    @include fontSize(14px);
+    font-size: 14px;
   }
 
   a.invite-button-modal
   {
-    @include fontSize(18px);
+    font-size: 18px;
     @include rounded(10px);
     padding: 10px 15px 10px 15px;
   }

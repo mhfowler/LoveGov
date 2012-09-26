@@ -41,7 +41,7 @@ div.new-register-form {
       width:300px;
       float:left;
       @include titleFont();
-      @include fontSize(20px);
+      font-size: 20px;
     }
     input.r-input.dob-input {
       width:35px;
@@ -52,7 +52,7 @@ div.new-register-form {
     span.dob-sep {
       float:left;
       margin: 0px 5px;
-      @include fontSize(24px);
+      font-size: 24px;
     }
     span.r-label.dob-label {
       margin-left:10px;
@@ -185,7 +185,7 @@ div.no-login-modal
   div#create-account-div {
     h3.new-to-lovegov {
       color:$dark-gray;
-      @include fontSize(28px);
+      font-size: 28px;
       text-align:center;
     }
     a.create-account-button {
@@ -197,7 +197,7 @@ div.no-login-modal
     div.try-it {
       display:block;
       text-align:center;
-      @include fontSize(18px);
+      font-size: 18px;
       margin-top:15px;
     }
     p.mission {
@@ -226,7 +226,7 @@ div.no-login-modal
     p {
       margin-left:10px;
       margin-top:40px;
-      @include fontSize(18px);
+      font-size: 18px;
       @include titleFont();
       text-transform: uppercase;
     }
@@ -267,7 +267,7 @@ div.no-login-modal
         margin-top:8px;
         text-transform: none;
         @include titleFont();
-        @include fontSize(14px);
+        font-size: 14px;
       }
     }
   }
@@ -350,7 +350,7 @@ div.no-login-modal
           margin:0px;
           margin-top:5px;
           @include titleFont();
-          @include fontSize(20px);
+          font-size: 20px;
           width:100%;
         }
 
@@ -362,7 +362,7 @@ div.no-login-modal
           color:#adadad;
           padding-left:5px;
           @include titleFont();
-          @include fontSize(18px);
+          font-size: 18px;
         }
         input.password-input {
           margin-top:8px;
@@ -381,7 +381,7 @@ div.no-login-modal
           }
 
           span.login-error {
-            @include fontSize(14px);
+            font-size: 14px;
             float:left;
             width:110px;
             text-align:center;
@@ -667,7 +667,7 @@ div.get-started-left
 
 p.recovery-error
 {
-  @include fontSize(17px);
+  font-size: 17px;
   @include setMargin($margin-top:5px);
   float:left;
   width:260px;
@@ -772,7 +772,7 @@ span.add-to-mailing-list-msg {
 
   h3
   {
-    @include fontSize(24px);
+    font-size: 24px;
   }
 }
 
@@ -872,14 +872,14 @@ div.screenshots-div {
   h4.explanation-header {
     margin-top:27px;
     margin-left:10px;
-    @include fontSize(26px);
+    font-size: 26px;
   }
 
   p.explanation {
     padding: 0 10px 0 10px;
     margin-top:15px;
     @include titleFont();
-    @include fontSize(18px);
+    font-size: 18px;
   }
 
 }

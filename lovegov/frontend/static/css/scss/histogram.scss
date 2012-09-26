@@ -24,7 +24,7 @@
 
       div.count {
         @include big();
-        @include fontSize(40px);
+        font-size: 40px;
         position:absolute;
         top: 40px;
         left: 55px;
@@ -118,7 +118,7 @@
       p.histogram-footer-text {
         float:left;
         @include really-big();
-        @include fontSize(30px);
+        font-size: 30px;
         color:white;
         margin: 7px 0 0 20px;
         a {
@@ -141,7 +141,7 @@
       p.histogram-topic {
         float:right;
         @include really-big();
-        @include fontSize(30px);
+        font-size: 30px;
         color:white;
         margin: 15px 20px 0 0px;
       }

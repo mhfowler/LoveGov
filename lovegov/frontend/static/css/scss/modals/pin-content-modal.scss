@@ -12,7 +12,7 @@ div.pin-content-modal {
   height:200px;
 
   div.pin-title {
-    @include fontSize(24px);
+    font-size: 24px;
   }
 
   div.pin-explanation {

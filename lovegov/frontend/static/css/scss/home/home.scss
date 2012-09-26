@@ -32,7 +32,7 @@ div.like-minded-header-dialogue {
     width:100%;
     span.like-minded-x {
       float:right;
-      @include fontSize(20px);
+      font-size: 20px;
       &:hover {
         cursor:pointer;
         color:$red;
@@ -156,7 +156,7 @@ div.home-header-top {
   margin-bottom: 7px;
   div.home-section-title {
     text-transform:uppercase;
-    @include fontSize(20px);
+    font-size: 20px;
     float:left;
   }
 
@@ -281,7 +281,7 @@ div.left-navbar {
     color:$black;
     position:absolute;
     @include titleFont();
-    @include fontSize(14px);
+    font-size: 14px;
     display:none;
   }
 
@@ -343,7 +343,7 @@ div.left-navbar {
     margin: 8px 0px 5px 0px;
     div.divider-title {
       margin-left: 3px;
-      @include fontSize(10px);
+      font-size: 10px;
     }
   }
   div.simple_navsection {
@@ -378,7 +378,7 @@ div.navbar-title {
   @extend .gray-hover;
   @include inline-block;
   @include grayText();
-  @include fontSize(24px);
+  font-size: 24px;
   padding: 5px;
 }
 a.section_title.clicked {
@@ -401,7 +401,7 @@ a.section_title.clicked {
   }
   div.navbar-title {
     @include inline-block;
-    @include fontSize(15px);
+    font-size: 15px;
     padding: 5px;
     //width:150px;
     color:$black;
@@ -455,7 +455,7 @@ a.section_title.clicked {
 
     a.create-link {
       float:right;
-      @include fontSize(12px);
+      font-size: 12px;
       margin-right:50px;
       padding-right:5px;
     }
@@ -506,7 +506,7 @@ div.dismissible-header {
     position: absolute;
     left: 96%;
     top:0px;
-    @include fontSize(32px);
+    font-size: 32px;
     padding:5px;
     &:hover {
       background-color:$black;

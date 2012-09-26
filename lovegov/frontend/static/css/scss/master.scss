@@ -81,7 +81,7 @@ div.main-top {
   margin-top:5px;
   div.header-title {
     float:left;
-    @include fontSize(22px);
+    font-size: 22px;
   }
   div.red-line {
     float:left;
@@ -218,7 +218,7 @@ a.invert_link:hover
 
 a.big_link, a.big_link:visited, a.big_link:active, a.big_link:link, a.big_link:hover
 {
-  @include fontSize(20px);
+  font-size: 20px;
 }
 
 

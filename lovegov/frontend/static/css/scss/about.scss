@@ -89,7 +89,7 @@ div#about-content
     display:block;
     width: 1400px;
     text-align: center;
-    @include fontSize(40px);
+    font-size: 30px;
     padding-top: 80px;
     position: relative;
     left: -196px;
@@ -209,15 +209,15 @@ div#contact-div {
     width:700px;
     margin: 20px 0 0 0;
     h4 {
-      @include fontSize(30px);
+      font-size: 30px;
     }
     p.press-text {
       margin: 10px 0 0 0;
-      @include fontSize(26px);
+      font-size: 30px;
     }
   }
   h4.find-us {
-    @include fontSize(30px);
+    font-size: 30px;
     margin:40px 0 20px 0;
   }
 }

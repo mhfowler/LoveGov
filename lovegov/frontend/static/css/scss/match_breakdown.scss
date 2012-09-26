@@ -38,7 +38,7 @@ div.match_breakdown {
         top:0px;
         width:100%;
         color:$black;
-        @include fontSize(12px);
+        font-size: 12px;
         display:none;
       }
     }
@@ -79,7 +79,7 @@ div.match_breakdown {
           width:100%;
           text-align:right;
           color:$black;
-          @include fontSize(12px);
+          font-size: 12px;
           positition:relative;
           left:8px;
           display:none;

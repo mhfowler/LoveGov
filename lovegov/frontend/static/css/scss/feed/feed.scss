@@ -429,7 +429,7 @@ div.feed-main
       width:100%;
       margin-top:50px;
       div.everything-loaded-header {
-        @include fontSize(20px);
+        font-size: 20px;
         margin-bottom:15px;
         display:none;
       }
@@ -553,7 +553,7 @@ div.feed-item-wrapper {
 
 
       div.commenter {
-        @include fontSize(14px);
+        font-size: 14px;
         font-weight:bold;
         a.commenter-name {
           color:$black;
@@ -644,7 +644,7 @@ div.group-posted-to {
   display:block;
   a.posted-to-link {
     color:$dark-green;
-    @include fontSize(12px);
+    font-size: 12px;
     &:hover {
       color:$green;
     }
@@ -666,7 +666,7 @@ a.feed-link-wrapper {
   position:relative;
   top:1px;
   span.content-title {
-    @include fontSize(24px);
+    font-size: 24px;
     color:$text-blue;
     &:hover {
       text-decoration:none;
@@ -808,7 +808,7 @@ div.feed-item-wrapper {
         width:450px;
         div.current-question {
           margin-top:2px;
-          @include fontSize(18px);
+          font-size: 18px;
           a {
             color:$dark-gray;
             &:hover {
@@ -1118,7 +1118,7 @@ div.item-ranking
     &.clicked{ @include staticImage('/images/icons/hearts/plusheart-red.png'); }
   }
   div.heart-number {
-    @include fontSize(20px);
+    font-size: 20px;
     font-weight:bold;
   }
   div.heart-minus

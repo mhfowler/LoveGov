@@ -24,7 +24,7 @@ div.browse-all-wrapper {
       position:absolute;
       top: -5px;
       left: -27px;
-      @include fontSize(22px);
+      font-size: 22px;
       display:none;
     }
   }

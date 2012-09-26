@@ -29,13 +29,13 @@ div.groups-header {
     @include clearfix;
     div.group-title {
       @include titleFont();
-      @include fontSize(16px);
+      font-size: 16px;
       font-weight:bold;
       float:left;
       padding-top:5px;
     }
     div.group-plus {
-      @include fontSize(16px);
+      font-size: 16px;
       margin: 5px 15px;
       float:left;
     }
@@ -44,7 +44,7 @@ div.groups-header {
       float:left;
       color:$black;
       padding:5px;
-      @include fontSize(16px);
+      font-size: 16px;
       margin-right:20px;
       background-color:$gray;
       &:hover {
@@ -94,7 +94,7 @@ div.like-minded-header {
       margin-top:15px;
       float:left;
       width:500px;
-      @include fontSize(18px);
+      font-size: 18px;
       div.hi-top {
         margin-bottom:8px;
       }
@@ -104,7 +104,7 @@ div.like-minded-header {
       margin-right: 153px;
       margin-top: 40px;
       div.counter-num {
-        @include fontSize(64px);
+        font-size: 64px;
         float:left;
         padding-right:15px;
       }
@@ -179,7 +179,7 @@ div.like-minded-header {
           display:block;
           margin-top:10px;
           div.click-for-explanation {
-            @include fontSize(18px);
+            font-size: 18px;
           }
           div.click-explanation {
             display:none;
@@ -195,7 +195,7 @@ div.like-minded-header {
         width: 800px;
         margin-top:7px;
         div.like-minded-description-header {
-          @include fontSize(16px);
+          font-size: 16px;
         }
         div.like-minded-description-text {
           margin-top:3px;
@@ -214,7 +214,7 @@ div.like-minded-header {
         float:left;
         div.members-header {
           float:left;
-          @include fontSize(20px);
+          font-size: 20px;
         }
         a.view-all-friends {
           float:left;

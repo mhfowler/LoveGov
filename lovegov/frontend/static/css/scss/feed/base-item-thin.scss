@@ -46,7 +46,7 @@ div.feed-item-thin
         div.feed-thin-avatar-timestamp
         {
           color: $dark-gray;
-          @include fontSize(11px);
+          font-size: 11px;
           font-style: italic;
         }
       }
@@ -122,7 +122,7 @@ div.feed-item-thin
     div.heart-number
     {
       @include inline-block();
-      @include fontSize(16px);
+      font-size: 16px;
       font-weight: bold;
       padding-top: 6px;
     }
@@ -151,7 +151,7 @@ div.feed-item-thin
     {
       color: $red;
       font-style: italic;
-      @include fontSize(12px);
+      font-size: 12px;
     }
   }
 }
