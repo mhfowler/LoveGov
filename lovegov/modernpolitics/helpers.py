@@ -400,12 +400,7 @@ def getControllingUser(request=None, control_id=None):
 #-----------------------------------------------------------------------------------------------------------------------
 def getPrivacy(request):
     """"Returns value of privacy cookie, or in the case of no cookie returns 'public'."""
-    try:
-        to_return = request.COOKIES['privacy']
-    except KeyError:
-        logger.error("no privacy cookie")
-        to_return = 'PUB'
-    return to_return
+    return request.COOKIES.get('privacy') or 'PUB'
 
 #-----------------------------------------------------------------------------------------------------------------------
 # Checks if an email is valid

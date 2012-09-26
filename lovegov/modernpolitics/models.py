@@ -617,7 +617,8 @@ class Content(ActiveModel, Privacy, LocationLevel):
         action = CreatedAction(user=creator,content=self,privacy=privacy)
         action.autoSave()
         self.like(user=creator, privacy="PRI")
-        logger.debug("created " + self.title)
+        if self.title:
+            logger.debug("created " + self.title)
 
     #-------------------------------------------------------------------------------------------------------------------
     # Saves a creation relationship for this content, with inputted creator and privacy.
