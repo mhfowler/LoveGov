@@ -211,8 +211,6 @@ def checkBrowserCompatible(request):
                 version = float(browser.get('version'))
                 if version < 9.0:
                     to_return = False
-    else:
-        to_return = False
 
     if not to_return:
         browser_logger.debug('useragent: ' + str(user_agent))
