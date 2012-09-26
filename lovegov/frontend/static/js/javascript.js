@@ -3045,7 +3045,9 @@ function saveAnswer(stub) {
                 }, 3000);
 
                 var agreement_bargraph = stub.find(".agreement_bargraph_seed");
-                initializeDomElement(agreement_bargraph);
+                if (agreement_bargraph.length!=0) {
+                    initializeDomElement(agreement_bargraph);
+                }
             }
 
             bindOnNewElements();
