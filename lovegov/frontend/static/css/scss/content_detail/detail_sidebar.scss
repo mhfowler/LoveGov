@@ -16,17 +16,16 @@ div.content-detail-sidebar {
       padding:8px;
       background-color:$light-gray;
       color:white;
-      font-size: 16px;
+      @include fontSize(16px);
       margin-bottom:10px;
       @include border-radius(8px);
       text-align:center;
     }
     div.gray-triangle {
-      $triangle-size:23px;
-      @include triangle('left', $light-gray, $triangle-size + -1px);
+      $triangle-size:20px;
+      @include triangle('left', $light-gray, $triangle-size);
       position: absolute;
       left:-15px;
-      top:-1px;
     }
     &:hover {
       text-decoration:none;
@@ -36,21 +35,6 @@ div.content-detail-sidebar {
       div.gray-triangle {
         border-right-color:$gray;
       }
-    }
-
-  }
-
-
-  div.sidebar-header {
-    margin-top:5px;
-    margin-bottom:5px;
-    font-size: 22px;
-  }
-  div.liked-wrapper {
-    padding:10px 10px 10px 0;
-    a.liked-avatar {
-      float:left;
-      margin-right:15px;
     }
   }
 }
