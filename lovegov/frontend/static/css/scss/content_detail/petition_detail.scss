@@ -1,0 +1,101 @@
+@charset "UTF-8";
+@import 'master-variables';
+@import 'master-mixins';
+@import "compass";
+
+
+/* petition detail */
+div.sign-area {
+  margin-bottom: 5px;
+  div.signed {
+    margin-top:7px;
+    margin-left:10px;
+    font-style:italic;
+  }
+  a.action-button {
+    padding:5px;
+    margin-bottom:15px;
+    width:100%;
+    text-align:center;
+    background-color:$dark-gray;
+    float:left;
+    color:$white;
+    font-size: 20px;
+    &:hover {
+      background-color:$black;
+    }
+  }
+}
+
+div.signers-sidebar {
+  width:100%;
+  margin-top:35px;
+  div.signers-header {
+    margin-top:25px;
+  }
+  div.signer-wrapper {
+    width:100%;
+    margin-top:10px;
+    span.signer-image {
+      float:left;
+    }
+    span.signer-name {
+      float:left;
+      margin-top: 18px;
+      margin-left: 13px;
+      font-size: 12px;
+    }
+  }
+  a.see-all-signers {
+    float:left;
+    width:100%;
+    margin-top:10px;
+    color:$dark-gray;
+    &:hover {
+      color:$gray;
+    }
+  }
+}
+
+/* content main */
+div.petition-wrapper {
+
+  div.text-wrapper {
+    margin-top:15px;
+  }
+
+  div.header-wrapper {
+    width:100%;
+    display:block;
+    div.content-info-header {
+      float:left;
+    }
+    div.pencil-button {
+      float:left;
+      margin-left:8px;
+    }
+  }
+
+  textarea.edit-petition {
+    width:100%;
+    height:200px;
+    padding:5px;
+  }
+  a.edit-link {
+    float:right;
+    margin-left:6px;
+    margin-top:5px;
+  }
+}
+
+div.petition-signers-modal {
+  @include modal;
+  top: 50%;
+  left: 50%;
+  margin-left: -550px;
+  margin-top: -300px;
+  min-height: 300px;
+  position: fixed;
+  width: 60%;
+  padding: 50px;
+}

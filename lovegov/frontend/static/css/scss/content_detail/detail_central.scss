@@ -1,0 +1,195 @@
+@charset "UTF-8";
+@import 'master-variables';
+@import 'master-mixins';
+@import "compass";
+
+/* everything thats not the right sidebar */
+div.content-detail-central {
+  float:left;
+  width:650px;
+  //border-right:1px solid $gray;
+
+/* content detail top header */
+  div.content-detail-top {
+    width:700px;
+
+    div.the-hearts {
+      float:left;
+    }
+
+    div.detail-item-header {
+      margin-top: 10px;
+      width: 550px;
+      margin-left: 16px;
+      float:left;
+      div.item-feed-bottom-wrapper {
+        width:100%;
+      }
+    }
+  }
+
+/* content main, below the top header */
+  div.content-main-wrapper {
+
+    div.petition-detail-wrapper {
+      padding-left:30px;
+      width:550px;
+
+      div.detail-petition-bar-wrapper {
+        width: 500px;
+        margin-left: 30px;
+        margin-top:20px;
+      }
+
+      div.petition-full-text {
+        margin-top:15px;
+        margin-bottom:15px;
+        div.edit-full-text {
+          float:left;
+          color:$gray;
+        }
+        textarea.edit-petition {
+          width:100%;
+          height:500px;
+        }
+      }
+
+      div.petition-detail-sign-area {
+        div.sign-area {
+          width:100%;
+          a.action-button {
+            width: 100%;
+            text-align: center;
+            background-color: $gray;
+            padding: 5px;
+            color: white;
+            display:block;
+            margin-top:10px;
+            font-size:16px;
+            &:hover {
+              background-color:$dark-gray;
+            }
+          }
+          div.not-finalized {
+            margin-top:20px;
+            width:100%;
+            display:block;
+            font-style:italic;
+          }
+        }
+      }
+    }
+
+    div.content-detail-description {
+      margin-top:15px;
+      max-width:600px;
+      font-size: 15px;
+      line-height: 20px;
+      color: #4c4c4c;
+    }
+
+
+    div.news-detail-wrapper {
+      div.news-link-wrapper {
+        margin-top:20px;
+        span.link-label {
+          font-size: 20px;
+        }
+        a.news-link {
+          margin-left:20px;
+          font-size: 18px;
+        }
+        span.link-clicks {
+          margin-left:10px;
+        }
+      }
+    }
+
+    div.poll-detail-wrapper {
+      margin-top:25px;
+      margin-bottom: 20px;
+    }
+    div.mini-feed-wrapper {
+      div.feed-main {
+        width: 100%;
+      }
+      div.answers-wrapper {
+        width:400px;
+      }
+      td.create-button {
+        display:none;
+      }
+      span.question-topic {
+        width: 25px;
+        height: 25px;
+        float: left;
+        margin-right:5px;
+      }
+      div.explanation-wrapper {
+        margin-left:20px;
+        width:400px;
+        div.inline-div {
+          float:left;
+        }
+        textarea.explanation-inline {
+          margin-top: 90px;
+          margin-left: 10px;
+          width: 550px;
+        }
+      }
+      div.feed-buttons-container {
+        margin-right:0px;
+        span.only-unanswered {
+          margin-right:0px;
+        }
+        span.only-unanswered-text {
+          margin-left:15px;
+        }
+      }
+      div.num-responses {
+        position: relative;
+      }
+      a.help-link {
+        display:none;
+      }
+    }
+  }
+}
+
+
+/* poll sample question */
+div.sample-question {
+  float:left;
+  width:500px;
+  div.arrow {
+    font-size: 30px;
+    &:hover {
+      background-color:$light-gray;
+      cursor:pointer;
+    }
+  }
+  div.left-arrow {
+    float:left;
+  }
+  div.right-arrow {
+    float:right;
+  }
+  div.current-question {
+    width:410px;
+    text-align:center;
+    color:$black;
+    background-color:$light-gray;
+    padding:5px;
+    padding-left:10px;
+    padding-right:10px;
+    float:left;
+    margin-left:20px;
+    margin-right:15px;
+    margin-top:5px;
+    font-size: 16px;
+    &:hover  {
+      background-color:$dark-gray;
+      cursor:pointer;
+    }
+  }
+}

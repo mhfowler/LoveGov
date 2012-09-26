@@ -1,0 +1,265 @@
+@charset "UTF-8";
+@import 'master-variables';
+@import 'master-mixins';
+
+@import "compass";
+
+/* lovegov robot */
+div.lovegov-robot {
+  @include staticImage("/images/icons/logo/lg_robot.jpg");
+  width: 75px;
+  height: 75px;
+  background-size: 75px 75px;
+}
+
+
+/* what would be, questions feed */
+div.what-would-be-wrapper {
+  position:relative;
+  font-size: 18px;
+  padding: 15px 15px;
+  background-color: $yellow-light;
+  margin-top: 15px;
+  margin-bottom: 25px;
+
+  &.strong-match {
+    background-color:#D6ECBF;
+  }
+
+  div.what-would-be-text {
+    float:left;
+    width:820px;
+    span.bold-part {
+      font-weight:bold;
+    }
+  }
+  span.questions-progress {
+    float:right;
+    margin-right: 25px;
+    margin-top: 8px;
+    font-size: 30px;
+  }
+
+  a.what-would-be-x {
+    position: absolute;
+    left: 947px;
+    top: 7px;
+    color:$black;
+    &:hover {
+      color:$red;
+    }
+  }
+}
+
+/* introduction headers */
+div.completed-all-tasks {
+
+  width:475px;
+  float:left;
+
+  div.congratulations-header {
+    font-size:30px;
+    color:$gray;
+
+    div.lovegov-robot {
+      float:left;
+    }
+    span.congratulations-header-text {
+      float:left;
+      margin-left:20px;
+      height:100px;
+      padding-top:20px;
+      margin-right:25px;
+    }
+
+  }
+
+  div.congratulations-text {
+    margin-top:10px;
+    font-size:16px;
+  }
+}
+
+div.introduction-header {
+
+  width:100%;
+
+  div.where-am-i {
+
+    width: 475px;
+    float:left;
+
+    div.where-am-i-header {
+      width:100%;
+      float:left;
+      div.lovegov-robot {
+        float:left;
+      }
+      div.where-am-i-text {
+        float:left;
+        font-size: 30px;
+        margin-left: 30px;
+        margin-top: 16px;
+      }
+      a.hide-intros {
+        float: left;
+        margin-top: 27px;
+        margin-left: 31px;
+      }
+    }
+    div.where-am-i-content {
+      float:left;
+      width:100%;
+      margin-top:20px;
+      font-size:16px;
+      padding-left:20px;
+    }
+  }
+}
+
+
+/* get started checkboxes */
+div.get-started {
+
+  width:450px;
+  float:left;
+  margin-left:5px;
+  margin-top: 25px;
+  position: relative;
+  left: 50px;
+
+  div.get-started-header {
+    font-size: 20px;
+    width:100%;
+    margin-bottom:15px;
+    font-weight:bold;
+    letter-spacing: 1px;
+  }
+  div.tasks-wrapper {
+    width:100%;
+    div.task-wrapper {
+      width:100%;
+      float:left;
+      margin-bottom:20px;
+      a.task-checkbox {
+        width:25px;
+        height:25px;
+        border:1px solid $gray;
+        float:left;
+        &:hover {
+          border-color:$dark-gray;
+        }
+        div.task-completed {
+          @include staticImage("/images/icons/arrows/check.png");
+          width: 30px;
+          height: 30px;
+          background-size: 30px 30px;
+          position: relative;
+          top: -10px;
+          left: 2px;
+        }
+        &.incomplete {
+          div.task-completed {
+            display:none;
+          }
+        }
+      }
+      a.task-label {
+        float:left;
+        margin-left:15px;
+        margin-top:0px;
+        width:400px;
+        font-size: 20px;
+        color:$black;
+        font-family:"Sonus-ExtraLight";
+        &:hover {
+          color:black;
+        }
+      }
+    }
+  }
+}
+
+
+/* first login header */
+div.first-login-header {
+
+  padding-left:30px;
+
+  div.welcome-div {
+
+    width:375px;
+    float:left;
+
+    div.welcome-message {
+      margin-top:20px;
+      font-size: 36px;
+      line-height:36px;
+      font-family:"Sonus-ExtraLight";
+      color:$dark-gray;
+    }
+
+    div.logo {
+      margin-top:0px;
+      @include staticImage("/images/icons/logo/big_welcome_logo.png");
+      width: 350px;
+      height: 120px;
+      background-size: 350px 120px;
+      background-repeat: no-repeat;
+    }
+
+    div.our-goal {
+      margin-top:20px;
+      width:100%;
+      font-size: 18px;
+    }
+  }
+
+  div.get-started {
+    margin-top:100px;
+    margin-left:50px;
+    left:0px;
+  }
+
+  div.are-you {
+    //width: 460px;
+    width: 556px;
+    float: left;
+    margin-top: 14px;
+    margin-bottom: 30px;
+    padding-left: 49px;
+    height: 142px;
+    //margin-left: 65px;
+    div.are-you-wrapper {
+      margin-bottom:19px;
+      font-size: 16px;
+      color:$dark-gray;
+      a.are-you-link {
+        color:$text-blue;
+        &:hover {
+          color:$blue;
+        }
+      }
+    }
+  }
+
+  div.get-involved {
+    width: 450px;
+    font-size: 16px;
+    display: inline-block;
+    margin-left: 77px;
+    margin-top: 10px;
+  }
+
+  div.completed-all {
+    float: right;
+    width: 320px;
+    margin-right: 140px;
+    text-align: left;
+    font-size: 14px;
+    color:$green;
+  }
+}
+
+
+
