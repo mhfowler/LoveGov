@@ -162,39 +162,62 @@ def setLogging(log_root):
         'version': 1,
         'disable_existing_loggers': True,
         'formatters': {
-            'standard': {
+            'verbose': {
                 'format': '%(asctime)s [%(levelname)s] %(name)s: %(message)s'
             },
-            },
+            'simple': {
+                'format': '%(levelname)s %(message)s'
+            }
+        },
         'handlers': {
-            'default': {
-                'level':'DEBUG',
+            'null': {
+                'level': 'DEBUG',
+                'class': 'django.utils.log.NullHandler',
+                },
+            'lg_critical_handler': {
+                'level':'CRITICAL',
                 'class':'logging.handlers.RotatingFileHandler',
-                'filename': log_root + 'default.log',
+                'filename': log_root + 'critical.log',
                 'maxBytes': 1024*1024*5, # 5 MB
                 'backupCount': 5,
-                'formatter':'standard',
+                'formatter':'verbose',
+                },
+            'lg_error_handler': {
+                'level':'CRITICAL',
+                'class':'logging.handlers.RotatingFileHandler',
+                'filename': log_root + 'error.log',
+                'maxBytes': 1024*1024*5, # 5 MB
+                'backupCount': 5,
+                'formatter':'verbose',
+                },
+            'lg_warning_handler': {
+                'level':'WARNING',
+                'class':'logging.handlers.RotatingFileHandler',
+                'filename': log_root + 'warning.log',
+                'maxBytes': 1024*1024*5, # 5 MB
+                'backupCount': 5,
+                'formatter':'verbose',
+                },
+            'lg_info_handler': {
+                'level':'INFO',
+                'class':'logging.handlers.RotatingFileHandler',
+                'filename': log_root + 'info.log',
+                'maxBytes': 1024*1024*5, # 5 MB
+                'backupCount': 5,
+                'formatter':'verbose',
+                },
+            'lg_debug_handler': {
+                'level':'DEBUG',
+                'class':'logging.handlers.RotatingFileHandler',
+                'filename': log_root + 'debug.log',
+                'maxBytes': 1024*1024*5, # 5 MB
+                'backupCount': 5,
+                'formatter':'verbose',
                 },
             'mail_admins': {
                 'class': 'django.utils.log.AdminEmailHandler',
                 'level': 'ERROR',
                 'include_html': True,
-                },
-            'request_handler': {
-                'level':'DEBUG',
-                'class':'logging.handlers.RotatingFileHandler',
-                'filename': log_root + 'django_request.log',
-                'maxBytes': 1024*1024*5, # 5 MB
-                'backupCount': 5,
-                'formatter':'standard',
-                },
-            'file_handler': {
-                'level':'DEBUG',
-                'class':'logging.handlers.RotatingFileHandler',
-                'filename': log_root + 'django.log',
-                'maxBytes': 1024*1024*5, # 5 MB
-                'backupCount': 5,
-                'formatter':'standard',
                 },
             'scheduled_handler': {
                 'level':'DEBUG',
@@ -202,31 +225,7 @@ def setLogging(log_root):
                 'filename': log_root + 'scheduled.log',
                 'maxBytes': 1024*1024*5, # 5 MB
                 'backupCount': 5,
-                'formatter':'standard',
-                },
-            'normal_handler': {
-                'level':'DEBUG',
-                'class':'logging.handlers.RotatingFileHandler',
-                'filename': log_root + 'normal.log',
-                'maxBytes': 1024*1024*5, # 5 MB
-                'backupCount': 5,
-                'formatter':'standard',
-                },
-            'errors_handler': {
-                'level':'DEBUG',
-                'class':'logging.handlers.RotatingFileHandler',
-                'filename': log_root + 'errors.log',
-                'maxBytes': 1024*1024*5, # 5 MB
-                'backupCount': 5,
-                'formatter':'standard',
-                },
-            'temp_handler': {
-                'level':'DEBUG',
-                'class':'logging.handlers.RotatingFileHandler',
-                'filename': log_root + 'temp.log',
-                'maxBytes': 1024*1024*5, # 5 MB
-                'backupCount': 5,
-                'formatter':'standard',
+                'formatter':'verbose',
                 },
             'browser_handler': {
                 'level':'DEBUG',
@@ -234,46 +233,45 @@ def setLogging(log_root):
                 'filename': log_root + 'browser.log',
                 'maxBytes': 1024*1024*5, # 5 MB
                 'backupCount': 5,
-                'formatter':'standard',
+                'formatter':'verbose',
                 },
             },
         'loggers': {
-
+            'django': {
+                'handlers': ['null'],
+                'propagate': True,
+                'level': 'DEBUG',
+                },
             'django.request': {
                 'handlers': ['mail_admins'],
                 'level': 'ERROR',
                 'propagate': True,
                 },
-            '': {
-                'handlers': ['default'],
-                'level': 'ERROR',
-                'propagate': True
-            },
-            'lglogger': {
-                'handlers': ['mail_admins'],
+            'lg.critical': {
+                'handlers': ['lg_critical_handler'],
+                'level': 'CRITICAL',
+                'propagate': True,
+                },
+            'lg.error': {
+                'handlers': ['lg_error_handler'],
                 'level': 'ERROR',
                 'propagate': True,
             },
-            'filelogger': {
-                'handlers': ['file_handler'],
+            'lg.warning': {
+                'handlers': ['lg_warning_handler'],
+                'level': 'WARNING',
+                'propagate': True,
+                },
+            'lg.info': {
+                'handlers': ['lg_info_handler'],
+                'level': 'INFO',
+                'propagate': True,
+                },
+            'lg.debug': {
+                'handlers': ['lg_debug_handler'],
                 'level': 'DEBUG',
-                'propagate': False
-            },
-            'normallogger': {
-                'handlers': ['normal_handler'],
-                'level': 'DEBUG',
-                'propagate': False
-            },
-            'errorslogger': {
-                'handlers': ['errors_handler'],
-                'level': 'DEBUG',
-                'propagate': False
-            },
-            'templogger': {
-                'handlers': ['temp_handler'],
-                'level': 'DEBUG',
-                'propagate': False
-            },
+                'propagate': True,
+                },
             'scheduledlogger': {
                 'handlers': ['scheduled_handler'],
                 'level': 'DEBUG',
@@ -284,8 +282,8 @@ def setLogging(log_root):
                 'level': 'DEBUG',
                 'propagate': False
             },
-            }
         }
+    }
 
 LOGGING = setLogging(LOG_ROOT)
 
