@@ -356,6 +356,8 @@ ADMINS = (
 
 MANAGERS = ADMINS
 
+SERVER_EMAIL = 'team@lovegov.com'
+
 import s3_configuration
 AWS_ACCESS_KEY_ID = s3_configuration.AWS_ACCESS_KEY_ID
 AWS_SECRET_ACCESS_KEY = s3_configuration.AWS_SECRET_ACCESS_KEY
