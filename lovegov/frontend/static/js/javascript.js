@@ -36,6 +36,9 @@ function bindOnReload() {
     // like minded computing
     likeMindedComputing();
 
+    // cached back button
+    showBackButtonIfCachedPage();
+
     switch (rebind) {
 
         case "home":
@@ -318,6 +321,11 @@ bind(".do_ajax_link", 'click', null, function(event) {
     ajaxReload($(this).attr("href"), true);
 });
 
+function pushURL(url) {
+    History.pushState( {k:1}, "LoveGov: Beta", url);
+    PATH = url;
+}
+
 function selectHeaderLinks() {
     $(".header_link").removeClass("clicked");
     var header_link = $('.header_link[href="' + PATH + '"]');
@@ -335,14 +343,13 @@ function ajaxReload(theurl)
     {
         if (pre_page_nonce == current_page_nonce) {
             var returned = $.parseJSON(data);
-            History.pushState( {k:1}, "LoveGov: Beta", returned.url);
+            pushURL(returned.url);
             $('body').css("overflow","scroll");
             $('.main_content').css("top","0px");
             $(".main_content").html(returned.html);
             $('.main_content').show();
             bindOnReload();
             rebind = returned.rebind;
-            PATH = returned.url;
             bindOnReload();
         }
     };
@@ -410,26 +417,21 @@ function initFeedParameters() {
         feed_rank = 'N';
     }
 
-    /*
     var feed_data = feed_memory[PATH];
-    if (!feed_data) {
-        var cookie_feed_memory = $.cookie('feed_memory');
-        if (cookie_feed_memory) {
-            cookie_feed_memory = $.parseJSON(cookie_feed_memory);
-            feed_data = cookie_feed_memory[PATH];
-        }
-    }
     if (feed_data) {
         var saved_feed_rank = feed_data['feed_rank'];
         if (saved_feed_rank) {
             feed_rank = saved_feed_rank;
+        }
+        var saved_feed_types = feed_data['feed_types'];
+        if (saved_feed_types) {
+            feed_types = $.parseJSON(saved_feed_types);
         }
         var saved_question_rank = feed_data['question_rank'];
         if (saved_question_rank) {
             question_rank = saved_question_rank;
         }
     }
-    */
 
     selectRank(feed_rank);
     selectQuestionRank(question_rank);
@@ -437,6 +439,7 @@ function initFeedParameters() {
     $.each(feed_types, function(i, e) {
         selectType(e);
     });
+
 }
 
 /* does a get request for all feeds on page */
@@ -527,8 +530,7 @@ function homeReload(theurl) {
             if (pre_page_nonce == current_page_nonce) {
                 $(".home_reloading").hide();
                 var returned = $.parseJSON(data);
-                History.pushState( {k:1}, "LoveGov: Beta", returned.url);
-                PATH = returned.url;
+                pushURL(returned.url);
                 $(".home_focus").html(returned.focus_html);
                 bindOnReload();
             }
@@ -1294,8 +1296,7 @@ function getFeed(container) {
     }
 
     // save in memory
-    //feed_memory[PATH] = data;
-    //$.cookie('feed_memory', JSON.stringify(feed_memory));
+    feed_memory[PATH] = data;
 
     var action_dict = {
         data: data,
@@ -4747,3 +4748,50 @@ function postPageAnalytics() {
         }
     }
 }
+
+
+/***********************************************************************************************************************
+ *
+ *     ~ caching and restoring a page (for back to feed)
+ *
+ ***********************************************************************************************************************/
+function restoreCachedPage() {
+    var cached_page_container = $(".cached_page");
+    var cached_page_html = cached_page_container.data('html');
+    if (cached_page_html) {
+        var cached_page_height = cached_page_container.data("page_height");
+        var old_url = cached_page_container.data('url');
+        $(".main_content").html(cached_page_html);
+        pushURL(old_url);
+        bindOnNewElements();
+    }
+}
+
+function storeCachedPage() {
+    var cached_page_container = $(".cached_page");
+    var page_html = $(".main_content").html();
+    var page_height = $(document).scrollTop();
+    cached_page_container.data('url', PATH);
+    cached_page_container.data('page_height', page_height);
+    cached_page_container.data('html', page_html);
+}
+
+function showBackButtonIfCachedPage() {
+    var cached_page_container = $(".cached_page");
+    if (cached_page_container.data('html')) {
+        $(".restore_cache").show();
+    }
+    else {
+        $(".restore_cache").hide();
+    }
+}
+
+bind('.cached_ajax_link', 'click', function(e) {
+    var theurl = $(this).attr("href");
+    storeCachedPage();
+    ajaxReload(theurl);
+});
+
+bind('.restore_cache', 'click', function(e) {
+    restoreCachedPage();
+});

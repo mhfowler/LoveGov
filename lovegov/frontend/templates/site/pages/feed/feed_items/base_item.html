@@ -40,7 +40,7 @@
                     </div>
                 {% endblock %}
                 {% block content-title %}
-                    <a href="{{ content.get_url }}" class="feed-link-wrapper"><span class="content-title"> {{ content.getFeedTitle }}</span></a>
+                    <a href="{{ content.get_url }}" class="feed-link-wrapper dummy_link cached_ajax_link"><span class="content-title"> {{ content.getFeedTitle }}</span></a>
                 {% endblock %}
             {% endmacro %}
             {% usemacro feed_title content %}
