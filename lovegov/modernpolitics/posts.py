@@ -1904,9 +1904,8 @@ def getGroups(request, vals={}):
 def getElections(request, vals={}):
     from lovegov.frontend.views_helpers import valsElection
     viewer = vals['viewer']
-    elections = Election.objects.order_by("-num_members")
+    elections = Election.objects.order_by("-num_followers")
     feed_start = int(request.POST['feed_start'])
-    elections = elections
 
     # filter by location
     state = request.POST['state']
@@ -1915,7 +1914,6 @@ def getElections(request, vals={}):
         elections = elections.filter(location__state=state, location__city=city)
     elif state and state != 'all':
         elections = elections.filter(location__state=state)
-
 
     # paginate
     elections = elections[feed_start:feed_start+5]
