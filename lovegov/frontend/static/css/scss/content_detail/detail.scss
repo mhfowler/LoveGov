@@ -270,11 +270,10 @@ div.content-detail-sidebar {
       text-align:center;
     }
     div.gray-triangle {
-      $triangle-size:23px;
-      @include triangle('left', $light-gray, $triangle-size + -1px);
+      $triangle-size:20px;
+      @include triangle('left', $light-gray, $triangle-size);
       position: absolute;
       left:-15px;
-      top:-1px;
     }
     &:hover {
       text-decoration:none;
