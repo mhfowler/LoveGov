@@ -338,6 +338,7 @@ function ajaxReload(theurl)
     var pre_page_nonce = current_page_nonce;
     $('#search-dropdown').hide();
     $('.main_content').hide();
+    $(document).scrollTop(0);
 
     var success_fun = function(data)
     {
@@ -348,7 +349,6 @@ function ajaxReload(theurl)
             $('.main_content').css("top","0px");
             $(".main_content").html(returned.html);
             $('.main_content').show();
-            bindOnReload();
             rebind = returned.rebind;
             bindOnReload();
         }
@@ -4764,6 +4764,7 @@ function restoreCachedPage() {
         $(".main_content").html(cached_page_html);
         pushURL(old_url);
         bindOnNewElements();
+        $(document).scrollTop(cached_page_height);
     }
 }
 

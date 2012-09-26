@@ -270,7 +270,7 @@ div.content-detail-sidebar {
       text-align:center;
     }
     div.gray-triangle {
-      $triangle-size:20px;
+      $triangle-size:23px;
       @include triangle('left', $light-gray, $triangle-size + -1px);
       position: absolute;
       left:-15px;
