@@ -32,12 +32,18 @@ from lovegov.modernpolitics.profiler import profile
 
 import logging
 
-logger = logging.getLogger('filelogger')
+logger = logging.getLogger('lg.debug')
 scheduled_logger = logging.getLogger('scheduledlogger')
-normal_logger = logging.getLogger('filelogger')
-errors_logger = logging.getLogger('errorslogger')
-temp_logger = logging.getLogger('templogger')
-lg_logger = logging.getLogger("lglogger")
+normal_logger = logging.getLogger('lg.debug')
+errors_logger = logging.getLogger('lg.error')
+temp_logger = logging.getLogger('lg.debug')
+lg_logger = logging.getLogger("lg.error")
+
+critical_logger = logging.getLogger('lg.critical')
+error_logger = logging.getLogger('lg.error')
+warning_logger = logging.getLogger('lg.warning')
+info_logger = logging.getLogger('lg.info')
+debug_logger = logging.getLogger('lg.debug')
 
 #-----------------------------------------------------------------------------------------------------------------------
 # Useful manager for all our models.
