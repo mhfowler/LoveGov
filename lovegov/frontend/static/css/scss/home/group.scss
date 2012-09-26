@@ -119,7 +119,7 @@ div.group-expanded
     div.group-info-title
     {
       @include grayText();
-      @include fontSize(18px);
+      font-size: 18px;
       margin-bottom: 2px;
     }
 
@@ -339,7 +339,7 @@ div.group-histogram {
 
         .total_count {
           @include big();
-          @include fontSize(20px);
+          font-size: 20px;
           margin:0px;
           display:none;
         }
@@ -357,7 +357,7 @@ div.group-histogram {
         .identical_count {
           float:left;
           @include big();
-          @include fontSize(20px);
+          font-size: 20px;
           float:left;
           margin: 10px 0 0 20px;
         }
@@ -395,7 +395,7 @@ div.group-histogram {
 
         .label {
           @include really-big();
-          @include fontSize(14px);
+          font-size: 14px;
           margin-top: 5px;
         }
       }
@@ -427,7 +427,7 @@ div.group-histogram {
 div.group-description-modal {
   width:500px;
   div.group-title {
-    @include fontSize(24px);
+    font-size: 24px;
     width:100%;
     text-align:Center;
   }

@@ -596,8 +596,7 @@ def questions(request, vals={}):
     getMainTopics(vals)
 
     valsLGPoll(vals)
-    lgpoll = vals['lgpoll']
-    getQuestionStats(vals, lgpoll)
+    getQuestionStats(vals)
 
     html =  ajaxRender('site/pages/qa/qa.html', vals, request)
     url = request.path

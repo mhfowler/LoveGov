@@ -1,0 +1,240 @@
+@charset "UTF-8";
+@import 'master-variables';
+@import 'master-mixins';
+@import "compass";
+
+/* scorecards */
+div.scorecard-section-header {
+  font-size: 20px;
+  color:$dark-gray;
+  margin-top:20px;
+  margin-bottom:20px;
+  width:100%;
+  span.header-text {
+    float:left;
+  }
+  a.add-to-scorecard {
+    margin-left:20px;
+    float:left;
+    font-size: 12px;
+
+  }
+}
+
+a.add-to-scorecard {
+  padding:6px;
+  background-color:$gray;
+  width:200px;
+  text-align:center;
+  color:black;
+  &:hover {
+    background-color:$dark-gray;
+  }
+}
+
+div.based-off-of {
+  width:500px;
+  margin-top:25px;
+  span.based-off-text {
+    float:left;
+    margin-top:8px;
+  }
+  a.take-poll-button {
+    float:left;
+    margin-left:20px;
+    padding:6px;
+    color:$black;
+    background-color:$light-gray;
+    @include border-radius(6px);
+    &:hover {
+      background-color:$dark-gray;
+    }
+  }
+}
+
+div.scorecard-avatar-strips-wrapper {
+  width:100%;
+  margin-left:60px;
+  div.scorecard-avatar-strip-wrapper {
+    position:relative;
+    width:100%;
+    width:800px;
+    margin-bottom:10px;
+    max-width:800px;
+    div.avatar-strip-main {
+      width:400px;
+    }
+    div.before-match {
+      position:static;
+      margin-top:10px;
+    }
+    a.remove-from-scorecard {
+      position:absolute;
+      left: -37px;
+      top: 13px;
+      font-size: 30px;
+      color:$black;
+      padding:4px;
+      &:hover {
+        color:$red;
+      }
+    }
+  }
+  div.no-one-on-scorecard {
+    float:left;
+  }
+}
+
+div.reps-compare {
+  width:100%;
+  margin-top:10px;
+}
+
+div.politicians-compare {
+  width:100%;
+  margin-top:10px;
+}
+
+div.scorecard-description {
+  div.scorecard-summary {
+    height:100px;
+    overflow:hidden;
+  }
+  div.based-off-of {
+    margin-top:10px;
+  }
+}
+
+$scorecard-red:#FFCFC8;
+div.edit-scorecard-wrapper {
+  div.question_expanded_choose {
+    div.answers-wrapper {
+      div.answer-choice {
+        &:hover {
+          background-color:$scorecard-red;
+          cursor:pointer;
+        }
+        &.clicked {
+          background-color:$scorecard-red;
+          &:hover {
+            background-color:$scorecard-red;
+          }
+        }
+      }
+    }
+  }
+
+  div.question_stub  {
+
+    div.question_expanded_choose {
+      div.answer-actions {
+        display:none;
+      }
+    }
+    div.explanation-wrapper {
+      display:none;
+    }
+  }
+}
+
+div.edit-scorecard-header {
+  margin-top:15px;
+  margin-bottom:15px;
+  div.edit-scorecard-title {
+    font-size: 20px;
+    a.back-to-scorecard {
+      float:right;
+    }
+  }
+  div.edit-scorecard-explanation {
+    margin-top:10px;
+  }
+}
+
+
+div.scorecard-compare-wrapper {
+  div.scorecard-title-wrapper {
+    margin-top:15px;
+  }
+}
+
+
+
+
+/* add to scorecard  */
+div.add-to-scorecard-wrapper {
+
+  padding:20px;
+  width:700px;
+
+  div.scorecard-modal-header {
+    font-size: 26px;
+    margin-bottom:25px;
+    width:100%;
+  }
+
+  a.add-to-button {
+    padding:8px;
+    background-color:$red;
+    color:white;
+    @include border-radius(8px);
+    float:left;
+    margin-left:20px;
+    margin-top:-2px;
+    &:hover {
+      color:$red-light;
+    }
+  }
+
+  div.add-header {
+    width:350px;
+    margin-bottom:15px;
+  }
+
+  div.add-to-scorecard {
+    width:100%;
+    position:relative;
+
+    div.add-to-select-container {
+      width:500px;
+      float:left;
+      padding-top:5px;
+      height:50px;
+      margin-bottom:25px;
+      select.add-to-select {
+        height:30px;
+        width:100%;
+        font-size:8px;
+        li input {
+          height:17px;
+        }
+      }
+    }
+
+    div.add-success-message {
+      position:absolute;
+      color:$blue;
+      top: 55px;
+      width: 160px;
+      left: 518px;
+      display:none;
+    }
+  }
+
+  div.invite-to-scorecard {
+    width:100%;
+    input.invite-to-scorecard {
+      height:30px;
+      width:300px;
+      float:left;
+      padding-left:5px;
+    }
+    div.invite-success-message {
+      float:left;
+      margin-left:15px;
+      margin-top:7px;
+      color:$blue;
+      display:none;
+    }
+  }
+}

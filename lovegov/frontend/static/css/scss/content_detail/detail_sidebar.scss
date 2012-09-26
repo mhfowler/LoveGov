@@ -1,0 +1,40 @@
+@charset "UTF-8";
+@import 'master-variables';
+@import 'master-mixins';
+@import "compass";
+
+/* content detail sidebar */
+div.content-detail-sidebar {
+
+  div.back-buttons {
+    margin-top:10px;
+  }
+
+  a.back-to-button {
+    position:relative;
+    div.back-container {
+      padding:8px;
+      background-color:$light-gray;
+      color:white;
+      @include fontSize(16px);
+      margin-bottom:10px;
+      @include border-radius(8px);
+      text-align:center;
+    }
+    div.gray-triangle {
+      $triangle-size:20px;
+      @include triangle('left', $light-gray, $triangle-size);
+      position: absolute;
+      left:-15px;
+    }
+    &:hover {
+      text-decoration:none;
+      div.back-container {
+        background-color:$gray;
+      }
+      div.gray-triangle {
+        border-right-color:$gray;
+      }
+    }
+  }
+}

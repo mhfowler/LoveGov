@@ -38,7 +38,7 @@ td.action-timestamp
   color: $dark-gray;
   text-align: right;
   font-style: italic;
-  @include fontSize(12px);
+  font-size: 12px;
 }
 
 div.action-separator

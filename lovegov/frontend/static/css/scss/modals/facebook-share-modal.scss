@@ -46,7 +46,7 @@ div.facebook-share-modal-container
 
     input.facebook-share-button-modal
     {
-      @include fontSize(18px);
+      font-size: 18px;
       @include rounded(10px);
       padding: 10px 15px 10px 15px;
       color: white;

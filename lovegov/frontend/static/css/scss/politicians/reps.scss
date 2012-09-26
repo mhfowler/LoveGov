@@ -20,7 +20,7 @@ div.find-your-reps {
     display:none;
   }
   div.find-your-reps-title {
-    @include fontSize(20px);
+    font-size: 20px;
   }
   div.find-your-reps-form {
     padding-top:10px;
@@ -48,7 +48,7 @@ div.find-your-reps {
       float:left;
       background-color:$black;
       color:white;
-      @include fontSize(16px);
+      font-size: 16px;
       text-align:center;
       padding:5px;
       width:100px;
@@ -63,7 +63,7 @@ div.find-your-reps {
 
 div.reps-top {
   div.reps-header {
-    @include fontSize(20px);
+    font-size: 20px;
     float:left;
     text-transform:uppercase;
   }
@@ -71,7 +71,7 @@ div.reps-top {
     float:left;
     color:$gray;
     margin-left: 25px;
-    @include fontSize(16px);
+    font-size: 16px;
     margin-top: 4px;
   }
   span.not-your-district {

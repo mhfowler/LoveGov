@@ -132,18 +132,18 @@ div.poll-detail-sidebar {
   //@include border-radius(9px);
 
   div.sidebar-header {
-    @include fontSize(18px);
+    font-size: 18px;
   }
 
   div.poll-progress {
     margin-top:5px;
     color:$red;
     div.numbers {
-      @include fontSize(36px);
+      font-size: 36px;
     }
     div.text {
       line-height:20px;
-      @include fontSize(30px);
+      font-size: 30px;
     }
   }
 }
@@ -172,7 +172,7 @@ div.question-detail-sidebar {
 
     div.agree-with {
       margin-top:25px;
-      @include fontSize(18px);
+      font-size: 18px;
       font-weight:bold;
 
       div.agrees-box {
@@ -184,7 +184,7 @@ div.question-detail-sidebar {
   }
   div.friends {
     margin-top:25px;
-    @include fontSize(18px);
+    font-size: 18px;
     font-weight:bold;
   }
 }
@@ -204,7 +204,7 @@ div.questions-sidebar {
   width:150px;
 
   div.sidebar-header {
-    @include fontSize(14px);
+    font-size: 14px;
     font-weight:bold;
     padding-left:8px;
   }
@@ -351,7 +351,7 @@ div.question_stub {
       margin-left:8px;
       padding-top:10px;
       padding-bottom:6px;
-      @include fontSize(20px);
+      font-size: 20px;
       color:$black;
       &:hover {
         color:black;
@@ -364,7 +364,7 @@ div.question_stub {
         width:60px;
         margin-right:5px;
         color:$blue;
-        @include fontSize(22px);
+        font-size: 22px;
         display:none;
         float:right;
       }
@@ -385,7 +385,7 @@ div.question_stub {
       margin-right:10px;
       width:130px;
       text-align:center;
-      @include fontSize(16px);
+      font-size: 16px;
     }
     a.button-reanswer {
       background-color:$blue;
@@ -499,7 +499,7 @@ div.question_stub {
           }
         }
         span.answer-text {
-          @include fontSize(18px);
+          font-size: 18px;
         }
       }
       div.answer-choice.first {
@@ -518,7 +518,7 @@ div.question_stub {
     div.answer-actions {
       width:190px;
       float:right;
-      @include fontSize(16px);
+      font-size: 16px;
       padding: 10px 0px;
       div.a-action {
         margin-top:20px;
@@ -545,7 +545,7 @@ div.question_stub {
           span.action-text-lower {
             float:left;
             color:$gray;
-            @include fontSize(14px);
+            font-size: 14px;
             margin-left:20px;
           }
         }
@@ -553,7 +553,7 @@ div.question_stub {
           color:$dark-gray;
           position: relative;
           left: -6px;
-          @include fontSize(16px);
+          font-size: 16px;
         }
       }
       div.a-action.answer-privacy {
@@ -701,7 +701,7 @@ div#comparison-hover {
   div.match-title {
     width:100%;
     text-align:center;
-    @include fontSize(24px);
+    font-size: 24px;
     margin-top:15px;
     color:$black;
     a {
@@ -716,10 +716,10 @@ div#comparison-hover {
     text-align:center;
     margin-top:10px;
     div.match-percent {
-      @include fontSize(26px);
+      font-size: 26px;
     }
     p.percent {
-      @include fontSize(14px);
+      font-size: 14px;
       margin-top:5px;
       color:$text-blue;
     }
@@ -742,7 +742,7 @@ div.questions-header {
   div.questions-left {
     float:left;
     div.header-title {
-      @include fontSize(20px);
+      font-size: 20px;
       margin-bottom:5px;
     }
     div.sidebar-header {
@@ -751,7 +751,7 @@ div.questions-header {
     }
     div.questions-explanation {
       width:550px;
-      @include fontSize(14px);
+      font-size: 14px;
     }
   }
   div.questions-links {
@@ -767,7 +767,7 @@ div.questions-header {
       margin-top: 10px;
       width: 250px;
       float:right;
-      @include fontSize(12px);
+      font-size: 12px;
       &:hover {
         background-color:$dark-gray;
       }

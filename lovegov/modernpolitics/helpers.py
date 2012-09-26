@@ -22,6 +22,7 @@ from googlemaps import GoogleMaps
 import sunlight
 from sunlight.errors import BadRequestException
 from curses.ascii import isalnum
+from urlparse import urlsplit
 
 browser_logger = logging.getLogger('browserlogger')
 
@@ -209,7 +210,7 @@ def checkBrowserCompatible(request):
             browser_name = browser.get('name')
             if browser_name == "Microsoft Internet Explorer":
                 version = float(browser.get('version'))
-                if version < 9.0:
+                if version < 10.0:
                     to_return = False
 
     if not to_return:
@@ -283,28 +284,19 @@ def setDistrict(location):
 def getSourcePath(request):
     if request.is_ajax():
         if request.method == 'GET':
-            path = request.POST.get('url')
+            url = request.POST.get('url')
         else:
-            path = request.GET.get('url')
-        if not path:
-            referer = request.META.get('HTTP_REFERER')
-            if not referer:
-                return request.path
-            else:
-                if LOCAL:
-                    splitted = referer.split(".com:8000")
-                else:
-                    splitted = referer.split(".com")
-                path = splitted[1]
-        else:
-            if LOCAL:
-                splitted = path.split(".com:8000")
-            else:
-                splitted = path.split(".com")
-            path = splitted[1]
+            url = request.GET.get('url')
+        if not url:
+            url = request.META.get('HTTP_REFERER')
+            if not url:
+                url = request.path
+        tuple = urlsplit(url)
+        to_return = tuple[2]
     else:
-        path = request.path
-    return path
+        to_return = request.path
+    return to_return
+
 
 def getHostHelper(request):
     return 'http://' + request.get_host()

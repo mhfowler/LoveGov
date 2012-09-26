@@ -23,7 +23,7 @@ div.avatar-strip {
       float:left;
       width:100%;
       span.user-name {
-        @include fontSize(24px);
+        font-size: 24px;
         float:left;
         margin-left: 10px;
         color:$black;
@@ -47,7 +47,7 @@ div.avatar-strip {
       float:left;
       width:100%;
       span.user-title {
-        @include fontSize(16px);
+        font-size: 16px;
         color:$gray;
         float:left;
         margin-left:10px;
@@ -96,7 +96,7 @@ div.avatar-strip {
     top: -15px;
     color:$red;
     div.match-number {
-      @include fontSize(66px);
+      font-size: 66px;
       span.match-percent {
         margin-left:2px;
       }

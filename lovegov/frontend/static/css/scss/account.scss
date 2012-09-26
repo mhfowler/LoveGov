@@ -342,19 +342,19 @@ div.account-right
   div.admin-submit-message
   {
     color: $dark-gray;
-    @include fontSize(14px);
+    font-size: 14px;
     display: none;
   }
 
   div.admin-explanation
   {
     color: $dark-gray;
-    @include fontSize(14px);
+    font-size: 14px;
   }
 
   a.admin-button
   {
-    @include fontSize(18px);
+    font-size: 18px;
     @include rounded(10px);
     padding: 10px 15px 10px 15px;
   }
@@ -528,7 +528,7 @@ div.politician-settings-wrapper {
       color:$text-blue;
       float:left;
       marign-left:20px;
-      @include fontSize(24px);
+      font-size: 24px;
       margin-right:15px;
     }
     input.settings-checkbox {
@@ -568,7 +568,7 @@ div.politician-settings-wrapper {
         float:left;
         width:100%;
         div.settings-label {
-          @include fontSize(18px);
+          font-size: 18px;
           color:$text-blue;
           float:left;
           margin-bottom:8px;

@@ -46,7 +46,7 @@ div.notifications-dropdown
   div.notifications-header
   {
     @include grayText();
-    @include fontSize(18px);
+    font-size: 18px;
     padding-top: 10px;
     padding-bottom: 5px;
     text-align:center;

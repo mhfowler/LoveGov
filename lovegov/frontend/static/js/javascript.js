@@ -139,20 +139,7 @@ $(document).ready(function()
     // check browser compatability
     checkCompatability();
 
-    // Prepare
-    var History = window.History; // Note: We are using a capital H instead of a lower h
-    if ( !History.enabled )
-    {        // History.js is disabled for this browser.
-        // This is because we can optionally choose to support HTML4 browsers or not.
-        return false;
-    }
-    // Bind to StateChange Eveent
-    History.Adapter.bind(window,'statechange',function()
-    {
-        // Note: We are using statechange instead of popstate
-        var State = History.getState(); // Note: We are using History.getState() instead of event.state
-        History.log(State.data, State.title, State.url);
-    });
+    HISTORY_ENABLED = prepareHistory();
 
     // back button reload
     window.onpopstate = function(event)
@@ -175,6 +162,25 @@ $(document).ready(function()
 
 });
 
+function prepareHistory() {
+
+    // Prepare
+    var History = window.History; // Note: We are using a capital H instead of a lower h
+    if ( !History.enabled )
+    {        // History.js is disabled for this browser.
+        // This is because we can optionally choose to support HTML4 browsers or not.
+        return false;
+    }
+    // Bind to StateChange Eveent
+    History.Adapter.bind(window,'statechange',function()
+    {
+        // Note: We are using statechange instead of popstate
+        var State = History.getState(); // Note: We are using History.getState() instead of event.state
+        History.log(State.data, State.title, State.url);
+    });
+
+    return true;
+}
 
 
 /***********************************************************************************************************************
@@ -3039,7 +3045,9 @@ function saveAnswer(stub) {
                 }, 3000);
 
                 var agreement_bargraph = stub.find(".agreement_bargraph_seed");
-                initializeDomElement(agreement_bargraph);
+                if (agreement_bargraph.length!=0) {
+                    initializeDomElement(agreement_bargraph);
+                }
             }
 
             bindOnNewElements();

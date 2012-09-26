@@ -1,0 +1,102 @@
+@charset "UTF-8";
+@import 'master-variables';
+@import 'master-mixins';
+@import "compass";
+
+/* content detail */
+div.content-detail-wrapper {
+
+  margin-top:10px;
+  margin-left:10px;
+  width:1000px;
+  //border-right: 1px solid $gray;
+/* content detail right sidebar */
+  div.content-detail-right-sidebar {
+    float:left;
+    margin-left: 0px;
+    width: 250px;
+    //border:1px solid $gray;
+  }
+
+  div.content-discussion {
+    float:left;
+    width: 900px;
+    margin-top: 25px;
+  }
+}
+
+/*  used in content_detail_title macro */
+span.content-title {
+  font-size: 24px;
+}
+span.posted-in {
+  color:$light-gray;
+  font-size: 16px;
+  margin-left:10px;
+}
+span.posted-group {
+  margin-left:10px;
+  font-size: 16px;
+}
+
+div.item-title-wrapper {
+  width:100%;
+  a.item-title {
+    float:left;
+    font-size: 24px;
+    color:$text-blue;
+    &:hover {
+      color:black;
+    }
+  }
+  div.posted-in {
+    margin-left:15px;
+    margin-top:5px;
+    float:left;
+    font-style:italic;
+    color:$gray;
+  }
+  a.posted-in-group {
+    margin-left:5px;
+    margin-top:5px;
+    float:left;
+    color:$green;
+    &:hover {
+      color:green;
+    }
+  }
+}
+
+/* most recent */
+div.content-admin-actions {
+  margin-top: 20px;
+  border: 1px solid $gray;
+  border-left: none;
+  border-right: none;
+  padding: 10px;
+  span.content-admin-action-delete {
+    cursor: pointer;
+    color: $text-blue-light;
+    margin: 0 10px;
+    &:hover {
+      color: $red;
+    }
+  }
+}
+
+/* basic structure */
+div.left-sidebar {
+  float:left;
+  width:150px;
+  min-height:100px;
+  margin-right:30px;
+
+  div.sidebar-fixed {
+    position:fixed;
+  }
+}
+
+div.main-focus {
+  float:left;
+  width:940px;
+}

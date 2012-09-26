@@ -166,7 +166,7 @@ div.feed-item-content
         div.feed-avatar-timestamp
         {
           color: $dark-gray;
-          @include fontSize(11px);
+          font-size: 11px;
           font-style: italic;
         }
       }
