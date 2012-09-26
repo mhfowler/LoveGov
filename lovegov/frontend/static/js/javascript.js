@@ -334,6 +334,7 @@ function selectHeaderLinks() {
 
 function ajaxReload(theurl)
 {
+    storeCachedPage();
     current_page_nonce += 1;
     var pre_page_nonce = current_page_nonce;
     $('#search-dropdown').hide();
@@ -517,6 +518,7 @@ bind(".bind_link", "click", null, function(event) {
  ***********************************************************************************************************************/
 /* ajax load home sections */
 function homeReload(theurl) {
+    storeCachedPage();
     current_page_nonce += 1;
     var pre_page_nonce = current_page_nonce;
     $('#search-dropdown').hide();
@@ -4755,31 +4757,39 @@ function postPageAnalytics() {
  *     ~ caching and restoring a page (for back to feed)
  *
  ***********************************************************************************************************************/
-function restoreCachedPage() {
-    var cached_page_container = $(".cached_page");
-    var cached_page_html = cached_page_container.data('html');
-    if (cached_page_html) {
-        var cached_page_height = cached_page_container.data("page_height");
-        var old_url = cached_page_container.data('url');
-        $(".main_content").html(cached_page_html);
-        pushURL(old_url);
+function CachedPage(html, page_height, url) {
+    this.html = html;
+    this.page_height = page_height;
+    this.url = url;
+
+    this.restorePage = function () {
+        $(".main_content").html(this.html);
+        pushURL(this.url);
         bindOnNewElements();
-        $(document).scrollTop(cached_page_height);
+        $(document).scrollTop(this.page_height);
+    }
+}
+
+var cached_pages = [];
+function restoreLastCachedPage() {
+    if (cached_pages.length != 0) {
+        var last_cached_page = cached_pages.pop();
+        last_cached_page.restorePage();
     }
 }
 
 function storeCachedPage() {
-    var cached_page_container = $(".cached_page");
     var page_html = $(".main_content").html();
     var page_height = $(document).scrollTop();
-    cached_page_container.data('url', PATH);
-    cached_page_container.data('page_height', page_height);
-    cached_page_container.data('html', page_html);
+    var cached_page = new CachedPage(page_html, page_height, PATH);
+    cached_pages.push(cached_page);
+    if (cached_pages.length > 2) {
+        cached_pages.splice(0, 1);
+    }
 }
 
 function showBackButtonIfCachedPage() {
-    var cached_page_container = $(".cached_page");
-    if (cached_page_container.data('html')) {
+    if (cached_pages.length != 0) {
         $(".restore_cache").show();
     }
     else {
@@ -4787,12 +4797,6 @@ function showBackButtonIfCachedPage() {
     }
 }
 
-bind('.cached_ajax_link', 'click', function(e) {
-    var theurl = $(this).attr("href");
-    storeCachedPage();
-    ajaxReload(theurl);
-});
-
 bind('.restore_cache', 'click', function(e) {
-    restoreCachedPage();
+    restoreLastCachedPage();
 });

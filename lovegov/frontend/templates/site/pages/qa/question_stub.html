@@ -16,7 +16,7 @@
                     <span class="question-topic"> {% include 'site/pieces/topic_icon.html' with topic=question.main_topic width="30" height="30"%}</span>
                 </td>
                 <td class="question-title-wrapper">
-                    <a href="{{ question.get_url }}" class="question-title dummy_link cached_ajax_link"> {{ question.get_name }}</a>
+                    <a href="{{ question.get_url }}" class="question-title dummy_link do_ajax_link"> {{ question.get_name }}</a>
                 </td>
                 <td class="saved-message-wrapper">
                     <span class="saved-message saved_message"> saved </span>
