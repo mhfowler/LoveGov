@@ -100,10 +100,10 @@ import djcelery
 djcelery.setup_loader()
 
 
-COMPRESS_URL = STATIC_URL + '/'
+COMPRESS_URL = STATIC_URL
 COMPRESS_OUTPUT_DIR = 'CACHE' # default, included for simplicity
-#COMPRESS_STORAGE = 'storage.CachedS3BotoStorage'
-COMPRESS_STORAGE = 'compressor.storage.CompressorFileStorage'
+COMPRESS_STORAGE = 'storage.CachedS3BotoStorage'
+#COMPRESS_STORAGE = 'compressor.storage.CompressorFileStorage'
 COMPRESS_ROOT = "LoveGov/frontend"
 
 COMPRESS_ENABLED = True
