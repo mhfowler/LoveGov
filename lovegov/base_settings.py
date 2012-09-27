@@ -55,6 +55,7 @@ STATIC_ROOT = '/static/'
 
 # URL prefix for static files.
 STATIC_URL = '/static/'
+STATIC_URL_NOSLASH = '/static'
 
 # Absolute filesystem path to the directory that will hold user-uploaded files.
 MEDIA_ROOT = '/media/'              # !!!!

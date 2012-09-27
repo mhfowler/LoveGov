@@ -56,7 +56,7 @@ def homeResponse(request, focus_html, url, vals):
 def viewWrapper(view, requires_login=False):
     """Outer wrapper for all views"""
     def new_view(request, *args, **kwargs):
-        vals = {'STATIC_URL':settings.STATIC_URL}
+        vals = {'STATIC_URL':settings.STATIC_URL_NOSLASH}
         try: # Catch all error messages
 
 #            return shortcuts.redirect('/underconstruction/')

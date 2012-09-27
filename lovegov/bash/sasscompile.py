@@ -30,7 +30,7 @@ def replace(file, pattern, subst):
 # modify static_url in master-variables
 master_variables_file = scss + '/master-variables.scss'
 old_static = "$STATIC_URL: '/static';"
-new_static = "$STATIC_URL: '" + settings.STATIC_URL + "';"
+new_static = "$STATIC_URL: '" + settings.STATIC_URL_NOSLASH + "';"
 
 replace(master_variables_file, old_static, new_static)
 
