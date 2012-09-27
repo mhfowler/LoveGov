@@ -792,10 +792,13 @@ span.add-to-mailing-list-msg {
 
 .bottom-box {
   padding-top:15px;
-  width:320px;
+  width:300px;
   float:left;
   -moz-border-radius: 25px;
   border-radius: 25px;
+  &:first-child {
+    clear: left;
+  }
 }
 
 #privacy-div
