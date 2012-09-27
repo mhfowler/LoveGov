@@ -107,3 +107,5 @@ COMPRESS_STORAGE = 'compressor.storage.CompressorFileStorage'
 COMPRESS_ROOT = "LoveGov/frontend"
 
 COMPRESS_ENABLED = True
+
+ABSOLUTE_STATIC_URL_NOSLASH = "http://dev.lovegov.com" + STATIC_URL_NOSLASH
