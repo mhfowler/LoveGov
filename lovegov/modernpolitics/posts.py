@@ -1195,6 +1195,45 @@ def getAgreementBarGraphHTML(request, vals={}):
     return HttpResponse(json.dumps({'html':html}))
 
 
+def getAgreementPeopleListHTML(request, vals={}):
+    viewer = vals['viewer']
+    q_id = request.POST['q_id']
+    question = Question.objects.get(id=q_id)
+    response = viewer.getResponseToQuestion(question)
+    which = request.POST['which']
+    vals['agreement_title'] = request.POST['title']
+    if response:
+        valsWhoAgrees(viewer, response, which, vals)
+    html = ajaxRender('site/pages/content_detail/agreement_people_list.html', vals, request)
+    return HttpResponse(json.dumps({'html':html}))
+
+def valsWhoAgrees(viewer, response, which, vals):
+
+    if which == 'people':
+        people = UserProfile.objects.filter(ghost=False)
+    elif which == 'congress':
+        people = UserProfile.objects.filter(elected_official=True)
+    elif which == 'friends':
+        people = viewer.i_follow.getMembers()
+
+    if response:
+        a_id = response.most_chosen_answer_id
+        question = response.question
+        responses = Response.objects.filter(question=question, privacy="PUB")
+        agreed = responses.filter(most_chosen_answer_id=a_id)
+        vals['agreed'] = getRespondersHelper(viewer, people, agreed)
+        disagreed = responses.exclude(most_chosen_answer_id=a_id)
+        vals['disagreed'] = getRespondersHelper(viewer, people, disagreed)
+
+def getRespondersHelper(viewer, people, responses, max_num=10):
+    responder_ids = responses.values_list("creator_id", flat=True)
+    responders = people.filter(id__in=responder_ids)
+    if len(responders) > max_num:
+        responders = random.sample(responders, max_num)
+    for x in responders:
+        x.comparison = viewer.getComparison(x)
+    return responders
+
 #----------------------------------------------------------------------------------------------------------------------
 # gets html for next poll question
 #-----------------------------------------------------------------------------------------------------------------------

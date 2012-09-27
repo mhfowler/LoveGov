@@ -59,14 +59,19 @@ CACHES = {
 import djcelery
 djcelery.setup_loader()
 
-from compressor_settings import *
-COMPRESS_ENABLED = False
-
 STATIC_URL = '/static'
 
 THUMBNAIL_DUMMY = True
 
 THUMBNAIL_DUMMY_SOURCE = 'http://placekitten.com/%(width)s/%(height)s'
+
+COMPRESS_URL = STATIC_URL + '/'
+COMPRESS_OUTPUT_DIR = 'CACHE' # default, included for simplicity
+#COMPRESS_STORAGE = 'storage.CachedS3BotoStorage'
+COMPRESS_STORAGE = 'compressor.storage.CompressorFileStorage'
+COMPRESS_ROOT = "LoveGov/frontend"
+
+COMPRESS_ENABLED = True
 
 
 

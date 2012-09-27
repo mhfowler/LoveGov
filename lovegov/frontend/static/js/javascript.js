@@ -3053,6 +3053,7 @@ function saveAnswer(stub) {
             bindOnNewElements();
             updateMatches();
             updateStats();
+            updateElementsAfterAnswer();
 
             // if should compute like minded then start it up
             if (returned.start_like_minded) {
@@ -3274,6 +3275,23 @@ bind('div.stats-box.supporter-box', 'click', function(e) {
     getModal('supporting_user_modal', {'user': p_id});
 });
 
+function updateElementsAfterAnswer() {
+    $(".update_after_answer").each(function(i,e) {
+        updateDomElement($(this));
+    });
+}
+
+function updateDomElement(element) {
+    var data = element.data();
+    action({
+        data: data,
+        success: function(data) {
+            var returned = $.parseJSON(data);
+            element.html(returned.html);
+            postInitialize(element);
+        }
+    });
+}
 
 function initializeDomElements() {
     $(".initialize_self").each(function(i,e) {
@@ -3301,29 +3319,13 @@ function postInitialize(element) {
         element.find(".agreement_bargraph").fadeIn();
     }
 
+    if (element.hasClass("agreement_people_list_seed")) {
+        element.find(".agreement_people_list_wrapper").fadeIn();
+    }
+
     bindOnNewElements();
 
 }
-
-
-/*
- // position absolute relatively to parent
- var stub = element.parents(".question_stub");
- var min_stub_height = 450;
- stub.animate({'min-height':String(min_stub_height) + "px"}, 200);
- var stub_height = stub.height();
- var bargraph = element.find('.agreement_bargraph');
- var bargraph_height = bargraph.height();
- var bottom_padding = 105;
- var min_above = 200;
- var bargraph_top = stub_height - bargraph_height - bottom_padding;
- if (bargraph_top > min_above) {
- bargraph.css("top", String(bargraph_top) + "px");
- }
- else {
- bargraph.css("top", String(bargraph_top) + "px");
- //bargraph.hide();
- }*/
 
 /***********************************************************************************************************************
  *

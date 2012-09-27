@@ -812,21 +812,10 @@ def questionDetail(request, q_id=None, vals={}):
     else:
         question = Question.objects.get(id=q_id)
 
-    response = viewer.view.responses.filter(question=question)
-    if response:
-        response = response[0]
+    response = viewer.getResponseToQuestion(question)
+    question.my_response = response
     vals['response'] = response
     vals['question'] = question
-
-    if response:
-        vals['group_tuples'] = getGroupTuples(viewer, question, response)
-
-    friends = viewer.getIFollow()
-    friends_answered = []
-    for f in friends:
-        if f.view.responses.filter(question=question):
-            friends_answered.append(f)
-    vals['friends_answered'] = friends_answered
 
     contentDetail(request, question, vals)
     html = ajaxRender('site/pages/content_detail/question_detail.html', vals, request)

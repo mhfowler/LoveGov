@@ -210,7 +210,7 @@ def checkBrowserCompatible(request):
             browser_name = browser.get('name')
             if browser_name == "Microsoft Internet Explorer":
                 version = float(browser.get('version'))
-                if version < 10.0:
+                if version < 9.0:
                     to_return = False
 
     if not to_return:

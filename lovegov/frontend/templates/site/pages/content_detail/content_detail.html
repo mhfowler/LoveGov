@@ -51,15 +51,17 @@
 
         <div class="content-detail-central">
             <div class="content-detail-top">
-                <div class="the-hearts">
-                    {% usemacro hearts_rank content my_vote %}
-                </div>
-                <div class="detail-item-header">
-                    {% usemacro feed_title content %}
-                    <div class="feed-item-bottom-wrapper">
-                        {% usemacro feed_bottom content %}
+                {% block content_detail_top %}
+                    <div class="the-hearts">
+                        {% usemacro hearts_rank content my_vote %}
                     </div>
-                </div>
+                    <div class="detail-item-header">
+                        {% usemacro feed_title content %}
+                        <div class="feed-item-bottom-wrapper">
+                            {% usemacro feed_bottom content %}
+                        </div>
+                    </div>
+                {% endblock %}
                 <div style="clear:both;"></div>
             </div>
 

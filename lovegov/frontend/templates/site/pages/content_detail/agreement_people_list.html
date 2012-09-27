@@ -1,0 +1,27 @@
+<div class="agreement-people-list-wrapper agreement_people_list_wrapper">
+
+    <div class="agreement-people-title">
+        {{ agreement_title }} agree with you
+    </div>
+
+    <div class="people-list-wrapper">
+        {% for user in agreed %}
+            {% include 'site/pieces/avatar_strip.html'  %}
+        {% empty %}
+            No One
+        {% endfor %}
+    </div>
+
+    <div class="agreement-people-title">
+        {{ agreement_title }} disagree with you
+    </div>
+
+    <div class="people-list-wrapper">
+        {% for user in disagreed %}
+            {% include 'site/pieces/avatar_strip.html'  %}
+        {% empty %}
+            No One
+        {% endfor %}
+    </div>
+
+</div>
