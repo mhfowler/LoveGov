@@ -11,7 +11,7 @@
             To match yourself with politicians, take the <a href="{{ lgpoll.get_url }}"> LoveGov Poll </a>.
             You can also create your own polls and questions.
         <!-- topic stat box -->
-        {% include 'site/pages/qa/poll_progress_by_topic.html' %}
+        {% include 'site/pages/qa/poll_progress_by_topic.html' with poll="nothing" %}
     </div>
 {% endblock %}
 
