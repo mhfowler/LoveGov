@@ -29,3 +29,12 @@ LOGGING = base_settings.setLogging(LOG_ROOT)
 
 ADMIN_MEDIA_PREFIX = STATIC_ROOT + "admin/"
 
+COMPRESS_URL = STATIC_URL
+COMPRESS_OUTPUT_DIR = 'CACHE' # default, included for simplicity
+COMPRESS_STORAGE = 'storage.CachedS3BotoStorage'
+#COMPRESS_STORAGE = 'compressor.storage.CompressorFileStorage'
+COMPRESS_ROOT = "LoveGov/frontend"
+
+COMPRESS_ENABLED = True
+
+ABSOLUTE_STATIC_URL_NOSLASH = "http://dev.lovegov.com" + STATIC_URL_NOSLASH
