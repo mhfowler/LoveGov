@@ -235,6 +235,7 @@ div.feed-main
           &:hover
           {
             @include background-image(linear-gradient(white, #f7f7f7));
+            background-color:$light-gray;
             cursor:pointer;
           }
           &:active {
@@ -249,6 +250,7 @@ div.feed-main
           padding-top: $button-top-padding + 1;
           padding-bottom: $button-top-padding - 1;
           @include background-image(linear-gradient($light-gray, $white-gray));
+          background-color:$light-gray;
         }
 
         div.last-button
