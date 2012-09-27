@@ -26,6 +26,7 @@ div.content-detail-sidebar {
       @include triangle('left', $light-gray, $triangle-size);
       position: absolute;
       left:-15px;
+      border-right-color:$light-gray;
     }
     &:hover {
       text-decoration:none;
