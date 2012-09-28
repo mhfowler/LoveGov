@@ -1084,8 +1084,9 @@ def updateMatch(request, vals={}):
     viewer = vals['viewer']
     to_compare_alias = request.POST['to_compare_alias']
     to_compare = aliasToObject(to_compare_alias)
-    display = request.POST['display']
     vals['to_compare'] = to_compare
+    display = request.POST['display']
+    vals['match_display'] = display
     if display == 'comparison_web':
         comparison, web_json = to_compare.getComparisonJSON(viewer)
         vals['web_json'] = web_json
@@ -1105,8 +1106,10 @@ def updateMatch(request, vals={}):
     elif display == 'comparison_web':
         html = ajaxRender('site/pages/qa/comparison_web.html', vals, request)
     elif display == 'match_num':
-        to_compare.comparison = to_compare.getComparison(viewer)
+        to_compare.comparison = comparison
         html = ajaxRender('site/pages/qa/match_num.html', vals, request)
+    elif display == 'group_header_match':
+        html = ajaxRender('site/pieces/match_breakdown/match_breakdown.html', vals, request)
     return HttpResponse(json.dumps({'html':html}))
 
 #-----------------------------------------------------------------------------------------------------------------------

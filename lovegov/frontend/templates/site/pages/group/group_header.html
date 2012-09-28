@@ -105,7 +105,7 @@
 
                 <div class="group-topic-comparison">
                     <div class="hundred"> 100% </div>
-                    {% include 'site/pieces/match_breakdown/match_breakdown.html' with match_display="group_header_match" comparison=info.comparison_breakdown %}
+                    {% include 'site/pieces/match_breakdown/match_breakdown.html' with match_display="group_header_match" comparison=info.comparison_breakdown to_compare=group %}
                 </div>
 
                 <a href="{{ group.getHistogramURL }}" class="see-more">
