@@ -35,6 +35,6 @@ COMPRESS_STORAGE = 'storage.CachedS3BotoStorage'
 #COMPRESS_STORAGE = 'compressor.storage.CompressorFileStorage'
 COMPRESS_ROOT = "LoveGov/frontend"
 
-COMPRESS_ENABLED = True
+COMPRESS_ENABLED = False
 
 ABSOLUTE_STATIC_URL_NOSLASH = "http://dev.lovegov.com" + STATIC_URL_NOSLASH

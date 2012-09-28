@@ -304,19 +304,19 @@ def scriptCreateResponses(args=None):
                 print "+II+ Successfully answered question for " + politician_name[0]
 
 def sendStudentGroupInviteEmail():
-    path = os.path.join(PROJECT_PATH, 'frontend/excel/AcademiaBundle_ME.xls')
+    path = os.path.join(PROJECT_PATH, 'frontend/excel/AcademiaBundle_MA.xls')
     wb = open_workbook(path)
     sheet = wb.sheet_by_index(0)
     num = 0
-    for row in range(1,sheet.nrows):
-    #for row in range(1,3):
+    #for row in range(1,sheet.nrows):
+    for row in range(1,3):
         student_name = sheet.cell(row,0).value
         student_first_name = student_name.split(' ')[0]
         student_affiliation = sheet.cell(row,1).value
         student_email = sheet.cell(row,2).value
         email_message = render_to_string('emails/lovegov/student_group_invite.html',{'student_name': student_first_name, 'student_affiliation': student_affiliation})
-        send_mail('LoveGov', email_message, 'joschka@lovegov.com', [student_email])
-        #send_mail('LoveGov', email_message, 'joschka@lovegov.com', ['jsgreenf@gmail.com'])
+        #send_mail('LoveGov', email_message, 'joschka@lovegov.com', [student_email])
+        send_mail('LoveGov', email_message, 'joschka@lovegov.com', ['jsgreenf@gmail.com'])
         try:
             print 'Name: %s, Affiliation: %s, Email: %s' % (student_name, student_affiliation, student_email)
         except:

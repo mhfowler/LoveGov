@@ -8,6 +8,7 @@ class CachedS3BotoStorage(S3BotoStorage):
     S3 storage backend that saves the files locally, too.
     """
     def __init__(self, *args, **kwargs):
+        # override location to use compressor's S3 path
     	kwargs['location'] = compressor_settings.STATIC_S3_PATH
         super(CachedS3BotoStorage, self).__init__(*args, **kwargs)
         self.local_storage = get_storage_class(
