@@ -207,7 +207,7 @@ class PhysicalAddress(LGModel):
         elif city:
             to_return = city
         elif state:
-            to_return = state
+            to_return = ":" + state
         return to_return
 
     def getMatchingIdentifiersList(self):
