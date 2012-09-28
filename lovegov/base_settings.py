@@ -372,6 +372,6 @@ CURRENT_TEST_RUN = 0
 BENCHMARK_PAGES = ['/home/', '/groups/', '/elections/', '/questions/']
 
 BENCHMARK_AJAX = [
-    ('/home/', 'getFeed'),
-    ('/groups/', 'getGroups')
+#    ('/home/', 'getFeed'),
+#    ('/groups/', 'getGroups')
 ]
