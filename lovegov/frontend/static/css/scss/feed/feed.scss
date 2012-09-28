@@ -886,8 +886,11 @@ div.feed-item-wrapper {
             @include valignable();
             @include border-radius(8px);
             &:hover {
-              background-color:$awesome-blue;
+              background-color:$white-gray;
               cursor:pointer;
+            }
+            &:active {
+              background-color: $awesome-blue;
             }
             &.clicked {
               background-color:$awesome-blue;
