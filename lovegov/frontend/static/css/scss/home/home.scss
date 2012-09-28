@@ -4,6 +4,10 @@
 
 @import "compass";
 
+a.home_link:hover {
+  text-decoration:none;
+}
+
 /* like minded home page */
 div.home-page-header {
   position:relative;
