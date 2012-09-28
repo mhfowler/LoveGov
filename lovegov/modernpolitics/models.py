@@ -1308,7 +1308,10 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
 
     def makeStale(self, content):
         if not content in self.stale_content.all():
-            self.stale_content.add(content)
+            try:
+                self.stale_content.add(content)
+            except:
+                error_logger.error("Failed to make content stale: " + enc(content.get_name()) + " for " + enc(self.get_name()))
 
     def updateStale(self):
         for x in self.seen_content.all():
@@ -5146,8 +5149,11 @@ class CalculatedGroup(Group):
                     if comparison.result >= LIKE_MINDED_RESULT_THRESHOLD and comparison.num_q >= LIKE_MINDED_NUMQ_THRESHOLD:
                         self.members.add(x)
                         found.append(x)
-                self.processed.add(x)
-                processed_num += 1
+                try:
+                    self.processed.add(x)
+                    processed_num += 1
+                except:
+                    error_logger.error("Failed to add to like minded " + enc(x.get_name()) + " to " + enc(viewer.get_name()))
 
         if not processed_num:
             viewer.addFinishedTask("L")
@@ -5831,3 +5837,6 @@ class BlogEntry(LGModel):
         return '/blog/' + self.creator.alias + '/' + str(self.id)
 
 
+
+def enc(s):
+    return s.encode('ascii', 'ignore')
