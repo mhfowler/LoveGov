@@ -195,16 +195,28 @@ class PhysicalAddress(LGModel):
         return to_return
 
     def setIdentifier(self):
-        self.identifier = self.city + ":" + self.state
+        self.identifier = self.calcIdentifier()
         self.save()
 
+    def calcIdentifier(self):
+        city = self.city
+        state = self.state
+        to_return = ""
+        if city and state:
+            to_return = city + ":" + state
+        elif city:
+            to_return = city
+        elif state:
+            to_return = state
+        return to_return
+
     def getMatchingIdentifiersList(self):
-        identifiers = []
+        identifiers = [""]
         if self.state:
             identifiers.append(":" + self.state)
             if self.city:
                 identifiers.append(self.city + ":" + self.state)
-        return identifiers
+        return reversed(identifiers)
 
     def modify(self, city=None, state=None):
         if city:
