@@ -447,8 +447,9 @@ def invite(request, vals={}):
     Sends invite email and and addds email to valid emails.
     """
     email = request.POST['email']
+    msg = request.POST.get('msg')
     inviter = vals['viewer']
-    sendInviteByEmail(inviter, email)
+    sendInviteByEmail(inviter, email, msg)
     return HttpResponse("+")
 
 #-----------------------------------------------------------------------------------------------------------------------
