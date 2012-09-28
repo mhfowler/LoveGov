@@ -211,12 +211,13 @@ class PhysicalAddress(LGModel):
         return to_return
 
     def getMatchingIdentifiersList(self):
-        identifiers = [""]
+        identifiers = []
         if self.state:
             identifiers.append(":" + self.state)
             if self.city:
                 identifiers.append(self.city + ":" + self.state)
-        return reversed(identifiers)
+        identifiers.append("")
+        return identifiers
 
     def modify(self, city=None, state=None):
         if city:
