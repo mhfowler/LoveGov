@@ -80,6 +80,13 @@ STATICFILES_FINDERS = (
     'compressor.finders.CompressorFinder',
     )
 
+COMPRESS_ENABLED = True
+
+COMPRESS_URL = STATIC_URL
+#COMPRESS_STORAGE = 'storage.CachedS3BotoStorage'
+COMPRESS_STORAGE = 'compressor.storage.CompressorFileStorage'
+
+COMPRESS_OUTPUT_DIR = 'CACHE' # default, included for simplicity
 
 
 ########################################################################################################################
@@ -375,3 +382,5 @@ BENCHMARK_AJAX = [
 #    ('/home/', 'getFeed'),
 #    ('/groups/', 'getGroups')
 ]
+
+

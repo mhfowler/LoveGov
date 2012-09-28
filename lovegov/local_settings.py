@@ -65,14 +65,7 @@ THUMBNAIL_DUMMY = True
 
 THUMBNAIL_DUMMY_SOURCE = 'http://placekitten.com/%(width)s/%(height)s'
 
-COMPRESS_URL = STATIC_URL + '/'
-
-#COMPRESS_STORAGE = 'storage.CachedS3BotoStorage'
-COMPRESS_STORAGE = 'compressor.storage.CompressorFileStorage'
-COMPRESS_ROOT = STATIC_ROOT
-COMPRESS_OUTPUT_DIR = 'CACHE' # default, included for simplicity
-
-COMPRESS_ENABLED = True
+COMPRESS_ENABLED = False
 
 #STATICFILES_STORAGE = 'storage.CachedS3BotoStorage'
 

@@ -68,13 +68,6 @@ CACHES = {
 import djcelery
 djcelery.setup_loader()
 
-
-COMPRESS_URL = STATIC_URL
-#COMPRESS_STORAGE = 'storage.CachedS3BotoStorage'
-COMPRESS_STORAGE = 'compressor.storage.CompressorFileStorage'
 COMPRESS_ROOT = STATIC_ROOT
-COMPRESS_OUTPUT_DIR = 'CACHE' # default, included for simplicity
-
-COMPRESS_ENABLED = True
 
 ABSOLUTE_STATIC_URL_NOSLASH = "http://dev.lovegov.com" + STATIC_URL_NOSLASH
