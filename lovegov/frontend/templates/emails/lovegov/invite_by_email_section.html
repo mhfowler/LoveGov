@@ -6,9 +6,19 @@
 
     <p>
         {{ inviter.get_name }} has invited you to join LoveGov.
+
         Join to match yourself to politicians, track elections, and stay informed about what’s going on in politics.
         If you don’t know who {{ inviter.get_name }} is, we’re sorry!
     </p>
+
+    {% if msg %}
+    <hr>
+
+    <p><span style="color: gray; font-style: italic;">{{ msg }}</span></p>
+
+    <hr>
+
+    {% endif %}
 
     <div class="claim-wrapper" style="width:100%;text-align:center;margin-top:30px;">
 

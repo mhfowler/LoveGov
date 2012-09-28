@@ -1463,10 +1463,11 @@ function sendInvitation(event)
 {
     event.preventDefault();
     var email = $("#email-input").val();
+    var msg = $("textarea#email-message").val();
     $("#invite-return-message").text("");
     $("#invite-return-loading-img").show();
     action({
-        data: {'action':'invite','email':email},
+        data: {'action':'invite','email':email, 'msg': msg},
         success: function(data)
         {
             $("#invite-return-loading-img").hide();

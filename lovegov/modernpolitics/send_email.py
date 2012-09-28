@@ -88,9 +88,9 @@ def sendScorecardInviteEmail(to_email, scorecard):
     email_template = 'emails/lovegov/invite_scorecard.html'
     sendLoveGovEmailHelper(None, subject, email_vals, email_template, to_email=to_email)
 
-def sendInviteByEmail(inviter, to_email):
+def sendInviteByEmail(inviter, to_email, msg):
     subject = "You were invited to join LoveGov"
-    email_vals = {'inviter':inviter}
+    email_vals = {'inviter':inviter, 'msg': msg}
     email_template = 'emails/lovegov/invite_by_email.html'
     sendLoveGovEmailHelper(None, subject, email_vals, email_template, to_email=to_email)
 
