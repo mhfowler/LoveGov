@@ -517,7 +517,6 @@ def submitAddress(request, vals={}):
     try:
         location = postLocationHelper(request)
         viewer.setNewLocation(location)
-        viewer.joinLocationGroups()
     except:
         return HttpResponse(json.dumps({'success':-1}))
 
