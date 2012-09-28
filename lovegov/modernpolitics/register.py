@@ -86,13 +86,13 @@ def createUserHelper(control,name,active=True,verified=False):
     first_name = ""
     last_name = ""
     for i,name in enumerate(names):
-        name = str(name)
+        name = enc(name).capitalize()
         if i==0:
-            first_name = str.capitalize(name)
+            first_name = name
         elif i < (num_names-1):
-            first_name += " " + str.capitalize(name)
+            first_name += " " + name
         else:
-            last_name = str.capitalize(name)
+            last_name = name
     user_profile.first_name = first_name
     user_profile.last_name = last_name
 
