@@ -1239,13 +1239,13 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
             self.updateHotFeed()
 
     def updateHotFeed(self):
+        self.last_updated_hot_feed = datetime.datetime.now()
+        self.save()
         self.hot_feed.clear()
         hot_feed_content = self.calculateHotFeedContent()
         for score, content in enumerate(hot_feed_content):
             r = RankedContent(content=content, score=score, user=self)
             r.save()
-        self.last_updated_hot_feed = datetime.datetime.now()
-        self.save()
 
     def calculateHotFeedContent(self):
         self.updateStale()
