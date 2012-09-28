@@ -364,3 +364,11 @@ def updateHotFeeds(debug=False):
 def updateHot(debug=False):
     updateHotScores(debug)
     updateHotFeeds(debug)
+
+## get all content relevant to a location
+def getContentRelevantToLocation(location):
+    content = Content.objects.filter(in_feed=True)
+    if location:
+        identifiers = location.getMatchingIdentifiersList()
+        content = content.filter(Q(location=None) | Q(location__identifier__in=identifiers))
+    return content

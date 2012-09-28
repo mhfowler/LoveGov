@@ -1286,17 +1286,14 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
             r = RankedContent(content=content, score=score, user=self)
             r.save()
 
-    def getContentRelevantToLocation(self):
-        content = Content.objects.filter(in_feed=True)
-        if self.location:
-            location = self.location
-            identifiers = location.getMatchingIdentifiersList()
-            content = content.filter(Q(location=None) | Q(location__identifier__in=identifiers))
-        return content
+    def getContentRelevantToMyLocation(self):
+        from lovegov.modernpolitics.feed import getContentRelevantToLocation
+        location = self.location
+        return getContentRelevantToLocation(location)
 
     def calculateHotFeedContent(self):
         self.updateStale()
-        content = self.getContentRelevantToLocation()
+        content = self.getContentRelevantToMyLocation()
         content = self.getUnstaleContent(content)
         content_ids = content.values_list("id", flat=True)
 
