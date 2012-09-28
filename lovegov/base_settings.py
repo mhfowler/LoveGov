@@ -249,7 +249,7 @@ def setLogging(log_root):
                 'propagate': True,
                 },
             'lg.critical': {
-                'handlers': ['lg_critical_handler', 'mail_admins'],
+                'handlers': ['mail_admins', 'lg_critical_handler'],
                 'level': 'CRITICAL',
                 'propagate': True,
                 },

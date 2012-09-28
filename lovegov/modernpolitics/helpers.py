@@ -39,7 +39,7 @@ class LGException(Exception):
             self.client_message = error_message
 
         self.error_message = error_message
-        critical_logger.error(self.error_message)
+        critical_logger.critical(self.error_message)
 
     def __str__(self):
         return repr(self.error_message)
