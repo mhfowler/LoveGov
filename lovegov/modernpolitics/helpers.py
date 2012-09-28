@@ -258,6 +258,8 @@ def locationHelper(address, city, state, zip, location=None):
 
     setDistrict(location)
 
+    location.setIdentifier()
+
     return location
 
 def setDistrict(location):

@@ -70,6 +70,15 @@ COMPRESS_ENABLED = False
 #STATICFILES_STORAGE = 'storage.CachedS3BotoStorage'
 
 
+########################################################################################################################
+#    email during dev
+#
+########################################################################################################################
+
+EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
+EMAIL_FILE_PATH = '/log/emails'
+
+
 
 
 

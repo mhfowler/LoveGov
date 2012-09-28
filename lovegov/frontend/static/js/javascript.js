@@ -1802,6 +1802,7 @@ bind(".sign_up_with_email_button", 'click', null, function(event) {
 
 bind(".r_register", 'click', null, function(event) {
     var form = $(this).parents(".r_register_form");
+    form.find(".registering_gif").show();
     var form_type = form.data("form_type");
     form.find(".register_gif").show();
     var name = form.find(".name_input").val();
@@ -1827,7 +1828,7 @@ bind(".r_register", 'click', null, function(event) {
         data: data,
         success: function(data)
         {
-            form.find(".register_gif").hide();
+            form.find(".registering_gif").hide();
             var returned = $.parseJSON(data);
 
             if (returned.success) {

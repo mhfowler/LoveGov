@@ -1,5 +1,31 @@
 from lovegov.modernpolitics.initialize import *
 
+### recalculate location identifiers ###
+def recalculateLocationIdentifiers():
+    count = 0
+    addresses = PhysicalAddress.objects.all()
+    print "to do: " + str(len(addresses))
+    for l in addresses:
+        l.setIdentifier()
+        count += 1
+        if not count%20:
+            print count
+
+def recalculateContentLocationsByPostedTo():
+    count = 0
+    content = Content.objects.filter(in_feed=True)
+    for c in content:
+        if c.posted_to:
+            g = c.posted_to
+            if g.location:
+                location = g.location
+                c.setLocationByCityAndState(city=location.city, state=location.state)
+                print c.get_name()
+        count += 1
+        if not count%20:
+            print count
+
+
 ### recalculate stale ###
 def recalculateStaleContent():
     for u in UserProfile.objects.filter(ghost=False):

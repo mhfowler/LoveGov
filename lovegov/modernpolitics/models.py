@@ -166,6 +166,7 @@ class PhysicalAddress(LGModel):
     state = models.CharField(max_length=15, null=True)
     city = models.CharField(max_length=500, null=True)
     district = models.IntegerField(null=True)
+    identifier = models.CharField(max_length=500, null=True)
 
     def clear(self):
         self.address_string = None
@@ -192,6 +193,38 @@ class PhysicalAddress(LGModel):
         elif state:
             to_return = state
         return to_return
+
+    def setIdentifier(self):
+        self.identifier = self.calcIdentifier()
+        self.save()
+
+    def calcIdentifier(self):
+        city = self.city
+        state = self.state
+        to_return = ""
+        if city and state:
+            to_return = city + ":" + state
+        elif city:
+            to_return = city
+        elif state:
+            to_return = state
+        return to_return
+
+    def getMatchingIdentifiersList(self):
+        identifiers = []
+        if self.state:
+            identifiers.append(":" + self.state)
+            if self.city:
+                identifiers.append(self.city + ":" + self.state)
+        identifiers.append("")
+        return identifiers
+
+    def modify(self, city=None, state=None):
+        if city:
+            self.city = city
+        if state:
+            self.state = state
+        self.setIdentifier()
 
 #=======================================================================================================================
 # Abstract tuple for representing what location and scale content is applicable to.
@@ -544,6 +577,12 @@ class Content(ActiveModel, Privacy, LocationLevel):
             self.main_topic = topic
             self.save()
             self.topics.add(topic)
+
+    def setLocationByCityAndState(self, city=None, state=None):
+        location = PhysicalAddress(city=city, state=state)
+        location.setIdentifier()
+        self.location = location
+        self.save()
 
     #-------------------------------------------------------------------------------------------------------------------
     # Get vote rating of content.
@@ -1247,9 +1286,15 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
             r = RankedContent(content=content, score=score, user=self)
             r.save()
 
+    def getContentRelevantToMyLocation(self):
+        from lovegov.modernpolitics.feed import getContentRelevantToLocation
+        location = self.location
+        return getContentRelevantToLocation(location)
+
     def calculateHotFeedContent(self):
         self.updateStale()
-        content = self.getUnstaleContent()
+        content = self.getContentRelevantToMyLocation()
+        content = self.getUnstaleContent(content)
         content_ids = content.values_list("id", flat=True)
 
         petitions = content.filter(type="P").order_by("-status")
@@ -1336,10 +1381,11 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
             self.makeStale(x.content)
 
 
-    def getUnstaleContent(self):
+    def getUnstaleContent(self, content=None):
+        if not content:
+            content = Content.objects.filter(in_feed=True)
         stale_ids = self.stale_content.values_list("id", flat=True)
-        return Content.objects.filter(in_feed=True).exclude(id__in=stale_ids)
-        #return Content.objects.filter(in_feed=True)
+        return content.exclude(id__in=stale_ids)
 
     #-------------------------------------------------------------------------------------------------------------------
     # background tasks

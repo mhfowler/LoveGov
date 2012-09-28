@@ -90,10 +90,8 @@ div.new-register-form {
     }
     div.registering-gif {
       float:left;
-      margin-left:15px;
-      width:50px;
-      height:40px;
-      @include staticImage('/images/gifs/ajax-loader.gif');
+      margin-left: 27px;
+      margin-top: 16px;
       display:none;
     }
   }
@@ -383,9 +381,9 @@ div.no-login-modal
           span.login-error {
             font-size: 14px;
             float:left;
-            width:110px;
-            text-align:center;
-            margin: 14px 0px 0px 0;
+            width: 100%;
+            text-align: left;
+            margin: 17px 0px 0px 0;
             color:$red;
           }
           a.forgot-link {
