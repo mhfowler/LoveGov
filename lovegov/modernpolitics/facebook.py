@@ -116,6 +116,8 @@ def fbLogin(request, vals={}, refresh=False):
 
         # login
         user = user_prof.user
+        if not user:
+            raise LGException("FB Login resulted in user that was NoneType. Fb return was: " + str(me))
         user.backend = 'django.contrib.auth.backends.ModelBackend'
         auth.login(request, user)
         return user_prof

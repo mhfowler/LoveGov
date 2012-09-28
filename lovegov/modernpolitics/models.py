@@ -1311,7 +1311,8 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
             try:
                 self.stale_content.add(content)
             except:
-                error_logger.error("Failed to make content stale: " + enc(content.get_name()) + " for " + enc(self.get_name()))
+                from lovegov.modernpolitics.helpers import LGException
+                LGException("Failed to make content stale: " + enc(content.get_name()) + " for " + enc(self.get_name()))
 
     def updateStale(self):
         for x in self.seen_content.all():
@@ -5153,7 +5154,8 @@ class CalculatedGroup(Group):
                     self.processed.add(x)
                     processed_num += 1
                 except:
-                    error_logger.error("Failed to add to like minded " + enc(x.get_name()) + " to " + enc(viewer.get_name()))
+                    from lovegov.modernpolitics.helpers import LGException
+                    LGException("Failed to add to like minded " + enc(x.get_name()) + " to " + enc(viewer.get_name()))
 
         if not processed_num:
             viewer.addFinishedTask("L")

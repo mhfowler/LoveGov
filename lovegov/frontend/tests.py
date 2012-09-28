@@ -46,4 +46,7 @@ def fbTest(request, vals):
 
     return renderToResponseCSRF(template='test/fb_test.html', vals=vals, request=request)
 
+def lgExceptionTest(request, vals):
+    raise LGException("This is a test exception")
+
 ########################################################################################################################

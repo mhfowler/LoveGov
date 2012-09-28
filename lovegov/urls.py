@@ -136,6 +136,7 @@ urlpatterns += patterns('',
     (r'^test3/$', viewWrapper(tests.test3, requires_login=True)),
     (r'^test4/$', viewWrapper(tests.test4, requires_login=True)),
     (r'^css/$', viewWrapper(tests.css, requires_login=True)),
+    (r'^force_error/$', viewWrapper(tests.lgExceptionTest, requires_login=True)),          # force error page
 
     #admin
     url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
