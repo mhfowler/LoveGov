@@ -6,7 +6,7 @@
 function bindSettings()
 {
 
-    var currently_selected =  $('.account_button[data-url="' + path + '"]');
+    var currently_selected =  $('.account_button[data-url="' + PATH + '"]');
     var starting_url = '/settings/profile/';
     if (currently_selected.length==0) {
         currently_selected = $('.account_button[data-url="' + starting_url + '"]');
