@@ -8,7 +8,7 @@ if __name__ == "__main__":
     print '======================================================================='
     file = 'necandidates/HouseCandidateAnswers_MA.xls'
     print file
-    errors = scriptCreateResponses(file)
+    errors = scriptCreateResponses([file])
     print "=================== Logged Errors ======================"
     print '========================================================'
     pprint(errors)
