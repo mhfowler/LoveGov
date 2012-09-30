@@ -10,6 +10,8 @@
 # lovegov
 from lovegov.modernpolitics.models import *
 
+from xlrd import open_workbook
+
 # django
 from django.core.mail import EmailMessage
 from django.core.mail import send_mail
@@ -169,10 +171,96 @@ def sendLaunchEmailBatch():
 
 
 
+def sendStudentGroupInviteEmail():
+    email_code = "massachu_email_sep30"
+    path = os.path.join(PROJECT_PATH, 'frontend/excel/AcademiaBundle_MA.xls')
+    wb = open_workbook(path)
+    sheet = wb.sheet_by_index(0)
+    num = 0
+    #for row in range(1,sheet.nrows):
+    for row in range(1,3):
+        student_name = sheet.cell(row,0).value
+        student_first_name = student_name.split(' ')[0]
+        student_affiliation = sheet.cell(row,1).value
+        student_email = sheet.cell(row,2).value
+        vals = {'student_name': student_first_name, 'student_affiliation': student_affiliation, 'email_code':email_code, 'email':student_email}
+        email_message = render_to_string('emails/lovegov/student_group_invite.html',vals)
+        #send_mail('LoveGov', email_message, 'joschka@lovegov.com', [student_email])
+        send_mail('LoveGov', email_message, 'joschka@lovegov.com', ['max_fowler@brown.edu'])
+        try:
+            print 'Name: %s, Affiliation: %s, Email: %s' % (student_name, student_affiliation, student_email)
+        except:
+            print 'Something went wrong printing but the email should have sent...'
+        num += 1
+    return num
 
 
 
 
+
+def sendGroupGeneralInviteEmail():
+    path = os.path.join(PROJECT_PATH, 'frontend/excel/AcademiaBundle_NH.xls')
+    wb = open_workbook(path)
+    sheet = wb.sheet_by_index(1)
+    num = 0
+    for row in range(1,sheet.nrows):
+    #for row in range(1,3):
+        group_name = sheet.cell(row,0).value
+        group_email = sheet.cell(row,2).value
+        email_message = render_to_string('emails/lovegov/group_general_invite.html',{'group_name': group_name})
+        #send_mail('LoveGov', email_message, 'joschka@lovegov.com', ['jsgreenf@gmail.com'])
+        send_mail('LoveGov', email_message, 'joschka@lovegov.com', [group_email])
+        try:
+            print 'Name: %s, Email: %s' % (group_name, group_email)
+        except:
+            print 'Something went wrong printing but the email should have sent...'
+        num += 1
+    return num
+
+
+
+
+
+def sendProfessorInviteEmail():
+    path = os.path.join(PROJECT_PATH, 'frontend/excel/AcademiaBundle_RI.xls')
+    wb = open_workbook(path)
+    sheet = wb.sheet_by_index(1)
+    num = 0
+    for row in range(1,sheet.nrows):
+    #for row in range(1,3):
+        professor_name = sheet.cell(row,0).value
+        professor_last_name = professor_name.split(' ')[-1]
+        professor_affiliation = sheet.cell(row,1).value
+        professor_email = sheet.cell(row,2).value
+        email_message = render_to_string('emails/lovegov/professor_invite.html',{'professor_name': professor_last_name, 'professor_affiliation': professor_affiliation})
+        send_mail('LoveGov', email_message, 'joschka@lovegov.com', [professor_email])
+        #send_mail('LoveGov', email_message, 'joschka@lovegov.com', ['jsgreenf@gmail.com'])
+        try:
+            print 'Name: %s, Affiliation: %s, Email: %s' % (professor_name, professor_affiliation, professor_email)
+        except:
+            print 'Something went wrong printing but the email should have sent...'
+        num += 1
+    return num
+
+
+
+
+def sendBrownProfessorInviteEmail():
+    path = os.path.join(PROJECT_PATH, 'frontend/excel/AcademiaBundle_RI.xls')
+    wb = open_workbook(path)
+    sheet = wb.sheet_by_index(2)
+    num = 0
+    for row in range(1,sheet.nrows):
+        professor_name = sheet.cell(row,0).value
+        professor_last_name = professor_name.split(' ')[-1]
+        professor_affiliation = sheet.cell(row,1).value
+        professor_department = professor_affiliation.split('Brown University ')[-1]
+        professor_email = sheet.cell(row,2).value
+        email_message = render_to_string('emails/lovegov/brown_professor_invite.html',{'professor_name': professor_last_name, 'professor_affiliation': professor_department})
+        send_mail('LoveGov', email_message, 'joschka@lovegov.com', [professor_email])
+        print 'Name: %s, Affiliation: %s, Email: %s' % (professor_name, professor_affiliation, professor_email)
+        num += 1
+    return num
 
 
 

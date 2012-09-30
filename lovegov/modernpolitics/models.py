@@ -5503,6 +5503,11 @@ class EmailSent(LGModel):
     which = models.CharField(max_length=50)
     when = models.DateField(auto_now_add=True)
 
+class toLoveGov(LGModel):
+    who = models.CharField(max_length=100, null=True)
+    date = models.DateTimeField(auto_now_add=True)
+    from_where = models.CharField(max_length=100, null=True)
+
 #=======================================================================================================================
 # Stores an error message, for when a 500 server-error happens.
 #

@@ -199,6 +199,11 @@ def tryLoveGov(request, to_page="home/", vals={}):
 def unsubscribe(request, email, vals={}):
     return HttpResponse("You have unsubscribed from LoveGov emails.")
 
+def toLoveGov(request, from_where, who=None, vals={}):
+    save = toLoveGov(from_where=from_where, who=who)
+    save.save()
+    return shortcuts.redirect("/home/")
+
 #-----------------------------------------------------------------------------------------------------------------------
 # da blog
 #-----------------------------------------------------------------------------------------------------------------------
