@@ -172,7 +172,7 @@ def sendLaunchEmailBatch():
 
 
 def sendStudentGroupInviteEmail():
-    email_code = "massachu_email_sep30"
+    from_where = "massachu_email_sep30"
     path = os.path.join(PROJECT_PATH, 'frontend/excel/AcademiaBundle_MA.xls')
     wb = open_workbook(path)
     sheet = wb.sheet_by_index(0)
@@ -183,7 +183,11 @@ def sendStudentGroupInviteEmail():
         student_first_name = student_name.split(' ')[0]
         student_affiliation = sheet.cell(row,1).value
         student_email = sheet.cell(row,2).value
-        vals = {'student_name': student_first_name, 'student_affiliation': student_affiliation, 'email_code':email_code, 'email':student_email}
+
+        to_lovegov = toLoveGov(who=student_email, from_where=from_where)
+        email_code = to_lovegov.autoSave()
+
+        vals = {'student_name': student_first_name, 'student_affiliation': student_affiliation, 'email_code':email_code}
         email_message = render_to_string('emails/lovegov/student_group_invite.html',vals)
         #send_mail('LoveGov', email_message, 'joschka@lovegov.com', [student_email])
         send_mail('LoveGov', email_message, 'joschka@lovegov.com', ['max_fowler@brown.edu'])
