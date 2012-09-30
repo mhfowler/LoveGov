@@ -198,7 +198,7 @@ def sendStudentGroupInviteEmail():
             msg.content_subtype = "html"
             msg.send()
         except BotoServerError:
-            print '+WW+ Something went wrong with sending the email to : ' + student_email
+            print '+WW+ Something went wrong with sending the email to : ' + enc(student_email)
         try:
             print 'Name: %s, Affiliation: %s, Email: %s' % (student_name, student_affiliation, student_email)
         except:
