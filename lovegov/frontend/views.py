@@ -199,7 +199,7 @@ def tryLoveGov(request, to_page="home/", vals={}):
 def unsubscribe(request, email, vals={}):
     return HttpResponse("You have unsubscribed from LoveGov emails.")
 
-def toLoveGov(request, email_code, vals={}):
+def goToLoveGov(request, email_code, vals={}):
     to_lovegov = toLoveGov.lg.get_or_none(email_code=email_code)
     if to_lovegov:
         to_lovegov.clicked = True
