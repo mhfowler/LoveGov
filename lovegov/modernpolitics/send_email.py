@@ -11,6 +11,7 @@
 from lovegov.modernpolitics.models import *
 
 from xlrd import open_workbook
+from boto.exception import BotoServerError
 
 # django
 from django.core.mail import EmailMessage
@@ -178,7 +179,7 @@ def sendStudentGroupInviteEmail():
     sheet = wb.sheet_by_index(0)
     num = 0
     #for row in range(1,sheet.nrows):
-    for row in range(3,sheet.nrows):
+    for row in range(8,sheet.nrows):
         student_name = sheet.cell(row,0).value
         student_first_name = student_name.split(' ')[0]
         student_affiliation = sheet.cell(row,1).value
@@ -191,10 +192,13 @@ def sendStudentGroupInviteEmail():
         email_message = render_to_string('emails/lovegov/student_group_invite.html',vals)
         #send_mail('LoveGov', email_message, 'joschka@lovegov.com', [student_email])
         #send_mail('LoveGov', email_message, 'joschka@lovegov.com', ['max_fowler@brown.edu'])
-        msg = EmailMessage('LoveGov', email_message, 'joschka@lovegov.com', [student_email])
-        msg.content_subtype = "html"
-        msg.send()
-
+        email_message = enc(email_message)
+        try:
+            msg = EmailMessage('LoveGov', email_message, 'joschka@lovegov.com', [student_email])
+            msg.content_subtype = "html"
+            msg.send()
+        except BotoServerError:
+            print '+WW+ Something went wrong with sending the email to : ' + student_email
         try:
             print 'Name: %s, Affiliation: %s, Email: %s' % (student_name, student_affiliation, student_email)
         except:
