@@ -215,17 +215,17 @@ def sendGroupGeneralInviteEmail(xlsfile, sheet):
     wb = open_workbook(path)
     sheet = wb.sheet_by_index(sheet)
     num = 0
-    for row in range(1,sheet.nrows):
-    #for num, row in enumerate(range(1,3)):
-        group_name = sheet.cell(row,0).value
-        group_email = sheet.cell(row,1).value
-        #group_email = 'jsgreenf@gmail.com'
+    #for row in range(1,sheet.nrows):
+    for row in range(20,23):
+        group_affiliation = sheet.cell(row,1).value
+        #group_email = sheet.cell(row,0).value
+        group_email = 'jsgreenf@gmail.com'
 
         to_lovegov = toLoveGov(who=group_email, from_where=from_where)
         to_lovegov.save()
         email_code = to_lovegov.id
 
-        vals = {'group_name': group_name, 'email_code':email_code}
+        vals = {'group_affiliation': group_affiliation, 'email_code':email_code}
 
         email_message = render_to_string('emails/lovegov/group_general_invite.html',vals)
         email_message = enc(email_message)
@@ -236,7 +236,7 @@ def sendGroupGeneralInviteEmail(xlsfile, sheet):
         except BotoServerError:
             print '+WW+ Something went wrong with sending the email to : ' + enc(group_email)
         try:
-            print 'Name: %s, Email: %s' % (group_name, group_email)
+            print 'Affiliation: %s, Email: %s' % (group_affiliation, group_email)
         except:
             print 'Something went wrong printing but the email should have sent...'
         num += 1
