@@ -211,20 +211,20 @@ def sendStudentGroupInviteEmail():
 
 
 
-def sendGroupGeneralInviteEmail():
-    path = os.path.join(PROJECT_PATH, 'frontend/excel/AcademiaBundle_NH.xls')
+def sendGroupGeneralInviteEmail(xlsfile, sheet):
+    from_where = "testemail"
+    path = os.path.join(PROJECT_PATH, xlsfile)
     wb = open_workbook(path)
-    sheet = wb.sheet_by_index(1)
+    sheet = wb.sheet_by_index(sheet)
     num = 0
-    for row in range(1,sheet.nrows):
-    #for row in range(1,3):
+    #for row in range(1,sheet.nrows):
+    for row in range(1,3):
         group_name = sheet.cell(row,0).value
         group_email = sheet.cell(row,2).value
         email_message = render_to_string('emails/lovegov/group_general_invite.html',{'group_name': group_name})
-        #send_mail('LoveGov', email_message, 'joschka@lovegov.com', ['jsgreenf@gmail.com'])
-        #send_mail('LoveGov', email_message, 'joschka@lovegov.com', [group_email])
 
-        msg = EmailMessage('LoveGov', email_message, 'joschka@lovegov.com', [group_email])
+        #msg = EmailMessage('LoveGov', email_message, 'joschka@lovegov.com', [group_email])
+        msg = EmailMessage('LoveGov', email_message, 'joschka@lovegov.com', ['jsgreenf@gmail.com'])
         msg.content_subtype = "html"
         msg.send()
 
