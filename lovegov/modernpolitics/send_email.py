@@ -231,11 +231,11 @@ def sendGroupGeneralInviteEmail(xlsfile, sheet):
         email_message = render_to_string('emails/lovegov/group_general_invite.html',vals)
         email_message = enc(email_message)
         try:
-            msg = EmailMessage('LoveGov', email_message, 'joschka@lovegov.com', [student_email])
+            msg = EmailMessage('LoveGov', email_message, 'joschka@lovegov.com', [group_email])
             msg.content_subtype = "html"
             msg.send()
         except BotoServerError:
-            print '+WW+ Something went wrong with sending the email to : ' + enc(student_email)
+            print '+WW+ Something went wrong with sending the email to : ' + enc(group_email)
         try:
             print 'Name: %s, Email: %s' % (group_name, group_email)
         except:
