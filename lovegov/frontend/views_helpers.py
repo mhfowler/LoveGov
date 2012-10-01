@@ -3,6 +3,40 @@ from django.http import HttpResponse, HttpRequest
 # lovegov
 from lovegov.modernpolitics.backend import *
 from lovegov.base_settings import UPDATE
+from operator import attrgetter
+
+
+#-----------------------------------------------------------------------------------------------------------------------
+# get questions for weekly digest
+#-----------------------------------------------------------------------------------------------------------------------
+def getWeeklyDigestQuestions(time_start, time_end, viewer):
+
+    responses = viewer.getView().responses.all()
+    answered_ids = responses.values_list("question_id", flat=True)
+
+    questions = Question.objects.exclude(id__in=answered_ids)
+
+    all_users = UserProfile.objects.filter(ghost=False)
+    all_user_responses = Response.objects.filter(creator__in=all_users)
+
+    questions_list = []
+    for x in questions:
+        recent_responses = filterByEditedWhen(all_user_responses, time_start, time_end)
+        x.num_recent_responses = recent_responses.count()
+        questions_list.append(x)
+
+    questions_list.sort(key=attrgetter('num_recent_responses'), reverse=True)
+
+    return questions_list
+
+
+def getWeeklyDigestNews(time_start, time_end, viewer):
+
+    news = News.objects.all()
+    news = filterByCreatedWhen(news, time_start, time_end)
+    news.order_by("-status")
+
+    return news
 
 #-----------------------------------------------------------------------------------------------------------------------
 # get vals for displaying info about who chose what about question

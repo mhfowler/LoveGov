@@ -44,7 +44,7 @@
         <h2> details </h2>
         {% for x in accessed %}
             {% if not x.user.developer %}
-                {% include 'emails/daily_summary/session_summary.html' with session=x.session user=x.user %}
+                {% include 'emails/daily_summary/session_summary.html' with session=x.session user=x.user session_length=x.session_length %}
             {% endif %}
         {% endfor %}
         <div style="clear:both"></div>
@@ -55,7 +55,7 @@
             <br><br>
         <h2> anonymous activity </h2>
         {% for x in anon_activity %}
-           {% include 'emails/daily_summary/session_summary.html' with session=x.session ipaddress=x.ipaddress %}
+           {% include 'emails/daily_summary/session_summary.html' with session=x.session ipaddress=x.ipaddress  %}
         {% endfor %}
         <div style="clear:both"></div>
     {% endif %}

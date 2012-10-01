@@ -4,6 +4,67 @@
 
 @import 'compass';
 
+div.email-settings-wrapper {
+
+
+  div.email-settings-header {
+    font-size: 32px;
+    color:$red;
+    width:100%;
+    text-align:center;
+  }
+  div.email-settings-explanation {
+    width:100%;
+    text-align:center;
+    margin-top:10px;
+    margin-bottom:25px;
+    font-size:14px;
+  }
+
+  div.email-settings-choices {
+    width:100%;
+    div.email-setting-wrapper {
+      margin-bottom:25px;
+      div.email-setting-explanation {
+        float: left;
+        width: 350px;
+        div.email-setting-label {
+          font-size:20px;
+        }
+        div.email-setting-writing {
+          padding-left:15px;
+          width:300px;
+        }
+      }
+      input.email-setting-checkbox {
+        float:left;
+        margin-top:15px;
+      }
+    }
+  }
+
+  a.email-settings-save-changes {
+    float:right;
+    padding:15px;
+    background-color:$red;
+    @include border-radius(8px);
+    color:white;
+    &:hover {
+      background-color:$red-light;
+    }
+  }
+
+  div.email-settings-saved-message {
+    float:right;
+    margin-right:40px;
+    margin-top:15px;
+    display:none;
+  }
+
+}
+
+
+
 $account-header-margin-bottom:25px;
 
 div.account-left

@@ -1181,13 +1181,13 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
     first_name = models.CharField(max_length=200)
     last_name = models.CharField(max_length=200)
     email = models.EmailField()
-    # REGISTRATION
+    # registration
     registration_code = models.ForeignKey(RegisterCode,null=True)
     confirmed = models.BooleanField(default=False)
     confirmation_link = models.CharField(max_length=500)
     developer = models.BooleanField(default=False)  # for developmentWrapper
     user_title = models.CharField(max_length=200,null=True)
-    # INFO
+    # info
     political_statement = models.TextField(null=True)
     view = models.ForeignKey("WorldView", default=initView)
     networks = models.ManyToManyField("Network", related_name='networks')
@@ -1195,7 +1195,7 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
     location = models.ForeignKey(PhysicalAddress, null=True)
     temp_location = models.ForeignKey(PhysicalAddress, null=True, related_name='temp_users')
     old_locations = models.ManyToManyField(PhysicalAddress, related_name='old_users')
-    # GAMIFICATION
+    # gamification
     upvotes = models.IntegerField(default=0)
     downvotes = models.IntegerField(default=0)
     num_petitions = models.IntegerField(default=0)
@@ -1223,12 +1223,9 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
     last_updated_hot_feed = models.DateTimeField(auto_now_add=True, null=True)
     seen_content = models.ManyToManyField("SeenContent", related_name="seeing_users")
     stale_content = models.ManyToManyField(Content, related_name="stale_users")
-    # SETTINGS
+    # settings
     private_follow = models.BooleanField(default=False)
-    user_notification_setting = custom_fields.ListField()               # list of allowed types
-    content_notification_setting = custom_fields.ListField()            # list of allowed types
-    email_notification_setting = custom_fields.ListField()              # list of allowed types
-    custom_notification_settings = models.ManyToManyField(CustomNotificationSetting)
+    email_subscriptions = models.CharField(max_length=40, default="AW", blank=True)
     # Government Stuff
     political_title = models.CharField(max_length=100, default="Citizen")
     primary_role = models.ForeignKey("OfficeHeld", null=True)
@@ -1251,6 +1248,11 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
     # background tasks
     background_tasks = models.CharField(max_length=10, default="", blank=True)
     finished_tasks = models.CharField(max_length=10, default="", blank=True)
+    # deprecated
+    user_notification_setting = custom_fields.ListField()               # list of allowed types
+    content_notification_setting = custom_fields.ListField()            # list of allowed types
+    custom_notification_settings = models.ManyToManyField(CustomNotificationSetting)
+    email_notification_setting = custom_fields.ListField()              # list of email subscriptions
 
 
     def __unicode__(self):
@@ -1419,6 +1421,22 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
         if task in self.finished_tasks:
             self.finished_tasks = self.finished_tasks.replace(task, "")
             self.save()
+
+    #-------------------------------------------------------------------------------------------------------------------
+    # email subscription settings
+    #-------------------------------------------------------------------------------------------------------------------
+    def addEmailSubscription(self, subscription):
+        if not subscription in self.email_subscriptions:
+            self.email_subscriptions += subscription
+            self.save()
+
+    def removeEmailSubscription(self, subscription):
+        if subscription in self.email_subscriptions:
+            self.email_subscriptions = self.email_subscriptions.replace(subscription, "")
+            self.save()
+
+    def checkEmailSubscription(self, subscription):
+        return subscription in self.email_subscriptions
 
     #-------------------------------------------------------------------------------------------------------------------
     # string representation of location
@@ -1709,6 +1727,8 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
                 if delta.total_seconds() < (60*5):
                     total_time += delta
 
+        total_minutes = total_time.total_seconds() / 60.0
+        print enc(self.get_name()) + ": " + str(total_minutes)
         return total_time, logged_on
 
     #-------------------------------------------------------------------------------------------------------------------

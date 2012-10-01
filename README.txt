@@ -83,9 +83,9 @@ pip install beautifulsoup4
 lxml
 pip install lxml
 
-xlrd
+xlrd, xlwt, xlutils
 http://pypi.python.org/pypi/xlrd
-pip install xlrd
+pip install xlrd xlwt xlutils
 
 haystack (v2.X)
 http://haystacksearch.org/
