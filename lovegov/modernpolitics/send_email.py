@@ -252,13 +252,13 @@ def sendProfessorInviteEmail(xlsfile, sheet):
     wb = open_workbook(path)
     sheet = wb.sheet_by_index(sheet)
     num = 0
-    #for row in range(1,sheet.nrows):
-    for row in range(1,3):
+    for row in range(1,sheet.nrows):
+    #for row in range(1,3):
         professor_name = sheet.cell(row,0).value
         professor_last_name = professor_name.split(' ')[-1]
         professor_affiliation = sheet.cell(row,1).value
-        #professor_email = sheet.cell(row,2).value
-        professor_email = 'jsgreenf@gmail.com'
+        professor_email = sheet.cell(row,2).value
+        #professor_email = 'jsgreenf@gmail.com'
 
         to_lovegov = toLoveGov(who=professor_email, from_where=from_where)
         to_lovegov.save()
