@@ -216,7 +216,7 @@ def sendGroupGeneralInviteEmail(xlsfile, sheet):
     sheet = wb.sheet_by_index(sheet)
     num = 0
     #for row in range(1,sheet.nrows):
-    for row in range(20,23):
+    for row in range(30,33):
         group_affiliation = sheet.cell(row,1).value
         #group_email = sheet.cell(row,0).value
         group_email = 'jsgreenf@gmail.com'
