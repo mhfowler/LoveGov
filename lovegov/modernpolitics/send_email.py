@@ -210,15 +210,16 @@ def sendStudentGroupInviteEmail():
 
 
 def sendGroupGeneralInviteEmail(xlsfile, sheet):
-    from_where = "testemail"
+    from_where = "massachu_email_oct1"
     path = os.path.join(PROJECT_PATH, xlsfile)
     wb = open_workbook(path)
     sheet = wb.sheet_by_index(sheet)
-    #for num, row in enumerate(range(1,sheet.nrows)):
-    for num, row in enumerate(range(1,3)):
+    num = 0
+    for row in range(1,sheet.nrows):
+    #for num, row in enumerate(range(1,3)):
         group_name = sheet.cell(row,0).value
-        #group_email = sheet.cell(row,1).value
-        group_email = 'jsgreenf@gmail.com'
+        group_email = sheet.cell(row,1).value
+        #group_email = 'jsgreenf@gmail.com'
 
         email_message = render_to_string('emails/lovegov/group_general_invite.html',{'group_name': group_name})
 
@@ -240,6 +241,7 @@ def sendGroupGeneralInviteEmail(xlsfile, sheet):
             print 'Name: %s, Email: %s' % (group_name, group_email)
         except:
             print 'Something went wrong printing but the email should have sent...'
+        num += 1
     return num
 
 
