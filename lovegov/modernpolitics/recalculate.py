@@ -25,6 +25,13 @@ def recalculateContentLocationsByPostedTo():
         if not count%20:
             print count
 
+def recalculateQuestionPostedToByPoll():
+    for q in Question.objects.all():
+        p = q.top_poll
+        if p:
+            q.posted_to = p.posted_to
+            q.save()
+            print q.get_name()
 
 ### recalculate stale ###
 def recalculateStaleContent():

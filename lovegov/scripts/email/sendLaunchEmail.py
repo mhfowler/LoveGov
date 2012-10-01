@@ -1,11 +1,11 @@
 #!/usr/bin/env python
 
 if __name__ == "__main__":
-    from scripts.alpha import sendGroupGeneralInviteEmail
+    from lovegov.modernpolitics.send_email import sendStudentGroupInviteEmail
 
     print "================= sendStudentGroupInviteEmail() ==================="
     print '============================================================='
-    total_sent = sendGroupGeneralInviteEmail()
+    total_sent = sendStudentGroupInviteEmail()
     print "=================== Total Sent ======================"
     print("#: " + str(total_sent))
 

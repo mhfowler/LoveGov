@@ -1,0 +1,1 @@
+nohup ./answer_questions_by_xls.py > /log/script_output.txt &
