@@ -186,7 +186,8 @@ def sendStudentGroupInviteEmail():
         student_email = sheet.cell(row,2).value
 
         to_lovegov = toLoveGov(who=student_email, from_where=from_where)
-        email_code = to_lovegov.autoSave()
+        to_lovegov.save()
+        email_code = to_lovegov.id
 
         vals = {'student_name': student_first_name, 'student_affiliation': student_affiliation, 'email_code':email_code}
         email_message = render_to_string('emails/lovegov/student_group_invite.html',vals)

@@ -199,13 +199,13 @@ def tryLoveGov(request, to_page="home/", vals={}):
 def unsubscribe(request, email, vals={}):
     return HttpResponse("You have unsubscribed from LoveGov emails.")
 
-def goToLoveGov(request, email_code, vals={}):
-    to_lovegov = toLoveGov.lg.get_or_none(email_code=email_code)
+def goToLoveGov(request, link_id, vals={}):
+    to_lovegov = toLoveGov.lg.get_or_none(id=link_id)
     if to_lovegov:
-        to_lovegov.clicked = True
+        to_lovegov.clicks += 1
         to_lovegov.save()
     else:
-        error_logger.error("to lovegov with code that does not exist: " + str(email_code))
+        error_logger.error("to lovegov with code that does not exist: " + str(link_id))
     return shortcuts.redirect("/home/")
 
 #-----------------------------------------------------------------------------------------------------------------------

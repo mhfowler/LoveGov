@@ -5507,23 +5507,7 @@ class toLoveGov(LGModel):
     who = models.CharField(max_length=100, null=True)
     date = models.DateTimeField(auto_now_add=True)
     from_where = models.CharField(max_length=100, null=True)
-    email_code = models.IntegerField(default=0)
-    clicked = models.BooleanField(default=False)
-
-    def autoSave(self):
-        max_code = 10000
-        email_code = random.randint(0,max_code)
-        already = toLoveGov.lg.get_or_none(email_code=email_code)
-        safety_max = 100
-        count = 0
-        while already and count < safety_max:
-            email_code = random.randint(0,max_code)
-            already = toLoveGov.lg.get_or_none(email_code=email_code)
-            count += 1
-        self.email_code = email_code
-        self.save()
-        return email_code
-
+    clicks = models.IntegerField(default=0)
 
 #=======================================================================================================================
 # Stores an error message, for when a 500 server-error happens.
