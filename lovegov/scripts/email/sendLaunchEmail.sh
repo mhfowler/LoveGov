@@ -1,1 +1,1 @@
-nohup ./sendLaunchEmail.py > /log/send_email.txt &
+./sendLaunchEmail.py > /log/send_email.txt &

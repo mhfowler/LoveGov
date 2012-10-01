@@ -504,10 +504,10 @@ function bindTooltips() {
      $("body").tooltip({'selector': '.tooltip-bottom', 'placement': 'bottom'});
      */
 
-    $(".tooltip-top").tooltip({'placement': 'top', 'animation': 'true'});
-    $(".tooltip-bottom").tooltip({'placement': 'bottom', 'animation': 'true'});
-    $(".tooltip-right").tooltip({'placement': 'right', 'animation': 'true'});
-    $(".tooltip-left").tooltip({'placement': 'left', 'animation': 'true'});
+    $(".tooltip-top").tooltip({'placement': 'top', 'animation': false});
+    $(".tooltip-bottom").tooltip({'placement': 'bottom', 'animation': false});
+    $(".tooltip-right").tooltip({'placement': 'right', 'animation': false});
+    $(".tooltip-left").tooltip({'placement': 'left', 'animation': false});
 }
 
 bind(".bind_link", "click", null, function(event) {

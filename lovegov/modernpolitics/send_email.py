@@ -202,27 +202,25 @@ def sendLaunchEmailBatch():
 
 
 
-def sendStudentGroupInviteEmail():
-    from_where = "massachu_email_sep30"
-    path = os.path.join(PROJECT_PATH, 'frontend/excel/AcademiaBundle_MA.xls')
+def sendStudentGroupInviteEmail(xlsfile, sheet):
+    from_where = "national_email_oct01"
+    path = os.path.join(PROJECT_PATH, xlsfile)
     wb = open_workbook(path)
-    sheet = wb.sheet_by_index(0)
+    sheet = wb.sheet_by_index(sheet)
     num = 0
-    #for row in range(1,sheet.nrows):
-    for row in range(8,sheet.nrows):
-        student_name = sheet.cell(row,0).value
-        student_first_name = student_name.split(' ')[0]
-        student_affiliation = sheet.cell(row,1).value
-        student_email = sheet.cell(row,2).value
+    for row in range(1,sheet.nrows):
+    #for row in range(100,103):
+        student_name = sheet.cell(row,4).value
+        student_affiliation = sheet.cell(row,3).value
+        student_email = sheet.cell(row,0).value
+        #student_email = 'jsgreenf@gmail.com'
 
         to_lovegov = toLoveGov(who=student_email, from_where=from_where)
         to_lovegov.save()
         email_code = to_lovegov.id
 
-        vals = {'student_name': student_first_name, 'student_affiliation': student_affiliation, 'email_code':email_code}
+        vals = {'student_name': student_name, 'student_affiliation': student_affiliation, 'email_code':email_code}
         email_message = render_to_string('emails/lovegov/student_group_invite.html',vals)
-        #send_mail('LoveGov', email_message, 'joschka@lovegov.com', [student_email])
-        #send_mail('LoveGov', email_message, 'joschka@lovegov.com', ['max_fowler@brown.edu'])
         email_message = enc(email_message)
         try:
             msg = EmailMessage('LoveGov', email_message, 'joschka@lovegov.com', [student_email])
@@ -241,25 +239,34 @@ def sendStudentGroupInviteEmail():
 
 
 
-def sendGroupGeneralInviteEmail():
-    path = os.path.join(PROJECT_PATH, 'frontend/excel/AcademiaBundle_NH.xls')
+def sendGroupGeneralInviteEmail(xlsfile, sheet):
+    from_where = "massachu_email_oct1"
+    path = os.path.join(PROJECT_PATH, xlsfile)
     wb = open_workbook(path)
-    sheet = wb.sheet_by_index(1)
+    sheet = wb.sheet_by_index(sheet)
     num = 0
     for row in range(1,sheet.nrows):
-    #for row in range(1,3):
-        group_name = sheet.cell(row,0).value
-        group_email = sheet.cell(row,2).value
-        email_message = render_to_string('emails/lovegov/group_general_invite.html',{'group_name': group_name})
-        #send_mail('LoveGov', email_message, 'joschka@lovegov.com', ['jsgreenf@gmail.com'])
-        #send_mail('LoveGov', email_message, 'joschka@lovegov.com', [group_email])
+    #for row in range(30,33):
+        group_affiliation = sheet.cell(row,1).value
+        group_email = sheet.cell(row,0).value
+        #group_email = 'jsgreenf@gmail.com'
 
-        msg = EmailMessage('LoveGov', email_message, 'joschka@lovegov.com', [group_email])
-        msg.content_subtype = "html"
-        msg.send()
+        to_lovegov = toLoveGov(who=group_email, from_where=from_where)
+        to_lovegov.save()
+        email_code = to_lovegov.id
 
+        vals = {'group_affiliation': group_affiliation, 'email_code':email_code}
+
+        email_message = render_to_string('emails/lovegov/group_general_invite.html',vals)
+        email_message = enc(email_message)
         try:
-            print 'Name: %s, Email: %s' % (group_name, group_email)
+            msg = EmailMessage('LoveGov', email_message, 'joschka@lovegov.com', [group_email])
+            msg.content_subtype = "html"
+            msg.send()
+        except BotoServerError:
+            print '+WW+ Something went wrong with sending the email to : ' + enc(group_email)
+        try:
+            print 'Affiliation: %s, Email: %s' % (group_affiliation, group_email)
         except:
             print 'Something went wrong printing but the email should have sent...'
         num += 1
@@ -269,10 +276,11 @@ def sendGroupGeneralInviteEmail():
 
 
 
-def sendProfessorInviteEmail():
-    path = os.path.join(PROJECT_PATH, 'frontend/excel/AcademiaBundle_RI.xls')
+def sendProfessorInviteEmail(xlsfile, sheet):
+    from_where = "massachu_email_oct1"
+    path = os.path.join(PROJECT_PATH, xlsfile)
     wb = open_workbook(path)
-    sheet = wb.sheet_by_index(1)
+    sheet = wb.sheet_by_index(sheet)
     num = 0
     for row in range(1,sheet.nrows):
     #for row in range(1,3):
@@ -280,9 +288,22 @@ def sendProfessorInviteEmail():
         professor_last_name = professor_name.split(' ')[-1]
         professor_affiliation = sheet.cell(row,1).value
         professor_email = sheet.cell(row,2).value
-        email_message = render_to_string('emails/lovegov/professor_invite.html',{'professor_name': professor_last_name, 'professor_affiliation': professor_affiliation})
-        send_mail('LoveGov', email_message, 'joschka@lovegov.com', [professor_email])
-        #send_mail('LoveGov', email_message, 'joschka@lovegov.com', ['jsgreenf@gmail.com'])
+        #professor_email = 'jsgreenf@gmail.com'
+
+        to_lovegov = toLoveGov(who=professor_email, from_where=from_where)
+        to_lovegov.save()
+        email_code = to_lovegov.id
+
+        vals = {'professor_name': professor_name, 'professor_affiliation': professor_affiliation, 'email_code':email_code}
+
+        email_message = render_to_string('emails/lovegov/professor_invite.html',vals)
+        email_message = enc(email_message)
+        try:
+            msg = EmailMessage('LoveGov', email_message, 'joschka@lovegov.com', [professor_email])
+            msg.content_subtype = "html"
+            msg.send()
+        except BotoServerError:
+            print '+WW+ Something went wrong with sending the email to : ' + enc(professor_email)
         try:
             print 'Name: %s, Affiliation: %s, Email: %s' % (professor_name, professor_affiliation, professor_email)
         except:
