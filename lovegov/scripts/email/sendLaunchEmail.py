@@ -5,7 +5,7 @@ if __name__ == "__main__":
 
     print "================= sendStudentGroupInviteEmail() ==================="
     print '============================================================='
-    total_sent = sendGroupGeneralInviteEmail()
+    total_sent = sendGroupGeneralInviteEmail('frontend/excel/AcademiaBundle_MA.xls', 1)
     print "=================== Total Sent ======================"
     print("#: " + str(total_sent))
 

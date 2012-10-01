@@ -191,8 +191,6 @@ def sendStudentGroupInviteEmail():
 
         vals = {'student_name': student_first_name, 'student_affiliation': student_affiliation, 'email_code':email_code}
         email_message = render_to_string('emails/lovegov/student_group_invite.html',vals)
-        #send_mail('LoveGov', email_message, 'joschka@lovegov.com', [student_email])
-        #send_mail('LoveGov', email_message, 'joschka@lovegov.com', ['max_fowler@brown.edu'])
         email_message = enc(email_message)
         try:
             msg = EmailMessage('LoveGov', email_message, 'joschka@lovegov.com', [student_email])
@@ -216,23 +214,32 @@ def sendGroupGeneralInviteEmail(xlsfile, sheet):
     path = os.path.join(PROJECT_PATH, xlsfile)
     wb = open_workbook(path)
     sheet = wb.sheet_by_index(sheet)
-    num = 0
-    #for row in range(1,sheet.nrows):
-    for row in range(1,3):
+    #for num, row in enumerate(range(1,sheet.nrows)):
+    for num, row in enumerate(range(1,3)):
         group_name = sheet.cell(row,0).value
-        group_email = sheet.cell(row,2).value
+        #group_email = sheet.cell(row,1).value
+        group_email = 'jsgreenf@gmail.com'
+
         email_message = render_to_string('emails/lovegov/group_general_invite.html',{'group_name': group_name})
 
-        #msg = EmailMessage('LoveGov', email_message, 'joschka@lovegov.com', [group_email])
-        msg = EmailMessage('LoveGov', email_message, 'joschka@lovegov.com', ['jsgreenf@gmail.com'])
-        msg.content_subtype = "html"
-        msg.send()
+        to_lovegov = toLoveGov(who=group_email, from_where=from_where)
+        to_lovegov.save()
+        email_code = to_lovegov.id
 
+        vals = {'group_name': group_name, 'email_code':email_code}
+
+        email_message = render_to_string('emails/lovegov/group_general_invite.html',vals)
+        email_message = enc(email_message)
+        try:
+            msg = EmailMessage('LoveGov', email_message, 'joschka@lovegov.com', [student_email])
+            msg.content_subtype = "html"
+            msg.send()
+        except BotoServerError:
+            print '+WW+ Something went wrong with sending the email to : ' + enc(student_email)
         try:
             print 'Name: %s, Email: %s' % (group_name, group_email)
         except:
             print 'Something went wrong printing but the email should have sent...'
-        num += 1
     return num
 
 
@@ -243,9 +250,8 @@ def sendProfessorInviteEmail():
     path = os.path.join(PROJECT_PATH, 'frontend/excel/AcademiaBundle_RI.xls')
     wb = open_workbook(path)
     sheet = wb.sheet_by_index(1)
-    num = 0
-    for row in range(1,sheet.nrows):
-    #for row in range(1,3):
+    for num, row in enumerate(range(1,sheet.nrows)):
+    #for num, row in enumerate(range(1,3)):
         professor_name = sheet.cell(row,0).value
         professor_last_name = professor_name.split(' ')[-1]
         professor_affiliation = sheet.cell(row,1).value
@@ -257,7 +263,6 @@ def sendProfessorInviteEmail():
             print 'Name: %s, Affiliation: %s, Email: %s' % (professor_name, professor_affiliation, professor_email)
         except:
             print 'Something went wrong printing but the email should have sent...'
-        num += 1
     return num
 
 
