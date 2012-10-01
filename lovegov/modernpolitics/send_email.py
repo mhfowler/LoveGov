@@ -179,7 +179,7 @@ def sendStudentGroupInviteEmail(xlsfile, sheet):
     sheet = wb.sheet_by_index(sheet)
     num = 0
     #for row in range(1,sheet.nrows):
-    for row in range(50,53):
+    for row in range(100,103):
         student_name = sheet.cell(row,4).value
         student_affiliation = sheet.cell(row,3).value
         #student_email = sheet.cell(row,0).value
