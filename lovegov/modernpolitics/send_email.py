@@ -221,8 +221,6 @@ def sendGroupGeneralInviteEmail(xlsfile, sheet):
         group_email = sheet.cell(row,1).value
         #group_email = 'jsgreenf@gmail.com'
 
-        email_message = render_to_string('emails/lovegov/group_general_invite.html',{'group_name': group_name})
-
         to_lovegov = toLoveGov(who=group_email, from_where=from_where)
         to_lovegov.save()
         email_code = to_lovegov.id
@@ -248,23 +246,39 @@ def sendGroupGeneralInviteEmail(xlsfile, sheet):
 
 
 
-def sendProfessorInviteEmail():
-    path = os.path.join(PROJECT_PATH, 'frontend/excel/AcademiaBundle_RI.xls')
+def sendProfessorInviteEmail(xlsfile, sheet):
+    from_where = "massachu_email_oct1"
+    path = os.path.join(PROJECT_PATH, xlsfile)
     wb = open_workbook(path)
-    sheet = wb.sheet_by_index(1)
-    for num, row in enumerate(range(1,sheet.nrows)):
-    #for num, row in enumerate(range(1,3)):
+    sheet = wb.sheet_by_index(sheet)
+    num = 0
+    #for row in range(1,sheet.nrows):
+    for row in range(1,3):
         professor_name = sheet.cell(row,0).value
         professor_last_name = professor_name.split(' ')[-1]
         professor_affiliation = sheet.cell(row,1).value
-        professor_email = sheet.cell(row,2).value
-        email_message = render_to_string('emails/lovegov/professor_invite.html',{'professor_name': professor_last_name, 'professor_affiliation': professor_affiliation})
-        send_mail('LoveGov', email_message, 'joschka@lovegov.com', [professor_email])
-        #send_mail('LoveGov', email_message, 'joschka@lovegov.com', ['jsgreenf@gmail.com'])
+        #professor_email = sheet.cell(row,2).value
+        professor_email = 'jsgreenf@gmail.com'
+
+        to_lovegov = toLoveGov(who=professor_email, from_where=from_where)
+        to_lovegov.save()
+        email_code = to_lovegov.id
+
+        vals = {'professor_name': professor_name, 'professor_affiliation': professor_affiliation, 'email_code':email_code}
+
+        email_message = render_to_string('emails/lovegov/group_general_invite.html',vals)
+        email_message = enc(email_message)
+        try:
+            msg = EmailMessage('LoveGov', email_message, 'joschka@lovegov.com', [professor_email])
+            msg.content_subtype = "html"
+            msg.send()
+        except BotoServerError:
+            print '+WW+ Something went wrong with sending the email to : ' + enc(professor_email)
         try:
             print 'Name: %s, Affiliation: %s, Email: %s' % (professor_name, professor_affiliation, professor_email)
         except:
             print 'Something went wrong printing but the email should have sent...'
+        num += 1
     return num
 
 
