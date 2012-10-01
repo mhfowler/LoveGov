@@ -266,7 +266,7 @@ def sendProfessorInviteEmail(xlsfile, sheet):
 
         vals = {'professor_name': professor_name, 'professor_affiliation': professor_affiliation, 'email_code':email_code}
 
-        email_message = render_to_string('emails/lovegov/group_general_invite.html',vals)
+        email_message = render_to_string('emails/lovegov/professor_invite.html',vals)
         email_message = enc(email_message)
         try:
             msg = EmailMessage('LoveGov', email_message, 'joschka@lovegov.com', [professor_email])
