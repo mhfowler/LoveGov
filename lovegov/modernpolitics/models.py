@@ -1293,7 +1293,7 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
 
     def calculateHotFeedContent(self):
         self.updateStale()
-        content = self.getContentRelevantToMyLocation()
+        content = self.getGroupSubscriptionContent()
         content = self.getUnstaleContent(content)
         content_ids = content.values_list("id", flat=True)
 
@@ -1465,6 +1465,12 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
 
         p = getPresidentialElection2012()
         followGroupAction(self, p, True, "PRI")
+
+        improving = Group.lg.get_or_none(alias="improving_lovegov")
+        if improving: followGroupAction(self, improving, True, "PRI")
+
+        interesting = Group.lg.get_or_none(alias="interesting_news")
+        if interesting: followGroupAction(self, interesting, True, "PRI")
 
         self.locationSubscribe()
 
@@ -2386,6 +2392,12 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
         supported = Supported.objects.filter(confirmed=True, user=self)
         politician_ids = supported.values_list("to_user", flat=True)
         return UserProfile.objects.filter(id__in=politician_ids)
+
+    def getGroupSubscriptionContent(self):
+        groups = self.getSubscriptions()
+        groups_ids = groups.values_list("id", flat=True)
+        content = Content.objects.filter(posted_to_id__in=groups_ids)
+        return content
 
     #-------------------------------------------------------------------------------------------------------------------
     # Returns a list of all Users who are (confirmed) following this user.
