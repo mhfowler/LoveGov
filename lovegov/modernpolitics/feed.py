@@ -67,9 +67,7 @@ def getContentFromAlias(alias, viewer):
         elections_ids = elections.values_list("id", flat=True)
         content = Content.objects.filter(posted_to_id__in=elections_ids)
     elif alias ==  'my_groups':
-        groups = viewer.getGroupSubscriptions()
-        groups_ids = groups.values_list("id", flat=True)
-        content = Content.objects.filter(posted_to_id__in=groups_ids)
+        content = viewer.getGroupSubscriptionContent()
     elif alias == 'representatives':
         representatives = viewer.getRepresentatives(location=viewer.temp_location)
         content = getLegislationFromCongressmen(representatives)
