@@ -23,38 +23,58 @@
         {% endif %}
     {% endcomment %}
 
-    {% if content.official %}
-        <div class="agreement_people_list_seed
-        {% if content.my_response %} initialize_self {% endif %}
-        update_after_answer"
-             data-action="getAgreementPeopleListHTML"
-             data-which="congress"
-             data-title="Congressmen who"
-             data-q_id="{{ question.id }}">
-            <div class="updating-object initialize_loading"></div>
-        </div>
-    {% endif %}
 
-    {% if viewer.i_follow.num_members %}
-        <div class="agreement_people_list_seed
-        {% if content.my_response %} initialize_self {% endif %}
-        update_after_answer"
-             data-action="getAgreementPeopleListHTML"
-             data-which="friends"
-             data-title="Friends who"
-             data-q_id="{{ question.id }}">
-            <div class="updating-object initialize_loading"></div>
-        </div>
-    {% endif %}
+    <div class="see-who-agrees-wrapper">
 
-    <div class="agreement_people_list_seed
-        {% if content.my_response %} initialize_self {% endif %}
-        update_after_answer"
-         data-action="getAgreementPeopleListHTML"
-         data-which="people"
-         data-title="People who"
-         data-q_id="{{ question.id }}">
-        <div class="updating-object initialize_loading"></div>
+        {% if content.official %}
+            <div class="agreement_wrapper">
+                <a class="see-who-agrees see_who_agrees">
+                    See congressmen who agree with you
+                </a>
+                <div class="agreement_people_list_seed
+                {% if content.my_response %} initialize_self {% endif %}
+                update_after_answer"
+                     data-action="getAgreementPeopleListHTML"
+                     data-which="congress"
+                     data-title="Congressmen who"
+                     data-q_id="{{ question.id }}">
+                    <div class="updating-object initialize_loading"></div>
+                </div>
+            </div>
+        {% endif %}
+
+        {% if viewer.i_follow.num_members %}
+            <div class="agreement_wrapper">
+                <a class="see-who-agrees see_who_agrees">
+                    See friends who agree with you
+                </a>
+                <div class="agreement_people_list_seed
+            {% if content.my_response %} initialize_self {% endif %}
+            update_after_answer"
+                     data-action="getAgreementPeopleListHTML"
+                     data-which="friends"
+                     data-title="Friends who"
+                     data-q_id="{{ question.id }}">
+                    <div class="updating-object initialize_loading"></div>
+                </div>
+            </div>
+        {% endif %}
+
+        <div class="agreement_wrapper">
+            <a class="see-who-agrees see_who_agrees">
+                See people who agree with you
+            </a>
+            <div class="agreement_people_list_seed
+            {% if content.my_response %} initialize_self {% endif %}
+            update_after_answer"
+                 data-action="getAgreementPeopleListHTML"
+                 data-which="people"
+                 data-title="People who"
+                 data-q_id="{{ question.id }}">
+                <div class="updating-object initialize_loading"></div>
+            </div>
+        </div>
+
     </div>
 
     <script> rebind="question_detail"; </script>

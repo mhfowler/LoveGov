@@ -3329,6 +3329,20 @@ function postInitialize(element) {
 
 }
 
+
+bind('.see_who_agrees', 'click', function(e) {
+    var wrapper = $(this).parents(".agreement_wrapper");
+    var people_list = wrapper.find(".agreement_people_list_seed");
+    if (!$(this).hasClass("clicked")) {
+        $(this).addClass("clicked");
+        people_list.show();
+    }
+    else {
+        $(this).removeClass("clicked");
+        people_list.hide();
+    }
+});
+
 /***********************************************************************************************************************
  *
  *     ~Histogram
