@@ -1804,12 +1804,13 @@ def getFeed(request, vals):
 
     feed_items = contentToFeedItems(content, vals['viewer'])
     vals['feed_items'] = feed_items
+    num_items = len(feed_items)
 
     html = ajaxRender('site/pages/feed/feed_helper.html', vals, request)
 
     everything_loaded = everythingLoadedHelper(request, vals, feed_items)
 
-    to_return = {'html':html, 'num_items':len(feed_items), 'everything_loaded':everything_loaded}
+    to_return = {'html':html, 'num_items':num_items, 'everything_loaded':everything_loaded}
     return HttpResponse(json.dumps(to_return))
 
 # generates a list of (content, vote) tuples for each piece of content in list

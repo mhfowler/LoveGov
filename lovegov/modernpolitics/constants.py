@@ -742,6 +742,12 @@ UNAUTHENTICATED_ACTIONS = [
     'addEmailList'
 ]
 
+SAVE_POST_PARAMETERS_ACTIONS = [
+    'getFeed',
+    'getLegislation',
+    'getQuestions'
+]
+
 DEFAULT_PROHIBITED_ACTIONS = []
 
 ANONYMOUS_PROHIBITED_ACTIONS = [

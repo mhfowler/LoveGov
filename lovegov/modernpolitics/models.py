@@ -5437,13 +5437,14 @@ class PageAccess(LGModel):
     action = models.CharField(max_length=50, null=True)
     when = models.DateTimeField(auto_now_add=True)
     type = models.CharField(max_length=4)
+    post_parameters = models.CharField(max_length=5000, null=True)      # optional for saving what the post parameters were
     # deprecated
     left = models.DateTimeField(null=True)
     duration = models.TimeField(null=True)
     exit = models.BooleanField(default=False)
     login = models.BooleanField(default=True)
 
-    def autoSave(self, request):
+    def autoSave(self, request, save_post=False):
         from lovegov.modernpolitics.helpers import getSourcePath, getUserProfile
         user_prof = getUserProfile(request)
         if user_prof:
@@ -5453,12 +5454,21 @@ class PageAccess(LGModel):
             if request.method == "POST":
                 self.type = 'POST'
                 if 'action' in request.POST:
-                    self.action = request.POST['action']
+                    action = request.POST['action']
+                    self.action = action
+                    if action in SAVE_POST_PARAMETERS_ACTIONS:
+                        self.post_parameters = json.dumps(request.POST)
             else:
                 self.type = 'GET'
                 if 'action' in request.GET:
                     self.action = request.GET['action']
             self.save()
+
+    def getPostParametersDict(self):
+        if self.post_parameters:
+            return json.loads(x.post_parameters)
+        else:
+            return {}
 
 class ClientAnalytics(LGModel):
     user = models.ForeignKey(UserProfile)

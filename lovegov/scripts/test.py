@@ -1,13 +1,24 @@
-__author__ = 'maxfowler'
+""" sends emails to all developers describing usage of the site that day."""
 
 from lovegov.frontend.views import *
-from lovegov.frontend.analytics import metricsToExcel
+from lovegov.frontend.analytics import *
 
-#g = Group.objects.get(title__contains="Whales")
+print "*** SENDING DAILY SUMMARY EMAIL ***"
+print "args: [email] [days-ago-start] [how-many-days]"
 
-#updateGroupView(g)
+days_ago=1
+days_for=0
+if len(sys.argv) > 1:
+    email = sys.argv[1]
+    print "sending to: " + email
+    email_recipients = [email]
+else:
+    email_recipients = ['max_fowler@brown.edu']
+if len(sys.argv) == 3:
+    days_ago = int(sys.argv[2])
+if len(sys.argv) == 4:
+    days_for= int(sys.argv[3])
 
-sendWeeklyDigestEmails()
-
-
+sendHTMLEmail(subject="LoveGov Daily Summary [summary]", email_html=dailySummaryEmail(days_ago, days_for),
+    email_sender="info@lovegov.com", email_recipients=email_recipients)
 

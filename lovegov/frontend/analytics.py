@@ -477,6 +477,7 @@ def summaryEmail(time_start, time_end):
     for x in pa:
         try:
             user = x.user
+            x.post_parameters_dict = x.getPostParametersDict()
             if not user.isAnon():
                 alias = user.alias
                 if not alias in accessed:
