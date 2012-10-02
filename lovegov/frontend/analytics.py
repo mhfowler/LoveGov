@@ -10,35 +10,92 @@
 from lovegov.modernpolitics.backend import *
 from operator import itemgetter
 import xlwt
-
-#-----------------------------------------------------------------------------------------------------------------------
-# def filter by time
-#-----------------------------------------------------------------------------------------------------------------------
-
-def filterByCreatedWhen(stuff, time_start, time_end):
-    if time_start:
-        stuff = stuff.filter(created_when__gt=time_start)
-    if time_end:
-        stuff = stuff.filter(created_when__lt=time_end)
-    return stuff
-
-def filterByEditedWhen(stuff, time_start, time_end):
-    if time_start:
-        stuff = stuff.filter(edited_when__gt=time_start)
-    if time_end:
-        stuff = stuff.filter(edited_when__lt=time_end)
-    return stuff
-
-def filterByWhen(stuff, time_start, time_end):
-    if time_start:
-        stuff = stuff.filter(when__gt=time_start)
-    if time_end:
-        stuff = stuff.filter(when__lt=time_end)
-    return stuff
+import xlutils
 
 #-----------------------------------------------------------------------------------------------------------------------
 # METRICS
 #-----------------------------------------------------------------------------------------------------------------------
+
+### output metrics to excel doc ###
+def metricsToExcel(filepath):
+
+    from xlutils import copy
+
+    metrics_template_filepath = os.path.join(PROJECT_PATH, 'logging/metrics/metrics_template.xls')
+
+    rb = open_workbook(metrics_template_filepath,formatting_info=True)
+    wb = xlutils.copy.copy(rb) #a writable copy (I can't read values out of this, only write to it)
+
+    start_epoch = datetime.datetime(month=8, year=2012, day=28, hour=4)
+    now = datetime.datetime.now()
+    delta = datetime.timedelta(days=1)
+    spread = 20                    # num columns between average and total
+
+    which_metrics = [
+            {'metric_label':'page views', 'which':'page_views'},
+            {'metric_label':'time on site', 'which':'session_length'},
+            {'metric_label':'answers', 'which':'new_answers'},
+            {'metric_label':'posts', 'which':'num_posts', },
+            {'metric_label':'comments', 'which':'num_posts', 'type':'C'},
+            {'metric_label':'signatures', 'which':'activity', 'type':'signatures'},
+            {'metric_label':'upvotes', 'which':'activity', 'type':'upvotes'},
+            {'metric_label':'downvotes', 'which':'activity', 'type':'downvotes'},
+            {'metric_label':'groups joined', 'which':'activity', 'type':'groups_joined'},
+            {'metric_label':'groups followed', 'which':'activity', 'type':'groups_followed'},
+            {'metric_label':'users followed', 'which':'activity', 'type':'users_followed'},
+            {'metric_label':'politicians supported', 'which':'activity', 'type':'politicians_supported'},
+            {'metric_label':'news', 'which':'num_posts', 'type':'N'},
+            {'metric_label':'questions', 'which':'num_posts', 'type':'Q'},
+            {'metric_label':'discussions', 'which':'num_posts', 'type':'D'},
+            {'metric_label':'petitions', 'which':'num_posts', 'type':'P'},
+            {'metric_label':'polls', 'which':'num_posts', 'type':'B'},
+            #{'metric_label':'% anon answers', 'which':'anon_percent', 'type':'answers'},
+            #{'metric_label':'% anon posts', 'which':'anon_percent', 'type':'posts'},
+            #{'metric_label':'% anon comments', 'which':'anon_percent', 'type':'comments'},
+    ]
+
+    demographics = ['logged_on', 'new_users', 'returning_users']
+    for i, demograph in enumerate(demographics):
+
+        print "DEMOGRAPH: " + demograph
+
+        w_sheet = wb.get_sheet(i)
+        c_date = start_epoch
+        row = 1
+        total_to_date = 0
+        while c_date < now:
+            time_start = c_date
+            time_end = time_start + delta
+            user_group = getUserGroupsFromDemographics(time_start, time_end, [demograph])[0]
+
+            dt = time_start.strftime('%m/%d/%y')
+            w_sheet.write(row,2,dt)
+
+            w_sheet.write(row,3,total_to_date)
+
+            users = user_group['users']
+            num_users_today = len(users)
+            w_sheet.write(row,4,num_users_today)
+            print "NUM USERS: " + str(num_users_today)
+
+            column = 7
+            for args_dict in which_metrics:
+                total, normalized = metricsResult(args_dict, time_start, time_end, users)
+                w_sheet.write(row, column, normalized)
+                w_sheet.write(row, column+spread, total)
+                print args_dict['metric_label'] + " " + str(total)
+                column += 1
+
+            total_to_date += num_users_today
+            row += 1
+            c_date = time_end
+
+            print c_date
+
+    wb.save(filepath)
+
+
+
 
 # takes in a time start, time end, a list of strings of hardcoded demographics. Returns html showing metrics for input.
 def getMetricsHTMLFromTimeAndDemographics(time_start, time_end, demographics=[]):
@@ -76,6 +133,7 @@ def getMetricsHTMLFromTimeAndDemographics(time_start, time_end, demographics=[])
     html = getMultipleMetricsHTML(which_metrics, user_groups)
     return html
 
+
 # returns a list of user group dictionaries, based on inputted times, and hardcoded demographic option strings
 # user_groups is a list where each element is a dictionary of form
 # 'users': queryset of users
@@ -85,10 +143,12 @@ def getMetricsHTMLFromTimeAndDemographics(time_start, time_end, demographics=[])
 def getUserGroupsFromDemographics(time_start, time_end, demographics):
     user_groups = []
 
+    anon = getAnonUser()
+
     count = 0
 
     if 'all_users' in demographics:
-        all_users = UserProfile.objects.filter(ghost=False)
+        all_users = UserProfile.objects.filter(ghost=False).exclude(id=anon.id)
         all_users_dict = {'time_start':time_start,
                           'time_end':time_end,
                           'users':  all_users,
@@ -98,13 +158,7 @@ def getUserGroupsFromDemographics(time_start, time_end, demographics):
         count += 1
 
     if 'logged_on' in demographics:
-        pa = PageAccess.objects.all()
-        pa = filterByWhen(pa, time_start, time_end)
-        logged_on_users = []
-        for x in pa:
-            user = x.user
-            if not user in logged_on_users:
-                logged_on_users.append(user)
+        logged_on_users = getLoggedOnUsers(time_start, time_end).exclude(id=anon.id)
         logged_on_dict = {'time_start':time_start,
                           'time_end':time_end,
                           'users':  logged_on_users,
@@ -113,8 +167,19 @@ def getUserGroupsFromDemographics(time_start, time_end, demographics):
         user_groups.append(logged_on_dict)
         count += 1
 
+    if 'returning_users' in demographics:
+        logged_on_users = getLoggedOnUsers(time_start, time_end).exclude(id=anon.id)
+        returning_users = filterByCreatedWhen(logged_on_users, None, time_end=time_start)
+        returning_users_dict = {'time_start':time_start,
+                                'time_end':time_end,
+                                'users': returning_users,
+                                'description': 'returning users',
+                                'which_color': USER_GROUP_COLORS[count]}
+        user_groups.append(returning_users_dict)
+        count += 1
+
     if 'new_users' in demographics:
-        new_users = UserProfile.objects.filter(ghost=False)
+        new_users = UserProfile.objects.filter(ghost=False).exclude(id=anon.id)
         new_users = filterByCreatedWhen(new_users, time_start, time_end)
         new_users_dict = {'time_start':time_start,
                           'time_end':time_end,
@@ -125,6 +190,13 @@ def getUserGroupsFromDemographics(time_start, time_end, demographics):
         count += 1
 
     return user_groups
+
+def getLoggedOnUsers(time_start, time_end):
+    pa = PageAccess.objects.all()
+    pa = filterByWhen(pa, time_start, time_end)
+    user_ids = pa.values_list('user_id', flat=True)
+    logged_on_users = UserProfile.objects.filter(id__in=user_ids)
+    return logged_on_users
 
 # returns html for a list of chosen metrics for a list of user groups
 def getMultipleMetricsHTML(which_metrics, user_groups):
@@ -169,13 +241,19 @@ def metricsResult(args_dict, time_start=None, time_end=None, users=None):
             posts = posts.filter(type=c_type)
         result = posts.count()
         if num_users:
-            normalized = result / num_users
+            normalized = result / float(num_users)
 
     elif which == 'num_answers':
         responses = metricsGetResponsesHelper(time_start, time_end, users)
         result = responses.count()
         if num_users:
-            normalized = result / num_users
+            normalized = result / float(num_users)
+
+    elif which == 'new_answers':
+        responses = metricsGetResponsesHelper(time_start, time_end, users, created=True)
+        result = responses.count()
+        if num_users:
+            normalized = result / float(num_users)
 
     elif which == 'activity':
         type = args_dict.get('type')
@@ -198,7 +276,7 @@ def metricsResult(args_dict, time_start=None, time_end=None, users=None):
             activity = activity.filter(creator__in=users)
         result = activity.count()
         if num_users:
-            normalized = result / num_users
+            normalized = result / float(num_users)
 
     elif which == 'anon_percent':
         type = args_dict.get('type')
@@ -231,7 +309,7 @@ def metricsResult(args_dict, time_start=None, time_end=None, users=None):
 
         result = pa.count()
         if num_users:
-            normalized = result / num_users
+            normalized = result / float(num_users)
 
     elif which == 'session_length':
         anon_id = getAnonUser().id
@@ -244,19 +322,22 @@ def metricsResult(args_dict, time_start=None, time_end=None, users=None):
             if logged_on:
                 total_time += time_on_site
                 total_logged_on += 1
-        result = int(total_time.total_seconds())
+        result = int(total_time.total_seconds()) / 60.0
         if total_logged_on:
-            normalized = total_time.total_seconds() / float(total_logged_on)
+            normalized = result / float(total_logged_on)
 
     normalized = str(normalized)
     normalized = normalized[:5]
 
     return result, normalized
 
-def metricsGetResponsesHelper(time_start, time_end, users):
+def metricsGetResponsesHelper(time_start, time_end, users, created=False):
     lg = getLoveGovUser()
     responses = Response.objects.exclude(creator=lg)
-    responses = filterByEditedWhen(responses, time_start, time_end)
+    if created:
+        responses = filterByCreatedWhen(responses, time_start, time_end)
+    else:
+        responses = filterByEditedWhen(responses, time_start, time_end)
     if users:
         responses = responses.filter(creator__in=users)
     return responses
@@ -396,6 +477,7 @@ def summaryEmail(time_start, time_end):
     for x in pa:
         try:
             user = x.user
+            x.post_parameters_dict = x.getPostParametersDict()
             if not user.isAnon():
                 alias = user.alias
                 if not alias in accessed:
@@ -413,6 +495,9 @@ def summaryEmail(time_start, time_end):
     accessed_list.sort(key=lambda item: item['session'].getNumPA())
     for x in accessed_list:
         x['session'].processPA()
+        user = x['user']
+        time_on_site, logged_on = user.getTimeOnSite(time_start, time_end)
+        x['session_length'] = time_on_site.total_seconds() / 60.0
 
     vals['accessed'] = accessed_list
 
@@ -431,6 +516,8 @@ def summaryEmail(time_start, time_end):
     # metrics
     demographics = ['logged_on', 'new_users']
     vals['metrics_html'] = getMetricsHTMLFromTimeAndDemographics(time_start, time_end, demographics)
+
+    vals['IGNORED_POST_PARAMETERS'] = ['csrfmiddlewaretoken', 'path', 'action', 'url']
 
     context = Context(vals)
     template = loader.get_template('emails/daily_summary/daily_summary.html')
@@ -585,4 +672,6 @@ def ajaxAnalyticsToExcel():
         col += 1
     wb.save(filename)
     print filename
+
+
 

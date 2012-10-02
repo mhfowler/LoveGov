@@ -103,6 +103,45 @@ def sendLaunchEmail(user_profile):
     email_template = 'emails/lovegov/launch.html'
     sendLoveGovEmailHelper(user_profile, subject, email_vals, email_template)
 
+def sendWeeklyDigestEmail(user_profile):
+
+    from lovegov.frontend.views_helpers import getWeeklyDigestQuestions, getWeeklyDigestNews
+
+    if not user_profile.checkEmailSubscription("W"):
+        return False
+
+    subject = "LoveGov Weekly Digest"
+
+    now = datetime.datetime.now()
+    delta = datetime.timedelta(days=7)
+    time_start = now - delta
+    time_end = now
+
+    popular_questions = getWeeklyDigestQuestions(time_start, time_end, user_profile)[:5]
+    for x in popular_questions:
+        x.the_link = DOMAIN + x.get_url()
+        user_profile.addDigestedContent(x)
+
+    popular_news = getWeeklyDigestNews(time_start, time_end, user_profile)[:5]
+    for x in popular_news:
+        x.the_link = x.link
+        user_profile.addDigestedContent(x)
+
+    email_vals = {'popular_questions':popular_questions, 'popular_news':popular_news}
+    email_template = 'emails/lovegov/weekly_digest/weekly_digest.html'
+    sendLoveGovEmailHelper(user_profile, subject, email_vals, email_template)
+
+def sendWeeklyDigestEmails():
+    m = UserProfile.lg.get_or_none(alias="max_fowler")
+    sendWeeklyDigestEmail(m)
+
+def isUnsubscribedToEmail(email):
+    user = UserProfile.lg.get_or_none(email=email)
+    if user:
+        return not user.checkEmailSubscription("A")
+    else:
+        return UnsubscribedToEmail.lg.get_or_none(email=email)
+
 
 
 

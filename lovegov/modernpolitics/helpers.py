@@ -63,6 +63,30 @@ def aliasToObject(alias):
     return to_return
 
 #-----------------------------------------------------------------------------------------------------------------------
+# def filter by time
+#-----------------------------------------------------------------------------------------------------------------------
+def filterByCreatedWhen(stuff, time_start, time_end):
+    if time_start:
+        stuff = stuff.filter(created_when__gt=time_start)
+    if time_end:
+        stuff = stuff.filter(created_when__lt=time_end)
+    return stuff
+
+def filterByEditedWhen(stuff, time_start, time_end):
+    if time_start:
+        stuff = stuff.filter(edited_when__gt=time_start)
+    if time_end:
+        stuff = stuff.filter(edited_when__lt=time_end)
+    return stuff
+
+def filterByWhen(stuff, time_start, time_end):
+    if time_start:
+        stuff = stuff.filter(when__gt=time_start)
+    if time_end:
+        stuff = stuff.filter(when__lt=time_end)
+    return stuff
+
+#-----------------------------------------------------------------------------------------------------------------------
 # gets query set of main topics, pseudo-caching
 #-----------------------------------------------------------------------------------------------------------------------
 def getMainTopics(vals=None):

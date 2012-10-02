@@ -3,6 +3,46 @@ from django.http import HttpResponse, HttpRequest
 # lovegov
 from lovegov.modernpolitics.backend import *
 from lovegov.base_settings import UPDATE
+from operator import attrgetter
+
+
+#-----------------------------------------------------------------------------------------------------------------------
+# get questions for weekly digest
+#-----------------------------------------------------------------------------------------------------------------------
+def getWeeklyDigestQuestions(time_start, time_end, viewer):
+
+    responses = viewer.getView().responses.all()
+    answered_ids = responses.values_list("question_id", flat=True)
+    questions = Question.objects.exclude(id__in=answered_ids)
+
+    questions = viewer.filterContentOnlyMyContent(questions)
+
+    digested_ids = viewer.digested_content.values_list("id", flat=True)
+    questions = questions.exclude(id__in=digested_ids)
+
+    all_users = UserProfile.objects.filter(ghost=False)
+    all_user_responses = Response.objects.filter(creator__in=all_users)
+
+    questions_list = []
+    for x in questions:
+        recent_responses = filterByEditedWhen(all_user_responses, time_start, time_end)
+        x.num_recent_responses = recent_responses.count()
+        questions_list.append(x)
+
+    questions_list.sort(key=attrgetter('num_recent_responses'), reverse=True)
+
+    return questions_list
+
+
+def getWeeklyDigestNews(time_start, time_end, viewer):
+
+    digested_ids = viewer.digested_content.values_list("id", flat=True)
+    news = News.objects.exclude(id__in=digested_ids)
+    news = filterByCreatedWhen(news, time_start, time_end)
+    news = viewer.filterContentOnlyMyContent(news)
+    news = news.order_by("-status")
+
+    return news
 
 #-----------------------------------------------------------------------------------------------------------------------
 # get vals for displaying info about who chose what about question
@@ -423,7 +463,7 @@ def valsGroup(viewer, group, vals):
     vals['group_admins'] = group.admins.all()[:2]
 
     # Get the list of all members and truncate it to be the number of members showing
-    group_members = group.getMembers()
+    group_members = group.getMembers().order_by("-created_when")
     if admins:
         num_members_display = 16
     else:

@@ -1,0 +1,15 @@
+{% extends 'emails/lovegov/frame.html' %}
+
+{% block email_main %}
+
+    {% include 'emails/lovegov/weekly_digest/weekly_digest_message.html' %}
+
+    {% if popular_questions %}
+        {% include 'emails/lovegov/weekly_digest/popular_content.html' with section_header="Popular Questions" content=popular_questions %}
+    {% endif %}
+
+    {% if popular_news %}
+        {% include 'emails/lovegov/weekly_digest/popular_content.html' with section_header="Popular News" content=popular_news %}
+    {% endif %}
+
+{% endblock %}

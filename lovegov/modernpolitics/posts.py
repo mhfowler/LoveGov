@@ -10,6 +10,14 @@
 from lovegov.modernpolitics.modals import *
 from django.core.files.base import ContentFile
 
+### change email subscription settings ###
+def changeEmailSubscriptionSettings(request, vals):
+    subscriptions = request.POST['subscriptions']
+    viewer = vals['viewer']
+    viewer.email_subscriptions = subscriptions
+    viewer.save()
+    return HttpResponse("success");
+
 ### log page load analytics from client side ###
 def clientSideAnalytics(request, vals):
 
@@ -1796,12 +1804,13 @@ def getFeed(request, vals):
 
     feed_items = contentToFeedItems(content, vals['viewer'])
     vals['feed_items'] = feed_items
+    num_items = len(feed_items)
 
     html = ajaxRender('site/pages/feed/feed_helper.html', vals, request)
 
     everything_loaded = everythingLoadedHelper(request, vals, feed_items)
 
-    to_return = {'html':html, 'num_items':len(feed_items), 'everything_loaded':everything_loaded}
+    to_return = {'html':html, 'num_items':num_items, 'everything_loaded':everything_loaded}
     return HttpResponse(json.dumps(to_return))
 
 # generates a list of (content, vote) tuples for each piece of content in list

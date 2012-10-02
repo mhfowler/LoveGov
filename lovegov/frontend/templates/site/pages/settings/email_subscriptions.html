@@ -1,0 +1,41 @@
+<div class="account_div email-settings-wrapper" data-url="/settings/email_subscriptions/">
+
+    <div class="email-settings-header">
+        Email Subscription Settings
+    </div>
+
+    <div class="email-settings-explanation">
+        Check a setting to receive emails of that kind, uncheck to disable all future emails.
+    </div>
+
+    <div class="email-settings-choices">
+
+        <div class="email-setting-wrapper">
+            <div class="email-setting-explanation">
+                <div class="email-setting-label"> Weekly Digest Emails </div>
+                <div class="email-setting-writing">
+                    If you uncheck this box then you will not receive weekly digest emails from LoveGov.
+                </div>
+            </div>
+            <input class="email-setting-checkbox email_setting_checkbox" type="checkbox" {% if 'W' in viewer.email_subscriptions %} checked="checked" {% endif %} data-subscription="W"/>
+            <div style="clear:both;"></div>
+        </div>
+
+        <div class="email-setting-wrapper">
+            <div class="email-setting-explanation">
+                <div class="email-setting-label"> All LoveGov Emails </div>
+                <div class="email-setting-writing">
+                    If you uncheck this box then you will not receive any further emails from LoveGov.
+                </div>
+            </div>
+            <input class="email-setting-checkbox email_setting_checkbox all_email_setting_checkbox" type="checkbox" {% if 'A' in viewer.email_subscriptions %} checked="checked" {% endif %} data-subscription="A"/>
+        </div>
+
+        <div style="clear:both;"></div>
+    </div>
+
+    <a class="email-settings-save-changes email_settings_save_changes"> save changes </a>
+
+    <div class="email-settings-saved-message email_setting_checkbox email_settings_saved_message"> your settings have been saved. </div>
+
+</div>
