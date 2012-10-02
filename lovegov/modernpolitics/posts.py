@@ -1237,12 +1237,15 @@ def valsWhoAgrees(viewer, response, which, vals):
         vals['disagreed'] = getRespondersHelper(viewer, people, disagreed)
 
 def getRespondersHelper(viewer, people, responses, max_num=10):
+    from operator import attrgetter
     responder_ids = responses.values_list("creator_id", flat=True)
     responders = people.filter(id__in=responder_ids)
     if len(responders) > max_num:
         responders = random.sample(responders, max_num)
     for x in responders:
         x.comparison = viewer.getComparison(x)
+    responders = list(responders)
+    responders.sort(key=attrgetter('comparison'), reverse=True)
     return responders
 
 #----------------------------------------------------------------------------------------------------------------------
