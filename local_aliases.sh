@@ -39,7 +39,7 @@ alias localpython="source $LG/local_env.sh && bpython -i $LG/autopython.py"
 alias lgtest="python $LG/lovegov/local_manage.py test tests"
 alias mostrecent="ls -ctr1 | tail -1"
 alias devpush="sudo git push origin dev"
-alias livepush="sudo git push origin live"
+alias livepush="sudo git push origin master"
 
 # server
 alias lg1max="ssh -i ~/lovegov/ec2/lg1.pem max@ec2-23-23-91-235.compute-1.amazonaws.com"
