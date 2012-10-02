@@ -463,7 +463,7 @@ def valsGroup(viewer, group, vals):
     vals['group_admins'] = group.admins.all()[:2]
 
     # Get the list of all members and truncate it to be the number of members showing
-    group_members = group.getMembers()
+    group_members = group.getMembers().order_by("-created_when")
     if admins:
         num_members_display = 16
     else:
