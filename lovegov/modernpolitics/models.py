@@ -5467,7 +5467,7 @@ class PageAccess(LGModel):
 
     def getPostParametersDict(self):
         if self.post_parameters:
-            return json.loads(x.post_parameters)
+            return json.loads(self.post_parameters)
         else:
             return {}
 

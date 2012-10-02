@@ -40,7 +40,7 @@ def runScript(operation, tag, args=[]):
 # Update script.
 #-----------------------------------------------------------------------------------------------------------------------
 def scriptUpdate(tag, args=[]):
-    tags = ['groupviews', 'lovegovresponses','congress','hot_scores']
+    tags = ['groupviews', 'lovegovresponses','congress','hot_scores', 'like_minded_groups']
     if tag == 'all':
         for t in tags:
             scriptUpdate(t)
@@ -57,6 +57,9 @@ def scriptUpdate(tag, args=[]):
     elif tag == 'hot_scores':
         print "*** UPDATING HOT SCORES ***"
         updateHotScores()
+    elif tag == 'like_minded_groups':
+        print "*** UPDATING LIKE MINDED GROUPS ***"
+        updateLikeMindedGroups()
     # prints valid tags
     elif tag == 'help':
         print "***** UPDATE HELP *****"

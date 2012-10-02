@@ -517,6 +517,8 @@ def summaryEmail(time_start, time_end):
     demographics = ['logged_on', 'new_users']
     vals['metrics_html'] = getMetricsHTMLFromTimeAndDemographics(time_start, time_end, demographics)
 
+    vals['IGNORED_POST_PARAMETERS'] = ['csrfmiddlewaretoken', 'path', 'action', 'url']
+
     context = Context(vals)
     template = loader.get_template('emails/daily_summary/daily_summary.html')
     email = template.render(context)
