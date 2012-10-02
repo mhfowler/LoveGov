@@ -1216,6 +1216,7 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
     # temp data
     last_page_access = models.IntegerField(default=-1, null=True)       # foreign key to page access
     last_answered = models.DateTimeField(auto_now_add=True, default=datetime.datetime.now, blank=True)     # last time answer question
+    last_updated_like_minded = models.DateTimeField(auto_now_add=True)
     # my groups and feeds
     group_subscriptions = models.ManyToManyField("Group")
     group_views = models.ManyToManyField("GroupView")
@@ -1259,6 +1260,17 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
 
     def __unicode__(self):
         return self.get_name()
+
+    #-------------------------------------------------------------------------------------------------------------------
+    # Updated like minded group on a schedule.
+    #-------------------------------------------------------------------------------------------------------------------
+    def updateLikeMindedGroup(self):
+        self.last_updated_like_minded = datetime.datetime.now()
+        self.save()
+        self.clearLikeMinded()
+        self.findLikeMinded(num=0)
+        num_members = self.like_minded.members.count()
+        print self.get_name() + ": " + str(num_members)
 
     #-------------------------------------------------------------------------------------------------------------------
     # Get hot feed, paginated

@@ -24,6 +24,19 @@ def getBucketList(resolution=10):
     return bucket_list
 
 #-----------------------------------------------------------------------------------------------------------------------
+# Update like minded groups for all people who haven't have answered a question, or who haven't updated in a week.
+#-----------------------------------------------------------------------------------------------------------------------
+def updateLikeMindedGroups():
+    for u in UserProfile.objects.filter(ghost=False):
+        if u.last_answered > u.last_updated_like_minded:
+            u.updateLikeMindedGroup()
+        else:
+            delta = datetime.datetime.now() - u.last_updated_like_minded
+            print delta.hours
+            if (delta.hours / 24) > 4:
+                u.updateLikeMindedGroup()
+
+#-----------------------------------------------------------------------------------------------------------------------
 # Updates aggregate-response for all groups
 #-----------------------------------------------------------------------------------------------------------------------
 def updateGroupViews(debug=False, fast=True):
