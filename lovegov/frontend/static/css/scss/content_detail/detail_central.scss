@@ -205,6 +205,15 @@ div.agreement_wrapper {
     float:left;
     width:100%;
   }
+  div.updating-object {
+    @include staticImage("/images/gifs/ajax-loader.gif");
+    width: 30px;
+    height: 30px;
+    background-size: 30px 30px;
+    background-repeat: no-repeat;
+    display:block;
+    float:left;
+  }
 }
 
 
