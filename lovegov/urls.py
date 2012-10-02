@@ -70,6 +70,7 @@ urlpatterns += patterns('',
     (r'^link/(\d+)/$', viewWrapper(views.linkRedirect, requires_login=True)),
     (r'^underconstruction/$', views.underConstruction),
     (r'^500/$', 'django.views.generic.simple.direct_to_template', {'template': '500.html', 'extra_context': {'STATIC_URL': settings.STATIC_URL}}),
+    (r'^404/$', views.error404),
     (r'^robots.txt', 'django.views.generic.simple.direct_to_template', {'template': 'robots.txt'}),
 
     # home pages
@@ -155,7 +156,7 @@ urlpatterns += patterns('',
     # REDIRECT
     (r'^popup_redirect/$', views.popupRedirect),
     (r'(?P<alias>\w+)/$', views.aliasDowncast),
-    (r'.*/$', views.redirect),
+    (r'.*/$', views.error404),
     (r'^$', views.redirect, {'page':"/login/"})
 
 )
