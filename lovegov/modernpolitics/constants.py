@@ -731,7 +731,8 @@ ACTIONS = [
     'addEmailList',
     'clientSideAnalytics',
     'getAgreementBarGraphHTML',
-    'getAgreementPeopleListHTML'
+    'getAgreementPeopleListHTML',
+    'changeEmailSubscriptionSettings'
 ]
 
 UNAUTHENTICATED_ACTIONS = [

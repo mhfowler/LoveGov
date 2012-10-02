@@ -28,7 +28,7 @@
                     If you uncheck this box then you will not receive any further emails from LoveGov.
                 </div>
             </div>
-            <input class="email-setting-checkbox email_setting_checkbox" type="checkbox" {% if 'A' in viewer.email_subscriptions %} checked="checked" {% endif %} data-subscription="A"/>
+            <input class="email-setting-checkbox email_setting_checkbox all_email_setting_checkbox" type="checkbox" {% if 'A' in viewer.email_subscriptions %} checked="checked" {% endif %} data-subscription="A"/>
         </div>
 
         <div style="clear:both;"></div>
@@ -36,6 +36,6 @@
 
     <a class="email-settings-save-changes email_settings_save_changes"> save changes </a>
 
-    <div class="email-settings-saved-message email_settings_saved_message"> your settings have been saved. </div>
+    <div class="email-settings-saved-message email_setting_checkbox email_settings_saved_message"> your settings have been saved. </div>
 
 </div>

@@ -10,6 +10,14 @@
 from lovegov.modernpolitics.modals import *
 from django.core.files.base import ContentFile
 
+### change email subscription settings ###
+def changeEmailSubscriptionSettings(request, vals):
+    subscriptions = request.POST['subscriptions']
+    viewer = vals['viewer']
+    viewer.email_subscriptions = subscriptions
+    viewer.save()
+    return HttpResponse("success");
+
 ### log page load analytics from client side ###
 def clientSideAnalytics(request, vals):
 

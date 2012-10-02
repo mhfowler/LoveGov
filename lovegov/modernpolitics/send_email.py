@@ -129,10 +129,17 @@ def sendWeeklyDigestEmail(user_profile):
     email_template = 'emails/lovegov/weekly_digest/weekly_digest.html'
     sendLoveGovEmailHelper(user_profile, subject, email_vals, email_template)
 
-
 def sendWeeklyDigestEmails():
     m = UserProfile.lg.get_or_none(alias="max_fowler")
     sendWeeklyDigestEmail(m)
+
+def isUnsubscribedToEmail(email):
+    user = UserProfile.lg.get_or_none(email=email)
+    if user:
+        return not user.checkEmailSubscription("A")
+    else:
+        return UnsubscribedToEmail.lg.get_or_none(email=email)
+
 
 
 
