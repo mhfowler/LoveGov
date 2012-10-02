@@ -5259,8 +5259,7 @@ class CalculatedGroup(Group):
                     self.processed.add(x)
                     processed_num += 1
                 except:
-                    from lovegov.modernpolitics.helpers import LGException
-                    LGException("Failed to add to like minded " + enc(x.get_name()) + " to " + enc(viewer.get_name()))
+                    error_logger.error("Failed to add to like minded " + enc(x.get_name()) + " to " + enc(viewer.get_name()))
 
         if not processed_num:
             viewer.addFinishedTask("L")
