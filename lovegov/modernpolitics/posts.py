@@ -1245,7 +1245,7 @@ def getRespondersHelper(viewer, people, responses, max_num=10):
     for x in responders:
         x.comparison = viewer.getComparison(x)
     responders = list(responders)
-    responders.sort(key=attrgetter('comparison'), reverse=True)
+    responders.sort(key=lambda x: x.comparison.result, reverse=True)
     return responders
 
 #----------------------------------------------------------------------------------------------------------------------
