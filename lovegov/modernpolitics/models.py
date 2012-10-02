@@ -1227,6 +1227,7 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
     # settings
     private_follow = models.BooleanField(default=False)
     email_subscriptions = models.CharField(max_length=40, default="AW", blank=True)
+    digested_content = models.ManyToManyField("Content", related_name="digested_by")            # content which was sent to this user in a digest email
     # Government Stuff
     political_title = models.CharField(max_length=100, default="Citizen")
     primary_role = models.ForeignKey("OfficeHeld", null=True)
@@ -1389,6 +1390,13 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
             content = Content.objects.filter(in_feed=True)
         stale_ids = self.stale_content.values_list("id", flat=True)
         return content.exclude(id__in=stale_ids)
+
+    def addDigestedContent(self, content):
+        self.digested_content.add(content)
+
+    def clearDigested(self):
+        print self.digested_content.count()
+        self.digested_content.clear()
 
     #-------------------------------------------------------------------------------------------------------------------
     # background tasks
@@ -5541,7 +5549,6 @@ class toLoveGov(LGModel):
     date = models.DateTimeField(auto_now_add=True)
     from_where = models.CharField(max_length=100, null=True)
     clicks = models.IntegerField(default=0)
-
 
 class UnsubscribedToEmail(LGModel):
     email = models.EmailField()

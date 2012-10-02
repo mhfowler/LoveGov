@@ -197,6 +197,9 @@ def tryLoveGov(request, to_page="home/", vals={}):
     return response
 
 def unsubscribe(request, email, vals={}):
+    already = UnsubscribedToEmail.lg.get_or_none(email=email)
+    if not already:
+        UnsubscribedToEmail(email=email).save()
     return HttpResponse("You have unsubscribed from LoveGov emails.")
 
 def goToLoveGov(request, link_id, vals={}):

@@ -120,10 +120,12 @@ def sendWeeklyDigestEmail(user_profile):
     popular_questions = getWeeklyDigestQuestions(time_start, time_end, user_profile)[:5]
     for x in popular_questions:
         x.the_link = DOMAIN + x.get_url()
+        user_profile.addDigestedContent(x)
 
     popular_news = getWeeklyDigestNews(time_start, time_end, user_profile)[:5]
     for x in popular_news:
         x.the_link = x.link
+        user_profile.addDigestedContent(x)
 
     email_vals = {'popular_questions':popular_questions, 'popular_news':popular_news}
     email_template = 'emails/lovegov/weekly_digest/weekly_digest.html'

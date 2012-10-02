@@ -16,6 +16,9 @@ def getWeeklyDigestQuestions(time_start, time_end, viewer):
 
     questions = Question.objects.exclude(id__in=answered_ids)
 
+    digested_ids = viewer.digested_content.values_list("id", flat=True)
+    questions = questions.exclude(id__in=digested_ids)
+
     all_users = UserProfile.objects.filter(ghost=False)
     all_user_responses = Response.objects.filter(creator__in=all_users)
 
@@ -32,7 +35,8 @@ def getWeeklyDigestQuestions(time_start, time_end, viewer):
 
 def getWeeklyDigestNews(time_start, time_end, viewer):
 
-    news = News.objects.all()
+    digested_ids = viewer.digested_content.values_list("id", flat=True)
+    news = News.objects.exclude(id__in=digested_ids)
     news = filterByCreatedWhen(news, time_start, time_end)
     news.order_by("-status")
 

@@ -4,8 +4,12 @@
 
     {% include 'emails/lovegov/weekly_digest/weekly_digest_message.html' %}
 
-    {% include 'emails/lovegov/weekly_digest/popular_content.html' with section_header="Popular Questions" content=popular_questions %}
+    {% if popular_questions %}
+        {% include 'emails/lovegov/weekly_digest/popular_content.html' with section_header="Popular Questions" content=popular_questions %}
+    {% endif %}
 
-    {% include 'emails/lovegov/weekly_digest/popular_content.html' with section_header="Popular News" content=popular_news %}
+    {% if popular_news %}
+        {% include 'emails/lovegov/weekly_digest/popular_content.html' with section_header="Popular News" content=popular_news %}
+    {% endif %}
 
 {% endblock %}
