@@ -107,14 +107,16 @@ def viewWrapper(view, requires_login=False):
                     to_page = vals['to_page']
                     # if not unauthenticated action, redirect to login page
                     if not request.POST.get('action') in UNAUTHENTICATED_ACTIONS:
-                        return shortcuts.redirect("/login" + request.path)
+                        if not request.REQUEST.get('robotscantlove'):
+                            return shortcuts.redirect("/login" + request.path)
+                        else:
+                            user = getAnonUser()
+                            vals['i_am_anonymous'] = True
+                            vals['prohibited_actions'] = ANONYMOUS_PROHIBITED_ACTIONS
+                            vals['controlling_user'] = user.user
                     else: # otherwise action can be done without AUTHENTICATION
                         vals['prohibited_actions'] = ANONYMOUS_PROHIBITED_ACTIONS
                         return view(request,vals=vals,*args,**kwargs)
-#                    user = getAnonUser()
-#                    vals['i_am_anonymous'] = True
-#                    vals['prohibited_actions'] = ANONYMOUS_PROHIBITED_ACTIONS
-#                    vals['anonymous_welcome'] = not request.COOKIES.get("closed_anon")
 
                 # get user profile associated with controlling user
                 vals['user'] = user
@@ -255,7 +257,7 @@ def aliasDowncast(request, alias=None, vals={}):
     if matched_group:
         the_view = viewWrapper(groupPage, requires_login=True)
         return the_view(request=request, g_alias=matched_group.alias)
-    return redirect(request)
+    return error404(request)
 
 #-----------------------------------------------------------------------------------------------------------------------
 # points alias urls to correct pages, and then on to edit page
@@ -270,7 +272,11 @@ def aliasDowncastEdit(request, alias=None, vals={}):
     if matched_group:
         the_view = viewWrapper(groupEdit, requires_login=True)
         return the_view(request=request, g_alias=matched_group.alias)
-    return redirect(request)
+    return error404(request)
+
+def error404(request, vals={}):
+    return render_to_response('404.html')
+
 
 #-----------------------------------------------------------------------------------------------------------------------
 # login, password recovery and authentication
