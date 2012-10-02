@@ -5444,9 +5444,10 @@ class PageAccess(LGModel):
     exit = models.BooleanField(default=False)
     login = models.BooleanField(default=True)
 
-    def autoSave(self, request, save_post=False):
+    def autoSave(self, request, user_prof=None):
         from lovegov.modernpolitics.helpers import getSourcePath, getUserProfile
-        user_prof = getUserProfile(request)
+        if not user_prof:
+            user_prof = getUserProfile(request)
         if user_prof:
             self.user = user_prof
             self.page = getSourcePath(request)

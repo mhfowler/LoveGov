@@ -57,6 +57,7 @@ def viewWrapper(view, requires_login=False):
     """Outer wrapper for all views"""
     def new_view(request, *args, **kwargs):
         vals = {'STATIC_URL':settings.STATIC_URL_NOSLASH}
+        user = None
         try: # Catch all error messages
 
 #            return shortcuts.redirect('/underconstruction/')
@@ -164,7 +165,8 @@ def viewWrapper(view, requires_login=False):
         finally:  # save page access, if there isn't specifically set value to log-ignore
             ignore = request.REQUEST.get('log-ignore')
             if not ignore:
-                saveAccess(request)
+                #saveAccess(request)
+                PageAccess().autoSave(request, user)
 
     return new_view
 
