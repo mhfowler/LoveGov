@@ -32,8 +32,7 @@ def updateLikeMindedGroups():
             u.updateLikeMindedGroup()
         else:
             delta = datetime.datetime.now() - u.last_updated_like_minded
-            print delta.minutes
-            if (delta.mintutes / 60 / 24) > 4:
+            if delta.days > 4:
                 u.updateLikeMindedGroup()
 
 #-----------------------------------------------------------------------------------------------------------------------
