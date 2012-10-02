@@ -2428,6 +2428,12 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
         content = Content.objects.filter(posted_to_id__in=groups_ids)
         return content
 
+    def filterContentOnlyMyContent(self, content):
+        my_content = self.getGroupSubscriptionContent()
+        my_content_ids = my_content.values_list("id", flat=True)
+        content = content.filter(id__in=my_content_ids)
+        return content
+
     #-------------------------------------------------------------------------------------------------------------------
     # Returns a list of all Users who are (confirmed) following this user.
     #-------------------------------------------------------------------------------------------------------------------
