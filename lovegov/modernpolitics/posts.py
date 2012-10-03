@@ -2351,7 +2351,6 @@ def getUsersByUID(request, vals={}):
 
 
 def getGroupMembersForDisplay(request, vals={}):
-
     viewer = vals['viewer']
     group = Group.objects.get(id=request.POST['g_id'])
     start_num = request.POST.get('start')
