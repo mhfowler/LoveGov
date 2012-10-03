@@ -612,6 +612,14 @@ def likeMinded(request, vals):
     viewer = vals['viewer']
     like_minded = viewer.getLikeMindedGroup()
     vals['like_minded'] = like_minded
+    vals['num_members'] = like_minded.members.count()
+    vals['num_processed'] = like_minded.processed.count()
+
+    valsQuestionsThreshold(vals)
+
+    focus_html =  ajaxRender('site/pages/like_minded/like_minded.html', vals, request)
+    url = request.path
+    return homeResponse(request, focus_html, url, vals)
 
 #-----------------------------------------------------------------------------------------------------------------------
 # qa

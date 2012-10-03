@@ -2749,15 +2749,17 @@ def getFBInviteFriends(request, vals={}):
 #-----------------------------------------------------------------------------------------------------------------------
 def findLikeMinded(request, vals={}):
     viewer = vals['viewer']
-    #num_answers = viewer.num_answers
-    #new_members, num_processed = viewer.findLikeMinded()
-    #num_new_members = len(new_members)
-    #vals['display'] = 'avatar'
-    #vals['users'] = new_members
-    #html = ajaxRender('site/pieces/render_users_helper.html', vals, request)
-    num_new_members = 0
-    num_processed = 0
-    html = ""
+    if settings.LIKE_MINDED_TURNED_ON:
+        num_answers = viewer.num_answers
+        new_members, num_processed = viewer.findLikeMinded()
+        num_new_members = len(new_members)
+        vals['display'] = 'avatar'
+        vals['users'] = new_members
+        html = ajaxRender('site/pieces/render_users_helper.html', vals, request)
+    else:
+        num_new_members = 0
+        num_processed = 0
+        html = ""
     return HttpResponse(json.dumps({"num_new_members":num_new_members, 'num_processed':num_processed, 'html':html}))
 
 #-----------------------------------------------------------------------------------------------------------------------

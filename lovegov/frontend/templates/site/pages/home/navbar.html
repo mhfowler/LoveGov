@@ -21,9 +21,7 @@
             <span class="lil-goob"></span>
             <div class="navbar_title navbar-title"> My Groups </div> </a>  <span class="red_triangle red-triangle"></span>
         <div class="navbar_links_wrapper groups_wrapper">
-            {% comment %}
-                {% include 'site/pages/home/navbar_snippet.html' with section_url="/like_minded/" section_title="Like Minded" %}
-            {% endcomment %}
+            {% include 'site/pages/home/navbar_snippet.html' with section_url="/like_minded/" section_title="Like Minded" %}
             {% for x in group_subscriptions %}
                 {% include 'site/pages/home/navbar_snippet.html' %}
             {% endfor %}
