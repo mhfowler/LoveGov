@@ -2354,20 +2354,26 @@ def getGroupMembersForDisplay(request, vals={}):
 
     viewer = vals['viewer']
     group = Group.objects.get(id=request.POST['g_id'])
-    start = int(request.POST['start'])
-    num = int(request.POST['num'])
-    display = request.POST['display']
-    vals['display'] = display
-    members = group.getMembers(start=start, num=num)
-
-    vals['users'] = members
-    how_many = len(members)
-    if display=='strip':
-        for u in members:
-            u.comparison = u.getComparison(viewer)
-    html = ajaxRender('site/pieces/render_users_helper.html', vals, request)
-    to_return = {'html':html, 'num':how_many}
-    return HttpResponse(json.dumps(to_return))
+    start_num = request.POST.get('start')
+    if start_num:
+        start = int(start_num)
+        num = int(request.POST['num'])
+        display = request.POST['display']
+        vals['display'] = display
+        members = group.getMembers(start=start, num=num)
+        vals['users'] = members
+        how_many = len(members)
+        if display=='strip':
+            for u in members:
+                u.comparison = u.getComparison(viewer)
+        html = ajaxRender('site/pieces/render_users_helper.html', vals, request)
+        to_return = {'html':html, 'num':how_many}
+        return HttpResponse(json.dumps(to_return))
+    else:
+        error_message = "getGroupMembersForDisplay error, start key not found: " + json.dumps(request.POST)
+        error_logger.error(error_message)
+        to_return = {'html':"", 'num':0}
+        return HttpResponse(json.dumps(to_return))
 
 #-----------------------------------------------------------------------------------------------------------------------
 # misc
