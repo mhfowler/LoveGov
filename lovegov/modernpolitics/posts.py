@@ -997,7 +997,8 @@ def saveAnswer(request, vals={}):
     vals['compare_responses'] = responses
 
     # if this was a real response, it set num_answers to be question threshold, then start calculating like minded
-    start_like_minded = your_response.most_chosen_answer and viewer.num_answers == QUESTIONS_THRESHOLD
+    num_answers = viewer.num_answers
+    start_like_minded = your_response.most_chosen_answer and num_answers == QUESTIONS_THRESHOLD
 
     html = ajaxRender('site/pages/qa/question_stub.html', vals, request)
     to_return = {'html':html, 'num_responses':question.num_responses, 'start_like_minded':start_like_minded}

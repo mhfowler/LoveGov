@@ -4266,8 +4266,10 @@ bind('.clear_like_minded' , 'click' , null , function(e)
                     $(".clear_result").show();
                     $(".total_members").html(0);
                     $(".total_members").data('num',0);
+                    $(".total_found").data('num', 0);
                     $(".total_found").html(0);
                     $(".total_processed").html(0);
+                    $(".computing_result").show();
                     computing_like_minded = true;
                     findNewLikeMinded();
                 }}
