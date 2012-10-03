@@ -49,7 +49,12 @@ def createTwitterUser(name, email, vals={}):
 def createUser(name, email, password,active=True, verified=False):
     # NORMAL CASE
     if not ControllingUser.objects.filter(username=email):
-        control = ControllingUser.objects.create_user(username=email, email=email, password=password)
+        from string import letters
+        from random import choice
+        random_username = ''.join([choice(letters) for i in xrange(30)])
+        while ControllingUser.objects.filter(username=random_username):
+            random_username = ''.join([choice(letters) for i in xrange(30)])
+        control = ControllingUser.objects.create_user(username=random_username, email=email, password=password)
         control.is_active = active
         control.save()
         logger.debug("created control: " + control.email)

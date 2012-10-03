@@ -142,30 +142,33 @@ bind('span.flag',"click", function(e) {
 // Load more comments click
 bind('div.load-more-comments', 'click', function(e) {
     if(!$(this).hasClass('disabled')) {
-        var num_to_load = 10;
-        var thread = $(this).siblings('div.thread');
-        if(thread.length) {
-            var cid = thread.data('cid');
-            var next_start = thread.data('num-showing');
-            var div_load_more = $(this);
-            action({
-                data: {'action': 'ajaxThread', 'c_id': cid, 'limit': num_to_load, 'start': next_start, 'new_comments': JSON.stringify(new_comments)},
-                success: function(data)
-                {
-                    var returned = $.parseJSON(data);
-                    var top_count = returned.top_count;
-                    if(top_count==0) {
-                        div_load_more.addClass('disabled');
-                        div_load_more.text("there are no more comments to load");
-                    } else {
-                        $(returned.html).hide().appendTo('div.thread').fadeIn(500);
-                        $('div.thread').data('num-showing', next_start + top_count);
-                    }
-                    bindTooltips();
-                }
-            });
-        }
+        loadMoreComments();
     }
 });
 
-
+function loadMoreComments() {
+    var button = $('div.load-more-comments');
+    var num_to_load = 10;
+    var thread = button.siblings('div.thread');
+    if(thread.length) {
+        var cid = thread.data('cid');
+        var next_start = thread.data('num-showing');
+        var div_load_more = button;
+        action({
+            data: {'action': 'ajaxThread', 'c_id': cid, 'limit': num_to_load, 'start': next_start, 'new_comments': JSON.stringify(new_comments)},
+            success: function(data)
+            {
+                var returned = $.parseJSON(data);
+                var top_count = returned.top_count;
+                if(top_count==0) {
+                    div_load_more.addClass('disabled');
+                    div_load_more.text("there are no more comments to load");
+                } else {
+                    $(returned.html).hide().appendTo('div.thread').fadeIn(500);
+                    $('div.thread').data('num-showing', next_start + top_count);
+                }
+                bindTooltips();
+            }
+        });
+    }
+}
