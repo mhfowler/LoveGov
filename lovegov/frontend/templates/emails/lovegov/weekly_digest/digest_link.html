@@ -11,6 +11,7 @@
         margin-right: 10px;
         "> {{ the_title }}
 </a>
+
 {% if comments_link %}
     <a href="{{ domain }}{{ comments_link }}" target="_blank" style="
     margin-right: 10px;
@@ -18,7 +19,7 @@
     color: #E0E0E0;
     text-decoration: none;
     display: inline-block;
-">{{ num_comments }} comment{{ num_comments|pluralize }}</a></span>
+">{% comment %}{{ num_comments }} comment{{ num_comments|pluralize }}{% endcomment %}see comments</a></span>
 {% endif %}
     <div style="clear:both;"></div>
 </div>
