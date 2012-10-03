@@ -160,6 +160,17 @@
       float:left;
       width:800px;
       border-right:1px solid $gray;
+
+      h3 {
+        float:left;
+      }
+      div.heart-gif {
+        float: left;
+        margin-right: 30px;
+        margin-left: 25px;
+        margin-top: 7px;
+      }
+
     }
     div.identical-avatars-header {
       padding-top:10px;
@@ -197,6 +208,8 @@
       float:left;
       width:170px;
       text-align:center;
+      border-left: 1px solid $light-gray;
+      min-height: 500px;
 
       a.href-avatar {
         float:left;

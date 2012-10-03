@@ -230,6 +230,7 @@ def loadHistogram(resolution, g_id, which, increment=1, vals={}):
                           'topic_text': 'All Topics',
                           'bucket_uids': bucket_uids,
                           'current_bucket': -1 ,
+                          'loading_members_nonce':0,
                           'maximum': maximum}
     vals['histogram_metadata'] = json.dumps(histogram_metadata)
 
