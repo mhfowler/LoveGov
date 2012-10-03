@@ -379,7 +379,7 @@ def loginPOST(request, to_page='/home/',message="",vals={}):
 
     # RECOVER
     elif request.POST['button'] == 'recover':
-        user = ControllingUser.lg.get_or_none(username=request.POST['username'])
+        user = ControllingUser.lg.get_or_none(email=request.POST['username'])
         if user: resetPassword(user)
         message = u"This is a temporary recovery system! Your password has been reset. Check your email for your new password, you can change it from the account settings page after you have logged in."
         return HttpResponse(json.dumps(message))
