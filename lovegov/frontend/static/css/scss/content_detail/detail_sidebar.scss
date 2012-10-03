@@ -38,21 +38,5 @@ div.content-detail-sidebar {
       }
     }
   }
-
-  div.thread-refresh {
-    position: fixed;
-    bottom: 200px;
-    cursor: pointer;
-    border: 1px solid $gray;
-    padding: 10px;
-    @include border-radius(5px);
-    &:hover {
-      background-color: $yellow-highlight;
-      text-decoration: underline;
-    }
-    &:active {
-      background-color: $red;
-      color: white;
-    }
-  }
 }
+

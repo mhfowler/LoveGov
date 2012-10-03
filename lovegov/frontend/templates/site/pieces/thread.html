@@ -1,4 +1,8 @@
-<span class="discuss">Discuss</span>
+<span class="discuss">Discuss
+        <div class="thread-refresh">
+            refresh comment thread
+        </div>
+</span>
 {% include 'site/pieces/reply-form.html' with width="100%" depth='-1' content=content class="reply-new" %}
 <!-- comment thread -->
 <div class="thread" data-cid="{{ content.id }}" data-num-showing="0">

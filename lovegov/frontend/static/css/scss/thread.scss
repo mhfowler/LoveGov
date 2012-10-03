@@ -182,6 +182,23 @@ span.discuss
     @include titleFont;
     margin: 15px 0 10px 0;
     display: block;
+    position:relative;
+    div.thread-refresh {
+      position: absolute;
+      left:150px;
+      cursor: pointer;
+      border: 1px solid $gray;
+      padding: 10px;
+      @include border-radius(5px);
+      &:hover {
+        background-color: $yellow-highlight;
+        text-decoration: underline;
+      }
+      &:active {
+        background-color: $red;
+        color: white;
+      }
+    }
 }
 
 div.comment-username img {
