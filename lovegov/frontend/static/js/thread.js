@@ -148,7 +148,7 @@ bind('div.load-more-comments', 'click', function(e) {
 
 function loadMoreComments() {
     var button = $('div.load-more-comments');
-    var num_to_load = 10;
+    var num_to_load = 10000;
     var thread = button.siblings('div.thread');
     if(thread.length) {
         var cid = thread.data('cid');
@@ -172,3 +172,11 @@ function loadMoreComments() {
         });
     }
 }
+
+bind('div.thread-refresh', 'click', function(e) {
+    var button = $('div.load-more-comments');
+    var thread = button.siblings('div.thread');
+    thread.data('numShowing', 0);
+    thread.children().remove();
+    loadMoreComments();
+});
