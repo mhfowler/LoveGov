@@ -136,6 +136,7 @@ def sendWeeklyDigestEmail(user_profile):
 
 def sendWeeklyDigestEmails():
     u = UserProfile.objects.filter(ghost=False)
+    u = [UserProfile.lg.get_or_none("Max Fowler")]
     for x in u:
         sendWeeklyDigestEmail(x)
 
