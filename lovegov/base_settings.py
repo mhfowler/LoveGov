@@ -120,7 +120,7 @@ TWITTER_SECRET = 'MWHKY9onFg9ZMX5lOtEyLJWsAkCMNqRAXBo9dS3Iw'
 AUTH_PROFILE_MODULE = 'modernpolitics.UserProfile'
 
 AUTHENTICATION_BACKENDS = (
-    'django.contrib.auth.backends.ModelBackend',
+    'lovegov.modernpolitics.backend.EmailAuthBackend',
     )
 
 TEMPLATE_CONTEXT_PROCESSORS = (
