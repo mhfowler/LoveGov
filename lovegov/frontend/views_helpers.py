@@ -469,15 +469,7 @@ def valsGroupButtons(viewer, group, vals):
 #-----------------------------------------------------------------------------------------------------------------------
 def valsElection(viewer, election, vals):
     if election.alias == 'presidential_election':
-        if not LOCAL:
-            obama = UserProfile.objects.get(alias='barack_obama')
-            mitt = UserProfile.objects.get(alias='mitt_romney')
-            ron = UserProfile.objects.get(alias='ronald_paul')
-            biden = UserProfile.objects.get(alias='joseph_biden')
-            ryan = UserProfile.objects.get(alias='paul_ryan')
-            running = [obama, mitt, ron, biden, ryan]
-        else:
-            running = UserProfile.objects.all()[:5]
+        running = UserProfile.objects.all()[:5]
     else:
         running = election.members.all().order_by("-num_supporters")
 
