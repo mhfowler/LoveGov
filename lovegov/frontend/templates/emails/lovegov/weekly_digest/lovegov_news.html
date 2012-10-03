@@ -1,0 +1,16 @@
+{% extends 'emails/lovegov/white_section.html' %}
+
+
+{% block white_section %}
+
+    <p>
+        {% include 'emails/lovegov/weekly_digest/digest_link.html' with the_link="https://register.rockthevote.com/registrants/new?partner=20437&source=embed-rtv234x60v1" the_title="Register to vote from LoveGov" %}
+
+        {% comment %}
+        {% include 'emails/lovegov/weekly_digest/digest_link.html' with the_link="http://lovegov.com/settings/email_subscriptions/" the_title="Change email subscription settings" %}
+        {% endcomment %}
+
+        <div style="clear:both;"></div>
+    </p>
+
+{% endblock %}
