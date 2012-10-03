@@ -44,9 +44,6 @@
                     <a class="like_minded_close close-like-minded dummy_link"> close </a>
                 </div>
                 <div class="like-minded-description">
-                    {% comment %}
-                        <div class="like-minded-description-header"> What is this? </div>
-                    {% endcomment %}
                     <div class="no-members no_members" {% if num_members %} style="display:none;" {% endif %}>
                         <div class="no-members-message">
                             You don't have anyone in your like-minded group yet. Press the update button on the left to tap
@@ -86,7 +83,7 @@
                     </div>
                 </div>
                 <div class="like_minded_members like-minded-members">
-                    {% for user in like_minded.members.all %}
+                    {% for user in members %}
                         {% include 'site/pieces/avatar_href.html' with width="50" height="50" %}
                     {% endfor %}
                 </div>

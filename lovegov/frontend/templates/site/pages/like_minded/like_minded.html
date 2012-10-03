@@ -2,7 +2,15 @@
 
 {% block home_header %}
 
-    {% include 'site/pages/like_minded/like_minded_header.html' with info_height="190px" %}
+    {% if not ABOVE_QUESTIONS_THRESHOLD %}
+        <div class="like-minded-not-enough-questions">
+            This page will contain a feed of content created by like minded people, but you haven't answered
+            enough questions for us to match you yet. Answer at least 15 questions and then refresh the page
+            to see who your like minded matches are and what they are doing on LoveGov.
+        </div>
+    {% else %}
+        {% include 'site/pages/like_minded/like_minded_header.html' with info_height="190px" %}
+    {% endif %}
 
 {% endblock %}
 
@@ -10,7 +18,19 @@
 
 {% block home_feed %}
 
-    {% include 'site/pages/feed/feed.html' with like_minded_filter=1 %}
+    {% if not ABOVE_QUESTIONS_THRESHOLD %}
+
+        {% include 'site/pages/dismissible_headers/not_enough_questions.html' with of_what="content" %}
+
+        <div class="normal_feed" style="display:none;">
+            {% include 'site/pages/feed/feed.html' with like_minded_filter=1 %}
+        </div>
+
+    {% else %}
+
+        {% include 'site/pages/feed/feed.html' with like_minded_filter=1 %}
+
+    {% endif %}
 
     <script> rebind="home"; </script>
 
