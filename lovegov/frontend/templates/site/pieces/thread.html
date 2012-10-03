@@ -7,8 +7,11 @@
 <div class="load-more-comments">load more comments</div>
 <script type="text/javascript">
     $(document).ready(function() {
-        $('div.load-more-comments').click();
+        loadMoreComments();
+        setInterval(loadMoreComments, 10000);
     });
-    // New comments loaded - prevents them from being
+    // New comments loaded - prevents them from being loaded again
     var new_comments = [];
+
+
 </script>
