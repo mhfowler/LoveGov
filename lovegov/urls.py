@@ -86,6 +86,7 @@ urlpatterns += patterns('',
     (r'^match/$', viewWrapper(views.match, requires_login=True)),
     (r'^my_groups/$', viewWrapper(views.myGroups, requires_login=True)),
     (r'^my_elections/$', viewWrapper(views.myElections, requires_login=True)),
+    (r'^like_minded/$', viewWrapper(views.likeMinded, requires_login=True)),
 
     # other main pages
     (r'^home/$', viewWrapper(views.redirect, requires_login=True)),
@@ -157,6 +158,6 @@ urlpatterns += patterns('',
     (r'^popup_redirect/$', views.popupRedirect),
     (r'(?P<alias>\w+)/$', views.aliasDowncast),
     (r'.*/$', views.error404),
-    (r'^$', views.redirect, {'page':"/login/"})
+    (r'^$', views.redirect, {'page':"/home/"})
 
 )

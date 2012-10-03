@@ -608,6 +608,11 @@ def friends(request, vals):
     url = request.path
     return homeResponse(request, focus_html, url, vals)
 
+def likeMinded(request, vals):
+    viewer = vals['viewer']
+    like_minded = viewer.getLikeMindedGroup()
+    vals['like_minded'] = like_minded
+
 #-----------------------------------------------------------------------------------------------------------------------
 # qa
 #-----------------------------------------------------------------------------------------------------------------------
