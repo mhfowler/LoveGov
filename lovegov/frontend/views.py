@@ -388,7 +388,7 @@ def passwordRecovery(request,confirm_link=None, vals={}):
 
     # new password recovery request
     if request.method == 'POST' and "email" in request.POST:
-        ResetPassword.create(username=request.POST['email'])
+        ResetPassword.create(email=request.POST['email'])
         msg = u"Check your email for instructions to reset your password."
         if request.is_ajax(): return HttpResponse(json.dumps({'message': msg}))
         else: return renderToResponseCSRF(template="site/pages/login/login-forgot-password.html",vals=vals.update({'message':msg}),request=request)

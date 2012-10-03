@@ -176,6 +176,7 @@ function loadMoreComments() {
 bind('div.thread-refresh', 'click', function(e) {
     var button = $('div.load-more-comments');
     var thread = button.siblings('div.thread');
+    thread.css("min-height", thread.height());
     thread.data('numShowing', 0);
     thread.children().remove();
     loadMoreComments();

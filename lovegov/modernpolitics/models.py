@@ -5928,15 +5928,15 @@ class ResetPassword(LGModel):
     email_code = models.CharField(max_length=75)
     created_when = models.DateTimeField(auto_now_add=True)
 
-    def create(username):
+    def create(email):
 
         from lovegov.modernpolitics.helpers import generateRandomPassword
         from lovegov.modernpolitics.send_email import sendPasswordRecoveryEmail
 
-        toDelete = ResetPassword.lg.get_or_none(userProfile__username=username)
+        toDelete = ResetPassword.lg.get_or_none(userProfile__email=email)
         if toDelete: toDelete.delete()
 
-        user_profile = UserProfile.lg.get_or_none(username=username)
+        user_profile = UserProfile.lg.get_or_none(email=email)
         if user_profile:
             try:
                 reseturl = generateRandomPassword(50)

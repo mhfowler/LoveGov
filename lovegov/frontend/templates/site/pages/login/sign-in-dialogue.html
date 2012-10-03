@@ -20,11 +20,8 @@
 
     <form action="/login{{ to_page }}" method="post" id="loginform"> {% csrf_token %}
 
-        <input type="text" class="sign-in-input" name="username"
-               value="{% if login_email %}{{ login_email }}{% else %}email{% endif %}"
-               data-orig="{% if login_email %} {{ login_email }} {% else %} email {% endif %}"/>
-        <input type="password" class="sign-in-input password-input" name="password"
-               value="{% if not login_email %}password{% endif %}" data-orig="password"/>
+        <input type="text" class="sign-in-input" name="username" {% if login_email %}value="{{ login_email }}"{% endif %} placeholder="email"/>
+        <input type="password" class="sign-in-input password-input" name="password" placeholder="password"/>
         <input type="hidden" name="button" value="login" />
 
         <div class="dialogue-bottom">

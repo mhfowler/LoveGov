@@ -887,11 +887,6 @@ function expandAnimation( div , animation_time)
  *      ~Sign In Dialogue
  *
  **********************************************************************************************************************/
-bind(".sign-in-input", 'focusin', null, function(event) {
-    $(this).val("");
-    $(this).css('color', 'black');
-});
-
 bind(".sign-in-input", 'focusout', null, function(event) {
     var entered = $(this).val();
     if (entered == "") {

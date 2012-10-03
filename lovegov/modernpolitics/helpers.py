@@ -435,7 +435,7 @@ def checkEmail(email):
         return False
 
 def checkUnique(email):
-    already = ControllingUser.objects.filter(username=email)
+    already = ControllingUser.objects.filter(email=email)
     if already: return False
     else: return True
 
