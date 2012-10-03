@@ -509,10 +509,7 @@ def valsGroupButtons(viewer, group, vals):
 # fill dictionary for a particular election
 #-----------------------------------------------------------------------------------------------------------------------
 def valsElection(viewer, election, vals):
-    if election.alias == 'presidential_election':
-        running = UserProfile.objects.all()[:5]
-    else:
-        running = election.members.all().order_by("-num_supporters")
+    running = election.members.all().order_by("-num_supporters")
 
     supporting = viewer.getPoliticians()
     for r in running:
