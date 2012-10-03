@@ -100,8 +100,8 @@ div.election-card {
 div.election-info {
   width:100%;
   display:block;
-  //margin-bottom:20px;
-  height:120px;
+  margin-bottom: 20px;
+  max-height: 120px;
   div.election-info-left {
     float:left;
     div.election-date {

@@ -2351,23 +2351,28 @@ def getUsersByUID(request, vals={}):
 
 
 def getGroupMembersForDisplay(request, vals={}):
-
     viewer = vals['viewer']
     group = Group.objects.get(id=request.POST['g_id'])
-    start = int(request.POST['start'])
-    num = int(request.POST['num'])
-    display = request.POST['display']
-    vals['display'] = display
-    members = group.getMembers(start=start, num=num)
-
-    vals['users'] = members
-    how_many = len(members)
-    if display=='strip':
-        for u in members:
-            u.comparison = u.getComparison(viewer)
-    html = ajaxRender('site/pieces/render_users_helper.html', vals, request)
-    to_return = {'html':html, 'num':how_many}
-    return HttpResponse(json.dumps(to_return))
+    start_num = request.POST.get('start')
+    if start_num:
+        start = int(start_num)
+        num = int(request.POST['num'])
+        display = request.POST['display']
+        vals['display'] = display
+        members = group.getMembers(start=start, num=num)
+        vals['users'] = members
+        how_many = len(members)
+        if display=='strip':
+            for u in members:
+                u.comparison = u.getComparison(viewer)
+        html = ajaxRender('site/pieces/render_users_helper.html', vals, request)
+        to_return = {'html':html, 'num':how_many}
+        return HttpResponse(json.dumps(to_return))
+    else:
+        error_message = "getGroupMembersForDisplay error, start key not found: " + json.dumps(request.POST)
+        error_logger.error(error_message)
+        to_return = {'html':"", 'num':0}
+        return HttpResponse(json.dumps(to_return))
 
 #-----------------------------------------------------------------------------------------------------------------------
 # misc
@@ -2744,12 +2749,18 @@ def getFBInviteFriends(request, vals={}):
 #-----------------------------------------------------------------------------------------------------------------------
 def findLikeMinded(request, vals={}):
     viewer = vals['viewer']
-    num_answers = viewer.num_answers
-    new_members, num_processed = viewer.findLikeMinded()
-    vals['display'] = 'avatar'
-    vals['users'] = new_members
-    html = ajaxRender('site/pieces/render_users_helper.html', vals, request)
-    return HttpResponse(json.dumps({"num_new_members":len(new_members), 'num_processed':num_processed, 'html':html}))
+    if settings.LIKE_MINDED_TURNED_ON:
+        num_answers = viewer.num_answers
+        new_members, num_processed = viewer.findLikeMinded()
+        num_new_members = len(new_members)
+        vals['display'] = 'avatar'
+        vals['users'] = new_members
+        html = ajaxRender('site/pieces/render_users_helper.html', vals, request)
+    else:
+        num_new_members = 0
+        num_processed = 0
+        html = ""
+    return HttpResponse(json.dumps({"num_new_members":num_new_members, 'num_processed':num_processed, 'html':html}))
 
 #-----------------------------------------------------------------------------------------------------------------------
 # calculate like minded group members

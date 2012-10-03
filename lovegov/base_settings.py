@@ -3,6 +3,7 @@ PROJECT_PATH = os.path.abspath(os.path.dirname(__file__))
 DEBUG = False
 UPDATE = False
 SHOW_TOOLBAR = False
+LIKE_MINDED_TURNED_ON = True
 
 ########################################################################################################################
 #    apps, middelware, urlconf

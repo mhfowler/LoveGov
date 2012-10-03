@@ -584,19 +584,27 @@ def updatePartyImages():
 
 def updatePoliticianImages():
 
-    romney = UserProfile.objects.get(first_name="Mitt",last_name="Romney", politician=True)
-    im_ref = os.path.join(PROJECT_PATH, 'frontend/static/images/presidentialCandidates/romney.jpeg')
+#    romney = UserProfile.objects.get(first_name="Mitt",last_name="Romney", politician=True)
+#    im_ref = os.path.join(PROJECT_PATH, 'frontend/static/images/presidentialCandidates/romney.jpeg')
+#    im = open(im_ref)
+#    romney.setProfileImage(im)
+#
+#    elizabeth = UserProfile.objects.get(first_name="Elizabeth", last_name="Warren", politician=True)
+#    im_ref = os.path.join(PROJECT_PATH, 'frontend/static/images/presidentialCandidates/warren.jpeg')
+#    im = open(im_ref)
+#    elizabeth.setProfileImage(im)
+#
+#    cicilline = UserProfile.objects.get(first_name="David", last_name="Cicilline", politician=True)
+#    im_ref = os.path.join(PROJECT_PATH, 'frontend/static/images/presidentialCandidates/cicilline.jpeg')
+#    im = open(im_ref)
+#    cicilline.setProfileImage(im)
+
+    johnson = UserProfile.objects.get(first_name="Gary", last_name="Johnson", politician=True)
+    im_ref = os.path.join(PROJECT_PATH, 'frontend/static/images/presidentialCandidates/johnson.jpeg')
     im = open(im_ref)
-    romney.setProfileImage(im)
+    johnson.setProfileImage(im)
 
-    elizabeth = UserProfile.objects.get(first_name="Elizabeth", last_name="Warren", politician=True)
-    im_ref = os.path.join(PROJECT_PATH, 'frontend/static/images/presidentialCandidates/warren.jpeg')
+    stein = UserProfile.objects.get(first_name="Jillian", last_name="Stein", politician=True)
+    im_ref = os.path.join(PROJECT_PATH, 'frontend/static/images/presidentialCandidates/stein.jpeg')
     im = open(im_ref)
-    elizabeth.setProfileImage(im)
-
-    cicilline = UserProfile.objects.get(first_name="David", last_name="Cicilline", politician=True)
-    im_ref = os.path.join(PROJECT_PATH, 'frontend/static/images/presidentialCandidates/cicilline.jpeg')
-    im = open(im_ref)
-    cicilline.setProfileImage(im)
-
-
+    stein.setProfileImage(im)

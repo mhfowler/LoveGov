@@ -1415,7 +1415,7 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
     #-------------------------------------------------------------------------------------------------------------------
     def valsBackgroundTasks(self, vals):
         if self.checkBackgroundTask("L") and not self.checkFinishedTask("L"):
-            vals["computing_like_minded"] = True
+            vals["computing_like_minded"] = settings.LIKE_MINDED_TURNED_ON
 
     def checkBackgroundTask(self, task):
         return task in self.background_tasks
@@ -5259,8 +5259,7 @@ class CalculatedGroup(Group):
                     self.processed.add(x)
                     processed_num += 1
                 except:
-                    from lovegov.modernpolitics.helpers import LGException
-                    LGException("Failed to add to like minded " + enc(x.get_name()) + " to " + enc(viewer.get_name()))
+                    error_logger.error("Failed to add to like minded " + enc(x.get_name()) + " to " + enc(viewer.get_name()))
 
         if not processed_num:
             viewer.addFinishedTask("L")

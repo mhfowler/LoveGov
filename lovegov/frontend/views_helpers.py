@@ -509,14 +509,16 @@ def valsGroupButtons(viewer, group, vals):
 # fill dictionary for a particular election
 #-----------------------------------------------------------------------------------------------------------------------
 def valsElection(viewer, election, vals):
+
     if election.alias == 'presidential_election':
         if not LOCAL:
             obama = UserProfile.objects.get(alias='barack_obama')
             mitt = UserProfile.objects.get(alias='mitt_romney')
-            ron = UserProfile.objects.get(alias='ronald_paul')
             biden = UserProfile.objects.get(alias='joseph_biden')
             ryan = UserProfile.objects.get(alias='paul_ryan')
-            running = [obama, mitt, ron, biden, ryan]
+            gary = UserProfile.objects.get(alias="gary_johnson")
+            jill = UserProfile.objects.get(alias="jillian_stein")
+            running = [obama, mitt, gary, biden, ryan, jill]
         else:
             running = UserProfile.objects.all()[:5]
     else:

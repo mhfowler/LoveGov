@@ -5,15 +5,7 @@
 
     {% for c in content %}
 
-        <a href="{{ c.the_link }}" style="
-        margin-bottom: 15px;
-        margin-top: 15px;
-        font-size: 16px;
-        float: left;
-        width: 100%;
-        color:black;
-        text-decoration:none;
-        "> {{ c.title }} </a>
+        {% include 'emails/lovegov/weekly_digest/digest_link.html' with the_link=c.the_link the_title=c.title num_comments=c.num_comments comments_link=c.getCommentsURL %}
 
     {% endfor %}
 

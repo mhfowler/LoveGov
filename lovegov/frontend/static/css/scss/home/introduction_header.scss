@@ -28,7 +28,7 @@ div.what-would-be-wrapper {
 
   div.what-would-be-text {
     float:left;
-    width:820px;
+    width:810px;
     span.bold-part {
       font-weight:bold;
     }
@@ -42,6 +42,7 @@ div.what-would-be-wrapper {
 
   a.what-would-be-x {
     position: absolute;
+    display:none;
     left: 947px;
     top: 7px;
     color:$black;
