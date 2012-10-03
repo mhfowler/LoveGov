@@ -614,6 +614,7 @@ def likeMinded(request, vals):
     vals['like_minded'] = like_minded
     vals['num_members'] = like_minded.members.count()
     vals['num_processed'] = like_minded.processed.count()
+    vals['members'] = like_minded.members.all().order_by("-created_when")
 
     valsQuestionsThreshold(vals)
 
