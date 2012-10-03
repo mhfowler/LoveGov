@@ -1,11 +1,26 @@
 <br><br>
 <p>
     {% include 'emails/daily_summary/demographics.html' %}
-    <ul>
-        {% for x in session.getPA %}
-            <li> {{ x.page }}
-                {% if x.action %}:{{ x.action }}{% endif %}
-                {% if x.duration  %} ({{ x.duration }} seconds) {% endif %} </li>
-        {% endfor %}
-    </ul>
+<ul>
+    {% for x in session.getPA %}
+        <li> {{ x.page }}
+            {% if x.action %}:{{ x.action }}{% endif %}
+            {% if x.duration  %} ({{ x.duration }} seconds) {% endif %}
+            {% if x.post_parameters_dict %}
+                <div style="
+                margin-left: 20px;
+                margin-bottom: 10px;"
+                        >
+                    {% for k,v in x.post_parameters_dict.items %}
+                        <div style="font-size:10px;">
+                            {% if not k in IGNORED_POST_PARAMETERS %}
+                                <span>{{ k }}:</span> <span>{{ v }}</span>
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </li>
+    {% endfor %}
+</ul>
 </p>

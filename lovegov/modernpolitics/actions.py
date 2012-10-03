@@ -460,6 +460,7 @@ def followGroupAction(viewer, group, follow, privacy):
                 group.num_followers += 1
                 group.save()
                 change = True
+                group.setNewContentSeen(viewer)
         else:
             modifier = "S"
             if group.id in viewer.group_subscriptions.all().values_list("id", flat=True):

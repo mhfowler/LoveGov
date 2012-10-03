@@ -195,6 +195,29 @@ div.sample-question {
 }
 
 
+div.agreement_wrapper {
+  div.agreement_people_list_seed {
+    display:none;
+  }
+  a.see-who-agrees {
+    font-size:16px;
+    margin-bottom:15px;
+    float:left;
+    width:100%;
+  }
+  div.updating-object {
+    @include staticImage("/images/gifs/ajax-loader.gif");
+    width: 30px;
+    height: 30px;
+    background-size: 30px 30px;
+    background-repeat: no-repeat;
+    display:block;
+    float:left;
+    margin-bottom:10px;
+  }
+}
+
+
 div.agreement-people-list-wrapper {
 
   div.people-list-wrapper {

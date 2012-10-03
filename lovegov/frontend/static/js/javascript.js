@@ -504,10 +504,10 @@ function bindTooltips() {
      $("body").tooltip({'selector': '.tooltip-bottom', 'placement': 'bottom'});
      */
 
-    $(".tooltip-top").tooltip({'placement': 'top', 'animation': 'true'});
-    $(".tooltip-bottom").tooltip({'placement': 'bottom', 'animation': 'true'});
-    $(".tooltip-right").tooltip({'placement': 'right', 'animation': 'true'});
-    $(".tooltip-left").tooltip({'placement': 'left', 'animation': 'true'});
+    $(".tooltip-top").tooltip({'placement': 'top', 'animation': false});
+    $(".tooltip-bottom").tooltip({'placement': 'bottom', 'animation': false});
+    $(".tooltip-right").tooltip({'placement': 'right', 'animation': false});
+    $(".tooltip-left").tooltip({'placement': 'left', 'animation': false});
 }
 
 bind(".bind_link", "click", null, function(event) {
@@ -1463,10 +1463,11 @@ function sendInvitation(event)
 {
     event.preventDefault();
     var email = $("#email-input").val();
+    var msg = $("textarea#email-message").val();
     $("#invite-return-message").text("");
     $("#invite-return-loading-img").show();
     action({
-        data: {'action':'invite','email':email},
+        data: {'action':'invite','email':email, 'msg': msg},
         success: function(data)
         {
             $("#invite-return-loading-img").hide();
@@ -1801,6 +1802,7 @@ bind(".sign_up_with_email_button", 'click', null, function(event) {
 
 bind(".r_register", 'click', null, function(event) {
     var form = $(this).parents(".r_register_form");
+    form.find(".registering_gif").show();
     var form_type = form.data("form_type");
     form.find(".register_gif").show();
     var name = form.find(".name_input").val();
@@ -1826,7 +1828,7 @@ bind(".r_register", 'click', null, function(event) {
         data: data,
         success: function(data)
         {
-            form.find(".register_gif").hide();
+            form.find(".registering_gif").hide();
             var returned = $.parseJSON(data);
 
             if (returned.success) {
@@ -3327,6 +3329,20 @@ function postInitialize(element) {
 
 }
 
+
+bind('.see_who_agrees', 'click', function(e) {
+    var wrapper = $(this).parents(".agreement_wrapper");
+    var people_list = wrapper.find(".agreement_people_list_seed");
+    if (!$(this).hasClass("clicked")) {
+        $(this).addClass("clicked");
+        people_list.show();
+    }
+    else {
+        $(this).removeClass("clicked");
+        people_list.hide();
+    }
+});
+
 /***********************************************************************************************************************
  *
  *     ~Histogram
@@ -3427,7 +3443,9 @@ function loadHistogram(histogram_wrapper) {
 }
 
 function selectHistogramBar(histogram_wrapper, bar) {
+    histogram_wrapper.find(".histogram_loading_members").show();
     var histogram_metadata = loadHistogramMetadata(histogram_wrapper);
+    histogram_metadata.loading_members_nonce += 1;
     if (bar.hasClass("clicked")) {
         histogram_metadata.current_bucket = -1;
         saveHistogramMetadata(histogram_wrapper, histogram_metadata);
@@ -3457,9 +3475,6 @@ function refreshHistogramData(histogram_wrapper, data) {
     histogram_metadata.total += data.total;
     histogram_metadata.identical += data.identical;
     histogram_metadata.identical_uids.push.apply(histogram_metadata.identical_uids, data.identical_uids);
-    if (histogram_metadata.increment < 20) {
-        histogram_metadata.increment += 1;
-    }
 
     $.map(data.buckets, function(item, key) {
 
@@ -3681,13 +3696,17 @@ function getHistogramMembersHelper(histogram_wrapper, identical) {
             'display':display,
             'log-ignore': true};
     }
+    var old_loading_members_nonce = histogram_metadata.loading_members_nonce;
     if (post_data) {
         action({
                 data: post_data,
                 success: function(data)
                 {
                     var returned =  $.parseJSON(data);
-                    appendHistogramMembersHTML(histogram_wrapper, returned.html, returned.num, identical, replace);
+                    var histogram_metadata = loadHistogramMetadata(histogram_wrapper);
+                    if (histogram_metadata.loading_members_nonce == old_loading_members_nonce) {
+                        appendHistogramMembersHTML(histogram_wrapper, returned.html, returned.num, identical, replace);
+                    }
                 }
             }
         );
@@ -3696,6 +3715,7 @@ function getHistogramMembersHelper(histogram_wrapper, identical) {
 
 /* appends html to members wrapper or identical wrapper appropriately, depending on identical=True */
 function appendHistogramMembersHTML(histogram_wrapper, html, num, identical, replace) {
+    histogram_wrapper.find(".histogram_loading_members").hide();
     var histogram_metadata = loadHistogramMetadata(histogram_wrapper);
     if (identical) {
         var $wrapper = histogram_wrapper.find(".identical_wrapper");
@@ -4167,14 +4187,28 @@ bind('.ask_to_join' , 'click' , null , function(e)
  ***********************************************************************************************************************/
 // recursive ajax function for finding new like minded members. doesn't do anyting if computing_like_minded is false
 var computing_like_minded = false;
+var like_minded_request_sending = false;
+var like_minded_safety_max = 50;
+var like_minded_safety_count = 0;
 function findNewLikeMinded() {
     if (computing_like_minded) {
         $(".clear_result").fadeOut();
         $(".find_loading").show();
+
+        if (like_minded_request_sending) {       // loop until exceed safety max or return received
+            setTimeout(function(){
+                like_minded_safety_count += 1;
+                if (like_minded_safety_count < like_minded_safety_max) {
+                    findNewLikeMinded();
+                }
+            }, 500);
+        }
+        like_minded_request_sending = true;
+
         backgroundAction({
                 data: {'action': 'findLikeMinded'},
                 success: function(data) {
-
+                    like_minded_request_sending = false;
                     var returned = $.parseJSON(data);
 
                     var like_minded_header = $(".like_minded_header");

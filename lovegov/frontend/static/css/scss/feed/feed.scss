@@ -319,18 +319,6 @@ div.feed-main
           margin-top: 11px;
         }
 
-        a.help-link {
-          float: left;
-          margin-left: 23px;
-          margin-top: 8px;
-          font-size: 16px;
-          font-style: italic;
-          color:$dark-gray;
-          &:hover {
-            color:$gray;
-          }
-        }
-
         a.help-robot {
           float: left;
           margin-left: 35px;
@@ -440,6 +428,18 @@ div.feed-main
         text-align:center;
       }
     }
+  }
+}
+
+a.help-link {
+  float: left;
+  margin-left: 45px;
+  margin-top: 8px;
+  font-size: 16px;
+  font-style: italic;
+  color:$dark-gray;
+  &:hover {
+    color:$gray;
   }
 }
 
@@ -1067,6 +1067,7 @@ div.feed-item-wrapper {
             float:right;
             div.answer-privacy {
               font-size:18px;
+              width: 190px;
               &:hover {
                 text-decoration:underline;
                 cursor:pointer;

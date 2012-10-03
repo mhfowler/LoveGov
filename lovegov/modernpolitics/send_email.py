@@ -10,6 +10,9 @@
 # lovegov
 from lovegov.modernpolitics.models import *
 
+from xlrd import open_workbook
+from boto.exception import BotoServerError
+
 # django
 from django.core.mail import EmailMessage
 from django.core.mail import send_mail
@@ -27,15 +30,14 @@ def emailHelper(subject, email_html, email_sender, email_recipients):
     email_html = email_html.encode('ascii', 'ignore')
     headers = {'From':'LoveGov <' + email_sender + '>'}
     msg = EmailMessage(subject, email_html, email_sender, email_recipients, headers=headers)
-    #msg = EmailMessage(subject, email_html, email_sender, email_recipients)
     msg.content_subtype = "html"
-#    try:
-    msg.send()
-#    except Exception, e:
-#        import traceback, os.path
-#        top = traceback.extract_stack()[-1]
-#        print ", ".join([type(e).__name__, os.path.basename(top[0]), str(top[1])])
-#        errors_logger.error("email error for [" + subject + "] to " + str(email_recipients))
+    try:
+        msg.send()
+    except Exception, e:
+        import traceback, os.path
+        top = traceback.extract_stack()[-1]
+        print ", ".join([type(e).__name__, os.path.basename(top[0]), str(top[1])])
+        errors_logger.error("email error for [" + subject + "] to " + str(email_recipients))
 
 #-----------------------------------------------------------------------------------------------------------------------
 # particular emails
@@ -88,9 +90,9 @@ def sendScorecardInviteEmail(to_email, scorecard):
     email_template = 'emails/lovegov/invite_scorecard.html'
     sendLoveGovEmailHelper(None, subject, email_vals, email_template, to_email=to_email)
 
-def sendInviteByEmail(inviter, to_email):
+def sendInviteByEmail(inviter, to_email, msg):
     subject = "You were invited to join LoveGov"
-    email_vals = {'inviter':inviter}
+    email_vals = {'inviter':inviter, 'msg': msg}
     email_template = 'emails/lovegov/invite_by_email.html'
     sendLoveGovEmailHelper(None, subject, email_vals, email_template, to_email=to_email)
 
@@ -99,6 +101,49 @@ def sendLaunchEmail(user_profile):
     email_vals = {}
     email_template = 'emails/lovegov/launch.html'
     sendLoveGovEmailHelper(user_profile, subject, email_vals, email_template)
+
+def sendWeeklyDigestEmail(user_profile):
+
+    from lovegov.frontend.views_helpers import getWeeklyDigestQuestions, getWeeklyDigestNews
+
+    if not user_profile.checkEmailSubscription("W"):
+        print "+XX+ not subscribed: " + enc(user_profile.get_name())
+        return False
+    else:
+        print "sending weekly digest to: " + enc(user_profile.get_name())
+
+    subject = "LoveGov Weekly Digest"
+
+    now = datetime.datetime.now()
+    delta = datetime.timedelta(days=7)
+    time_start = now - delta
+    time_end = now
+
+    popular_questions = getWeeklyDigestQuestions(time_start, time_end, user_profile)[:5]
+    for x in popular_questions:
+        x.the_link = DOMAIN + x.get_url()
+        user_profile.addDigestedContent(x)
+
+    popular_news = getWeeklyDigestNews(time_start, time_end, user_profile)[:5]
+    for x in popular_news:
+        x.the_link = x.link
+        user_profile.addDigestedContent(x)
+
+    email_vals = {'popular_questions':popular_questions, 'popular_news':popular_news}
+    email_template = 'emails/lovegov/weekly_digest/weekly_digest.html'
+    sendLoveGovEmailHelper(user_profile, subject, email_vals, email_template)
+
+def sendWeeklyDigestEmails():
+    u = UserProfile.objects.filter(ghost=False, id__gt=53)
+    for x in u:
+        sendWeeklyDigestEmail(x)
+
+def isUnsubscribedToEmail(email):
+    user = UserProfile.lg.get_or_none(email=email)
+    if user:
+        return not user.checkEmailSubscription("A")
+    else:
+        return UnsubscribedToEmail.lg.get_or_none(email=email)
 
 
 
@@ -169,10 +214,134 @@ def sendLaunchEmailBatch():
 
 
 
+def sendStudentGroupInviteEmail(xlsfile, sheet):
+    from_where = "national_email_oct01"
+    path = os.path.join(PROJECT_PATH, xlsfile)
+    wb = open_workbook(path)
+    sheet = wb.sheet_by_index(sheet)
+    num = 0
+    for row in range(1,sheet.nrows):
+    #for row in range(100,103):
+        student_name = sheet.cell(row,4).value
+        student_affiliation = sheet.cell(row,3).value
+        student_email = sheet.cell(row,0).value
+        #student_email = 'jsgreenf@gmail.com'
+
+        to_lovegov = toLoveGov(who=student_email, from_where=from_where)
+        to_lovegov.save()
+        email_code = to_lovegov.id
+
+        vals = {'student_name': student_name, 'student_affiliation': student_affiliation, 'email_code':email_code}
+        email_message = render_to_string('emails/lovegov/student_group_invite.html',vals)
+        email_message = enc(email_message)
+        try:
+            msg = EmailMessage('LoveGov', email_message, 'joschka@lovegov.com', [student_email])
+            msg.content_subtype = "html"
+            msg.send()
+        except BotoServerError:
+            print '+WW+ Something went wrong with sending the email to : ' + enc(student_email)
+        try:
+            print 'Name: %s, Affiliation: %s, Email: %s' % (student_name, student_affiliation, student_email)
+        except:
+            print 'Something went wrong printing but the email should have sent...'
+        num += 1
+    return num
 
 
 
 
+
+def sendGroupGeneralInviteEmail(xlsfile, sheet):
+    from_where = "massachu_email_oct1"
+    path = os.path.join(PROJECT_PATH, xlsfile)
+    wb = open_workbook(path)
+    sheet = wb.sheet_by_index(sheet)
+    num = 0
+    for row in range(1,sheet.nrows):
+    #for row in range(30,33):
+        group_affiliation = sheet.cell(row,1).value
+        group_email = sheet.cell(row,0).value
+        #group_email = 'jsgreenf@gmail.com'
+
+        to_lovegov = toLoveGov(who=group_email, from_where=from_where)
+        to_lovegov.save()
+        email_code = to_lovegov.id
+
+        vals = {'group_affiliation': group_affiliation, 'email_code':email_code}
+
+        email_message = render_to_string('emails/lovegov/group_general_invite.html',vals)
+        email_message = enc(email_message)
+        try:
+            msg = EmailMessage('LoveGov', email_message, 'joschka@lovegov.com', [group_email])
+            msg.content_subtype = "html"
+            msg.send()
+        except BotoServerError:
+            print '+WW+ Something went wrong with sending the email to : ' + enc(group_email)
+        try:
+            print 'Affiliation: %s, Email: %s' % (group_affiliation, group_email)
+        except:
+            print 'Something went wrong printing but the email should have sent...'
+        num += 1
+    return num
+
+
+
+
+
+def sendProfessorInviteEmail(xlsfile, sheet):
+    from_where = "massachu_email_oct1"
+    path = os.path.join(PROJECT_PATH, xlsfile)
+    wb = open_workbook(path)
+    sheet = wb.sheet_by_index(sheet)
+    num = 0
+    for row in range(1,sheet.nrows):
+    #for row in range(1,3):
+        professor_name = sheet.cell(row,0).value
+        professor_last_name = professor_name.split(' ')[-1]
+        professor_affiliation = sheet.cell(row,1).value
+        professor_email = sheet.cell(row,2).value
+        #professor_email = 'jsgreenf@gmail.com'
+
+        to_lovegov = toLoveGov(who=professor_email, from_where=from_where)
+        to_lovegov.save()
+        email_code = to_lovegov.id
+
+        vals = {'professor_name': professor_name, 'professor_affiliation': professor_affiliation, 'email_code':email_code}
+
+        email_message = render_to_string('emails/lovegov/professor_invite.html',vals)
+        email_message = enc(email_message)
+        try:
+            msg = EmailMessage('LoveGov', email_message, 'joschka@lovegov.com', [professor_email])
+            msg.content_subtype = "html"
+            msg.send()
+        except BotoServerError:
+            print '+WW+ Something went wrong with sending the email to : ' + enc(professor_email)
+        try:
+            print 'Name: %s, Affiliation: %s, Email: %s' % (professor_name, professor_affiliation, professor_email)
+        except:
+            print 'Something went wrong printing but the email should have sent...'
+        num += 1
+    return num
+
+
+
+
+def sendBrownProfessorInviteEmail():
+    path = os.path.join(PROJECT_PATH, 'frontend/excel/AcademiaBundle_RI.xls')
+    wb = open_workbook(path)
+    sheet = wb.sheet_by_index(2)
+    num = 0
+    for row in range(1,sheet.nrows):
+        professor_name = sheet.cell(row,0).value
+        professor_last_name = professor_name.split(' ')[-1]
+        professor_affiliation = sheet.cell(row,1).value
+        professor_department = professor_affiliation.split('Brown University ')[-1]
+        professor_email = sheet.cell(row,2).value
+        email_message = render_to_string('emails/lovegov/brown_professor_invite.html',{'professor_name': professor_last_name, 'professor_affiliation': professor_department})
+        send_mail('LoveGov', email_message, 'joschka@lovegov.com', [professor_email])
+        print 'Name: %s, Affiliation: %s, Email: %s' % (professor_name, professor_affiliation, professor_email)
+        num += 1
+    return num
 
 
 

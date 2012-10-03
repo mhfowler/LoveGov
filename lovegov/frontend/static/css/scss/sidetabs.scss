@@ -1,4 +1,5 @@
 @charset "UTF-8";
+@import "master-variables";
 /* CSS Document */
 
 .left-side-wrapper
@@ -90,16 +91,22 @@
     float:left;
 }
 
-.link input
+.link input, .link textarea
 {
     border:1px solid #ccc;
-    width:321px;
+    width:300px;
     height:27px;
     position:relative;
     float:right;
     padding-left:5px;
     vertical-align: middle;
     font-size:16px;
+}
+
+.link textarea {
+  height: 140px;
+  width: 300px;
+  padding: 5px;
 }
 
 /* SUBMIT BUTTON */
@@ -169,7 +176,7 @@ textarea:focus
 #invite-form
 {
     margin-bottom:20px;
-
+    overflow: hidden;
 }
 
 
@@ -240,4 +247,11 @@ textarea:focus
 #feedback-response p
 {
     margin-top:0;
+}
+
+span#email-label, span#email-message-label
+  {
+  font-weight:normal;
+  font-size:24px;
+  color:$text-blue;
 }

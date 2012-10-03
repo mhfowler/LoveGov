@@ -70,6 +70,22 @@ COMPRESS_ENABLED = False
 #STATICFILES_STORAGE = 'storage.CachedS3BotoStorage'
 
 
+########################################################################################################################
+#    email during dev
+#
+########################################################################################################################
+
+LOCAL_EMAIL = False
+
+if LOCAL_EMAIL:
+    EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
+    EMAIL_FILE_PATH = '/log/emails'
+else:
+    EMAIL_HOST = 'smtpout.secureserver.net'
+    EMAIL_HOST_USER = 'team@lovegov.com'
+    EMAIL_HOST_PASSWORD = 'lglglgLG'
+    EMAIL_PORT = '25'
+
 
 
 

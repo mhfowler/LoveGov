@@ -10,6 +10,14 @@
 from lovegov.modernpolitics.modals import *
 from django.core.files.base import ContentFile
 
+### change email subscription settings ###
+def changeEmailSubscriptionSettings(request, vals):
+    subscriptions = request.POST['subscriptions']
+    viewer = vals['viewer']
+    viewer.email_subscriptions = subscriptions
+    viewer.save()
+    return HttpResponse("success");
+
 ### log page load analytics from client side ###
 def clientSideAnalytics(request, vals):
 
@@ -447,8 +455,9 @@ def invite(request, vals={}):
     Sends invite email and and addds email to valid emails.
     """
     email = request.POST['email']
+    msg = request.POST.get('msg')
     inviter = vals['viewer']
-    sendInviteByEmail(inviter, email)
+    sendInviteByEmail(inviter, email, msg)
     return HttpResponse("+")
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -517,7 +526,6 @@ def submitAddress(request, vals={}):
     try:
         location = postLocationHelper(request)
         viewer.setNewLocation(location)
-        viewer.joinLocationGroups()
     except:
         return HttpResponse(json.dumps({'success':-1}))
 
@@ -1229,12 +1237,15 @@ def valsWhoAgrees(viewer, response, which, vals):
         vals['disagreed'] = getRespondersHelper(viewer, people, disagreed)
 
 def getRespondersHelper(viewer, people, responses, max_num=10):
+    from operator import attrgetter
     responder_ids = responses.values_list("creator_id", flat=True)
     responders = people.filter(id__in=responder_ids)
     if len(responders) > max_num:
         responders = random.sample(responders, max_num)
     for x in responders:
         x.comparison = viewer.getComparison(x)
+    responders = list(responders)
+    responders.sort(key=lambda x: x.comparison.result, reverse=True)
     return responders
 
 #----------------------------------------------------------------------------------------------------------------------
@@ -1796,12 +1807,13 @@ def getFeed(request, vals):
 
     feed_items = contentToFeedItems(content, vals['viewer'])
     vals['feed_items'] = feed_items
+    num_items = len(feed_items)
 
     html = ajaxRender('site/pages/feed/feed_helper.html', vals, request)
 
     everything_loaded = everythingLoadedHelper(request, vals, feed_items)
 
-    to_return = {'html':html, 'num_items':len(feed_items), 'everything_loaded':everything_loaded}
+    to_return = {'html':html, 'num_items':num_items, 'everything_loaded':everything_loaded}
     return HttpResponse(json.dumps(to_return))
 
 # generates a list of (content, vote) tuples for each piece of content in list
@@ -2732,12 +2744,16 @@ def getFBInviteFriends(request, vals={}):
 #-----------------------------------------------------------------------------------------------------------------------
 def findLikeMinded(request, vals={}):
     viewer = vals['viewer']
-    num_answers = viewer.num_answers
-    new_members, num_processed = viewer.findLikeMinded()
-    vals['display'] = 'avatar'
-    vals['users'] = new_members
-    html = ajaxRender('site/pieces/render_users_helper.html', vals, request)
-    return HttpResponse(json.dumps({"num_new_members":len(new_members), 'num_processed':num_processed, 'html':html}))
+    #num_answers = viewer.num_answers
+    #new_members, num_processed = viewer.findLikeMinded()
+    #num_new_members = len(new_members)
+    #vals['display'] = 'avatar'
+    #vals['users'] = new_members
+    #html = ajaxRender('site/pieces/render_users_helper.html', vals, request)
+    num_new_members = 0
+    num_processed = 0
+    html = ""
+    return HttpResponse(json.dumps({"num_new_members":num_new_members, 'num_processed':num_processed, 'html':html}))
 
 #-----------------------------------------------------------------------------------------------------------------------
 # calculate like minded group members

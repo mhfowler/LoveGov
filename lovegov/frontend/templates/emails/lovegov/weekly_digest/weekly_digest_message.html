@@ -1,0 +1,17 @@
+{% extends 'emails/lovegov/white_section.html' %}
+
+
+{% block white_section %}
+
+    <p>Hi {{ user_profile.first_name }},</p>
+    <p>
+        Here is a weekly roundup of questions and news that we think you might like.
+        This digest email is meant to keep you up to date with politics relevant to you, so please send us
+        <a href="mailto:feedback@lovegov.com" target="_blank" style="text-decoration:none;">feedback</a> on what you would like to see in the future.
+    </p>
+
+    <p>
+        Also log on to LoveGov at 9PM EST tonight to join our <a href="http://lovegov.com/discussion/308395/" target="_blank" style="text-decoration:none;">live discussion of the presidential debate</a>.
+    </p>
+
+{% endblock %}

@@ -1,0 +1,25 @@
+<div style="
+        float: left;
+        margin-bottom: 15px;
+        margin-top: 15px;
+        width: 100%;
+        ">
+<a href="{{ the_link }}" style="
+        font-size: 16px;
+        color:black;
+        text-decoration:none;
+        margin-right: 10px;
+        "> {{ the_title }}
+</a>
+
+{% if comments_link %}
+    <a href="{{ domain }}{{ comments_link }}" target="_blank" style="
+    margin-right: 10px;
+    font-size: 14px;
+    color: #E0E0E0;
+    text-decoration: none;
+    display: inline-block;
+">{% comment %}{{ num_comments }} comment{{ num_comments|pluralize }}{% endcomment %}see comments</a></span>
+{% endif %}
+    <div style="clear:both;"></div>
+</div>

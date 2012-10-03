@@ -731,7 +731,8 @@ ACTIONS = [
     'addEmailList',
     'clientSideAnalytics',
     'getAgreementBarGraphHTML',
-    'getAgreementPeopleListHTML'
+    'getAgreementPeopleListHTML',
+    'changeEmailSubscriptionSettings'
 ]
 
 UNAUTHENTICATED_ACTIONS = [
@@ -739,6 +740,12 @@ UNAUTHENTICATED_ACTIONS = [
     'getModal',
     'newRegister',
     'addEmailList'
+]
+
+SAVE_POST_PARAMETERS_ACTIONS = [
+    'getFeed',
+    'getLegislation',
+    'getQuestions'
 ]
 
 DEFAULT_PROHIBITED_ACTIONS = []

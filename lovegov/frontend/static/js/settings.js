@@ -6,7 +6,7 @@
 function bindSettings()
 {
 
-    var currently_selected =  $('.account_button[data-url="' + path + '"]');
+    var currently_selected =  $('.account_button[data-url="' + PATH + '"]');
     var starting_url = '/settings/profile/';
     if (currently_selected.length==0) {
         currently_selected = $('.account_button[data-url="' + starting_url + '"]');
@@ -193,3 +193,37 @@ bind('div.change-privacy','click', function() {
 });
 
 bind("div.account_div input[name=age]", "keyup", evalDate);
+
+
+
+/* mis */
+bind(".all_email_setting_checkbox", "click", function(e) {
+    if (!$(this).is(":checked")) {
+        $(".email_setting_checkbox").attr("checked", false);
+    }
+    else {
+        $(".email_setting_checkbox").attr("checked", true);
+    }
+});
+
+bind(".email_settings_save_changes", "click", function(e) {
+    $(".email_settings_saved_message").hide();
+    var subscriptions = "";
+    $(".email_setting_checkbox").each(function(i,e) {
+        if ($(this).is(":checked")) {
+            var val = $(this).data("subscription");
+            subscriptions += val;
+        }
+    });
+    action({
+        data: {
+            'action': 'changeEmailSubscriptionSettings',
+            'subscriptions': subscriptions
+        },
+        success: function(data) {
+           $(".email_settings_saved_message").show();
+           $(".email_settings_saved_message").fadeOut(2500);
+        }
+    });
+});
+

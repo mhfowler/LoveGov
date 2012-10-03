@@ -57,6 +57,7 @@ def viewWrapper(view, requires_login=False):
     """Outer wrapper for all views"""
     def new_view(request, *args, **kwargs):
         vals = {'STATIC_URL':settings.STATIC_URL_NOSLASH}
+        user = None
         try: # Catch all error messages
 
 #            return shortcuts.redirect('/underconstruction/')
@@ -107,14 +108,16 @@ def viewWrapper(view, requires_login=False):
                     to_page = vals['to_page']
                     # if not unauthenticated action, redirect to login page
                     if not request.POST.get('action') in UNAUTHENTICATED_ACTIONS:
-                        return shortcuts.redirect("/login" + request.path)
+                        if not request.REQUEST.get('robotscantlove'):
+                            return shortcuts.redirect("/login" + request.path)
+                        else:
+                            user = getAnonUser()
+                            vals['i_am_anonymous'] = True
+                            vals['prohibited_actions'] = ANONYMOUS_PROHIBITED_ACTIONS
+                            vals['controlling_user'] = user.user
                     else: # otherwise action can be done without AUTHENTICATION
                         vals['prohibited_actions'] = ANONYMOUS_PROHIBITED_ACTIONS
                         return view(request,vals=vals,*args,**kwargs)
-#                    user = getAnonUser()
-#                    vals['i_am_anonymous'] = True
-#                    vals['prohibited_actions'] = ANONYMOUS_PROHIBITED_ACTIONS
-#                    vals['anonymous_welcome'] = not request.COOKIES.get("closed_anon")
 
                 # get user profile associated with controlling user
                 vals['user'] = user
@@ -164,7 +167,8 @@ def viewWrapper(view, requires_login=False):
         finally:  # save page access, if there isn't specifically set value to log-ignore
             ignore = request.REQUEST.get('log-ignore')
             if not ignore:
-                saveAccess(request)
+                #saveAccess(request)
+                PageAccess().autoSave(request, user)
 
     return new_view
 
@@ -197,7 +201,19 @@ def tryLoveGov(request, to_page="home/", vals={}):
     return response
 
 def unsubscribe(request, email, vals={}):
+    already = UnsubscribedToEmail.lg.get_or_none(email=email)
+    if not already:
+        UnsubscribedToEmail(email=email).save()
     return HttpResponse("You have unsubscribed from LoveGov emails.")
+
+def goToLoveGov(request, link_id, vals={}):
+    to_lovegov = toLoveGov.lg.get_or_none(id=link_id)
+    if to_lovegov:
+        to_lovegov.clicks += 1
+        to_lovegov.save()
+    else:
+        error_logger.error("to lovegov with code that does not exist: " + str(link_id))
+    return shortcuts.redirect("/home/")
 
 #-----------------------------------------------------------------------------------------------------------------------
 # da blog
@@ -246,7 +262,7 @@ def aliasDowncast(request, alias=None, vals={}):
     if matched_group:
         the_view = viewWrapper(groupPage, requires_login=True)
         return the_view(request=request, g_alias=matched_group.alias)
-    return redirect(request)
+    return error404(request)
 
 #-----------------------------------------------------------------------------------------------------------------------
 # points alias urls to correct pages, and then on to edit page
@@ -261,7 +277,11 @@ def aliasDowncastEdit(request, alias=None, vals={}):
     if matched_group:
         the_view = viewWrapper(groupEdit, requires_login=True)
         return the_view(request=request, g_alias=matched_group.alias)
-    return redirect(request)
+    return error404(request)
+
+def error404(request, vals={}):
+    return render_to_response('404.html')
+
 
 #-----------------------------------------------------------------------------------------------------------------------
 # login, password recovery and authentication
@@ -587,6 +607,11 @@ def friends(request, vals):
     focus_html =  ajaxRender('site/pages/friends/friends.html', vals, request)
     url = request.path
     return homeResponse(request, focus_html, url, vals)
+
+def likeMinded(request, vals):
+    viewer = vals['viewer']
+    like_minded = viewer.getLikeMindedGroup()
+    vals['like_minded'] = like_minded
 
 #-----------------------------------------------------------------------------------------------------------------------
 # qa

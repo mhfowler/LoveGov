@@ -1,0 +1,14 @@
+{% extends 'emails/lovegov/white_section.html' %}
+
+
+{% block white_section %}
+
+    {% for c in content %}
+
+        {% include 'emails/lovegov/weekly_digest/digest_link.html' with the_link=c.the_link the_title=c.title num_comments=c.num_comments comments_link=c.getCommentsURL %}
+
+    {% endfor %}
+
+    <div style="clear:both;"></div>
+
+{% endblock %}
