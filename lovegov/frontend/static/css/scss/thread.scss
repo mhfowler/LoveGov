@@ -185,7 +185,10 @@ span.discuss
     position:relative;
     div.thread-refresh {
       position: absolute;
-      left:150px;
+      left: -195px;
+      top: 159px;
+      font-size: 14px;
+      color:$dark-gray;
       cursor: pointer;
       border: 1px solid $gray;
       padding: 10px;
