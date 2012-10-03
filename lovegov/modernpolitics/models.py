@@ -1415,7 +1415,8 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
     #-------------------------------------------------------------------------------------------------------------------
     def valsBackgroundTasks(self, vals):
         if self.checkBackgroundTask("L") and not self.checkFinishedTask("L"):
-            vals["computing_like_minded"] = True
+            #vals["computing_like_minded"] = True
+            pass
 
     def checkBackgroundTask(self, task):
         return task in self.background_tasks
