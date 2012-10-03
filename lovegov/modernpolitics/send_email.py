@@ -30,15 +30,14 @@ def emailHelper(subject, email_html, email_sender, email_recipients):
     email_html = email_html.encode('ascii', 'ignore')
     headers = {'From':'LoveGov <' + email_sender + '>'}
     msg = EmailMessage(subject, email_html, email_sender, email_recipients, headers=headers)
-    #msg = EmailMessage(subject, email_html, email_sender, email_recipients)
     msg.content_subtype = "html"
-#    try:
-    msg.send()
-#    except Exception, e:
-#        import traceback, os.path
-#        top = traceback.extract_stack()[-1]
-#        print ", ".join([type(e).__name__, os.path.basename(top[0]), str(top[1])])
-#        errors_logger.error("email error for [" + subject + "] to " + str(email_recipients))
+    try:
+        msg.send()
+    except Exception, e:
+        import traceback, os.path
+        top = traceback.extract_stack()[-1]
+        print ", ".join([type(e).__name__, os.path.basename(top[0]), str(top[1])])
+        errors_logger.error("email error for [" + subject + "] to " + str(email_recipients))
 
 #-----------------------------------------------------------------------------------------------------------------------
 # particular emails
@@ -135,8 +134,7 @@ def sendWeeklyDigestEmail(user_profile):
     sendLoveGovEmailHelper(user_profile, subject, email_vals, email_template)
 
 def sendWeeklyDigestEmails():
-    u = UserProfile.objects.filter(ghost=False)
-    u = [UserProfile.lg.get_or_none("Max Fowler")]
+    u = UserProfile.objects.filter(ghost=False, id__gt=53)
     for x in u:
         sendWeeklyDigestEmail(x)
 
