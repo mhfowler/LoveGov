@@ -32,7 +32,7 @@ bind("div.reply .tab-button.save", "click", function(event) {
                         $(html).hide().appendTo(reply.closest('div.threaddiv')).fadeIn(500);
                     } else {
                         textarea.val('');
-                        $(html).hide().prependTo('div.thread').fadeIn(500);
+                        $(html).hide().appendTo('div.thread').fadeIn(500);
                         new_comments.push(cid);
                     }
                     lockThreadReply = false;
@@ -148,12 +148,14 @@ bind('div.load-more-comments', 'click', function(e) {
 
 function loadMoreComments() {
     var button = $('div.load-more-comments');
-    var num_to_load = 10000;
+    var num_to_load = 10;
     var thread = button.siblings('div.thread');
     if(thread.length) {
         var cid = thread.data('cid');
         var next_start = thread.data('num-showing');
         var div_load_more = button;
+	var loadingimg = $('<div style="text-align: center; margin: 20px 0"><img src="/static/images/gifs/ajax-loader.gif"></div>');
+	loadingimg.appendTo(thread);
         action({
             data: {'action': 'ajaxThread', 'c_id': cid, 'limit': num_to_load, 'start': next_start, 'new_comments': JSON.stringify(new_comments)},
             success: function(data)
@@ -168,7 +170,10 @@ function loadMoreComments() {
                     $('div.thread').data('num-showing', next_start + top_count);
                 }
                 bindTooltips();
-            }
+            },
+		complete: function(data) {
+			loadingimg.remove();
+		}
         });
     }
 }
