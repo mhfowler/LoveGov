@@ -673,5 +673,74 @@ def ajaxAnalyticsToExcel():
     wb.save(filename)
     print filename
 
+#-----------------------------------------------------------------------------------------------------------------------
+# Feed usage analytics
+#-----------------------------------------------------------------------------------------------------------------------
+
+def feedFiltersAnalytics():
+
+    start_date = datetime.datetime(day=1, month=10, year=2012)
+    pa_getFeed = PageAccess.objects.filter(action="getFeed", when__gt=start_date)
+    users = getAllUsers(not_team=True)
+    pa_getFeed = pa_getFeed.filter(user__in=users)
+    total_pa_count = pa_getFeed.count()
+    print "total pa: " + str(total_pa_count)
+
+    users_click_habits_dict = {}
+    all_user_click_habits = ClickHabits()
+    total_analyzed = 0
+    for x in pa_getFeed:
+        user = x.user
+        print x.page
+        if x.post_parameters:
+            total_analyzed += 1
+            if not user.id in users:
+                users_click_habits_dict[x.id] = ClickHabits()
+            user_click_habits = users_click_habits_dict[x.id]
+            user_click_habits.addPA(x)
+            all_user_click_habits.addPA(x)
+
+    all_user_click_habits.specialPrint()
+
+class ClickHabits:
+    def __init__(self):
+        self.feed_rank = {'N':0, 'H':0, 'B':0}
+        self.feed_type = {'N':0, 'Q':0, 'P':0, 'D':0}
+        self.num_filter_clicks = 0
+        self.num_get_feeds = 0
+
+    def addPA(self, pa):
+
+        post_params = pa.getPostParametersDict()
+        page = pa.page
+        feed_start = int(post_params['feed_start'])
+
+        if feed_start == 0:         # if not getting more feed items
+
+            self.num_get_feeds += 1
+
+            clicked_filter = False
+            feed_rank = post_params['feed_rank']
+            if page == '/home/':
+                clicked_filter = feed_rank in ['N', 'B']
+            else:
+                clicked_filter = feed_rank in ['H', 'B']
+
+            if clicked_filter:
+                self.feed_rank[feed_rank] += 1
+
+            feed_types = json.loads(post_params['feed_types'])
+            if len(feed_types):
+                feed_type = feed_types[0]
+                self.feed_type[feed_type] += 1
+                clicked_filter = True
+
+            if clicked_filter:
+                self.num_filter_clicks += 1
+
+    def specialPrint(self):
+        print "# getFeed: " + str(self.num_get_feeds)
+        print "# filters clicked: " + str(self.num_filter_clicks)
+        print "% usage: " + str(self.num_filter_clicks / float(self.num_get_feeds))
 
 

@@ -202,6 +202,12 @@ def getUser(name):
         users = UserProfile.objects.filter(email=name)
     return users
 
+def getAllUsers(not_team=False):
+    users = UserProfile.objects.filter(ghost=False)
+    if not_team:
+        users = users.filter(developer=False)
+    return users
+
 #-----------------------------------------------------------------------------------------------------------------------
 # convenience methods to get some common things
 #-----------------------------------------------------------------------------------------------------------------------
