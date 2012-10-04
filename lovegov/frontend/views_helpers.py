@@ -325,7 +325,7 @@ def makeThread(request, object, user, depth=0, user_votes=None, user_comments=No
     if not excluded:
         excluded = []
     # Get all comments that are children of the object
-    comments = Comment.allobjects.filter(on_content=object).order_by('-status').exclude(id__in=excluded)[start:]
+    comments = Comment.allobjects.filter(on_content=object).order_by('-created_when').exclude(id__in=excluded)[start:]
     viewer = vals['viewer']
     top_levels = 0
     if comments:

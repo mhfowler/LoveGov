@@ -164,7 +164,7 @@ function loadMoreComments() {
                     div_load_more.addClass('disabled');
                     div_load_more.text("there are no more comments to load");
                 } else {
-                    $(returned.html).hide().appendTo('div.thread').fadeIn(500);
+                    $(returned.html).hide().prependTo('div.thread').fadeIn(500);
                     $('div.thread').data('num-showing', next_start + top_count);
                 }
                 bindTooltips();
