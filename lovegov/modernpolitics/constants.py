@@ -733,7 +733,8 @@ ACTIONS = [
     'getAgreementBarGraphHTML',
     'getAgreementPeopleListHTML',
     'changeEmailSubscriptionSettings',
-    'updateTrialMatch'
+    'updateTrialMatch',
+    'getPresidentialMatchingCount'
 ]
 
 UNAUTHENTICATED_ACTIONS = [
@@ -746,7 +747,9 @@ UNAUTHENTICATED_ACTIONS = [
     'updateTrialMatch',
     'supportPolitician',
     'changeAnswerPrivacy',
-    'editExplanation'
+    'editExplanation',
+    'hoverWebComparison',
+    'getPresidentialMatchingCount'
 ]
 
 SAVE_POST_PARAMETERS_ACTIONS = [

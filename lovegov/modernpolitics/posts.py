@@ -1143,16 +1143,24 @@ def updateTrialMatch(request, vals={}):
     vals['to_compare'] = to_compare
 
     cookie_data, new_cookie = getCookieData(request)
-
-    viewer_view = cookie_data.getView()
-    to_compare_view = to_compare.getView()
-    to_compare.comparison = viewCompare(viewer_view, to_compare_view)
-
+    to_compare.comparison = getComparisonFromCookieData(to_compare, cookie_data)
 
     html = ajaxRender('site/pages/october_login/trial_match_num.html', vals, request)
     response = HttpResponse(json.dumps({'html':html}))
 
     return cookieDataResponse(response, cookie_data, new_cookie)
+
+def getPresidentialMatchingCount(request, vals={}):
+    cookie_data, new_cookie = getCookieData(request)
+    num_answered = cookie_data.getView().responses.count()
+    vals['num_answered'] = num_answered
+    html = ajaxRender('site/pages/october_login/presidential_matching_counter.html', vals, request)
+    return HttpResponse(json.dumps({'html':html}))
+
+def getComparisonFromCookieData(to_compare, cookie_data):
+    viewer_view = cookie_data.getView()
+    to_compare_view = to_compare.getView()
+    return viewCompare(viewer_view, to_compare_view)
 
 #-----------------------------------------------------------------------------------------------------------------------
 # recalculates comparison between viewer and to_compare, and returns match html in the desired display form
@@ -1810,7 +1818,14 @@ def hoverComparison(request,vals={}):
 
 def hoverWebComparison(request, vals={}):
     object = urlToObject(request.POST['href'])
-    comparison = object.getComparison(vals['viewer'])
+    viewer = vals['viewer']
+
+    if not viewer.isAnon():
+        comparison = object.getComparison(viewer)
+    else:
+        cookie_data, new_cookie = getCookieData(request)
+        comparison = getComparisonFromCookieData(object, cookie_data)
+
     return HttpResponse(comparison.toJSON())
 
 #-----------------------------------------------------------------------------------------------------------------------

@@ -21,7 +21,7 @@
         <div class="right-side">
             <div class="match">
                 <div class="update_after_answer has_hover_comparison match-num" data-action="updateTrialMatch" data-to_compare_id="{{ user.id }}" data-href="{{ user.get_url }}"  data-display_name="{{ user.get_name }}">
-                    {% include 'site/pages/october_login/trial_match_num.html' with to_compare=candidate %}
+                    {% include 'site/pages/october_login/trial_match_num.html' with to_compare=user %}
                 </div>
                 <div class="match-text">
                     match

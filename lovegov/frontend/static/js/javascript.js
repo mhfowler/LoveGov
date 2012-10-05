@@ -3379,6 +3379,15 @@ function postInitialize(element) {
         element.find(".agreement_people_list_wrapper").fadeIn();
     }
 
+    if (element.hasClass("presidential_matching_counter")) {
+        var questions_answered = element.find(".questions_answered");
+        var num = questions_answered.data('num');
+        if (num >= 10) {
+            $(".trial_question_answering").hide();
+            $(".sign_up_wrapper").fadeIn(1000);
+        }
+    }
+
     bindOnNewElements();
 
 }

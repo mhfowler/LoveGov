@@ -338,7 +338,7 @@ def loginHowItWorks(request, vals):
     return loginResponse(request, central_html, url, vals)
 
 def loginSignUp(request, vals):
-    central_html = ajaxRender(template='site/pages/login/sign-up.html', vals=vals, request=request)
+    central_html = ajaxRender(template='site/pages/october_login/sign_up.html', vals=vals, request=request)
     url = request.path
     return loginResponse(request, central_html, url, vals)
 

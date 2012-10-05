@@ -259,8 +259,8 @@ div.october-login {
 
     div.sign-up-wrapper {
       width: 480px;
-      margin: auto;
-      padding-top: 100px;
+      padding-top: 55px;
+      float: left;
     }
 
     div.feed-main {
@@ -274,7 +274,7 @@ div.october-login {
 }
 
 div.presidential-matching {
-
+  min-height:500px;
   div.top-section {
     float:left;
     width: 100%;
@@ -328,19 +328,28 @@ div.presidential-matching {
         }
       }
     }
-
-    div.presidential-matching-explanation {
-      float:left;
-      font-size:21px;
-      color:$dark-gray;
-      width: 450px;
-      width: 100%;
-      margin-bottom: 20px;
-    }
   }
   div.bottom-section {
     width: 100%;
     float:left;
+    div.presidential-matching-explanation {
+      float:left;
+      font-size:21px;
+      color:$dark-gray;
+      width: 800px;
+      margin-bottom: 20px;
+    }
+
+    div.presidential-matching-counter {
+      float: left;
+      font-size: 33px;
+      position: relative;
+      top: -8px;
+      left: 85px;
+    }
+  }
+  div.sign_up_wrapper {
+    display:none;
   }
 }
 
