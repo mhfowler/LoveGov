@@ -353,7 +353,7 @@ def presidentialMatching(request, vals):
     vals['obama'] = obama
     vals['mitt'] = mitt
 
-    getMainTopics(vals)
+    vals['lgpoll'] = getLoveGovPoll()
 
     cookie_data, new_cookie = getCookieData(request)
 
