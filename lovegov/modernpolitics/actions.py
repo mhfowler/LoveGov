@@ -122,7 +122,7 @@ def scorecardAnswerAction(user, scorecard, question, answer_id):
 
     return response
 
-def trialAnswerAction(cookie_data, question,answer_id, weight=-1, explanation=""):
+def trialAnswerAction(cookie_data, question, privacy, answer_id, weight=-1, explanation=""):
 
     chosen_answer = Answer.lg.get_or_none(id=answer_id)
     if not chosen_answer:
@@ -143,21 +143,23 @@ def trialAnswerAction(cookie_data, question,answer_id, weight=-1, explanation=""
         if chosen_answer:
             response.most_chosen_num = 1
             response.total_num = 1
-        response.autoSave(creator=trial_user, privacy="PRI")
+        response.autoSave(creator=trial_user, privacy=privacy)
         world_view.responses.add(response)
     # else update old response
     else:
         response = my_response[0]
-        if weight != -1:
+        if weight == -1:
             weight = response.weight
         if not explanation:
             explanation = response.explanation
         response.most_chosen_answer = chosen_answer
         response.weight = weight
         response.explanation = explanation
+        response.privacy = privacy
         if chosen_answer:
             response.most_chosen_num = 1
             response.total_num = 1
+        response.save()
     return response
 
 
@@ -486,6 +488,14 @@ def supportAction(viewer, politician, support, privacy):
             action.autoSave()
             # notification
             politician.notify(action)
+
+
+def trialSupportAction(cookie_data, politician, support):
+    if support:
+        cookie_data.support(politician)
+    else:
+        cookie_data.unsupport(politician)
+
 
 ## Action causes user to follow or unfollow inputted group, follow is true or false, depending on whether to start or stop ##
 def followGroupAction(viewer, group, follow, privacy):

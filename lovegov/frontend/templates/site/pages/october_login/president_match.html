@@ -10,8 +10,13 @@
 <div class="election-card">
 
     <div class="card-top">
-        <div class="politician-image">
-            {% include 'site/pieces/avatar.html' with user=user width="150" height="150" hoveroff=1 %}
+        <div class="left-side">
+            <div class="politician-image">
+                {% include 'site/pieces/avatar.html' with user=user width="150" height="150" hoveroff=1 %}
+            </div>
+            <div class="politician-name">
+                {{ user.get_name }}
+            </div>
         </div>
         <div class="right-side">
             <div class="match">
@@ -24,11 +29,6 @@
             </div>
 
             {% include 'site/pages/profile/support_button.html' with politician=user %}
-
-            <div class="user-name">
-                {{ user.get_name }}
-            </div>
-
         </div>
         <div style="clear:both;"></div>
     </div>

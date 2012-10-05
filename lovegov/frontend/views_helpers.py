@@ -6,18 +6,6 @@ from lovegov.base_settings import UPDATE
 from operator import attrgetter
 
 #-----------------------------------------------------------------------------------------------------------------------
-# presidential matching from outside
-#-----------------------------------------------------------------------------------------------------------------------
-def getFirstUnansweredPresidentialMatchingQuestion(cookie_data):
-    answered_ids = cookie_data.getView().responses.all().values_list("question_id", flat=True)
-    question = None
-    for q in PRESIDENTIAL_MATCHING_QUESTIONS:
-        if q.id not in answered_ids:
-            question = q
-            break
-    return question
-
-#-----------------------------------------------------------------------------------------------------------------------
 # get questions for weekly digest
 #-----------------------------------------------------------------------------------------------------------------------
 def getWeeklyDigestQuestions(time_start, time_end, viewer):

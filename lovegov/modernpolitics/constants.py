@@ -733,8 +733,7 @@ ACTIONS = [
     'getAgreementBarGraphHTML',
     'getAgreementPeopleListHTML',
     'changeEmailSubscriptionSettings',
-    'updateTrialMatch',
-    'saveTrialAnswer'
+    'updateTrialMatch'
 ]
 
 UNAUTHENTICATED_ACTIONS = [
@@ -743,8 +742,10 @@ UNAUTHENTICATED_ACTIONS = [
     'newRegister',
     'addEmailList',
     'getQuestions',
-    'saveTrialAnswer',
-    'updateTrialMatch'
+    'saveAnswer',
+    'updateTrialMatch',
+    'supportPolitician',
+    'changeAnswerPrivacy'
 ]
 
 SAVE_POST_PARAMETERS_ACTIONS = [
@@ -835,10 +836,10 @@ ANONYMOUS_PROHIBITED_ACTIONS = [
     #'getElections',
     #'hoverWebComparison',
     #'newRegister',
-    'saveAnswer',
+    #'saveAnswer',
     'signPetition',
     'finalizePetition',
-    'supportPolitician',
+    #'supportPolitician',
     'createContent',
     'askToJoin',
     #'claimProfile',
@@ -849,7 +850,7 @@ ANONYMOUS_PROHIBITED_ACTIONS = [
     'findLikeMinded',
     'clearLikeMinded',
     'pinContent',
-    'changeAnswerPrivacy',
+    #'changeAnswerPrivacy',
     'editExplanation',
     'editPetitionFullText',
     'saveScorecardAnswer',
@@ -934,10 +935,3 @@ except:
     LEGISLATION_SESSIONS = []
 
 ########################################## PRESIDENTIAL MATCHING ON LOGIN ##############################################
-
-PRESIDENTIAL_MATCHING_QUESTIONS = []
-from modernpolitics.models import Question
-for q_id in Question.objects.all().values_list("id", flat=True):
-    question = Question.lg.get_or_none(id=q_id)
-    if question:
-        PRESIDENTIAL_MATCHING_QUESTIONS.append(question)

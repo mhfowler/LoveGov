@@ -869,6 +869,7 @@ def setPrivacy(request, vals={}):
     response.set_cookie('privacy',value=mode)
     return response
 
+
 #-----------------------------------------------------------------------------------------------------------------------
 # Toggles privacy cookies and returns html for button
 #-----------------------------------------------------------------------------------------------------------------------
@@ -973,7 +974,7 @@ def saveAnswer(request, vals={}):
     a_id = request.POST['a_id']
     weight = int(request.POST['weight'])
     viewer = vals['viewer']
-    your_response = answerAction(user=viewer, question=question,privacy=privacy, answer_id=a_id, weight=weight)
+    your_response, cookie_data, new_cookie = answerActionHelper(request=request, viewer=viewer, question=question, privacy=privacy, answer_id=a_id, weight=weight)
     vals['question'] = question
     vals['your_response'] = your_response
     vals['default_display'] = request.POST.get('default_display')
@@ -1005,7 +1006,9 @@ def saveAnswer(request, vals={}):
     from lovegov.frontend.views_helpers import valsQuestionMetrics
     valsQuestionMetrics(question=question, vals=to_return)
 
-    return HttpResponse(json.dumps(to_return))
+    response = HttpResponse(json.dumps(to_return))
+    return cookieDataResponse(response, cookie_data, new_cookie)
+
 
 def saveScorecardAnswer(request, vals):
     question = Question.objects.get(id=request.POST['q_id'])
@@ -1035,10 +1038,13 @@ def saveTrialAnswer(request, vals):
     question = Question.objects.get(id=request.POST['q_id'])
     a_id = request.POST['a_id']
     weight = int(request.POST['weight'])
+    privacy = request.POST.get("privacy")
+    if not privacy:
+        privacy = getPrivacy(request)
 
     cookie_data, new_cookie = getCookieData(request)
 
-    trial_response = trialAnswerAction(cookie_data, question=question,answer_id=a_id, weight=weight)
+    trial_response = trialAnswerAction(cookie_data, question=question, privacy=privacy, answer_id=a_id, weight=weight)
     vals['question'] = question
     vals['your_response'] = trial_response
     vals['default_display'] = request.POST.get('default_display')
@@ -1052,9 +1058,7 @@ def saveTrialAnswer(request, vals):
 
     response = HttpResponse(json.dumps(to_return))
 
-    if new_cookie:
-        response.set_cookie("cookie_data_id", cookie_data.id)
-    return response
+    return cookieDataResponse(response, cookie_data, new_cookie)
 
 
 def saveAnswerInFeed(request, vals):
@@ -1074,10 +1078,12 @@ def changeAnswerPrivacy(request, vals):
     r_id = request.POST.get("r_id")
     if r_id:
         response = Response.objects.get(id=r_id)
+        cookie_data = None
+        new_cookie = False
     else:
         question = Question.objects.get(id=q_id)
-        response = answerAction(user=viewer, question=question,privacy=getPrivacy(request), answer_id=-1)
-    if viewer == response.creator:
+        response, cookie_data, new_cookie = answerActionHelper(request=request, viewer=viewer, question=question,privacy=getPrivacy(request), answer_id=-1)
+    if viewer == response.creator or response.creator.isTrialUser():
         if response.getPublic():
             response.setPrivate()
             privacy = "PRI"
@@ -1088,7 +1094,8 @@ def changeAnswerPrivacy(request, vals):
         vals['anonymous'] = response.getPrivate()
         vals['q_id'] = q_id
         html = ajaxRender('site/pages/qa/answer_privacy.html', vals, request)
-        return HttpResponse(json.dumps({'html':html, 'privacy':privacy}))
+        response = HttpResponse(json.dumps({'html':html, 'privacy':privacy}))
+        return cookieDataResponse(response, cookie_data, new_cookie)
     else:
         LGException("trying to change privacy of response that was not their own. u_id:" + str(viewer.id))
         return HttpResponse("didn't work")
@@ -1101,18 +1108,30 @@ def editExplanation(request, vals):
     r_id = request.POST.get("r_id")
     if r_id:
         response = Response.objects.get(id=r_id)
+        cookie_data = None
+        new_cookie = False
     else:
         question = Question.objects.get(id=q_id)
-        response = answerAction(user=viewer, question=question,privacy=getPrivacy(request), answer_id=-1)
-    if viewer == response.creator:
+        response, cookie_data, new_cookie = answerActionHelper(request=request, viewer=viewer, question=question,privacy=getPrivacy(request), answer_id=-1)
+    if viewer == response.creator or response.creator.isTrialUser():
         response.editExplanation(explanation)
         response.save()
         vals['stuff'] = explanation
         explanation_html = ajaxRender('site/pieces/urlize.html', vals, request)
-        return HttpResponse(json.dumps({'explanation_html':explanation_html}))
+        response = HttpResponse(json.dumps({'explanation_html':explanation_html}))
+        return cookieDataResponse(response, cookie_data, new_cookie)
     else:
         LGException("trying to edit explanation of response that was not their own. u_id:" + str(viewer.id))
         return HttpResponse("didn't work")
+
+def answerActionHelper(request, viewer, question, privacy="PRI", answer_id=-1, weight=50, explanation=""):
+    if viewer.isAnon():
+        cookie_data, new_cookie = getCookieData(request)
+        response = trialAnswerAction(cookie_data, question, privacy=privacy, answer_id=answer_id, weight=weight, explanation=explanation)
+        return response, cookie_data, new_cookie
+    else:
+        response = answerAction(user=viewer, question=question,privacy=privacy, answer_id=answer_id, weight=weight, explanation=explanation)
+        return response, None, False
 
 #-----------------------------------------------------------------------------------------------------------------------
 # get match with person while you are still on trial usage
@@ -1133,9 +1152,7 @@ def updateTrialMatch(request, vals={}):
     html = ajaxRender('site/pages/october_login/trial_match_num.html', vals, request)
     response = HttpResponse(json.dumps({'html':html}))
 
-    if new_cookie:
-        response.set_cookie("cookie_data_id", cookie_data.id)
-    return response
+    return cookieDataResponse(response, cookie_data, new_cookie)
 
 #-----------------------------------------------------------------------------------------------------------------------
 # recalculates comparison between viewer and to_compare, and returns match html in the desired display form
@@ -1488,9 +1505,9 @@ def userFollowStop(request, vals={}):
 # supports or unsupports a politician based on posted value of 'support'
 #-----------------------------------------------------------------------------------------------------------------------
 def supportPolitician(request, vals={}):
-    viewer = vals['viewer']
+    viewer = vals.get('viewer')
     p_id = request.POST['p_id']
-    politician = UserProfile.lg.get_or_none(id=p_id, politician=True)
+    politician = UserProfile.lg.get_or_none(id=p_id)
     if not politician:
         LGException(viewer.get_name() + " tried to support a user who was not a politician|" + str(p_id))
         return HttpResponse("not politician.")
@@ -1499,10 +1516,20 @@ def supportPolitician(request, vals={}):
     support_bool = False
     if support == 'true':
         support_bool = True
-    supportAction(viewer, politician, support_bool, getPrivacy(request))
+
+    if not viewer.isAnon():
+        supportAction(viewer, politician, support_bool, getPrivacy(request))
+        new_cookie = False
+        cookie_data = None
+    else:
+        cookie_data, new_cookie = getCookieData(request)
+        trialSupportAction(cookie_data, politician, support_bool)
+
     vals['is_user_supporting'] = support_bool
     html = ajaxRender('site/pages/profile/support_button.html',vals,request)
-    return HttpResponse(json.dumps({'html':html}))
+    response = HttpResponse(json.dumps({'html':html}))
+
+    return cookieDataResponse(response, cookie_data, new_cookie)
 
 #-----------------------------------------------------------------------------------------------------------------------
 # follows or unfollows a group based on value of follow
@@ -1917,7 +1944,6 @@ def getQuestions(request, vals):
 
     vals['single_item'] = single_item = request.POST.get('single_item')
     if single_item:
-        only_unanswered = True
         num = 1
     else:
         num = 10
@@ -1926,9 +1952,14 @@ def getQuestions(request, vals):
         question_items = getQuestionComparisons(viewer=viewer, to_compare=to_compare, feed_ranking=feed_ranking,
             question_ranking=question_ranking, feed_topic=feed_topic, scorecard=scorecard, feed_start=feed_start, num=num)
     else:
+        if viewer.isAnon():
+            cookie_data, new_cookie = getCookieData(request)
+            responses = cookie_data.getView().responses.all()
+        else:
+            responses = None
         question_items = getQuestionItems(viewer=viewer, feed_ranking=feed_ranking,
             feed_topic=feed_topic,  poll=poll, scorecard=scorecard,
-            only_unanswered=only_unanswered, feed_start=feed_start, num=num)
+            only_unanswered=only_unanswered, feed_start=feed_start, num=num, responses=responses)
     vals['question_items']= question_items
     vals['to_compare'] = to_compare
     vals['default_display'] = request.POST.get('default_display')

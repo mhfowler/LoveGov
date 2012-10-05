@@ -283,7 +283,7 @@ div.presidential-matching {
       width:620px;
       height: 180px;
       float:left;
-      //border:1px solid $red;
+      margin-bottom:20px;
       div.president-match.left {
         float:left;
       }
@@ -291,22 +291,36 @@ div.presidential-matching {
         float:right;
       }
       div.election-card {
-        margin-bottom:10px;
+        div.left-side {
+          float:left;
+          div.politician-name {
+            font-size:20px;
+          }
+        }
+        div.match {
+          padding-top:41px;
+        }
       }
     }
 
     div.top-right-sign-up {
       float:left;
-      margin-top: 50px;
-      text-align: center;
-      width: 200px;
+      margin-top: 0px;
+      text-align: left;
+      width: 300px;
+      margin-left:70px;
+      p.sign-up-text {
+        text-align: left;
+        width: 155px;
+        font-size: 16px;
+      }
       a.sign-up-button {
-        text-align:center;
         padding:5px 10px;
-        width:130px;
-        text-align:center;
+        width:150px;
+        float:left;
         font-size: 16px;
         background-color:$green;
+        text-align:center;
         color:white;
         &:hover {
           background-color:$dark-green;

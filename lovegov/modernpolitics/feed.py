@@ -149,7 +149,7 @@ def getQuestionComparisons(viewer, to_compare, feed_ranking, question_ranking,
     return question_items[feed_start:feed_start+num]
 
 
-def getQuestionItems(viewer, feed_ranking, feed_topic=None, only_unanswered=False, poll=None, scorecard=None, feed_start=0, num=10):
+def getQuestionItems(viewer, feed_ranking, feed_topic=None, only_unanswered=False, poll=None, scorecard=None, feed_start=0, num=10, responses=None):
 
     # questions & check for p_id (filter by poll)
     if not poll:
@@ -159,7 +159,9 @@ def getQuestionItems(viewer, feed_ranking, feed_topic=None, only_unanswered=Fals
     question_items=[]
 
     # viewer responses
-    if not scorecard:
+    if responses:
+        you_responses = responses
+    elif not scorecard:
         you_responses = viewer.view.responses.all()
     else:
         you_responses = scorecard.scorecard_view.responses.all()
@@ -173,6 +175,14 @@ def getQuestionItems(viewer, feed_ranking, feed_topic=None, only_unanswered=Fals
 
     # sort & append
     questions = questionsSortHelper(questions, feed_ranking)
+
+    # paginate
+    if num:
+        questions= questions[feed_start:feed_start+num]
+    else:
+        questions = questions[feed_start:]
+
+    # add vals
     for q in questions:
         your_response = getResponseHelper(you_responses, q)
         q_item = getQuestionItem(question=q,
@@ -180,11 +190,6 @@ def getQuestionItems(viewer, feed_ranking, feed_topic=None, only_unanswered=Fals
             them=None, their_response=None)
         question_items.append(q_item)
 
-    # paginate
-    if num:
-        question_items = question_items[feed_start:feed_start+num]
-    else:
-        question_items = question_items[feed_start:]
     return question_items
 
 

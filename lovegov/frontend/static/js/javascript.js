@@ -1178,6 +1178,7 @@ function getFeed(container) {
         //container.css('min-height', old_height);
         container.find(".feed_content").empty();
         container.find(".everything_loaded_wrapper").hide();
+        container.find(".load_previous").hide();
         // feed nonce increases when you replace content
     }
 
@@ -3032,10 +3033,6 @@ function saveAnswer(stub) {
         var save_scorecard_answer = container.data("save_scorecard_answer");
         if (save_scorecard_answer == 1) {
             data['action'] = 'saveScorecardAnswer'
-        }
-        // check if trial question answering
-        if (container.data("trial_questions")) {
-            data['action'] = 'saveTrialAnswer'
         }
         // if only unanswered animate hide question
         var only_unanswered = container.data('only_unanswered');
