@@ -1,31 +1,27 @@
 <div class="presidential-matching">
 
-    <div class="presidential-matching-top">
-        Answer 10 questions about your political views and see how you compare with the candidates.
-    </div>
-
-    <div class="left-side">
+    <div class="top-section">
 
         <div class="the-matching">
-            <div class="president-match">
-                {% include 'site/pieces/avatar.html' with user=mitt width="50" height="50" %}
+            <div class="president-match left">
+                {% include 'site/pieces/avatar.html' with user=mitt width="150" height="150" %}
             </div>
-            <div class="president-match">
-                {% include 'site/pieces/avatar.html' with user=obama width="50" height="50" %}
+            <div class="president-match right">
+                {% include 'site/pieces/avatar.html' with user=obama width="150" height="150" %}
             </div>
+        </div>
+
+        <div class="presidential-matching-explanation">
+            Answer questions about your political views and see how you compare with the candidates.
         </div>
 
     </div>
 
-    <div class="right-side">
+    <div class="bottom-section">
 
-        <div class="the-question">
-
+        <div class="questions-wrapper trial-questions-wrapper">
+            {% include 'site/pages/qa/feed_browse_questions.html' with special_feed="getQuestions" default_display="choose" trial_questions=1 only_unanswered=1 no_create_button=1 no_sort_buttons=1 no_only_unanswered=1 no_filter_buttons=1 no_help_button=1 poll_id=lgpoll.id %}
         </div>
-
-        <a class="next-question">
-            next question
-        </a>
 
     </div>
 

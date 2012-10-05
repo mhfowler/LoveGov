@@ -541,6 +541,11 @@ div.question_stub {
             &:hover {
               color:black;
             }
+            &.how-important:hover {
+                text-decoration:none;
+                cursor:default;
+                color:$black;
+            }
           }
           span.action-text-lower {
             float:left;

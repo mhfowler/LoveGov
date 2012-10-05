@@ -739,7 +739,9 @@ UNAUTHENTICATED_ACTIONS = [
     'logCompatability',
     'getModal',
     'newRegister',
-    'addEmailList'
+    'addEmailList',
+    'getQuestions',
+    'saveAnswer'
 ]
 
 SAVE_POST_PARAMETERS_ACTIONS = [

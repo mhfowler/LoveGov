@@ -76,7 +76,7 @@
             <div class="answer-importance a-action importance_wrapper qa_importance_parent">
                 <span class="action-icon answer-importance-num importance_percent"> {% if your_response %}{{ your_response.weight }}{% else %}50{% endif %}%</span>
                 <span class="action-text">
-                    <a class='action-text-upper '> How important is this question to you? </a>
+                    <a class='action-text-upper how-important'> How important is this question to you? </a>
                     <div class="importance-bar-wrapper">
                         <div class="importance-bar importance_bar" {% if your_response %} data-weight="{{ your_response.weight }}"
                         {% else %} data-weight="50" {% endif %}></div>

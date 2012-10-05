@@ -1165,6 +1165,8 @@ var feed_topic = null;
 var question_rank = "R";
 function getFeed(container) {
 
+    container.find(".load_more").hide();
+
     var feed_nonce_pre_request = container.data('feed_nonce');
     feed_nonce_pre_request += 1;
     container.data('feed_nonce', feed_nonce_pre_request);
@@ -1175,7 +1177,6 @@ function getFeed(container) {
         var old_height = $("body").height();
         //container.css('min-height', old_height);
         container.find(".feed_content").empty();
-        container.find(".load_more").show();
         container.find(".everything_loaded_wrapper").hide();
         // feed nonce increases when you replace content
     }
@@ -1216,6 +1217,10 @@ function getFeed(container) {
         var scorecard_id = container.data("scorecard_id");
         if (typeof(scorecard_id) != 'undefined') {
             data['scorecard_id'] = scorecard_id;
+        }
+        // check if trial question answering
+        if (container.data("trial_questions")) {
+            data['trial_questions'] = 1;
         }
     }
     else if (feed == 'getUserActivity')
@@ -1343,6 +1348,9 @@ function getFeed(container) {
                 else {
                     everything_loaded.find(".reached_the_end").show();
                 }
+            }
+            else {
+                container.find(".load_more").show();
             }
             updateQuestionStubsDisplay();
             bindOnNewElements();
@@ -2996,6 +3004,10 @@ function saveAnswer(stub) {
         var save_scorecard_answer = container.data("save_scorecard_answer");
         if (save_scorecard_answer == 1) {
             data['action'] = 'saveScorecardAnswer'
+        }
+        // check if trial question answering
+        if (container.data("trial_questions")) {
+            data['trial_questions'] = 1;
         }
         // if only unanswered animate hide question
         var only_unanswered = container.data('only_unanswered');

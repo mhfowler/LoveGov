@@ -122,6 +122,45 @@ def scorecardAnswerAction(user, scorecard, question, answer_id):
 
     return response
 
+def trialAnswerAction(cookie_data, question,answer_id, weight=-1, explanation=""):
+
+    chosen_answer = Answer.lg.get_or_none(id=answer_id)
+    if not chosen_answer:
+        chosen_answer = None
+
+    world_view = cookie_data.world_view
+    my_response = world_view.responses.filter(question=question)
+
+    trial_user = getTrialUser()
+
+    if not my_response:
+        if weight == -1:
+            weight = 50
+        response = Response( question = question,
+            most_chosen_answer = chosen_answer,
+            weight = weight,
+            explanation = explanation)
+        if chosen_answer:
+            response.most_chosen_num = 1
+            response.total_num = 1
+        response.autoSave(creator=trial_user, privacy="PRI")
+        world_view.responses.add(response)
+    # else update old response
+    else:
+        response = my_response[0]
+        if weight != -1:
+            weight = response.weight
+        if not explanation:
+            explanation = response.explanation
+        response.most_chosen_answer = chosen_answer
+        response.weight = weight
+        response.explanation = explanation
+        if chosen_answer:
+            response.most_chosen_num = 1
+            response.total_num = 1
+    return response
+
+
 #-----------------------------------------------------------------------------------------------------------------------
 # Likes or dislikes content based on post.
 #-----------------------------------------------------------------------------------------------------------------------

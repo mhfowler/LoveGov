@@ -1029,6 +1029,24 @@ def saveScorecardAnswer(request, vals):
         LGException("user " + str(user.id) + " trying to edit scorecard which they are not allowed to." + str(scorecard.id))
         return HttpResponse("didnt' work")
 
+
+def saveTrialAnswer(request, vals):
+    question = Question.objects.get(id=request.POST['q_id'])
+    a_id = request.POST['a_id']
+    weight = int(request.POST['weight'])
+    user = vals['viewer']
+
+    trial_response = trialAnswerAction(user=user, question=question,answer_id=a_id, weight=weight)
+    vals['question'] = question
+    vals['your_response'] = trial_response
+    vals['default_display'] = request.POST.get('default_display')
+    responses = []
+    vals['compare_responses'] = responses
+    html = ajaxRender('site/pages/qa/question_stub.html', vals, request)
+    return HttpResponse(json.dumps({'html':html, 'num_responses':question.num_responses}))
+
+
+
 def saveAnswerInFeed(request, vals):
     question = Question.objects.get(id=request.POST['q_id'])
     privacy = request.POST.get("privacy")
@@ -1874,7 +1892,8 @@ def getQuestions(request, vals):
     vals['to_compare'] = to_compare
     vals['default_display'] = request.POST.get('default_display')
 
-    if not to_compare:
+    trial_questions =  request.POST.get('trial_questions')
+    if not (to_compare or trial_questions):
         vals['qa_tutorial'] = not viewer.checkTask("Q")
 
     html = ajaxRender('site/pages/qa/feed_helper_questions.html', vals, request)

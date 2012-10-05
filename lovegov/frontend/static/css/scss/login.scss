@@ -271,40 +271,50 @@ div.october-login {
 
 div.presidential-matching {
 
-  div.presidential-matching-top {
-    width:100%;
-    font-size:21px;
-    text-align:center;
-    margin-bottom:40px;
-    color:$dark-gray;
-    position: relative;
-    left: -10px;
-  }
-  div.left-side {
+  div.top-section {
     float:left;
+    width: 100%;
     div.the-matching {
       display:block;
-      height: 250px;
-      width: 350px;
-      border:1px solid $red;
+      width:380px;
+      height: 180px;
+      float:left;
+      //border:1px solid $red;
+      div.president-match.left {
+        float:left;
+      }
+      div.president-match.right {
+        float:right;
+      }
+    }
+    div.presidential-matching-explanation {
+      float:left;
+      font-size:21px;
+      text-align:center;
+      color:$dark-gray;
+      width: 450px;
+      margin-left: 95px;
+      padding-top: 33px;
     }
   }
-  div.right-side {
-    border:1px solid $light-gray;
-    width: 650px;
+  div.bottom-section {
+    width: 100%;
     float:left;
-    div.the-question {
-      height: 500px;
-    }
-    a.next-question {
-      display:block;
-      margin-top:20px;
-      width:100%;
-      text-align:center;
-    }
   }
 }
 
+div.trial-questions-wrapper {
+  a.question-title {
+    &:hover {
+      cursor:default;
+      text-decoration:none;
+      color:$black;
+    }
+  }
+  div.question_stub div.question_expanded_choose div.answer-actions div.a-action.discuss-question {
+    display:none;
+  }
+}
 
 
 
