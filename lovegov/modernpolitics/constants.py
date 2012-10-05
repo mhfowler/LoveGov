@@ -745,7 +745,8 @@ UNAUTHENTICATED_ACTIONS = [
     'saveAnswer',
     'updateTrialMatch',
     'supportPolitician',
-    'changeAnswerPrivacy'
+    'changeAnswerPrivacy',
+    'editExplanation'
 ]
 
 SAVE_POST_PARAMETERS_ACTIONS = [
@@ -851,7 +852,7 @@ ANONYMOUS_PROHIBITED_ACTIONS = [
     'clearLikeMinded',
     'pinContent',
     #'changeAnswerPrivacy',
-    'editExplanation',
+    #'editExplanation',
     'editPetitionFullText',
     'saveScorecardAnswer',
     'saveAnswerInFeed',
