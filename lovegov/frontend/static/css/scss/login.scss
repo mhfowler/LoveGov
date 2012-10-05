@@ -276,7 +276,7 @@ div.presidential-matching {
     width: 100%;
     div.the-matching {
       display:block;
-      width:380px;
+      width:620px;
       height: 180px;
       float:left;
       //border:1px solid $red;
@@ -286,15 +286,17 @@ div.presidential-matching {
       div.president-match.right {
         float:right;
       }
+      div.election-card {
+        margin-bottom:10px;
+      }
     }
     div.presidential-matching-explanation {
       float:left;
       font-size:21px;
-      text-align:center;
       color:$dark-gray;
       width: 450px;
-      margin-left: 95px;
-      padding-top: 33px;
+      width: 100%;
+      margin-bottom: 20px;
     }
   }
   div.bottom-section {

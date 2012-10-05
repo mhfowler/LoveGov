@@ -1003,7 +1003,7 @@ def saveAnswer(request, vals={}):
     html = ajaxRender('site/pages/qa/question_stub.html', vals, request)
     to_return = {'html':html, 'num_responses':question.num_responses, 'start_like_minded':start_like_minded}
     from lovegov.frontend.views_helpers import valsQuestionMetrics
-    valsQuestionMetrics(viewer=viewer, question=question, response=your_response, vals=to_return)
+    valsQuestionMetrics(question=question, vals=to_return)
 
     return HttpResponse(json.dumps(to_return))
 
@@ -1031,20 +1031,30 @@ def saveScorecardAnswer(request, vals):
 
 
 def saveTrialAnswer(request, vals):
+
     question = Question.objects.get(id=request.POST['q_id'])
     a_id = request.POST['a_id']
     weight = int(request.POST['weight'])
-    user = vals['viewer']
 
-    trial_response = trialAnswerAction(user=user, question=question,answer_id=a_id, weight=weight)
+    cookie_data, new_cookie = getCookieData(request)
+
+    trial_response = trialAnswerAction(cookie_data, question=question,answer_id=a_id, weight=weight)
     vals['question'] = question
     vals['your_response'] = trial_response
     vals['default_display'] = request.POST.get('default_display')
     responses = []
     vals['compare_responses'] = responses
     html = ajaxRender('site/pages/qa/question_stub.html', vals, request)
-    return HttpResponse(json.dumps({'html':html, 'num_responses':question.num_responses}))
+    to_return = {'html':html, 'num_responses':question.num_responses}
 
+    from lovegov.frontend.views_helpers import valsQuestionMetrics
+    valsQuestionMetrics(question=question, vals=to_return)
+
+    response = HttpResponse(json.dumps(to_return))
+
+    if new_cookie:
+        response.set_cookie("cookie_data_id", cookie_data.id)
+    return response
 
 
 def saveAnswerInFeed(request, vals):
@@ -1103,6 +1113,29 @@ def editExplanation(request, vals):
     else:
         LGException("trying to edit explanation of response that was not their own. u_id:" + str(viewer.id))
         return HttpResponse("didn't work")
+
+#-----------------------------------------------------------------------------------------------------------------------
+# get match with person while you are still on trial usage
+#-----------------------------------------------------------------------------------------------------------------------
+def updateTrialMatch(request, vals={}):
+
+    to_compare_id = request.POST['to_compare_id']
+    to_compare = UserProfile.objects.get(id=to_compare_id)
+    vals['to_compare'] = to_compare
+
+    cookie_data, new_cookie = getCookieData(request)
+
+    viewer_view = cookie_data.getView()
+    to_compare_view = to_compare.getView()
+    to_compare.comparison = viewCompare(viewer_view, to_compare_view)
+
+
+    html = ajaxRender('site/pages/october_login/trial_match_num.html', vals, request)
+    response = HttpResponse(json.dumps({'html':html}))
+
+    if new_cookie:
+        response.set_cookie("cookie_data_id", cookie_data.id)
+    return response
 
 #-----------------------------------------------------------------------------------------------------------------------
 # recalculates comparison between viewer and to_compare, and returns match html in the desired display form
@@ -1682,7 +1715,7 @@ def updateCompare(request, vals={}):
 # Returns the url of the latest comparison between two users, or creates a comparison between two users and then
 #
 #-----------------------------------------------------------------------------------------------------------------------
-def viewCompare(request, vals={}):
+def getViewComparison(request, vals={}):
     """Returns link to comparison between the two inputted users via simplejson/ajax."""
     vals = {'url':'/compare/' + request.POST['a_id'] + '/' +  request.POST['b_id'] + '/'}
     return HttpResponse(simplejson.dumps(vals))
@@ -1881,13 +1914,21 @@ def getQuestions(request, vals):
         feed_topic = Topic.lg.get_or_none(alias=feed_topic_alias)
     else:
         feed_topic = None
+
+    vals['single_item'] = single_item = request.POST.get('single_item')
+    if single_item:
+        only_unanswered = True
+        num = 1
+    else:
+        num = 10
+
     if to_compare:
         question_items = getQuestionComparisons(viewer=viewer, to_compare=to_compare, feed_ranking=feed_ranking,
-            question_ranking=question_ranking, feed_topic=feed_topic, scorecard=scorecard, feed_start=feed_start, num=10)
+            question_ranking=question_ranking, feed_topic=feed_topic, scorecard=scorecard, feed_start=feed_start, num=num)
     else:
         question_items = getQuestionItems(viewer=viewer, feed_ranking=feed_ranking,
             feed_topic=feed_topic,  poll=poll, scorecard=scorecard,
-            only_unanswered=only_unanswered, feed_start=feed_start, num=10)
+            only_unanswered=only_unanswered, feed_start=feed_start, num=num)
     vals['question_items']= question_items
     vals['to_compare'] = to_compare
     vals['default_display'] = request.POST.get('default_display')

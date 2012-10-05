@@ -732,7 +732,9 @@ ACTIONS = [
     'clientSideAnalytics',
     'getAgreementBarGraphHTML',
     'getAgreementPeopleListHTML',
-    'changeEmailSubscriptionSettings'
+    'changeEmailSubscriptionSettings',
+    'updateTrialMatch',
+    'saveTrialAnswer'
 ]
 
 UNAUTHENTICATED_ACTIONS = [
@@ -741,7 +743,8 @@ UNAUTHENTICATED_ACTIONS = [
     'newRegister',
     'addEmailList',
     'getQuestions',
-    'saveAnswer'
+    'saveTrialAnswer',
+    'updateTrialMatch'
 ]
 
 SAVE_POST_PARAMETERS_ACTIONS = [
@@ -930,3 +933,11 @@ except:
     LEGISLATION_COMMITTEES = []
     LEGISLATION_SESSIONS = []
 
+########################################## PRESIDENTIAL MATCHING ON LOGIN ##############################################
+
+PRESIDENTIAL_MATCHING_QUESTIONS = []
+from modernpolitics.models import Question
+for q_id in [Question.objects.all().values_list("id", flat=True)]:
+    question = Question.lg.get_or_none(id=q_id)
+    if question:
+        PRESIDENTIAL_MATCHING_QUESTIONS.append(question)

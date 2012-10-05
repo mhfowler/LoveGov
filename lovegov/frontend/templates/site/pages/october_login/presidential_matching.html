@@ -4,10 +4,10 @@
 
         <div class="the-matching">
             <div class="president-match left">
-                {% include 'site/pieces/avatar.html' with user=mitt width="150" height="150" %}
+                {% include 'site/pages/october_login/president_match.html' with user=obama %}
             </div>
             <div class="president-match right">
-                {% include 'site/pieces/avatar.html' with user=obama width="150" height="150" %}
+                {% include 'site/pages/october_login/president_match.html' with user=mitt %}
             </div>
         </div>
 
@@ -20,7 +20,7 @@
     <div class="bottom-section">
 
         <div class="questions-wrapper trial-questions-wrapper">
-            {% include 'site/pages/qa/feed_browse_questions.html' with special_feed="getQuestions" default_display="choose" trial_questions=1 only_unanswered=1 no_create_button=1 no_sort_buttons=1 no_only_unanswered=1 no_filter_buttons=1 no_help_button=1 poll_id=lgpoll.id %}
+            {% include 'site/pages/qa/feed_browse_questions.html' with special_feed="getQuestions" default_display="choose" single_item=1 trial_questions=1 no_create_button=1 no_sort_buttons=1 no_only_unanswered=1 no_filter_buttons=1 no_help_button=1 no_load_more=1 poll_id=lgpoll.id %}
         </div>
 
     </div>

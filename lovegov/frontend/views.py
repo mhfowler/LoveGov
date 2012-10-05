@@ -355,6 +355,10 @@ def presidentialMatching(request, vals):
 
     getMainTopics(vals)
 
+    cookie_data, new_cookie = getCookieData(request)
+    first_question = getFirstUnansweredPresidentialMatchingQuestion(cookie_data)
+    vals['question'] = first_question
+
     central_html = ajaxRender(template='site/pages/october_login/presidential_matching.html', vals=vals, request=request)
     url = request.path
     return loginResponse(request, central_html, url, vals)

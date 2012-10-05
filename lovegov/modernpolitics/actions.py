@@ -128,7 +128,7 @@ def trialAnswerAction(cookie_data, question,answer_id, weight=-1, explanation=""
     if not chosen_answer:
         chosen_answer = None
 
-    world_view = cookie_data.world_view
+    world_view = cookie_data.getView()
     my_response = world_view.responses.filter(question=question)
 
     trial_user = getTrialUser()

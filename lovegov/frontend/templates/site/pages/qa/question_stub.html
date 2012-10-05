@@ -23,15 +23,19 @@
                     <span class="saving-gif saving_gif"></span>
                 </td>
                 <td>
-                    {% if your_response %}
-                        <a href="#" class="stub-button button-reanswer answer_button dummy_link"> re-answer</a>
+                    {% if single_item %}
+                        <a class="stub-button button-next load_more"> next question </a>
                     {% else %}
-                        <a href="#" class="stub-button button-answer answer_button dummy_link"> answer </a>
-                    {% endif %}
-                    {% if default_display != "choose" %}
-                        <a href="#" class="stub-button button-cancel hide_button dummy_link"> cancel </a>
-                    {% else %}
-                        <div class="num-responses num_responses"> <span class="num"> {{ question.num_responses }}</span> response{{ question.num_responses|pluralize }} </div>
+                        {% if your_response %}
+                            <a href="#" class="stub-button button-reanswer answer_button dummy_link"> re-answer</a>
+                        {% else %}
+                            <a href="#" class="stub-button button-answer answer_button dummy_link"> answer </a>
+                        {% endif %}
+                        {% if default_display != "choose" %}
+                            <a href="#" class="stub-button button-cancel hide_button dummy_link"> cancel </a>
+                        {% else %}
+                            <div class="num-responses num_responses"> <span class="num"> {{ question.num_responses }}</span> response{{ question.num_responses|pluralize }} </div>
+                        {% endif %}
                     {% endif %}
                 </td>
             </tr>

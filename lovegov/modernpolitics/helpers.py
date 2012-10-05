@@ -411,12 +411,27 @@ def getUserProfile(request=None, control_id=None, control=None):
     user_prof = user_prof or getAnonUser()
     return user_prof
 
+
 def getControllingUser(request=None, control_id=None):
     if control_id:
         control = ControllingUser.lg.get_or_none(id=control_id)
     else:
         control = ControllingUser.lg.get_or_none(id=request.user.id)
     return control
+
+
+def getCookieData(request):
+
+    cookie_data_id = request.COOKIES.get('cookie_data_id')
+    if cookie_data_id:
+        cookie_data = CookieData.objects.get(id=cookie_data_id)
+        new_cookie = False
+    else:
+        cookie_data = CookieData()
+        cookie_data.save()
+        new_cookie = True
+    return cookie_data, new_cookie
+
 
 #-----------------------------------------------------------------------------------------------------------------------
 # Gets privacy from cookies.

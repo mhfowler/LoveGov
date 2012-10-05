@@ -401,6 +401,13 @@ div.question_stub {
         background-color:$dark-green;
       }
     }
+    a.button-next {
+      background-color:$green;
+      color:white;
+      &:hover {
+        background-color:$dark-green;
+      }
+    }
     a.button-cancel {
       background-color:$gray;
       color:white;
@@ -565,6 +572,7 @@ div.question_stub {
         margin-top:0px;
       }
       div.a-action.discuss-question {
+        display:none;
         margin-top:21px;
         span.discuss-icon {
           @include staticImage("/images/icons/gray_comment.png");

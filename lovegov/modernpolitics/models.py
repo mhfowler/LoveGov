@@ -1158,6 +1158,23 @@ class FacebookProfileModel(models.Model):
         return self.facebook_profile_url.replace('http://www.facebook.com/', '')
 
 
+#=======================================================================================================================
+# Model for storing data about a user before they register (as part of a cookie)
+#=======================================================================================================================
+class CookieData(LGModel):
+    view = models.ForeignKey("WorldView", null=True)
+    ipaddress = models.IPAddressField(default='255.255.255.255', null=True)
+    created_when = models.DateTimeField(auto_now_add=True)
+
+    def getView(self):
+        if self.view:
+            return self.view
+        else:
+            view = WorldView()
+            view.save()
+            self.view = view
+            self.save()
+            return self.view
 
 #=======================================================================================================================
 # Model for storing user of site. extends FacebookProfileModel, so that there are fields for that.

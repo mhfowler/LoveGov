@@ -53,17 +53,12 @@ function bindOnReload() {
         case "legislation_detail":
             shortenLongText();
             break;
-        case "home":
-            break;
         case "profile":
             break;
         case "groupedit":
             loadGroupEdit();
             break;
         case 'questions':
-            break;
-        case 'question_detail':
-            updateQuestionStubsDisplay();
             break;
         case 'poll_detail':
             updateQuestionStubsDisplay();
@@ -87,6 +82,9 @@ function bindOnNewElements() {
 
     // show any visible helper bubles
     showBubbles();
+
+    // question stubs
+    updateQuestionStubsDisplay();
 
     // hover comparison popup
     loadHoverComparison();
@@ -116,6 +114,7 @@ function bindOnNewElements() {
 
     // initialize self initializing elements
     initializeDomElements();
+
 }
 
 
@@ -1173,7 +1172,8 @@ function getFeed(container) {
 
     var feed_start = container.data('feed_start');
     var replace = (feed_start==0);
-    if (replace) {
+    var single_item = container.data('single_item');
+    if (replace || single_item) {
         var old_height = $("body").height();
         //container.css('min-height', old_height);
         container.find(".feed_content").empty();
@@ -1221,6 +1221,10 @@ function getFeed(container) {
         // check if trial question answering
         if (container.data("trial_questions")) {
             data['trial_questions'] = 1;
+        }
+        // check if only single item
+        if (container.data("single_item")) {
+            data['single_item'] = 1;
         }
     }
     else if (feed == 'getUserActivity')
@@ -1352,7 +1356,6 @@ function getFeed(container) {
             else {
                 container.find(".load_more").show();
             }
-            updateQuestionStubsDisplay();
             bindOnNewElements();
             //container.css("min-height", container.height());
         }
@@ -3007,7 +3010,7 @@ function saveAnswer(stub) {
         }
         // check if trial question answering
         if (container.data("trial_questions")) {
-            data['trial_questions'] = 1;
+            data['action'] = 'saveTrialAnswer'
         }
         // if only unanswered animate hide question
         var only_unanswered = container.data('only_unanswered');
