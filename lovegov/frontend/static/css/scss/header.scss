@@ -4,6 +4,66 @@
 
 @import "compass";
 
+
+div.header-logo
+{
+  position:relative;
+  @include staticImage('/images/icons/logo/logo.png');
+  float:left;
+  @include clearfix;
+  background-size: 150px;
+  background-position-y: 9px;
+  background-repeat: no-repeat;
+  width: 144px;
+  height: 54px;
+  cursor: pointer;
+  @include transition(0.15s);
+  &:hover {
+    @include opacity(0.55);
+  }
+}
+
+img.beta {
+  margin-top:10px;
+  float:left;
+}
+
+ul.header-links-wrapper {
+  //padding-left:10px;
+  list-decoration: none;
+  @include inline-block;
+  cursor: pointer;
+  margin: 3px;
+  margin-top:6px;
+  margin-left:11px;
+  padding-left:10px;
+  a {
+    li {
+      color: $red;
+      @include inline-block;
+      font-size: 15px;
+      float:left;
+      margin-top: -11px;
+      padding: 12px;
+      padding-bottom: 10px;
+      padding-top: 27px;
+    }
+    &:hover li {
+      background-color: $red;
+      color: white;
+    }
+    &:active li {
+      background-color: $orange;
+      color: white;
+    }
+    &.clicked li {
+      background-color: $red;
+      color:white;
+    }
+  }
+}
+
+
 header
 {
 /* anonymous welcome dialogue */
@@ -85,72 +145,11 @@ header
 
 
 /* normal header */
-  ul {
-    padding-left:10px;
-  }
 
   width: 100%;
   padding: 3px 5px;
   font-family: Sonus-Light;
   padding-top:5px;
-
-
-  div.header-logo
-  {
-    position:relative;
-    @include staticImage('/images/icons/logo/logo.png');
-    float:left;
-    @include clearfix;
-    background-size: 150px;
-    background-position-y: 9px;
-    background-repeat: no-repeat;
-    width: 144px;
-    height: 54px;
-    cursor: pointer;
-    @include transition(0.15s);
-    &:hover {
-      @include opacity(0.55);
-    }
-  }
-
-  img.beta {
-    margin-top:10px;
-    float:left;
-  }
-
-  ul {
-    //padding-left:10px;
-    list-decoration: none;
-    @include inline-block;
-    cursor: pointer;
-    margin: 3px;
-    margin-top:6px;
-    margin-left:11px;
-    a {
-      li {
-        color: $red;
-        @include inline-block;
-        font-size: 15px;
-        float:left;
-        margin-top: -11px;
-        padding: 12px;
-        padding-bottom: 10px;
-        padding-top: 27px;
-      }
-      &:hover li {
-        background-color: $red;
-        color: white;
-      }
-      &:active li {
-        background-color: $orange;
-        color: white;
-      }
-      &.clicked li {
-        background-color: $red;
-        color:white;
-      }
-    }
-  }
 
 
   div.search

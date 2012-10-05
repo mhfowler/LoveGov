@@ -15,6 +15,53 @@
   }
 }
 
+div.who-are-we-circle
+{
+  position:relative;
+  min-width:475px;
+  margin-right:25px;
+  float:left;
+  height:500px;
+}
+
+div.who-are-we-circle-div
+{
+  @include circleDiv(200px)
+}
+
+
+@each $color-name in $color-name-list
+{
+  $color:colorMap($color-name);
+
+  div.who-are-we-circle-div-#{$color-name}
+  {
+    border: 2px $color solid;
+  }
+
+  div.who-are-we-circle-div-#{$color-name}-hover
+  {
+    -moz-box-shadow: 0 0 40px 5px $color;
+    -webkit-box-shadow: 0 0 40px 5px $color;
+    box-shadow: 0 0 40px 5px $color;
+  }
+}
+
+div.who-are-we-circle-div-center
+{
+  @include circleDiv(250px);
+  background-color:$red;
+  border: 2px $red solid;
+}
+
+div.about-content-right
+{
+  @extend .about-content-block;
+  width:475px;
+  margin-left:25px;
+}
+
+
 div.about-section {
   display: none;
 }
@@ -145,15 +192,6 @@ div#about-content
     margin-right:25px;
   }
 
-  div.who-are-we-circle
-  {
-    position:relative;
-    min-width:475px;
-    margin-right:25px;
-    float:left;
-    height:500px;
-  }
-
   div.mission
   {
     margin-top:25px;
@@ -164,42 +202,6 @@ div#about-content
     {
       margin-bottom:5px;
     }
-  }
-
-  div.who-are-we-circle-div
-  {
-    @include circleDiv(200px)
-  }
-
-  @each $color-name in $color-name-list
-  {
-    $color:colorMap($color-name);
-
-    div.who-are-we-circle-div-#{$color-name}
-    {
-      border: 2px $color solid;
-    }
-
-    div.who-are-we-circle-div-#{$color-name}-hover
-    {
-      -moz-box-shadow: 0 0 40px 5px $color;
-      -webkit-box-shadow: 0 0 40px 5px $color;
-      box-shadow: 0 0 40px 5px $color;
-    }
-  }
-
-  div.who-are-we-circle-div-center
-  {
-    @include circleDiv(250px);
-    background-color:$red;
-    border: 2px $red solid;
-  }
-
-  div.about-content-right
-  {
-    @extend .about-content-block;
-    width:475px;
-    margin-left:25px;
   }
 }
 

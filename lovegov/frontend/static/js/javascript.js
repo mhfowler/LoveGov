@@ -340,6 +340,10 @@ function selectHeaderLinks() {
 
 function ajaxReload(theurl)
 {
+    if (theurl == PATH) {
+        return false;
+    }
+
     storeCachedPage();
     current_page_nonce += 1;
     var pre_page_nonce = current_page_nonce;
@@ -350,6 +354,7 @@ function ajaxReload(theurl)
     var success_fun = function(data)
     {
         if (pre_page_nonce == current_page_nonce) {
+            $('.ajax_reloading_heart').hide();
             var returned = $.parseJSON(data);
             pushURL(returned.url);
             $('body').css("overflow","scroll");
@@ -365,10 +370,16 @@ function ajaxReload(theurl)
         success_fun = analyzeFunction(success_fun, theurl, action);
     }
 
+    var data = {'url':window.location.href};
+        if ($(".october_header").length != 0) {
+        data['has_login_frame'] = true;
+    }
+
+    $('.ajax_reloading_heart').show();
     $.ajax({
         url: theurl,
         type: 'GET',
-        data: {'url':window.location.href},
+        data: data,
         success: success_fun,
         error: function(jqXHR, textStatus, errorThrown)
         {
@@ -1838,6 +1849,17 @@ bind(".r_register", 'click', null, function(event) {
 
 bind(".log_in_button", 'click', null, function(event) {
     $(".signing_in_gif").show();
+});
+
+/***********************************************************************************************************************
+ *
+ *      ~October login
+ *
+ **********************************************************************************************************************/
+bind(".login_header_link", 'click', null, function(event) {
+    var url = $(this).data('url');
+    $(".login_central").hide();
+    $('.login_central[data-url="' + url + '"]').fadeIn(1000);
 });
 
 /***********************************************************************************************************************

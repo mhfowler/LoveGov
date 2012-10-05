@@ -52,6 +52,13 @@ def homeResponse(request, focus_html, url, vals):
         html = ajaxRender('site/pages/home/home_frame.html', vals, request)
         return framedResponse(request, html, url, vals, rebind="home")
 
+def loginResponse(request, central_html, url, vals):
+    if request.is_ajax() and request.GET.get('has_login_frame'):
+        to_return = {'html':central_html, 'url':url, 'title':vals['page_title']}
+        return HttpResponse(json.dumps(to_return))
+    else:
+        vals['central_html'] = central_html
+        return renderToResponseCSRF(template='site/pages/october_login/october_login.html', vals=vals, request=request)
 
 def viewWrapper(view, requires_login=False):
     """Outer wrapper for all views"""
@@ -312,10 +319,43 @@ def login(request, to_page='home/', message="", vals={}):
 
     else: # Otherwise load the login page
         vals.update( {"registerform":RegisterForm(), "username":'', "error":'', "state":'fb', 'login_email':""} )
-        response = renderToResponseCSRF(template='site/pages/login/login-main.html', vals=vals, request=request)
+        central_html = ajaxRender(template='site/pages/october_login/video_login.html', vals=vals, request=request)
+        url = request.path
+        return loginResponse(request, central_html, url, vals)
 
     response.delete_cookie('lovegov_try')
     return response
+
+def loginMission(request, vals):
+    valsMission(vals)
+    central_html = ajaxRender(template='site/pages/who-are-we.html', vals=vals, request=request)
+    url = request.path
+    return loginResponse(request, central_html, url, vals)
+
+def loginHowItWorks(request, vals):
+    central_html = ajaxRender(template='site/pages/how-it-works.html', vals=vals, request=request)
+    url = request.path
+    return loginResponse(request, central_html, url, vals)
+
+def loginSignUp(request, vals):
+    central_html = ajaxRender(template='site/pages/login/sign-up.html', vals=vals, request=request)
+    url = request.path
+    return loginResponse(request, central_html, url, vals)
+
+def presidentialMatching(request, vals):
+
+    if not LOCAL:
+        obama = UserProfile.objects.get(alias='barack_obama')
+        mitt = UserProfile.objects.get(alias='mitt_romney')
+    else:
+        obama = getUser("Randy Johnson")
+        mitt = getUser("Katy Perry")
+    vals['obama'] = obama
+    vals['mitt'] = mitt
+
+    central_html = ajaxRender(template='site/pages/october_login/presidential_matching.html', vals=vals, request=request)
+    url = request.path
+    return loginResponse(request, central_html, url, vals)
 
 def loginRedirect(request, viewer, to_page):
     if "login" in to_page or to_page in OUTSIDE_LOGIN or (to_page + '/') in OUTSIDE_LOGIN or 'password_recovery' in to_page:
@@ -916,36 +956,38 @@ def histogramDetail(request, alias, vals={}):
 def about(request, start="video", vals={}):
     if request.method == 'GET':
         vals['start_page'] = start
-        developers = UserProfile.objects.filter(developer=True).order_by('id')
-        developers = developers.reverse()
-        skew = 185
-        side = 110
-        main_side = 165
-        offset = 450
-        angle_offset = math.pi/3
-        for num in range(0,len(developers)):
-            angle = 2.0*math.pi*(float(num)/float(len(developers)))+angle_offset
-            cosine = math.cos(angle)
-            sine = math.sin(angle)
-            developers[num].x = int(cosine*skew)+(offset/2)-(side/2)
-            developers[num].y = int(sine*skew)+skew
-            developers[num].angle = math.degrees(angle)-180
-            developers[num].x2 = int(cosine*skew/2)+(offset/2)-(side/2)
-            developers[num].y2 =  int(sine*skew/2)+(offset/2)-(side/2)
-        vals['developers'] = developers
-        vals['side'] = side
-        vals['skew'] = skew
-        vals['side_half'] = side/2
-        vals['main_side'] = main_side
-        vals['main_side_half'] = main_side/2
-        vals['x'] = (offset-main_side)/2
-        vals['y'] = skew - ((main_side-side)/2)
-        vals['colors'] = MAIN_TOPIC_COLORS_LIST
-        vals['colors_cycle'] = ["who-are-we-circle-div-green", "who-are-we-circle-div-blue","who-are-we-circle-div-yellow", "who-are-we-circle-div-purple", "who-are-we-circle-div-pink", "who-are-we-circle-div-orange", "who-are-we-circle-div-teal"]
-
+        valsMission(vals)
         html = ajaxRender('site/pages/about.html', vals, request)
         url = '/about/'
         return framedResponse(request, html, url, vals)
+
+def valsMission(vals):
+    developers = UserProfile.objects.filter(developer=True).order_by('id')
+    developers = developers.reverse()
+    skew = 185
+    side = 110
+    main_side = 165
+    offset = 450
+    angle_offset = math.pi/3
+    for num in range(0,len(developers)):
+        angle = 2.0*math.pi*(float(num)/float(len(developers)))+angle_offset
+        cosine = math.cos(angle)
+        sine = math.sin(angle)
+        developers[num].x = int(cosine*skew)+(offset/2)-(side/2)
+        developers[num].y = int(sine*skew)+skew
+        developers[num].angle = math.degrees(angle)-180
+        developers[num].x2 = int(cosine*skew/2)+(offset/2)-(side/2)
+        developers[num].y2 =  int(sine*skew/2)+(offset/2)-(side/2)
+    vals['developers'] = developers
+    vals['side'] = side
+    vals['skew'] = skew
+    vals['side_half'] = side/2
+    vals['main_side'] = main_side
+    vals['main_side_half'] = main_side/2
+    vals['x'] = (offset-main_side)/2
+    vals['y'] = skew - ((main_side-side)/2)
+    vals['colors'] = MAIN_TOPIC_COLORS_LIST
+    vals['colors_cycle'] = ["who-are-we-circle-div-green", "who-are-we-circle-div-blue","who-are-we-circle-div-yellow", "who-are-we-circle-div-purple", "who-are-we-circle-div-pink", "who-are-we-circle-div-orange", "who-are-we-circle-div-teal"]
 
 #-----------------------------------------------------------------------------------------------------------------------
 # modify account, change password

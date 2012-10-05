@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+
+<!-- html header -->
+{% include 'site/frame/html-header.html' %}
+
+<body>
+    <div class="october-header october_header">
+        <a href="/login/" class="header-logo"></a>
+
+        <a class="october-link do_ajax_link dummy_link header_link" href="/how_it_works/"> how it works </a>
+        <a class="october-link do_ajax_link dummy_link header_link" href="/mission/"> mission </a>
+        <a class="october-link do_ajax_link dummy_link header_link" href="/sign_up/"> sign up </a>
+
+        <div class="heart-gif"></div>
+
+        <p class="lovegov-tagline">
+            Using the internet to facilitate democracy.
+        </p>
+
+        <div class="top-right">
+            <div class="sign-in">
+                <p> have an account? </p> <a href="#" id="sign_in_button" class="sign-in-button sign_in_button"> Sign In </a> <div style="clear:both"></div>
+                {% include 'site/pages/login/sign-in-dialogue.html' %}
+            </div>
+        </div>
+        <div style="clear:both"></div>
+    </div>
+
+    {% block content %}
+
+    {% endblock %}
+
+<div class="no-login-footer october-footer">
+    {% include 'site/frame/new_footer.html' %}
+</div>
+
+</body>
+</html>

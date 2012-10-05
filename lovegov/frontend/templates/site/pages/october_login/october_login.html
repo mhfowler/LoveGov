@@ -1,0 +1,62 @@
+{% extends 'site/pages/october_login/october_frame.html' %}
+{% block content %}
+
+    <div class="october-login">
+
+        <div class="upper">
+
+            <div class="october-central main_content">
+                {{ central_html }}
+            </div>
+
+        </div>
+
+        {% comment %}
+            <!-- Fade-in Divs -->
+            {% include 'site/pages/login/login-about.html' %}
+            {% include 'site/pages/login/screenshots.html' %}
+            {% include 'site/pages/login/login-privacy.html' %}
+        {% endcomment %}
+
+        <script type="text/javascript">
+            $(document).ready(function()
+            {
+                var register_state = "{{ state }}";
+                if (register_state == 'register_error') {
+                    $(".state-div").hide();
+                    $("#register-div").show();
+                }
+                if (register_state == 'post-twitter') {
+                    $(".state-div").hide();
+                    $("#post-twitter-div").show();
+                }
+                if (register_state == 'need-confirmation') {
+                    $(".state-div").hide();
+                    $("#need-confirmation-div").show();
+                }
+                if (register_state == 'claimed_by') {
+                    $(".state-div").hide();
+                    $("#register-div").show();
+                }
+                if (register_state == 'register') {
+                    $(".state-div").hide();
+                    $("#sign-up-div").show();
+                }
+
+                if (login_state == 'login_error') {
+                    $(".sign_in_dialogue").show();
+                }
+            });
+        </script>
+
+
+    </div>
+
+    <script type="text/javascript">
+
+        rebind="login";
+        login_state = "{{ state }}";
+
+    </script>
+
+{% endblock %}

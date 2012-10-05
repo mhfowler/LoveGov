@@ -1,12 +1,32 @@
-{% extends 'site/pages/login/login.html' %}
+{% extends 'site/pages/october_login/october_login.html' %}
 
 {% block middle %}
 
     <div class="upper">
 
-        <div id="middle-left">
-            <iframe src="http://player.vimeo.com/video/48815262" width="425" height="239" frameborder="0" webkitAllowFullScreen mozallowfullscreen allowFullScreen></iframe>
-            <p style="text-align:center;">Want to learn more? <a id="what-is-lovegov" href="/try/about/" class="invert_link">Click here</a>.</p>
+        <div class="october-central october_central">
+
+            <div class="video-wrapper login_central" data-url="/login/" style="display:block;">
+                <iframe src="http://player.vimeo.com/video/48815262" width="800" height="450" frameborder="0" webkitAllowFullScreen mozallowfullscreen allowFullScreen></iframe>
+                <p class="want-to-learn-more">New to LoveGov? <a class="login_header_link" data-url="/presidential_matching/">Try our presidential matching.</a></p>
+            </div>
+
+            <div class="how-it-works-wrapper login_central" data-url="/how_it_works/">
+               {% include 'site/pages/how-it-works.html' %}
+            </div>
+
+            <div class="mission-wrapper login_central" data-url="/mission/">
+                {% include 'site/pages/who-are-we.html' %}
+            </div>
+
+            <div class="sign-up-wrapper login_central" data-url="/sign_up/">
+                {% include 'site/pages/login/sign-up.html' %}
+            </div>
+
+            <div class="presidential-matching-wrapper login_central" data-url="/presidential_matching/">
+                {% include 'site/pages/october_login/presidential_matching.html' %}
+            </div>
+
         </div>
 
         <div id="middle-right">
@@ -15,7 +35,7 @@
                 {% include 'site/pages/login/create-account.html' %}
             </div>
 
-            <div id="sign-up-div" class="sign-up-wrapper state-div">
+            <div id="sign-up-div" class="state-div">
                 {% include 'site/pages/login/sign-up.html' %}
             </div>
 
