@@ -297,7 +297,7 @@ div.presidential-matching {
             float:none;
           }
           div.politician-name {
-            font-size:20px;
+            font-size:21px;
             margin-top: 7px;
           }
         }
@@ -348,6 +348,7 @@ div.presidential-matching {
     }
   }
   div.bottom-section {
+    margin-top:20px;
     width: 100%;
     float:left;
     div.presidential-matching-explanation {
@@ -355,7 +356,6 @@ div.presidential-matching {
       font-size:21px;
       color:$dark-gray;
       width: 800px;
-      margin-bottom: 20px;
     }
 
     div.presidential-matching-counter {
@@ -372,6 +372,8 @@ div.presidential-matching {
 }
 
 div.trial-questions-wrapper {
+  float:left;
+  margin-top:0px;
   a.question-title {
     &:hover {
       cursor:default;
