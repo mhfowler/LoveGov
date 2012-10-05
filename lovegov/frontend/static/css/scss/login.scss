@@ -262,6 +262,10 @@ div.october-login {
       margin: auto;
       padding-top: 100px;
     }
+
+    div.feed-main {
+      min-height:400px;
+    }
   }
 
   div.screenshots-div {
@@ -290,6 +294,27 @@ div.presidential-matching {
         margin-bottom:10px;
       }
     }
+
+    div.top-right-sign-up {
+      float:left;
+      margin-top: 50px;
+      text-align: center;
+      width: 200px;
+      a.sign-up-button {
+        text-align:center;
+        padding:5px 10px;
+        width:130px;
+        text-align:center;
+        font-size: 16px;
+        background-color:$green;
+        color:white;
+        &:hover {
+          background-color:$dark-green;
+          text-decoration:none;
+        }
+      }
+    }
+
     div.presidential-matching-explanation {
       float:left;
       font-size:21px;

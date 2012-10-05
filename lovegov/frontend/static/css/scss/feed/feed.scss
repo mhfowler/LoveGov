@@ -131,6 +131,32 @@ div.load-more:hover {
   cursor:pointer;
 }
 
+div.navigation-buttons {
+  display:block;
+  margin-top:34px;
+  width:100%;
+  a.button-next {
+    display:none;
+    padding:5px 10px;
+    margin-right:10px;
+    width:130px;
+    text-align:center;
+    font-size: 16px;
+    background-color:$gray;
+    color:white;
+    &:hover {
+      background-color:$dark-gray;
+      text-decoration:none;
+    }
+    &.left {
+      float:left;
+    }
+    &.right {
+      float:right;
+    }
+  }
+}
+
 td.create-button
 {
   @include staticImage('/images/icons/white_create.png');

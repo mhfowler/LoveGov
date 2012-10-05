@@ -356,12 +356,14 @@ def presidentialMatching(request, vals):
     getMainTopics(vals)
 
     cookie_data, new_cookie = getCookieData(request)
-    first_question = getFirstUnansweredPresidentialMatchingQuestion(cookie_data)
-    vals['question'] = first_question
 
     central_html = ajaxRender(template='site/pages/october_login/presidential_matching.html', vals=vals, request=request)
     url = request.path
-    return loginResponse(request, central_html, url, vals)
+    response = loginResponse(request, central_html, url, vals)
+
+    if new_cookie:
+        response.set_cookie("cookie_data_id", cookie_data.id)
+    return response
 
 def loginRedirect(request, viewer, to_page):
     if "login" in to_page or to_page in OUTSIDE_LOGIN or (to_page + '/') in OUTSIDE_LOGIN or 'password_recovery' in to_page:

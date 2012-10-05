@@ -25,9 +25,10 @@
 
             {% include 'site/pages/profile/support_button.html' with politician=user %}
 
-            <a href="{{ user.get_url }}" class="profile-button action-button">
-                view profile
-            </a>
+            <div class="user-name">
+                {{ user.get_name }}
+            </div>
+
         </div>
         <div style="clear:both;"></div>
     </div>
