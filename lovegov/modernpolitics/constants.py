@@ -937,7 +937,7 @@ except:
 
 PRESIDENTIAL_MATCHING_QUESTIONS = []
 from modernpolitics.models import Question
-for q_id in [Question.objects.all().values_list("id", flat=True)]:
+for q_id in Question.objects.all().values_list("id", flat=True):
     question = Question.lg.get_or_none(id=q_id)
     if question:
         PRESIDENTIAL_MATCHING_QUESTIONS.append(question)
