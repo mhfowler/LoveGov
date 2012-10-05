@@ -34,14 +34,14 @@ div.october-header {
 
   a.october-link {
 
-    /*
-    margin-top:35px;
-    float:left;
-    margin-left:35px;
-    font-size:18px;
-    color:$red;
-    padding-bottom:15px;
-    */
+  /*
+  margin-top:35px;
+  float:left;
+  margin-left:35px;
+  font-size:18px;
+  color:$red;
+  padding-bottom:15px;
+  */
 
     color: $red;
     @include inline-block;
@@ -293,12 +293,30 @@ div.presidential-matching {
       div.election-card {
         div.left-side {
           float:left;
+          div.politician-image {
+            float:none;
+          }
           div.politician-name {
             font-size:20px;
+            margin-top: 7px;
           }
         }
-        div.match {
-          padding-top:41px;
+        div.right-side {
+          padding-left:0px;
+          div.match {
+            padding-top: 62px;
+          }
+          .support-button {
+            height: 35px;
+            padding-top: 12px;
+            font-size: 20px;
+          }
+          div.support-politician {
+            @extend .support-button;
+          }
+          div.unsupport-politician {
+            @extend .support-button;
+          }
         }
       }
     }
