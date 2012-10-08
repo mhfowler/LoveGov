@@ -8,25 +8,34 @@
     <span class="answered-filter only_unanswered only-unanswered {% if only_unanswered %} clicked {% endif %}"> only unanswered </span>
     {% endcomment %}
 
-    <div class='buttons-container-text'>Sort by:</div>
-    <div class="sort-button feed_button rank_button" data-rank="N" >New</div>
-    <div class="sort-button feed_button rank_button" data-rank="H">Hot</div>
-    <div class="sort-button feed_button rank_button last-button" data-rank="B">Best</div>
+    {% if not no_sort_buttons %}
+        <div class='buttons-container-text'>Sort by:</div>
+        <div class="sort-button feed_button rank_button" data-rank="N" >New</div>
+        <div class="sort-button feed_button rank_button" data-rank="H">Hot</div>
+        <div class="sort-button feed_button rank_button last-button" data-rank="B">Best</div>
+    {% endif %}
 
 {% endblock %}
 
 {% block filter_buttons %}
-    <div class='buttons-container-text'>Filter by:</div>
-    {% for t in main_topics %}
-        <a href="#" class="topic-button feed_button topic_button tooltip-top" data-t_alias="{{ t.alias }}" title="{{ t.topic_text }}">
-            {% include 'site/pieces/topic_icon.html' with topic=t width="30" height="30" %}
-        </a>
-    {% endfor %}
 
-    <span class="only-unanswered-text qa_only_unanswered_parent"> only unanswered </span>
-    <input type="checkbox" class="only-unanswered-checkbox only_unanswered" {% if only_unanswered %} checked="checked" {% endif %} />
+    {% if not no_filter_buttons %}
+        <div class='buttons-container-text'>Filter by:</div>
+        {% for t in main_topics %}
+            <a href="#" class="topic-button feed_button topic_button tooltip-top" data-t_alias="{{ t.alias }}" title="{{ t.topic_text }}">
+                {% include 'site/pieces/topic_icon.html' with topic=t width="30" height="30" %}
+            </a>
+        {% endfor %}
+    {% endif %}
 
-    {% include 'site/pages/helper_bubbles/helper_robot.html' with tutorial="qa" %}
+    {% if not no_only_unanswered %}
+        <span class="only-unanswered-text qa_only_unanswered_parent"> only unanswered </span>
+        <input type="checkbox" class="only-unanswered-checkbox only_unanswered" {% if only_unanswered %} checked="checked" {% endif %} />
+    {% endif %}
+
+    {% if not no_help_button %}
+        {% include 'site/pages/helper_bubbles/helper_robot.html' with tutorial="qa" %}
+    {% endif %}
 
 {% endblock %}
 

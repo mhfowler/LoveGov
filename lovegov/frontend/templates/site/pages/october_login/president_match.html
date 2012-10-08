@@ -1,0 +1,36 @@
+{% comment %}
+<div class="president-pic">
+{% include 'site/pieces/avatar.html' with user=candidate width="150" height="150" %}
+</div>
+<div class="president-match-num-wrapper update_after_answer" data-action="updateTrialMatch" data-to_compare_id="{{ candidate.id }}">
+    {% include 'site/pages/october_login/trial_match_num.html' with to_compare=candidate %}
+</div>
+{% endcomment %}
+
+<div class="election-card">
+
+    <div class="card-top">
+        <div class="left-side">
+            <div class="politician-image">
+                {% include 'site/pieces/avatar.html' with user=user width="150" height="150" hoveroff=1 %}
+            </div>
+            <div class="politician-name">
+                {{ user.get_name }}
+            </div>
+        </div>
+        <div class="right-side">
+            <div class="match">
+                <div class="update_after_answer has_hover_comparison match-num" data-action="updateTrialMatch" data-to_compare_id="{{ user.id }}" data-href="{{ user.get_url }}"  data-display_name="{{ user.get_name }}">
+                    {% include 'site/pages/october_login/trial_match_num.html' with to_compare=user %}
+                </div>
+                <div class="match-text">
+                    match
+                </div>
+            </div>
+
+            {% include 'site/pages/profile/support_button.html' with politician=user %}
+        </div>
+        <div style="clear:both;"></div>
+    </div>
+
+</div>

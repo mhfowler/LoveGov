@@ -1,32 +1,43 @@
 <div class="presidential-matching">
 
-    <div class="presidential-matching-top">
-        Answer 10 questions about your political views and see how you compare with the candidates.
-    </div>
-
-    <div class="left-side">
+    <div class="top-section">
 
         <div class="the-matching">
-            <div class="president-match">
-                {% include 'site/pieces/avatar.html' with user=mitt width="50" height="50" %}
+            <div class="president-match left">
+                {% include 'site/pages/october_login/president_match.html' with user=obama %}
             </div>
-            <div class="president-match">
-                {% include 'site/pieces/avatar.html' with user=obama width="50" height="50" %}
+            <div class="president-match right">
+                {% include 'site/pages/october_login/president_match.html' with user=mitt %}
             </div>
+        </div>
+
+        <div class="top-right-sign-up">
+            <p class="sign-up-text">
+               To save your answers and see more matches,
+            </p>
+            <a href="/sign_up/" class="sign-up-button"> sign up </a>
         </div>
 
     </div>
 
-    <div class="right-side">
+    <div class="bottom-section trial_question_answering">
 
-        <div class="the-question">
-
+        <div class="presidential-matching-explanation">
+            Click the answer closest to your view and see how you compare with the candidates.
         </div>
 
-        <a class="next-question">
-            next question
-        </a>
+        <div class="presidential-matching-counter presidential_matching_counter update_after_answer" data-action="getPresidentialMatchingCount">
+            0/10
+        </div>
 
+        <div class="questions-wrapper trial-questions-wrapper">
+            {% include 'site/pages/qa/feed_browse_questions.html' with special_feed="getQuestions" default_display="choose" poll_id=lgpoll.id single_item=1 trial_questions=1 no_create_button=1 no_sort_buttons=1 no_only_unanswered=1 no_filter_buttons=1 no_help_button=1 no_load_more=1  %}
+        </div>
+
+    </div>
+
+    <div class="sign-up-wrapper sign_up_wrapper">
+        {% include 'site/pages/october_login/sign_up.html' %}
     </div>
 
 

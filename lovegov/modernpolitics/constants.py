@@ -734,14 +734,24 @@ ACTIONS = [
     'getAgreementPeopleListHTML',
     'changeEmailSubscriptionSettings',
     'getNewCommentsStats',
-    'getChildComments'
+    'getChildComments',
+    'updateTrialMatch',
+    'getPresidentialMatchingCount',
 ]
 
 UNAUTHENTICATED_ACTIONS = [
     'logCompatability',
     'getModal',
     'newRegister',
-    'addEmailList'
+    'addEmailList',
+    'getQuestions',
+    'saveAnswer',
+    'updateTrialMatch',
+    'supportPolitician',
+    'changeAnswerPrivacy',
+    'editExplanation',
+    'hoverWebComparison',
+    'getPresidentialMatchingCount'
 ]
 
 SAVE_POST_PARAMETERS_ACTIONS = [
@@ -832,10 +842,10 @@ ANONYMOUS_PROHIBITED_ACTIONS = [
     #'getElections',
     #'hoverWebComparison',
     #'newRegister',
-    'saveAnswer',
+    #'saveAnswer',
     'signPetition',
     'finalizePetition',
-    'supportPolitician',
+    #'supportPolitician',
     'createContent',
     'askToJoin',
     #'claimProfile',
@@ -846,8 +856,8 @@ ANONYMOUS_PROHIBITED_ACTIONS = [
     'findLikeMinded',
     'clearLikeMinded',
     'pinContent',
-    'changeAnswerPrivacy',
-    'editExplanation',
+    #'changeAnswerPrivacy',
+    #'editExplanation',
     'editPetitionFullText',
     'saveScorecardAnswer',
     'saveAnswerInFeed',
@@ -930,3 +940,4 @@ except:
     LEGISLATION_COMMITTEES = []
     LEGISLATION_SESSIONS = []
 
+########################################## PRESIDENTIAL MATCHING ON LOGIN ##############################################

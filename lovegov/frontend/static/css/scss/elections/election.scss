@@ -31,7 +31,7 @@ div.election-card {
 
       div.match {
         padding-top:5px;
-        a.match-num {
+        .match-num {
           display:block;
           font-family: $body-fonts;
           color:$red;
@@ -56,6 +56,10 @@ div.election-card {
         }
       }
     }
+  }
+  div.user-name {
+    width:100%;
+    text-align:center;
   }
   .action-button {
     text-align:center;

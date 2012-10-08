@@ -9,6 +9,8 @@
         {% if save_scorecard_answer %} data-save_scorecard_answer="1" {% endif %}
         {% if to_compare %} data-to_compare_id="{{ to_compare.id }}" {% endif %}
         {% if profile_id %} data-profile_id="{{ profile_id }}" {% endif %}
+        {% if trial_questions %} data-trial_questions="1" {% endif %}
+        {% if single_item %} data-single_item="1" {% endif %}
         {% if like_minded_filter %} data-like_minded="" {% endif %}
         >
 
@@ -99,8 +101,19 @@
 
     <div class="feed-content-wrapper">
         <div class="feed-content feed_content {% if not no_feed_rules %} feed-rules {% endif %}"></div>
-        <div class="feed-fetching feed_fetching"></div>
-        <div class="load-more load_more"> <p> load more </p></div>
+        <div class="feed_fetching feed-fetching"></div>
+
+        {% if not no_load_more %}
+            <div class="load-more load_more"> <p> load more </p></div>
+        {% endif %}
+
+        {% if single_item %}
+            <div class="navigation-buttons">
+                <a class="stub-button button-next load_previous left"> previous </a>
+                <a class="stub-button button-next load_next right"> next </a>
+            </div>
+        {% endif %}
+
         <div class="everything_loaded_wrapper">
             <div class="reached_the_end everything-loaded-header everything_loaded_header">
                 You reached the end of the feed, so here's a politician.

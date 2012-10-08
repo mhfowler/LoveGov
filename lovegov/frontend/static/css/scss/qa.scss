@@ -401,6 +401,18 @@ div.question_stub {
         background-color:$dark-green;
       }
     }
+    div.single-item-fetching {
+      @include staticImage("/images/gifs/ajax-loader.gif");
+      width: 15px;
+      height: 15px;
+      background-size: 15px 15px;
+      background-repeat: no-repeat;
+      float:right;
+      margin-right:10px;
+      position:absolute;
+      top: -56px;
+      left: 84%;
+    }
     a.button-cancel {
       background-color:$gray;
       color:white;
@@ -541,6 +553,11 @@ div.question_stub {
             &:hover {
               color:black;
             }
+            &.how-important:hover {
+                text-decoration:none;
+                cursor:default;
+                color:$black;
+            }
           }
           span.action-text-lower {
             float:left;
@@ -560,6 +577,7 @@ div.question_stub {
         margin-top:0px;
       }
       div.a-action.discuss-question {
+        display:none;
         margin-top:21px;
         span.discuss-icon {
           @include staticImage("/images/icons/gray_comment.png");

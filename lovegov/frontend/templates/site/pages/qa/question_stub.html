@@ -23,15 +23,19 @@
                     <span class="saving-gif saving_gif"></span>
                 </td>
                 <td>
-                    {% if your_response %}
-                        <a href="#" class="stub-button button-reanswer answer_button dummy_link"> re-answer</a>
+                    {% if single_item %}
+                        <div class="single-item-fetching feed_next"></div>
                     {% else %}
-                        <a href="#" class="stub-button button-answer answer_button dummy_link"> answer </a>
-                    {% endif %}
-                    {% if default_display != "choose" %}
-                        <a href="#" class="stub-button button-cancel hide_button dummy_link"> cancel </a>
-                    {% else %}
-                        <div class="num-responses num_responses"> <span class="num"> {{ question.num_responses }}</span> response{{ question.num_responses|pluralize }} </div>
+                        {% if your_response %}
+                            <a href="#" class="stub-button button-reanswer answer_button dummy_link"> re-answer</a>
+                        {% else %}
+                            <a href="#" class="stub-button button-answer answer_button dummy_link"> answer </a>
+                        {% endif %}
+                        {% if default_display != "choose" %}
+                            <a href="#" class="stub-button button-cancel hide_button dummy_link"> cancel </a>
+                        {% else %}
+                            <div class="num-responses num_responses"> <span class="num"> {{ question.num_responses }}</span> response{{ question.num_responses|pluralize }} </div>
+                        {% endif %}
                     {% endif %}
                 </td>
             </tr>
@@ -40,7 +44,6 @@
     <!-- inline expansion for choosing answer, stage1 -->
     <div class="question_expanded_choose question_expanded">
         <div class="answers-wrapper qa_these_are_answers_parent">
-            <a class="see-their-response see_their_response"> see their response </a>
             {% with your_response_id=your_response.most_chosen_answer.id %}
                 {% for a in question.answers.all %}
                     <div class="answer-choice answer_choice {% if forloop.first %} first {% endif %}
@@ -76,7 +79,7 @@
             <div class="answer-importance a-action importance_wrapper qa_importance_parent">
                 <span class="action-icon answer-importance-num importance_percent"> {% if your_response %}{{ your_response.weight }}{% else %}50{% endif %}%</span>
                 <span class="action-text">
-                    <a class='action-text-upper '> How important is this question to you? </a>
+                    <a class='action-text-upper how-important'> How important is this question to you? </a>
                     <div class="importance-bar-wrapper">
                         <div class="importance-bar importance_bar" {% if your_response %} data-weight="{{ your_response.weight }}"
                         {% else %} data-weight="50" {% endif %}></div>

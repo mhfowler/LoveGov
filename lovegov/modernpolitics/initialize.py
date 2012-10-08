@@ -34,7 +34,10 @@ def getLoveGovUser():
     return UserProfile.lg.get_or_none(alias="lovegov") or initializeLoveGovUser()
 
 def getAnonUser():
-    return UserProfile.lg.get_or_none(alias="anonymous") or initializeAnonymous()
+        return UserProfile.lg.get_or_none(alias="anonymous") or initializeAnonymous()
+
+def getTrialUser():
+    return UserProfile.lg.get_or_none(alias="trial_user") or initializeTrialUser()
 
 def getTopicImage(topic):
     alias = "topicimage:" + topic.alias
@@ -153,6 +156,24 @@ def initializeAnonymous():
         print("initialized: anon user")
         return userprof
 
+def initializeTrialUser():
+    if UserProfile.objects.filter(alias="trial_user"):
+        print("...trial user already initialized.")
+    else:
+        from lovegov.modernpolitics.register import createUser
+        already = ControllingUser.lg.get_or_none(username="trial_user")
+        if already:
+            if already.user_profile:
+                already.user_profile.delete()
+            already.delete()
+        trial = createUser(name="Trial User", email="trial_user", password="theTriall")
+        userprof = trial.user_profile
+        userprof.confirmed = False
+        userprof.ghost = True
+        userprof.alias = 'trial_user'
+        userprof.save()
+        print("initialized: trial user")
+        return userprof
 
 #-----------------------------------------------------------------------------------------------------------------------
 # Initializes a user which represents all anonymous users on the site.

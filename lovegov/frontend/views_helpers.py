@@ -5,7 +5,6 @@ from lovegov.modernpolitics.backend import *
 from lovegov.base_settings import UPDATE
 from operator import attrgetter
 
-
 #-----------------------------------------------------------------------------------------------------------------------
 # get questions for weekly digest
 #-----------------------------------------------------------------------------------------------------------------------
@@ -47,7 +46,7 @@ def getWeeklyDigestNews(time_start, time_end, viewer):
 #-----------------------------------------------------------------------------------------------------------------------
 # get vals for displaying info about who chose what about question
 #-----------------------------------------------------------------------------------------------------------------------
-def valsQuestionMetrics(viewer, question, response, vals, in_feed=True):
+def valsQuestionMetrics(question, vals):
 
     percents_chosen_dict = {}
     lg_group = getLoveGovGroup()

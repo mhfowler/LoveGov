@@ -1158,6 +1158,31 @@ class FacebookProfileModel(models.Model):
         return self.facebook_profile_url.replace('http://www.facebook.com/', '')
 
 
+#=======================================================================================================================
+# Model for storing data about a user before they register (as part of a cookie)
+#=======================================================================================================================
+class CookieData(LGModel):
+
+    view = models.ForeignKey("WorldView", null=True)
+    supports = models.ManyToManyField("UserProfile", related_name="cookie_supporters")
+
+    ipaddress = models.IPAddressField(default='255.255.255.255', null=True)
+    created_when = models.DateTimeField(auto_now_add=True)
+
+    def getView(self):
+        if self.view:
+            return self.view
+        else:
+            view = WorldView()
+            view.save()
+            self.view = view
+            self.save()
+            return self.view
+
+    def support(self, politician):
+        self.supports.add(politician)
+    def unsupport(self, politician):
+        self.supports.remove(politician)
 
 #=======================================================================================================================
 # Model for storing user of site. extends FacebookProfileModel, so that there are fields for that.
@@ -1628,6 +1653,9 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
     #-------------------------------------------------------------------------------------------------------------------
     def isAnon(self):
         return self.alias == 'anonymous'
+
+    def isTrialUser(self):
+        return self.alias == 'trial_user'
 
     def isSuperHero(self):
         return self.alias in SUPER_HEROES

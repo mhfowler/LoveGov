@@ -53,17 +53,12 @@ function bindOnReload() {
         case "legislation_detail":
             shortenLongText();
             break;
-        case "home":
-            break;
         case "profile":
             break;
         case "groupedit":
             loadGroupEdit();
             break;
         case 'questions':
-            break;
-        case 'question_detail':
-            updateQuestionStubsDisplay();
             break;
         case 'poll_detail':
             updateQuestionStubsDisplay();
@@ -87,6 +82,9 @@ function bindOnNewElements() {
 
     // show any visible helper bubles
     showBubbles();
+
+    // question stubs
+    updateQuestionStubsDisplay();
 
     // hover comparison popup
     loadHoverComparison();
@@ -116,6 +114,7 @@ function bindOnNewElements() {
 
     // initialize self initializing elements
     initializeDomElements();
+
 }
 
 
@@ -371,7 +370,7 @@ function ajaxReload(theurl)
     }
 
     var data = {'url':window.location.href};
-        if ($(".october_header").length != 0) {
+    if ($(".october_header").length != 0) {
         data['has_login_frame'] = true;
     }
 
@@ -1165,25 +1164,34 @@ var feed_topic = null;
 var question_rank = "R";
 function getFeed(container) {
 
+    container.find(".load_more").hide();
+
     var feed_nonce_pre_request = container.data('feed_nonce');
     feed_nonce_pre_request += 1;
     container.data('feed_nonce', feed_nonce_pre_request);
 
     var feed_start = container.data('feed_start');
     var replace = (feed_start==0);
+    var single_item = container.data('single_item');
     if (replace) {
         var old_height = $("body").height();
         //container.css('min-height', old_height);
         container.find(".feed_content").empty();
-        container.find(".load_more").show();
         container.find(".everything_loaded_wrapper").hide();
+        container.find(".load_previous").hide();
         // feed nonce increases when you replace content
     }
+
     var feed_types_json = JSON.stringify(feed_types);
     var feed = container.data('feed');
-    var time = 10;
+    var time = 5;
     var feed_timeout = setTimeout(function(){
-        container.find(".feed_fetching").show();
+        if (!single_item || replace) {
+            container.find(".feed_fetching").show();
+        }
+        else {
+            container.find('.feed_next').show();
+        }
     },time);
     var like_minded = getValueFromKey(container, 'like_minded');
     var data;
@@ -1216,6 +1224,14 @@ function getFeed(container) {
         var scorecard_id = container.data("scorecard_id");
         if (typeof(scorecard_id) != 'undefined') {
             data['scorecard_id'] = scorecard_id;
+        }
+        // check if trial question answering
+        if (container.data("trial_questions")) {
+            data['trial_questions'] = 1;
+        }
+        // check if only single item
+        if (container.data("single_item")) {
+            data['single_item'] = 1;
         }
     }
     else if (feed == 'getUserActivity')
@@ -1322,15 +1338,22 @@ function getFeed(container) {
                 return;
             }
 
-            if (replace) {
+            if (replace || single_item) {
                 container.find(".feed_content").html(returned.html);
             }
             else {
                 container.find(".feed_content").append(returned.html);
             }
+
+            if (!replace) {
+                container.find(".load_previous").show();
+            }
+            container.find(".load_next").show();
+
             container.data( 'feed_start' , feed_start + returned.num_items );
             clearTimeout(feed_timeout);
             container.find(".feed_fetching").hide();
+            container.find(".feed_next").hide();
             if (returned.num_items == 0) {
                 container.find(".load_more").hide();
                 var everything_loaded = container.find(".everything_loaded_wrapper");
@@ -1344,7 +1367,9 @@ function getFeed(container) {
                     everything_loaded.find(".reached_the_end").show();
                 }
             }
-            updateQuestionStubsDisplay();
+            else {
+                container.find(".load_more").show();
+            }
             bindOnNewElements();
             //container.css("min-height", container.height());
         }
@@ -1359,6 +1384,18 @@ bind(".load_more" , "click" , null , function(event) {
     getFeed(container);
 });
 
+bind(".load_next" , "click" , null , function(event) {
+    var container = $(this).parents(".feed_main");
+    getFeed(container);
+});
+
+bind(".load_previous" , "click" , null , function(event) {
+    var container = $(this).parents(".feed_main");
+    var feed_start = container.data('feed_start');
+    feed_start = Math.max(feed_start - 2, 0);
+    container.data('feed_start', feed_start);
+    getFeed(container);
+});
 
 /***********************************************************************************************************************
  *
@@ -3340,6 +3377,15 @@ function postInitialize(element) {
 
     if (element.hasClass("agreement_people_list_seed")) {
         element.find(".agreement_people_list_wrapper").fadeIn();
+    }
+
+    if (element.hasClass("presidential_matching_counter")) {
+        var questions_answered = element.find(".questions_answered");
+        var num = questions_answered.data('num');
+        if (num >= 10) {
+            $(".trial_question_answering").hide();
+            $(".sign_up_wrapper").fadeIn(1000);
+        }
     }
 
     bindOnNewElements();

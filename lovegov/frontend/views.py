@@ -338,7 +338,7 @@ def loginHowItWorks(request, vals):
     return loginResponse(request, central_html, url, vals)
 
 def loginSignUp(request, vals):
-    central_html = ajaxRender(template='site/pages/login/sign-up.html', vals=vals, request=request)
+    central_html = ajaxRender(template='site/pages/october_login/sign_up.html', vals=vals, request=request)
     url = request.path
     return loginResponse(request, central_html, url, vals)
 
@@ -353,9 +353,17 @@ def presidentialMatching(request, vals):
     vals['obama'] = obama
     vals['mitt'] = mitt
 
+    vals['lgpoll'] = getLoveGovPoll()
+
+    cookie_data, new_cookie = getCookieData(request)
+
     central_html = ajaxRender(template='site/pages/october_login/presidential_matching.html', vals=vals, request=request)
     url = request.path
-    return loginResponse(request, central_html, url, vals)
+    response = loginResponse(request, central_html, url, vals)
+
+    if new_cookie:
+        response.set_cookie("cookie_data_id", cookie_data.id)
+    return response
 
 def loginRedirect(request, viewer, to_page):
     if "login" in to_page or to_page in OUTSIDE_LOGIN or (to_page + '/') in OUTSIDE_LOGIN or 'password_recovery' in to_page:

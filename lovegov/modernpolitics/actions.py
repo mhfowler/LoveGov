@@ -122,6 +122,47 @@ def scorecardAnswerAction(user, scorecard, question, answer_id):
 
     return response
 
+def trialAnswerAction(cookie_data, question, privacy, answer_id, weight=-1, explanation=""):
+
+    chosen_answer = Answer.lg.get_or_none(id=answer_id)
+    if not chosen_answer:
+        chosen_answer = None
+
+    world_view = cookie_data.getView()
+    my_response = world_view.responses.filter(question=question)
+
+    trial_user = getTrialUser()
+
+    if not my_response:
+        if weight == -1:
+            weight = 50
+        response = Response( question = question,
+            most_chosen_answer = chosen_answer,
+            weight = weight,
+            explanation = explanation)
+        if chosen_answer:
+            response.most_chosen_num = 1
+            response.total_num = 1
+        response.autoSave(creator=trial_user, privacy=privacy)
+        world_view.responses.add(response)
+    # else update old response
+    else:
+        response = my_response[0]
+        if weight == -1:
+            weight = response.weight
+        if not explanation:
+            explanation = response.explanation
+        response.most_chosen_answer = chosen_answer
+        response.weight = weight
+        response.explanation = explanation
+        response.privacy = privacy
+        if chosen_answer:
+            response.most_chosen_num = 1
+            response.total_num = 1
+        response.save()
+    return response
+
+
 #-----------------------------------------------------------------------------------------------------------------------
 # Likes or dislikes content based on post.
 #-----------------------------------------------------------------------------------------------------------------------
@@ -447,6 +488,14 @@ def supportAction(viewer, politician, support, privacy):
             action.autoSave()
             # notification
             politician.notify(action)
+
+
+def trialSupportAction(cookie_data, politician, support):
+    if support:
+        cookie_data.support(politician)
+    else:
+        cookie_data.unsupport(politician)
+
 
 ## Action causes user to follow or unfollow inputted group, follow is true or false, depending on whether to start or stop ##
 def followGroupAction(viewer, group, follow, privacy):
