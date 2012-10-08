@@ -354,6 +354,8 @@ def renderToResponseCSRF(template, vals, request):
         vals['privacy'] = 'PUB'
     vals['request'] = request
     response = render_to_response(template, vals, context_instance=RequestContext(request))
+    if vals['requires_login']:
+        response.delete_cookie("cookie_data_id")
     return response
 
 #-----------------------------------------------------------------------------------------------------------------------

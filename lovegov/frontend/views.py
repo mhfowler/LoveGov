@@ -98,6 +98,8 @@ def viewWrapper(view, requires_login=False):
             # helper for key stroke sequences
             vals['sequence'] = [0]
 
+            vals['requires_login'] = requires_login
+
             if requires_login:
 
                 # who is logged in?
@@ -401,7 +403,6 @@ def passwordRecovery(request,confirm_link=None, vals={}):
                         vals['recoveryForm'] = recoveryForm
         central_html = ajaxRender(template='site/pages/october_login/password_recovery_reset.html', vals=vals, request=request)
         return loginResponse(request, central_html, request.path, vals)
-
 
 def logout(request, vals={}):
     auth.logout(request)
