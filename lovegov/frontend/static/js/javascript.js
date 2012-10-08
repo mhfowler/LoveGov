@@ -3383,8 +3383,14 @@ function postInitialize(element) {
         var questions_answered = element.find(".questions_answered");
         var num = questions_answered.data('num');
         if (num >= 10) {
-            $(".trial_question_answering").hide();
-            $(".sign_up_wrapper").fadeIn(1000);
+            $(".trial_question_answering").fadeOut();
+            $(".trial_answering_questions_header").fadeOut();
+            $(".sign_up_wrapper").fadeIn();
+            setTimeout(function() {
+                $(".big_loading").hide();
+                $(".presidential_matching_finished").show();
+                $(".sign_up_wrapper").fadeIn();
+            }, 0);
         }
     }
 
@@ -4908,4 +4914,83 @@ function showBackButtonIfCachedPage() {
 
 bind('.restore_cache', 'click', function(e) {
     restoreLastCachedPage();
+});
+
+
+/***********************************************************************************************************************
+ *
+ *     ~ login stuff
+ *
+ ***********************************************************************************************************************/
+bind('.request_password_recovery_button', 'click', function(e) {
+    var email = $(".request_password_recovery_email").val();
+    $(".requested_message").hide();
+    $(".requesting_password").show();
+    action({
+        data: {
+            'action': 'requestPasswordRecovery',
+            'email': email
+
+        },
+        success: function(data) {
+            setTimeout(function() {
+                $(".requesting_password").hide();
+                $(".requested_message").show();
+            }, 200);
+        }
+    });
+});
+
+
+bind('.email_login_button', 'click', function(e) {
+    var email = $(".sign_in_email_input").val();
+    var password = $(".sign_in_password_input").val();
+    var from_page = PATH;
+    $(".login_error").hide();
+    action({
+        data: {
+            'action': 'emailLogin',
+            'email': email,
+            'password':password,
+            'from_page':from_page
+        },
+        success: function(data) {
+            $(".signing_in_gif").hide();
+            var returned = $.parseJSON(data);
+            if (returned.success) {
+                window.location.href = returned.go_to_page;
+            }
+            else {
+                $(".login_error").text(returned.error);
+                $(".login_error").show();
+            }
+        }
+    });
+});
+
+bind('.twitter_register_button', 'click', function(e) {
+    var name = $(".twitter_name").val();
+    var email = $(".twitter_email").val();
+    $(".twitter_registering").show();
+    $(".twitter_error").hide();
+    action({
+        data: {
+            'action': 'twitterRegisterPost',
+            'email': email,
+            'name': name
+        },
+        success: function(data) {
+            $(".twitter_registering").hide();
+            var returned = $.parseJSON(data);
+            if (returned.success) {
+                window.location.href = returned.url;
+            }
+            else {
+                $(".twitter_name_error").text(returned.twitter_name_error);
+                $(".twitter_email_error").text(returned.twitter_email_error);
+                $(".twitter_general_error").text(returned.twitter_error);
+                $(".twitter_error").show();
+            }
+        }
+    });
 });

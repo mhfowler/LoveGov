@@ -1168,6 +1168,8 @@ class CookieData(LGModel):
 
     ipaddress = models.IPAddressField(default='255.255.255.255', null=True)
     created_when = models.DateTimeField(auto_now_add=True)
+    claimed = models.BooleanField(default=False)
+    claimed_by = models.ForeignKey("UserProfile", null=True, related_name="my_cookie_datas")
 
     def getView(self):
         if self.view:
@@ -1183,6 +1185,25 @@ class CookieData(LGModel):
         self.supports.add(politician)
     def unsupport(self, politician):
         self.supports.remove(politician)
+
+    def claimedByProfile(self, user_profile):
+        if not self.claimed:
+            self.claimed = True
+            self.save()
+
+            if self.view:
+                user_view = user_profile.getView()
+                for r in self.view.responses.all():
+                    r.creator = user_profile
+                    r.save()
+                    user_view.responses.add(r)
+
+            from lovegov.modernpolitics.actions import supportAction
+            for politician in self.supports.all():
+                supportAction(user_profile, politician, True, "PRI")
+
+
+
 
 #=======================================================================================================================
 # Model for storing user of site. extends FacebookProfileModel, so that there are fields for that.

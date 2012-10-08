@@ -354,7 +354,6 @@ def renderToResponseCSRF(template, vals, request):
         vals['privacy'] = 'PUB'
     vals['request'] = request
     response = render_to_response(template, vals, context_instance=RequestContext(request))
-    response.set_cookie("fb_state", vals['fb_state'])
     return response
 
 #-----------------------------------------------------------------------------------------------------------------------

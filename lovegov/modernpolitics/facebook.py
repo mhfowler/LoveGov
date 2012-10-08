@@ -45,14 +45,13 @@ def fbGetRedirect(request, vals={}, redirect_uri=None, scope=FACEBOOK_SCOPE):
     if not redirect_uri:
         redirect_uri = getRedirectURI(request, "/fb/handle/")
     fb_state = random.randint(0, 100000)
-    url =  "https://www.facebook.com/dialog/oauth?"
-    url += "client_id=" + settings.FACEBOOK_APP_ID
-    url += "&redirect_uri=" + redirect_uri
-    url += "&scope=" + scope
-    url += "&state=" + str(fb_state)
-    url += "&response_type=code"
-    vals['fb_link'] = url
-    return fb_state
+    fb_link =  "https://www.facebook.com/dialog/oauth?"
+    fb_link += "client_id=" + settings.FACEBOOK_APP_ID
+    fb_link += "&redirect_uri=" + redirect_uri
+    fb_link += "&scope=" + scope
+    fb_link += "&state=" + str(fb_state)
+    fb_link += "&response_type=code"
+    return fb_link, fb_state
 
 def fbGetAccessToken(request, code, redirect_uri=None):
     if not redirect_uri:
@@ -101,7 +100,7 @@ def fbLogin(request, vals={}, refresh=False):
             if not user_prof:
                 refresh = False
                 name = (me.get('first_name') or "Unknown") + " " + (me.get('last_name') or "User")
-                control = createFBUser(name, fb_email)
+                control = createFBUser(name, fb_email, request=request)
                 user_prof = control.user_profile
                 vals['viewer'] = user_prof
                 user_prof.facebook_id = fb_id

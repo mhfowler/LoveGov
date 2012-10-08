@@ -6,6 +6,34 @@ from lovegov.base_settings import UPDATE
 from operator import attrgetter
 
 #-----------------------------------------------------------------------------------------------------------------------
+# Takes in a viewer and a to_page, stores stuff apropriately and returns page viewer should be redirect to
+#-----------------------------------------------------------------------------------------------------------------------
+def loginRedirectToPage(request, viewer, to_page):
+    to_page = to_page. replace("/login/", "/")
+    if to_page in OUTSIDE_LOGIN or (to_page + '/') in OUTSIDE_LOGIN or 'password_recovery' in to_page:
+        to_page = '/home/'
+
+    num_logins = viewer.num_logins
+    if not num_logins:
+        to_page = '/welcome/'
+    viewer.incrementNumLogins()
+
+    viewer.updateHotFeedIfOld()
+
+    return to_page
+
+def loginAuthenticate(request,user,to_page='home/'):
+    auth.login(request, user)
+    redirect_response = shortcuts.redirect('/' + to_page)
+    redirect_response.set_cookie('privacy', value='PUB')
+    return redirect_response
+
+def loginAuthenticateAndRedirect(request, viewer, to_page):
+    go_to_page = loginRedirectToPage(request, viewer, to_page)
+    return loginAuthenticate(request, viewer.user, go_to_page)
+
+
+#-----------------------------------------------------------------------------------------------------------------------
 # get questions for weekly digest
 #-----------------------------------------------------------------------------------------------------------------------
 def getWeeklyDigestQuestions(time_start, time_end, viewer):

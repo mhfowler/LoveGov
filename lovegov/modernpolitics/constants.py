@@ -59,7 +59,7 @@ USER_GROUP_COLORS = ['blue', 'red', 'blue', 'purple']
 
 ########################################## OUTSIDE LOGIN PAGES #########################################################
 
-OUTSIDE_LOGIN = ['/hello/', '/blog/']
+OUTSIDE_LOGIN = ['/hello/', '/blog/', '/presidential_matching/', '/sign_up/']
 
 ########################################## BACKGROUND TASKS ############################################################
 
@@ -734,7 +734,10 @@ ACTIONS = [
     'getAgreementPeopleListHTML',
     'changeEmailSubscriptionSettings',
     'updateTrialMatch',
-    'getPresidentialMatchingCount'
+    'getPresidentialMatchingCount',
+    'requestPasswordRecovery',
+    'emailLogin',
+    'twitterRegisterPost'
 ]
 
 UNAUTHENTICATED_ACTIONS = [
@@ -749,7 +752,10 @@ UNAUTHENTICATED_ACTIONS = [
     'changeAnswerPrivacy',
     'editExplanation',
     'hoverWebComparison',
-    'getPresidentialMatchingCount'
+    'getPresidentialMatchingCount',
+    'requestPasswordRecovery',
+    'emailLogin',
+    'twitterRegisterPost'
 ]
 
 SAVE_POST_PARAMETERS_ACTIONS = [

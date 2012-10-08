@@ -10,6 +10,81 @@
 from lovegov.modernpolitics.modals import *
 from django.core.files.base import ContentFile
 
+def twitterRegisterPost(request, vals):
+
+    name = request.POST.get('name')
+    email = request.POST.get('email')
+    zip =  request.POST.get('zip')
+
+    valid, twitter_name_error, twitter_email_error = validateTwitterForm(name, email)
+
+    vals['twitter_name_error'] = twitter_name_error
+    vals['twitter_email_error'] = twitter_email_error
+    vals['twitter_zip'] = zip
+
+    if valid:
+        tat = tatHelper(request)
+        if tat:                                                 # ready to twitter register
+            twitter_user_id = tat['user_id']
+            already = UserProfile.lg.get_or_none(twitter_user_id = twitter_user_id)
+            if already:
+                return twitterTryLogin(request, to_page="/home/", vals=vals)
+            else:
+                control = createTwitterUser(name, email, vals=vals, request=request)
+                user_prof = control.user_profile
+                vals['viewer'] = user_prof
+                user_prof.twitter_user_id = tat['user_id']
+                user_prof.twitter_screen_name = tat['screen_name']
+                user_prof.save()
+                if zip:
+                    user_prof.setZipCode(zip)
+                to_return = {'success':True, 'url':'/hello/'}
+        else:
+            lg_logger.critical("post twitter, user was not authenticated? " + name + " " + email)
+            twitter_error_message = "You are not authenticated with twitter. Please try logging in with " \
+                                    "twitter again via the sign in button in the top right."
+            to_return = {"success":False, 'twitter_error': twitter_error_message}
+    else:
+        to_return = {"success":False, 'twitter_name_error':twitter_name_error, 'twitter_email_error':twitter_email_error}
+
+    return HttpResponse(json.dumps(to_return))
+
+
+### login with email ###
+def emailLogin(request, vals):
+
+    email = request.POST['email']
+    password = request.POST['password']
+    url = request.POST['from_page']
+
+    user = auth.authenticate(username=email, password=password)
+
+    if user: # If the user authenticated
+        user_prof = getUserProfile(control_id=user.id)
+        if not user_prof: # If the controlling user has no profile, we're boned
+            error = 'Your account is currently broken.  Our developers have been notified and your account should be fixed soon.'
+            lg_logger.critical(error + "//" + user.email)
+            to_return = {'success':False, 'error':error}
+        elif user_prof.confirmed: # Otherwise log this bitch in
+            from lovegov.frontend.views_helpers import loginRedirectToPage
+            auth.login(request, user)
+            go_to_page = loginRedirectToPage(request, user_prof, url)
+            to_return = {'success':True, 'go_to_page':go_to_page}
+        else: # If they can't authenticate, they probably need to validate
+            error = 'Your account has not been validated yet. Check your email for a confirmation link.  It might be in your spam folder.'
+            to_return = {'success':False, 'error':error}
+    else: # Otherwise they're just straight up not in our database
+        error = 'Invalid Login/Password'
+        to_return = {'success':False, 'error':error}
+
+    return HttpResponse(json.dumps(to_return))
+
+
+### request password recovery ###
+def requestPasswordRecovery(request, vals):
+    ResetPassword.create(email=request.POST['email'])
+    return HttpResponse("requested.")
+
 ### change email subscription settings ###
 def changeEmailSubscriptionSettings(request, vals):
     subscriptions = request.POST['subscriptions']
@@ -65,12 +140,13 @@ def newRegister(request,vals={}):
     email = request.POST['email']
     email2 = request.POST['email2']
     password = request.POST['password']
-    day = request.POST['day']
-    month = request.POST['month']
-    year = request.POST['year']
-    zip = request.POST['zip']
     privacy = int(request.POST['privacy'])
     form_type = request.POST['form_type']
+
+#    day = request.POST['day']
+#    month = request.POST['month']
+#    year = request.POST['year']
+#    zip = request.POST['zip']
 
     # validate form
     if not email:
@@ -96,29 +172,29 @@ def newRegister(request,vals={}):
         vals['password_error'] = 'This field is required.'
         valid = False
 
-    if not (day and month and year):
-        vals['dob_error'] = 'Day, month and year of birth are required.'
-        valid = False
-    else:
-        try:
-            day = int(day)
-            month = int(month)
-            year = int(year)
-            if (year > 2012):
-                vals['dob_error'] = "You must already be born to register."
-                valid = False
-            elif (year < 1900):
-                vals['dob_error'] = "Year must be above 1900."
-                valid = False
-            elif (day>31 or day<0):
-                vals['dob_error'] = "Please enter a day between 1 and 31."
-                valid = False
-            elif (month>12 or month <0):
-                vals['dob_error'] = "Please enter a month between 1 and 12."
-                valid = False
-        except:
-            vals['dob_error'] = "Day, month and year of birth must be numbers."
-            valid = False
+#    if not (day and month and year):
+#        vals['dob_error'] = 'Day, month and year of birth are required.'
+#        valid = False
+#    else:
+#        try:
+#            day = int(day)
+#            month = int(month)
+#            year = int(year)
+#            if (year > 2012):
+#                vals['dob_error'] = "You must already be born to register."
+#                valid = False
+#            elif (year < 1900):
+#                vals['dob_error'] = "Year must be above 1900."
+#                valid = False
+#            elif (day>31 or day<0):
+#                vals['dob_error'] = "Please enter a day between 1 and 31."
+#                valid = False
+#            elif (month>12 or month <0):
+#                vals['dob_error'] = "Please enter a month between 1 and 12."
+#                valid = False
+#        except:
+#            vals['dob_error'] = "Day, month and year of birth must be numbers."
+#            valid = False
 
     if not privacy:
         vals['privacy_error'] = 'click'
@@ -151,13 +227,13 @@ def newRegister(request,vals={}):
         vals['name'] = name
         vals['email'] = email
         vals['email2'] = email2
-        vals['day'] = day
-        vals['month'] = month
-        vals['year'] = year
-        vals['zip'] = zip
         vals['privacy'] = privacy
         vals['form_type'] = form_type
-        html = ajaxRender('site/pages/login/new_register_form.html', vals, request)
+#        vals['day'] = day
+#        vals['month'] = month
+#        vals['year'] = year
+#        vals['zip'] = zip
+        html = ajaxRender('site/pages/october_login/sign_up_with_email_form.html', vals, request)
         return HttpResponse(json.dumps({'html':html}))
 
     # if form is valid register the user
@@ -168,7 +244,7 @@ def newRegister(request,vals={}):
             password = generateRandomPassword(10)
 
         # create user profile form form data
-        user_profile = registerHelper(name=name, email=email, password=password, day=day, month=month, year=year, zip=zip)
+        user_profile = registerHelper(name=name, email=email, password=password, request=request)
 
         # send a confirmation email based on type of registration
         if form_type=='twitter_register':

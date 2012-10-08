@@ -106,61 +106,14 @@ def twitterLogin(request, to_page="/home/", vals={}):
             user = user_prof.user
             user.backend = 'django.contrib.auth.backends.ModelBackend'
             auth.login(request, user)
-            from lovegov.frontend.views import loginRedirect
-            return loginRedirect(request, user_prof, to_page)
+            from lovegov.frontend.views_helpers import loginRedirectToPage
+            go_to_page = loginRedirectToPage(request, user_prof, to_page)
+            return shortcuts.redirect(go_to_page)
 
         else:
             return False
     else:
         return False
-
-#-----------------------------------------------------------------------------------------------------------------------
-# tries to create a user account from form post and twitter access token,
-# - if invalid returns forms with errors
-# - if not twitter access token redirects
-#-----------------------------------------------------------------------------------------------------------------------
-def twitterRegister(request, vals={}):
-
-    from lovegov.modernpolitics.register import createTwitterUser
-
-    already = twitterLogin(request, to_page='/home/', vals=vals)
-    if already:
-        return already
-
-    if request.method == 'POST':
-        name = request.POST.get('twitter_name')
-        email = request.POST.get('twitter_email')
-        zip =  request.POST.get('twitter_zip')
-
-        valid, twitter_name_error, twitter_email_error = validateTwitterForm(name, email)
-
-        vals['twitter_name_error'] = twitter_name_error
-        vals['twitter_email_error'] = twitter_email_error
-        vals['twitter_zip'] = zip
-
-        if valid:
-            tat = tatHelper(request)
-            if tat:                                                 # ready to twitter register
-                twitter_user_id = tat['user_id']
-                already = UserProfile.lg.get_or_none(twitter_user_id = twitter_user_id)
-                if already:
-                    return twitterTryLogin(request, to_page="/home/", vals=vals)
-                else:
-                    control = createTwitterUser(name, email, vals=vals)
-                    user_prof = control.user_profile
-                    vals['viewer'] = user_prof
-                    user_prof.twitter_user_id = tat['user_id']
-                    user_prof.twitter_screen_name = tat['screen_name']
-                    user_prof.save()
-                    if zip:
-                        user_prof.setZipCode(zip)
-                    return renderToResponseCSRF(template='site/pages/login/login-main-register-success.html', vals=vals, request=request)
-            else:
-                response = shortcuts.redirect("/twitter/redirect/")
-                return response
-
-    vals['state'] = 'post-twitter'
-    return renderToResponseCSRF(template='site/pages/login/login-main.html', vals=vals, request=request)
 
 #-----------------------------------------------------------------------------------------------------------------------
 # helper which returns dictionary from twitter access token cookie if it exists
@@ -182,27 +135,27 @@ def validateTwitterForm(name, email):
     valid = True
     if not email:
         valid = False
-        twitter_email_error = "email"
+        twitter_email_error = "Please enter a valid email."
     elif not "@" in email:
         valid = False
-        twitter_email_error = "email"
+        twitter_email_error = "Please enter a valid email."
     elif ControllingUser.lg.get_or_none(username=email):
         valid = False
-        twitter_email_error = "User with given email already has registered."
+        twitter_email_error = "A user with the inputted email has already registered."
     else:
-        twitter_email_error = email
+        twitter_email_error = ""
 
     if not name:
         valid = False
-        twitter_name_error = "full name"
+        twitter_name_error = "Please enter your name."
     else:
         splitted = name.split()
         length = len(splitted)
         if length <2:
             valid = False
-            twitter_name_error = "full name"
+            twitter_name_error = "Please enter your first and last name (at least two words)."
         else:
-            twitter_name_error = name
+            twitter_name_error = ""
 
     return valid, twitter_name_error, twitter_email_error
 

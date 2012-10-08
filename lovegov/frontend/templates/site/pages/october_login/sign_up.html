@@ -1,19 +1,30 @@
 {% load thumbnail %}
-<div class="form-div">
+<div class="october-sign-up">
 
-    <a href="#" class="sign-up-with-email-button sign_up_with_email_button"> Sign up using your email.</a>
+    {% if not no_appeal %}
+        <div class="lg-appeal">
+            Let's use the internet to fix government.
+        </div>
+    {% endif %}
 
-    <p class="or"> or </p>
-
-    <div class="connect-with">
-        <a href="{{ fb_link }}" class="fb-button"></a>
+    <div class="top-buttons">
+        <a href="/fb/redirect/" class="fb-button"></a>
         <a href="/twitter/redirect/" class="twitter-button twitter_register"> </a>
         <div style="clear:both;"></div>
     </div>
 
-    <div class="connect-message">
-        By connecting with Facebook or Twitter you agree to our  <a class="invert_link privacy_policy">Privacy Policy</a>
-        <p class="no-post">  *we will never post without your permission </p>
+    <div class="below-buttons">
+        <div class="left-side-disclaimer">
+            We won't post on your behalf & will never sell personal information.
+        </div>
+        <div class="sign-up-with-email-area">
+            <div class="sign-up-form-wrapper">
+                {% include 'site/pages/october_login/sign_up_with_email_form.html' %}
+            </div>
+        </div>
+    </div>
+    <div class="about-privacy-policy">
+        By signing up you agree to our <a href="/privacy_policy/" target="_blank">privacy policy</a> & <a href="/terms_of_use/" target="_blank">terms of use</a>.
     </div>
 
 </div>
