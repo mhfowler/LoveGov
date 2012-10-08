@@ -354,6 +354,10 @@ def loginSignUp(request, claimed_by="", vals={}):
     url = request.path
     return loginResponse(request, central_html, url, vals)
 
+def loginFAQ(request, vals={}):
+    central_html = ajaxRender(template='site/pages/faq.html', vals=vals, request=request)
+    url = request.path
+    return loginResponse(request, central_html, url, vals)
 
 def presidentialMatching(request, vals):
 

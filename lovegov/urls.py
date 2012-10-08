@@ -55,6 +55,7 @@ urlpatterns += patterns('',
     (r'^hello/$', viewWrapper(views.hello)),
     (r'^privacy_policy/$', viewWrapper(views.privacyPolicy)),
     (r'^terms_of_use/$', viewWrapper(views.termsOfUse)),
+    (r'^faq/$', viewWrapper(views.loginFAQ)),
 
     # fb authentication
     (r'^fb/redirect(\S*)$', views.facebookRedirect),                                    # redirects you to facebook
