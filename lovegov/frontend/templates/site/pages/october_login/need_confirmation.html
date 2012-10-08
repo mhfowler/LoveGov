@@ -1,0 +1,14 @@
+<div class="confirm-wrapper">
+
+    <div class="confirm-text">
+            <p>
+                Hello{% if viewer %} {{ viewer.get_name }}{% endif %}, your account hasn't been confirmed yet. Check your email
+                {% if viewer %}({{ viewer.email }}){% endif %} to see if you
+                if your have an email from LoveGov with a link to confirm your account. It could be in your spam folder.
+            </p>
+            <p>
+                If you would like to sign in as another user, click <a href="/logout/">here</a>.
+            </p>
+    </div>
+
+</div>
