@@ -120,12 +120,15 @@ div.hello-wrapper {
     font-size:64px;
     color:$dark-gray;
   }
-  div.hello-text {
-    font-size:18px;
-    //width:700px;
-  }
   div.hello-robot {
-    margin-top:50px;
+    float:left;
+  }
+  div.hello-text {
+    float:left;
+    margin-left:25px;
+    font-size:18px;
+    padding-top:13px;
+    //width:700px;
   }
 }
 
