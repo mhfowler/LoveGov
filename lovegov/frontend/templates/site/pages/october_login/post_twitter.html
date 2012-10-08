@@ -1,0 +1,21 @@
+<div class="post-twitter">
+
+    <h2 class="post-twitter-title"> To finish your registration with twitter,
+        enter your name and email below. </h2>
+
+
+        <input type="text" class="twitter-input top twitter_name"
+               value="{% if twitter_name_error %}{{ twitter_name_error }}{% endif %}" placeholder="name"/>
+
+        <input type="text" class="twitter-input middle twitter_email"
+               value="{% if twitter_email_error %}{{ twitter_email_error }}{% endif %}" placeholder="email"/>
+
+        <a class="twitter-register-button twitter_register_button">register</a>
+
+    <div class="heart-gif twitter-registering twitter_registering"></div>
+
+    <p class="twitter-error twitter_error twitter_name_error"></p>
+    <p class="twitter-error twitter_error twitter_email_error"></p>
+    <p class="twitter-error twitter_error twitter_general_error"></p>
+
+</div>

@@ -8,7 +8,7 @@
 
     <div class="connect-buttons">
 
-        <a href="{{ fb_link }}" class="sign-in-fb log_in_button"> </a>
+        <a href="/fb/redirect{{ request.path }}" class="sign-in-fb log_in_button"> </a>
         <a href="/twitter/redirect/" class="sign-in-twitter log_in_button"> </a>
         <div style="clear:both;"></div>
 
@@ -18,22 +18,21 @@
         OR
     </p>
 
-    <form action="/login{{ to_page }}" method="post" id="loginform"> {% csrf_token %}
+    <form id="loginform"> {% csrf_token %}
 
-        {% comment %}
-        <input type="text" class="sign-in-input" name="username" {% if login_email %}value="{{ login_email }}"{% endif %} placeholder="email"/>
-        <input type="password" class="sign-in-input password-input" name="password" placeholder="password"/>
-        {% endcomment %}
 
-        <input type="text" class="sign-in-input" name="username" placeholder="email" {% if login_email %}value="{{login_email}}"{% endif %}/>
-        <input type="password" class="sign-in-input password-input" name="password" placeholder="password"/>
-        <input type="hidden" name="button" value="login" />
+        <input type="text" class="sign-in-input sign_in_email_input" name="username" placeholder="email" {% if login_email %}value="{{login_email}}"{% endif %}/>
+        <input type="password" class="sign-in-input password-input sign_in_password_input" name="password" placeholder="password"/>
 
         <div class="dialogue-bottom">
             <div class="signing_in_gif heart-gif"></div>
-            <input class="login-button" id="submit-login" type="submit" value="log in"/>
+            <a class="login-button email_login_button log_in_button">log in</a>
             <a class="account-actions forgot-link" id="forgot-password" href="/password_recovery/">forgot password?</a>
-            <span class="login-error">{{ error }}</span>
+            <span class="login-error login_error">
+            </span>
+            {% comment %}
+                <span class="new-to-lg"> Don't have an account? <a href="/sign_up/">Sign up</a>.</span>
+            {% endcomment %}
         </div>
     </form>
 

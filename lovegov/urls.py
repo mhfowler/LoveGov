@@ -50,18 +50,22 @@ urlpatterns += patterns('',
     (r'^password_recovery/$', viewWrapper(views.passwordRecovery)),
     (r'^confirm/(?P<confirm_link>\S+)/$', viewWrapper(views.confirm)),
     (r'^need_email_confirmation/$', viewWrapper(views.needConfirmation)),
-    (r'^claim_your_profile/(?P<claimed_by>\S+)/$', viewWrapper(views.claimYourProfile)),
+    (r'^claim_your_profile/(?P<claimed_by>\S+)/$', viewWrapper(views.loginSignUp)),
     (r'^register/$', viewWrapper(views.register)),
     (r'^hello/$', viewWrapper(views.hello)),
+    (r'^privacy_policy/$', viewWrapper(views.privacyPolicy)),
+    (r'^terms_of_use/$', viewWrapper(views.termsOfUse)),
+    (r'^faq/$', viewWrapper(views.loginFAQ)),
 
     # fb authentication
+    (r'^fb/redirect(\S*)$', views.facebookRedirect),                                    # redirects you to facebook
     (r'^fb/authorize/$', views.facebookAuthorize),
     (r'^fb/handle/$', viewWrapper(views.facebookHandle)),
 
     # twitter authentication
     (r'^twitter/redirect/$', viewWrapper(twitter.twitterTryLogin)),                      # redirect to twitter, and back to handle
     (r'^twitter/handle/$', viewWrapper(twitter.twitterHandle)),                          # handles return from twitter
-    (r'^twitter/register/$', viewWrapper(twitter.twitterRegister)),                      # twitter form page
+    (r'^twitter/register/$', viewWrapper(views.twitterRegister)),                      # twitter form page
 
     # misc
     (r'^logout/$', viewWrapper(views.logout)),

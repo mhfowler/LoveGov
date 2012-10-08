@@ -76,9 +76,6 @@ def viewWrapper(view, requires_login=False):
             # google analytics
             vals['google'] = GOOGLE_LOVEGOV
 
-            # Error otherwise?
-            vals['fb_state'] = fbGetRedirect(request, vals)
-
             # static file serving and host
             host_full = getHostHelper(request)
             vals['host_full'] = host_full
@@ -100,6 +97,8 @@ def viewWrapper(view, requires_login=False):
 
             # helper for key stroke sequences
             vals['sequence'] = [0]
+
+            vals['requires_login'] = requires_login
 
             if requires_login:
 
@@ -155,14 +154,11 @@ def viewWrapper(view, requires_login=False):
 
                 # if user not confirmed redirect to login page
                 if not user.confirmed:
-                    return shortcuts.redirect("/need_email_confirmation/")
+                    return needConfirmation(request, vals)
 
                 # background tasks
                 user.valsBackgroundTasks(vals)
 
-            # vals for not logged in pages
-            else:
-                vals['fb_state'] = fbGetRedirect(request, vals)
 
             # if everything worked, and there wasn't an error, return the view
             return view(request,vals=vals,*args,**kwargs)
@@ -243,7 +239,7 @@ def blog(request,category=None,number=None,vals=None):
             if blogPost:
                 vals['blogPost'] = blogPost
                 vals['blogPosts'] = blogPosts
-                return renderToResponseCSRF('site/pages/blog/blog.html',vals=vals,request=request)
+
         elif category:
             if string.capitalize(category) in BlogEntry.CATEGORY_CHOICES:
                 for blogPost in blogPosts:
@@ -256,7 +252,9 @@ def blog(request,category=None,number=None,vals=None):
         else:
             vals['blogPosts'] = blogPosts
 
-        return renderToResponseCSRF('site/pages/blog/blog.html',vals=vals,request=request)
+        central_html = ajaxRender(template='site/pages/october_login/blog.html', vals=vals, request=request)
+        url = request.path
+        return loginResponse(request, central_html, url, vals)
 
 
 def aliasDowncast(request, alias=None, vals={}):
@@ -296,35 +294,48 @@ def error404(request, vals={}):
 def hello(request, vals={}):
     vals['name'] = request.GET.get('name')
     vals['email'] = request.GET.get('email')
-    return renderToResponseCSRF(template='site/pages/login/login-main-register-success.html', vals=vals, request=request)
+    central_html = ajaxRender(template='site/pages/october_login/hello.html', vals=vals, request=request)
+    url = request.path
+    return loginResponse(request, central_html, url, vals)
+
+def privacyPolicy(request, vals={}):
+    central_html = ajaxRender(template='site/pages/october_login/privacy_policy.html', vals=vals, request=request)
+    url = request.path
+    return loginResponse(request, central_html, url, vals)
+
+def termsOfUse(request, vals={}):
+    defl = ajaxRender(template='site/pages/october_login/terms_of_use.html', vals=vals, request=request)
+    url = request.path
+    return loginResponse(request, central_html, url, vals)
 
 def login(request, to_page='home/', message="", vals={}):
     """
     login, password recovery and authentication
     """
     to_page = "/" + to_page
+
+    # Check if already logged in
+    if request.user.is_authenticated():
+        user_profile = getUserProfile(request)
+        go_to_page = loginRedirectToPage(request, user_profile, to_page)
+        return shortcuts.redirect(go_to_page)
+
     # Try logging in with facebook
     user_prof = fbLogin(request,vals,refresh=False)
     if user_prof:
-        return loginRedirect(request, user_prof, to_page)
+        go_to_page = loginRedirectToPage(request, user_prof, to_page)
+        return shortcuts.redirect(go_to_page)
 
     # Try logging in with twitter
     twitter = twitterLogin(request,to_page, vals)
     if twitter:
         return twitter
 
-    # Check for POST logins (LOGINS WITHOUT FACEBOOK) and build a response
-    if request.method == 'POST' and 'button' in request.POST:
-        response = loginPOST(request,to_page,message,vals)
+   # Otherwise load the login page
+    central_html = ajaxRender(template='site/pages/october_login/video_login.html', vals=vals, request=request)
+    url = request.path
+    return loginResponse(request, central_html, url, vals)
 
-    else: # Otherwise load the login page
-        vals.update( {"registerform":RegisterForm(), "username":'', "error":'', "state":'fb', 'login_email':""} )
-        central_html = ajaxRender(template='site/pages/october_login/video_login.html', vals=vals, request=request)
-        url = request.path
-        return loginResponse(request, central_html, url, vals)
-
-    response.delete_cookie('lovegov_try')
-    return response
 
 def loginMission(request, vals):
     valsMission(vals)
@@ -337,8 +348,14 @@ def loginHowItWorks(request, vals):
     url = request.path
     return loginResponse(request, central_html, url, vals)
 
-def loginSignUp(request, vals):
+def loginSignUp(request, claimed_by="", vals={}):
+    vals['email'] = vals['email2'] = claimed_by
     central_html = ajaxRender(template='site/pages/october_login/sign_up.html', vals=vals, request=request)
+    url = request.path
+    return loginResponse(request, central_html, url, vals)
+
+def loginFAQ(request, vals={}):
+    central_html = ajaxRender(template='site/pages/faq.html', vals=vals, request=request)
     url = request.path
     return loginResponse(request, central_html, url, vals)
 
@@ -365,83 +382,16 @@ def presidentialMatching(request, vals):
         response.set_cookie("cookie_data_id", cookie_data.id)
     return response
 
-def loginRedirect(request, viewer, to_page):
-    if "login" in to_page or to_page in OUTSIDE_LOGIN or (to_page + '/') in OUTSIDE_LOGIN or 'password_recovery' in to_page:
-        to_page = '/home/'
 
-    num_logins = viewer.num_logins
-    if not num_logins:
-        to_page = '/welcome/'
-    viewer.incrementNumLogins()
-
-    viewer.updateHotFeedIfOld()
-
-    return shortcuts.redirect(to_page)
-
-def loginAuthenticate(request,user,to_page='home/'):
-    if to_page == 'blog': to_page = 'home/'
-    auth.login(request, user)
-    redirect_response = shortcuts.redirect('/' + to_page)
-    redirect_response.set_cookie('privacy', value='PUB')
-    return redirect_response
-
-def loginPOST(request, to_page='/home/',message="",vals={}):
-    vals['registerform'] = RegisterForm()
-    # LOGIN
-    if request.POST['button'] == 'login':
-        # Authenticate user
-        user = auth.authenticate(username=request.POST['username'], password=request.POST['password'])
-
-        if user: # If the user authenticated
-            user_prof = getUserProfile(control_id=user.id)
-            if not user_prof: # If the controlling user has no profile, we're boned
-                error = 'Your account is currently broken.  Our developers have been notified and your account should be fixed soon.'
-            elif user_prof.confirmed: # Otherwise log this bitch in
-                auth.login(request, user)
-                return loginRedirect(request, user_prof, to_page)
-            else: # If they can't authenticate, they probably need to validate
-                error = 'Your account has not been validated yet. Check your email for a confirmation link.  It might be in your spam folder.'
-        else: # Otherwise they're just straight up not in our database
-            error = 'Invalid Login/Password'
-        # Return whatever error was found
-        vals.update({"login_email":request.POST['username'], "message":message, "error":error, "state":'login_error'})
-        return renderToResponseCSRF(template='site/pages/login/login-main.html', vals=vals, request=request)
-
-    # REGISTER
-    elif request.POST['button'] == 'register':
-        # Make the register form
-        registerform = RegisterForm(request.POST)
-        if registerform.is_valid():
-            registerform.save()
-            vals.update({"fullname":registerform.cleaned_data.get('fullname'),
-                         "email":registerform.cleaned_data.get('email'),
-                         'zip':registerform.cleaned_data.get('zip'),
-                         'age':registerform.cleaned_data.get('age')})
-            return renderToResponseCSRF(template='site/pages/login/login-main-register-success.html', vals=vals, request=request)
-        else:
-            vals.update({"registerform":registerform, "state":'register_error'})
-            return renderToResponseCSRF(template='site/pages/login/login-main.html', vals=vals, request=request)
-
-    elif request.POST['button'] == 'post-twitter':
-        return twitterRegister(request, vals)
-
-    # RECOVER
-    elif request.POST['button'] == 'recover':
-        user = ControllingUser.lg.get_or_none(email=request.POST['username'])
-        if user: resetPassword(user)
-        message = u"This is a temporary recovery system! Your password has been reset. Check your email for your new password, you can change it from the account settings page after you have logged in."
-        return HttpResponse(json.dumps(message))
 
 def passwordRecovery(request,confirm_link=None, vals={}):
 
-    # new password recovery request
-    if request.method == 'POST' and "email" in request.POST:
-        ResetPassword.create(email=request.POST['email'])
-        msg = u"Check your email for instructions to reset your password."
-        if request.is_ajax(): return HttpResponse(json.dumps({'message': msg}))
-        else: return renderToResponseCSRF(template="site/pages/login/login-forgot-password.html",vals=vals.update({'message':msg}),request=request)
+    # password recovery request
+    if not confirm_link:
+        central_html = ajaxRender(template='site/pages/october_login/password_recovery_request.html', vals=vals, request=request)
+        return loginResponse(request, central_html, request.path, vals)
 
-    # else following link to actual password recovery page
+    # password recovery reset
     else:
         if confirm_link is not None:
             confirm = ResetPassword.lg.get_or_none(email_code=confirm_link)
@@ -455,9 +405,8 @@ def passwordRecovery(request,confirm_link=None, vals={}):
                         if user: return loginAuthenticate(request,user)
                     else:
                         vals['recoveryForm'] = recoveryForm
-                        return renderToResponseCSRF(template="site/pages/login/login-forgot-password-reset.html",vals=vals,request=request)
-                else: return renderToResponseCSRF(template="site/pages/login/login-forgot-password-reset.html",vals=vals,request=request)
-        return renderToResponseCSRF(template="site/pages/login/login-forgot-password.html",vals=vals,request=request)
+        central_html = ajaxRender(template='site/pages/october_login/password_recovery_reset.html', vals=vals, request=request)
+        return loginResponse(request, central_html, request.path, vals)
 
 def logout(request, vals={}):
     auth.logout(request)
@@ -477,7 +426,9 @@ def confirm(request, to_page='home', message="", confirm_link=None,  vals={}):
         user.save()
         vals['viewer'] = user
     if request.method == 'GET':
-        return renderToResponseCSRF('site/pages/login/login-main-register-confirmation.html', vals=vals, request=request)
+        central_html = ajaxRender(template='site/pages/october_login/confirm.html', vals=vals, request=request)
+        url = request.path
+        return loginResponse(request, central_html, url, vals)
     else:
         return loginPOST(request,'/home/',message,vals)
 
@@ -486,28 +437,15 @@ def needConfirmation(request, vals={}):
     redirect = ifConfirmedRedirect(request)
     if redirect: return redirect
 
-    vals['confirmation_message'] =         'Your account has not been validated yet. '\
-                                           'Check your email for a confirmation link.  '\
-                                           'It might be in your spam folder.'
-    vals['state'] = 'need-confirmation'
-    return renderToResponseCSRF(template='site/pages/login/login-main.html', vals=vals, request=request)
+    central_html = ajaxRender(template='site/pages/october_login/need_confirmation.html', vals=vals, request=request)
+    url = request.path
+    return loginResponse(request, central_html, url, vals)
 
-def claimYourProfile(request, claimed_by="", vals={}):
-
-    if request.method == 'GET':
-        vals['state'] = 'claimed_by'
-        vals['email'] = vals['email2'] = claimed_by
-        return renderToResponseCSRF(template='site/pages/login/login-main.html', vals=vals, request=request)
-    else:
-        return login(request, vals)
 
 
 def register(request, vals={}):
-    if request.method == 'GET':
-        vals['state'] = 'register'
-        return renderToResponseCSRF(template='site/pages/login/login-main.html', vals=vals, request=request)
-    else:
-        return login(request, vals)
+    return loginSignUp(request, vals)
+
 
 #-----------------------------------------------------------------------------------------------------------------------
 # This is the view that generates the QAWeb
@@ -1244,7 +1182,9 @@ def facebookHandle(request, to_page="/login/home/", vals={}):
 
         auth_to_page = request.COOKIES.get('auth_to_page') #Get the authorization to_page from Cookies
         if auth_to_page: #If it exists
-            to_page = auth_to_page #set the to_page
+            to_page = auth_to_page
+            if not to_page.startswith("/login/"):
+                to_page = "/login/" + to_page
 
         response = shortcuts.redirect(to_page) #Build a response
         response.set_cookie('fb_token', access_token) #Set the facebook authorization cookie
@@ -1256,21 +1196,31 @@ def facebookHandle(request, to_page="/login/home/", vals={}):
 
     return shortcuts.redirect(to_page) #If this is the wrong state, go to default to_page
 
+def facebookRedirect(request, to_page="/login/home/", vals={}):
+    fb_link, fb_state = fbGetRedirect(request, vals)
+    response = shortcuts.redirect(fb_link)
+    response.set_cookie("fb_state", fb_state)
+    response.set_cookie("auth_to_page", to_page)
+    return response
 
 def facebookAuthorize(request, vals={}, scope=""):
+
     auth_to_page = request.GET.get('auth_to_page') #Check for an authorization to_page
     fb_scope = request.GET.get('fb_scope') #Check for a scope
+
     if fb_scope: #Set the scope if there is one
         scope = fb_scope
-    redir = getRedirectURI(request,'/fb/handle/') #Set the redirect URI
+
     if not scope == "":
-        fb_state = fbGetRedirect(request , vals , redir , scope) #Get the FB State and FB Link for the auth CODE
+        fb_link, fb_state = fbGetRedirect(request , vals , scope=scope) #Get the FB State and FB Link for the auth CODE
     else:
-        fb_state = fbGetRedirect(request , vals , redir) #Get the FB State and FB Link for the auth CODE
-    response = shortcuts.redirect( vals['fb_link'] ) #Build a response to get authorization CODE
+        fb_link, fb_state = fbGetRedirect(request , vals) #Get the FB State and FB Link for the auth CODE
+    response = shortcuts.redirect(fb_link) #Build a response to get authorization CODE
     response.set_cookie("fb_state", fb_state) #Set facebook state cookie
+
     if auth_to_page and not request.COOKIES.get('auth_to_page'): #If there is no authorization to_page in Cookies
         response.set_cookie("auth_to_page",auth_to_page) #use the retrieved one if there is one
+
     return response
 
 
@@ -1329,6 +1279,20 @@ def facebookAction(request, to_page="/home/", vals={}):
             response = shortcuts.redirect(to_page)
             response.delete_cookie('attempted_fb_auth_action')
             return response
+
+#-----------------------------------------------------------------------------------------------------------------------
+# tries to create a user account from form post and twitter access token,
+# - if invalid returns forms with errors
+# - if not twitter access token redirects
+#-----------------------------------------------------------------------------------------------------------------------
+def twitterRegister(request, vals={}):
+    already = twitterLogin(request, to_page='/home/', vals=vals)
+    if already:
+        return already
+
+    central_html = ajaxRender(template='site/pages/october_login/post_twitter.html', vals=vals, request=request)
+    url = request.path
+    return loginResponse(request, central_html, url, vals)
 
 #-----------------------------------------------------------------------------------------------------------------------
 # Search page

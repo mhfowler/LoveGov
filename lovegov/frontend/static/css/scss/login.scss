@@ -3,8 +3,134 @@
 @import 'master-mixins';
 @import "compass";
 
-/* october login */
+/* post twitter form */
+div.post-twitter {
 
+  padding:0px 50px;
+  width:550px;
+  position:relative;
+
+  div.post-twitter-title {
+
+  }
+
+  input.twitter-input {
+    width:300px;
+    height:30px;
+    padding-left:5px;
+    font-size:16px;
+    display:block;
+    margin-top:20px;
+  }
+
+  a.twitter-register-button {
+    @extend .october-red-button;
+    float:right;
+  }
+
+  p.twitter-error {
+    margin-top:20px;
+    color:$red;
+  }
+
+  div.twitter-registering {
+    position:absolute;
+    left: 100%;
+    top: 261px;
+    display:none;
+  }
+
+}
+
+/* blog */
+div.blog-wrapper {
+  padding: 0px 50px;
+}
+
+/* october login */
+$darkish-red:#C22E1B;
+.october-red-button {
+  background-color: $red;
+  padding: 10px;
+  font-size:18px;
+  color: white;
+  @include border-radius(8px);
+  &:hover {
+    background-color:$red-light;
+    text-decoration:none;
+  }
+}
+
+/* request password recovery */
+div.request-password-recovery {
+  padding: 0px 100px;
+  width:700px;
+  margin:auto;
+  div.request-password-recovery-title {
+    font-size:24px;
+    line-height: 32px;
+  }
+  input.request-password-recovery-email {
+    width: 100%;
+    height: 35px;
+    padding-left: 5px;
+    font-size: 18px;
+    margin-top: 15px;
+    margin-bottom: 30px;
+  }
+  div.requested-message {
+    padding-top:10px;
+    float:left;
+    font-size:16px;
+    display:none;
+  }
+  div.requesting-password {
+    margin-top: 14px;
+    margin-right: 40px;
+    float: right;
+    display: none;
+  }
+  a.request-password-recovery-button {
+    display: block;
+    float: right;
+    @extend .october-red-button;
+  }
+}
+
+
+/* terms and priavcy */
+div.october-login {
+  h3.terms-header {
+    font-size:32px;
+  }
+}
+
+/* confirm page */
+div.confirm-wrapper {
+  div.confirm-text {
+    width:800px;
+    font-size:16px;
+  }
+}
+
+/* hello page */
+div.hello-wrapper {
+  padding:0px 50px;
+  div.hello-header {
+    font-size:64px;
+    color:$dark-gray;
+  }
+  div.hello-robot {
+    float:left;
+  }
+  div.hello-text {
+    float:left;
+    margin-left:25px;
+    font-size:18px;
+    padding-top:13px;
+    //width:700px;
+  }
+}
 
 div.october-header {
 
@@ -12,7 +138,7 @@ div.october-header {
   border-bottom:1px solid $light-gray;
   padding-left:20px;
   padding-right:20px;
-  min-width:1000px;
+  min-width:1110px;
   text-align:center;
 
   a.header-logo {
@@ -112,18 +238,20 @@ div.october-header {
       div.sign-in-dialogue {
         display:none;
         position:absolute;
-        left:-195px;
-        top:55px;
-        padding: 30px;
+        left: -243px;
+        top: 67px;
+        padding: 30px 65px;
         z-index:20;
         border: 1px solid $black;
         background-color:white;
+        min-height:315px;
+        padding-top: 40px;
 
         div.dialogue-pointer
         {
           @include trianglePointer($direction:'up',$width:15px,$color-inner:#FFFFFF,$color-border:black,$offset:30px);
           z-index:25;
-          left:320px;
+          left:380px;
           top:-29px;
         }
 
@@ -205,7 +333,7 @@ div.october-header {
             float:right;
             margin: 21px 17px 0px 0;
           }
-          input.login-button {
+          a.login-button {
             float:right;
             margin: 15px 0 0px 0;
             @include div-button-padding($radius:7px,$padding:8px,$font-size:14px,$color:white,$background-color:$red,$hover-color:$red-light);
@@ -247,20 +375,38 @@ div.october-login {
 
     div.video-wrapper {
       text-align:center;
-      p.want-to-learn-more {
+      div.want-to-learn-more {
         font-size: 22px;
         margin-top: 32px;
+        width:800px;
+        a.presidential-matching-link {
+          margin-left: 50px;
+          padding: 17px 25px 13px;
+          color: white;
+          background-color: $red;
+          text-transform: uppercase;
+          &:hover {
+            background-color:$darkish-red;
+            text-decoration:none;
+          }
+        }
+      }
+      div.or-sign-up-wrapper {
+        width:800px;
+        margin:auto;
+        font-size:16px;
+        span.or-sign-up {
+          float:left;
+        }
+        a.sign-up-button {
+          float:left;
+          margin-left:5px;
+        }
       }
     }
 
     div.mission-wrapper {
 
-    }
-
-    div.sign-up-wrapper {
-      width: 480px;
-      padding-top: 55px;
-      float: left;
     }
 
     div.feed-main {
@@ -273,8 +419,76 @@ div.october-login {
   }
 }
 
+div.october-sign-up {
+  width:1000px;
+  margin:auto;
+  padding-left: 200px;
+  padding-right: 200px;
+  div.lg-appeal {
+    width:100%;
+    float:left;
+    text-align:center;
+    font-size:24px;
+    margin-bottom:25px;
+    display:none;
+  }
+  div.top-buttons {
+    a.fb-button {
+      @include staticImage($rel-path:'/images/login/FB_login.png');
+      width:250px;
+      height:50px;
+      background-size:250px 50px;
+      background-repeat:no-repeat;
+      float:left;
+    }
+    a.twitter-button {
+      @include staticImage($rel-path:'/images/login/Twitter_login.png');
+      background-repeat:no-repeat;
+      float:right;
+      width:250px;
+      height:50px;
+      background-size:250px 50px;
+    }
+    a.fb-button:hover {
+      @include staticImage($rel-path:'/images/login/FB_login_hover.png');
+    }
+    a.twitter-button:hover {
+      @include staticImage($rel-path:'/images/login/Twitter_login_hover.png');
+    }
+  }
+  div.left-side-disclaimer {
+    width: 100%;
+    float: left;
+    font-size: 16px;
+    text-align:center;
+    color:$dark-gray;
+    margin-top: 55px;
+    margin-bottom: 35px;
+  }
+  div.sign-up-with-email-area {
+    float: left;
+    width:100%;
+    text-align:left;
+    p.sign-up-form-header {
+      color:$red;
+      font-size: 20px;
+    }
+  }
+  div.about-privacy-policy {
+    float: left;
+    margin-top: 40px;
+    font-size: 16px;
+    width: 100%;
+    text-align:left;
+  }
+}
+
 div.presidential-matching {
   min-height:500px;
+  padding-left:50px;
+  padding-right:50px;
+  position:relative;
+  min-height:800px;
   div.top-section {
     float:left;
     width: 100%;
@@ -325,8 +539,7 @@ div.presidential-matching {
       float:right;
       margin-top: 0px;
       text-align: right;
-      width: 300px;
-      padding-right:43px;
+      width: 200px;
       p.sign-up-text {
         text-align: right;
         float: right;
@@ -348,7 +561,7 @@ div.presidential-matching {
       }
     }
   }
-  div.bottom-section {
+  div.trial-answering-questions-header {
     margin-top:20px;
     width: 100%;
     float:left;
@@ -358,23 +571,58 @@ div.presidential-matching {
       color:$dark-gray;
       width: 800px;
     }
-
     div.presidential-matching-counter {
-      float: left;
+      float: right;
       font-size: 33px;
       position: relative;
       top: -8px;
-      left: 85px;
+    }
+    div.big-loading {
+      @include staticImage("/images/gifs/fetching.gif");
+      float:left;
+      width:500px;
+      height:330px;
+      background-size:500px 330px;
+      background-repeat:no-repeat;
+      margin-left: 145px;
+      margin-top: 30px;
+      display:none;
     }
   }
-  div.sign_up_wrapper {
+  div.presidential-matching-finished {
+    float:left;
+    padding-top:12px;
+    font-size:24px;
+    color:$black;
+    width:750px;
+    padding-bottom:25px;
+    //width: 500px;
     display:none;
+  }
+  div.bottom-section {
+    width: 100%;
+    float:left;
+  }
+  div.sign-up-wrapper {
+    display:none;
+    padding-top:25px;
+    padding-left:0px;
+    float:left;
+    position:absolute;
+    top:185px;
+    div.october-sign-up {
+      padding-left:0px;
+      width:795px;
+    }
   }
 }
 
 div.trial-questions-wrapper {
   float:left;
   margin-top:0px;
+  div.feed-main {
+    width:100%;
+  }
   a.question-title {
     &:hover {
       cursor:default;
@@ -385,10 +633,10 @@ div.trial-questions-wrapper {
   div.question_stub div.question_expanded_choose div.answer-actions div.a-action.discuss-question {
     display:none;
   }
+  div.question_stub div.question_expanded_choose div.answers-wrapper div.answer-choice {
+    width:96%;
+  }
 }
-
-
-
 
 /* password reset */
 input.password-reset-input {
@@ -485,313 +733,25 @@ div.new-register-form {
 }
 
 
-/* old stuff */
-#main
-{
-  width:1000px;
-  margin-left:auto;
-  margin-right:auto;
-  margin-top:15px;
-}
 
-div.blocks
-{
-  width:1000px;
-  display:inline-block;
-  margin-bottom:35px;;
-}
 
-div#no-frame-top
-{
-  z-index:3;
-  position:relative;
-  width:1000px;
-  height:160px;
-  padding:0px;
-  display:block;
 
-  box-shadow: none;
 
-  @extend .blocks;
-  margin-bottom:5px;
-}
-div#middle
-{
-  margin-top:0px;
-  @extend .blocks;
-}
-div#bottom
-{
-  @extend .blocks;
-  border-top:1px solid #CCC;
-  padding-top:20px;
-}
 
-#middle-left
-{
-  position:relative;
-  float:left;
-  width:425px;
-  height:287px;
-  margin-left:20px;
-}
 
-div.no-login-modal
-{
-  min-height: 100px;
-  border:1px solid $red;
-  position: absolute;
-  top: 100px;
-  @include modal;
-  width: 40%;
-  margin-left: 30%;
-  margin-right: 30%;
-  padding: 50px;
 
-  div.no-login-content
-  {
-    text-align: center;
-    width: 100%;
-  }
-}
 
-#middle-right
-{
-  position:relative;
-  float:right;
-  margin-right:20px;
-  margin-top:0px;
-  width:440px;
 
-  div.state-div {
-    display:none;
-  }
 
-  div#create-account-div {
-    h3.new-to-lovegov {
-      color:$dark-gray;
-      font-size: 28px;
-      text-align:center;
-    }
-    a.create-account-button {
-      display:block;
-      text-align:center;
-      margin-top:15px;
-      @include div-button-padding($radius:7px,$padding:12px,$font-size:30px,$color:white,$background-color:$red,$hover-color:$red-light);
-    }
-    div.try-it {
-      display:block;
-      text-align:center;
-      font-size: 18px;
-      margin-top:15px;
-    }
-    p.mission {
-      display:block;
-      margin-top:20px;
-      @include titleFont;
-      color:$deep-gray;
-      display:block;
-      font-size:20px;
-      text-align:center;
-      width: 500px;
-      position: relative;
-      left: -24px;
-      top: 12px;
-    }
-  }
-}
 
-div.sign-up-wrapper {
-  text-align:center;
-  a.sign-up-with-email-button {
-    @include div-button-padding($radius:7px,$padding:14px,$font-size:26px,$color:white,$background-color:$gray,$hover-color:$light-gray);
-    padding-left: 40px;
-    padding-right: 40px;
-  }
 
-  p {
-    margin-left:10px;
-    margin-top:40px;
-    font-size: 18px;
-    @include titleFont();
-    text-transform: uppercase;
-  }
 
-  div.connect-with {
-    margin-top:20px;
-    display:block;
-    a.fb-button {
-      @include staticImage($rel-path:'/images/login/FB_login.png');
-      background-size:contain;
-      background-repeat:no-repeat;
-      margin-left:30px;
-      float:left;
-      width:200px;
-      height:35px;
-    }
-    a.twitter-button {
-      @include staticImage($rel-path:'/images/login/Twitter_login.png');
-      background-size:contain;
-      background-repeat:no-repeat;
-      float:right;
-      width:200px;
-      height:35px;
-    }
-    a.fb-button:hover {
-      @include staticImage($rel-path:'/images/login/FB_login_hover.png');
-    }
-    a.twitter-button:hover {
-      @include staticImage($rel-path:'/images/login/Twitter_login_hover.png');
-    }
 
-  }
 
-  div.connect-message {
-    display:block;
-    margin-top:30px;
-    p.no-post {
-      margin-top:8px;
-      text-transform: none;
-      @include titleFont();
-      font-size: 14px;
-    }
-  }
-}
 
-#no-frame-top {
 
-  div.top-right {
-    float:right;
-    margin-top:30px;
-    margin-right:0px;
 
-    div.sign-in {
-      position:relative;
-      float:right;
-      margin-left:50px;
-      margin-right:0px;
-      p {
-        margin-top:8px;
-        float:left;
-        color:$dark-gray;
-      }
-      a.sign-in-button {
-        margin-left:10px;
-        float:left;
-        @include div-button-padding($radius:7px,$padding:8px,$font-size:14px,$color:white,$background-color:$red,$hover-color:$red-light);
-      }
 
-      div.sign-in-dialogue {
-        display:none;
-        position:absolute;
-        left:-195px;
-        top:55px;
-        padding: 30px;
-        z-index:20;
-        border: 1px solid $black;
-        background-color:white;
-
-        div.dialogue-pointer
-        {
-          @include trianglePointer($direction:'up',$width:15px,$color-inner:#FFFFFF,$color-border:black,$offset:30px);
-          z-index:25;
-          left:320px;
-          top:-29px;
-        }
-
-        div.connect-buttons {
-          margin-top:0px;
-          display:block;
-
-          a.sign-in-fb {
-            @include staticImage($rel-path:'/images/login/FB_login.png');
-            background-repeat: no-repeat;
-            float: left;
-            width: 145px;
-            height: 35px;
-            background-size: 145px 30px;
-          }
-          a.sign-in-twitter {
-            @include staticImage($rel-path:'/images/login/Twitter_login.png');
-            background-repeat: no-repeat;
-            float: right;
-            width: 145px;
-            height: 35px;
-            background-size: 145px 30px;
-          }
-          a.sign-in-fb:hover {
-            @include staticImage($rel-path:'/images/login/FB_login_hover.png');
-          }
-          a.sign-in-twitter:hover {
-            @include staticImage($rel-path:'/images/login/Twitter_login_hover.png');
-          }
-        }
-
-        p {
-          clear:both;
-          text-align:center;
-          display:block;
-          text-transform: uppercase;
-          margin:0px;
-          margin-top:5px;
-          @include titleFont();
-          font-size: 20px;
-          width:100%;
-        }
-
-        input.sign-in-input {
-          display:block;
-          margin-top:5px;
-          width:300px;
-          height:30px;
-          color:$black;
-          padding-left:5px;
-          @include titleFont();
-          font-size: 18px;
-        }
-        input.password-input {
-          margin-top:8px;
-        }
-
-        div.dialogue-bottom {
-          display:block;
-          width:100%;
-          margin-top:10px;
-
-          div.heart-gif {
-            float:left;
-            margin-left:5px;
-            margin-top:20px;
-            display:none;
-          }
-
-          span.login-error {
-            font-size: 14px;
-            float:left;
-            width: 100%;
-            text-align: left;
-            margin: 17px 0px 0px 0;
-            color:$red;
-          }
-          a.forgot-link {
-            float:right;
-            margin: 21px 17px 0px 0;
-          }
-          input.login-button {
-            float:right;
-            margin: 15px 0 0px 0;
-            @include div-button-padding($radius:7px,$padding:8px,$font-size:14px,$color:white,$background-color:$red,$hover-color:$red-light);
-          }
-        }
-
-      }
-    }
-    div.mission-statement
-    {
-      display:none;
-    }
-  }
-}
 
 
 div.mission-statement

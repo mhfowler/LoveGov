@@ -13,22 +13,24 @@
 
         <div class="top-right-sign-up">
             <p class="sign-up-text">
-               To save your answers and see more matches,
+                To save your answers and see more matches,
             </p>
             <a href="/sign_up/" class="sign-up-button"> sign up </a>
         </div>
 
     </div>
 
-    <div class="bottom-section trial_question_answering">
-
-        <div class="presidential-matching-explanation">
+    <div class="trial-answering-questions-header trial_answering_questions_header">
+        <div class="presidential-matching-explanation presidential_matching_explanation">
             Click the answer closest to your view and see how you compare with the candidates.
         </div>
-
+        <div class="big-loading big_loading"></div>
         <div class="presidential-matching-counter presidential_matching_counter update_after_answer" data-action="getPresidentialMatchingCount">
             0/10
         </div>
+    </div>
+
+    <div class="bottom-section trial_question_answering">
 
         <div class="questions-wrapper trial-questions-wrapper">
             {% include 'site/pages/qa/feed_browse_questions.html' with special_feed="getQuestions" default_display="choose" poll_id=lgpoll.id single_item=1 trial_questions=1 no_create_button=1 no_sort_buttons=1 no_only_unanswered=1 no_filter_buttons=1 no_help_button=1 no_load_more=1  %}
@@ -37,8 +39,20 @@
     </div>
 
     <div class="sign-up-wrapper sign_up_wrapper">
+        <div class="presidential-matching-finished presidential_matching_finished">
+            {% comment %}
+            <p>
+                These are your matches with the candidates from 10 questions,
+                but presidential matching is just one of our tools.
+            </p>
+            {% endcomment %}
+            <p>
+                To answer more questions and join the LoveGov community sign up!
+            </p>
+        </div>
         {% include 'site/pages/october_login/sign_up.html' %}
     </div>
 
+    <div style="clear:both;"></div>
 
 </div>
