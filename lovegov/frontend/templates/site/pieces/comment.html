@@ -1,4 +1,4 @@
-<div class="comment {% if depth|divisibleby:'2' %}level1 {% else %}level2 {% endif %} {% if depth < 1 %}toplevel {% endif %}">
+<div class="comment {% if depth|divisibleby:'2' %}level1 {% else %}level2 {% endif %} {% if depth < 1 %}toplevel {% endif %}" data-cid="{{comment.id}}" data-depth={{ depth }}>
     <div class="comment-username feed-username">
         {% load thumbnail %}
         {% if comment.active %}
@@ -63,6 +63,7 @@
         {% endif %}
 
     </div>
+    <div class="show-new-replies">show <span class="num-new-replies">0</span> new replies</div>
 
     {% if creator.you %}
     {% include 'site/pieces/reply-form.html' with width=width cancel_button=1 hidden=1 content=comment depth=depth placeholder="Add more to this comment" class="reply-append" %}

@@ -1789,6 +1789,30 @@ def ajaxThread(request, vals={}):
     to_return = {'html':thread, 'top_count': top_count}
     return HttpResponse(json.dumps(to_return))
 
+def getNewCommentsStats(request, vals={}):
+    c_id = request.POST.get('c_id')
+    content = Content.lg.get_or_none(id=c_id)
+    rendered_so_far = int(request.POST.get('rendered_so_far'))
+    comments = Comment.objects.filter(root_content=content).order_by('created_when')
+    comments = [str(x.on_content.id) for x in comments[rendered_so_far:]]
+    return_dict = {}
+    for comment in comments:
+        return_dict[comment] = return_dict.get(comment,0) + 1
+    return HttpResponse(json.dumps(return_dict))
+
+def getChildComments(request, vals={}):
+    cid = request.POST.get('cid');
+    content = Content.lg.get_or_none(id=cid)
+    num_to_fetch = int(request.POST.get('num_to_fetch'))
+    depth = int(request.POST.get('depth'))
+    comments = Comment.objects.filter(on_content=content).order_by('-created_when')[:num_to_fetch]
+    from lovegov.frontend.views_helpers import renderComment
+    result = ''
+    for c in comments:
+        result += renderComment(request, vals, c, depth + 1)
+    return HttpResponse(result)
+
+
 #-----------------------------------------------------------------------------------------------------------------------
 # get feed
 #-----------------------------------------------------------------------------------------------------------------------

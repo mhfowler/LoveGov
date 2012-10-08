@@ -1,7 +1,5 @@
 <span class="discuss">Discuss
-        <div class="thread-refresh">
-            refresh comment thread
-        </div>
+    <div class="thread-filters"><label>sort comments by:</label><select><option selected>hot</option><option>new</option></select> </div>
 </span>
 {% include 'site/pieces/reply-form.html' with width="100%" depth='-1' content=content class="reply-new" %}
 <!-- comment thread -->
@@ -12,7 +10,7 @@
 <script type="text/javascript">
     $(document).ready(function() {
         loadMoreComments();
-        //setInterval(loadMoreComments, 10000);
+        setInterval(fetchAndUpdateNewComments, 10000);
     });
     // New comments loaded - prevents them from being loaded again
     var new_comments = [];

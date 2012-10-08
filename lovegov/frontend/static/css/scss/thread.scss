@@ -6,6 +6,7 @@
 div.reply {
 
     clear: both;
+    @include clearfix;
     textarea.comment-textarea {
         width: 100%;
         height: 100px;
@@ -43,7 +44,6 @@ div.comment
 {
     position:relative;
     padding: 30px;
-    padding-bottom:20+30px;
     padding-left: 70px;
     min-height: 110px;
     &.level1 {
@@ -61,12 +61,21 @@ div.comment
     }
     div.change-privacy {
         float:left;
+        margin: 12px 10px 0 12px;
     }
   div.comment-footer
   {
     position: absolute;
     top: 30px;
     left: 27px;
+  }
+  div.show-new-replies {
+    float: right;
+    cursor: pointer;
+    display: none;
+    &:hover {
+      text-decoration: underline;
+    }
   }
 }
 
@@ -122,6 +131,7 @@ div.bar-wrapper {
 
 .comment-actions
 {
+    @include clearfix;
     position:relative;
     margin-top:10px;
     @include titleFont;
@@ -139,6 +149,7 @@ div.bar-wrapper {
     }
     div:hover {
         color: $red-light;
+      text-decoration: underline;
     }
 }
 
@@ -183,24 +194,14 @@ span.discuss
     margin: 15px 0 10px 0;
     display: block;
     position:relative;
-    div.thread-refresh {
-      position: absolute;
-      left: -195px;
-      top: 159px;
+    div.thread-filters {
+      label {
+        margin-right: 15px;
+      }
+      float: right;
       font-size: 14px;
       color:$dark-gray;
-      cursor: pointer;
-      border: 1px solid $gray;
       padding: 10px;
-      @include border-radius(5px);
-      &:hover {
-        background-color: $yellow-highlight;
-        text-decoration: underline;
-      }
-      &:active {
-        background-color: $red;
-        color: white;
-      }
     }
 }
 

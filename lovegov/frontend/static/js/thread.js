@@ -36,6 +36,7 @@ bind("div.reply .tab-button.save", "click", function(event) {
                         new_comments.push(cid);
                     }
                     lockThreadReply = false;
+                    updateThreadCommentCount();
                     bindTooltips();
                 }
             });
@@ -146,6 +147,12 @@ bind('div.load-more-comments', 'click', function(e) {
     }
 });
 
+function updateThreadCommentCount() {
+    var count = $('div.comment').length;
+    $('div.thread').data('comments', count);
+    return count;
+}
+
 function loadMoreComments() {
     var button = $('div.load-more-comments');
     var num_to_load = 10;
@@ -154,8 +161,8 @@ function loadMoreComments() {
         var cid = thread.data('cid');
         var next_start = thread.data('num-showing');
         var div_load_more = button;
-	var loadingimg = $('<div style="text-align: center; margin: 20px 0"><img src="/static/images/gifs/ajax-loader.gif"></div>');
-	loadingimg.appendTo(thread);
+        var loadingimg = $('<div style="text-align: center; margin: 20px 0"><img src="/static/images/gifs/ajax-loader.gif"></div>');
+        loadingimg.appendTo(thread);
         action({
             data: {'action': 'ajaxThread', 'c_id': cid, 'limit': num_to_load, 'start': next_start, 'new_comments': JSON.stringify(new_comments)},
             success: function(data)
@@ -169,20 +176,74 @@ function loadMoreComments() {
                     $(returned.html).hide().prependTo('div.thread').fadeIn(500);
                     $('div.thread').data('num-showing', next_start + top_count);
                 }
+                updateThreadCommentCount();
                 bindTooltips();
             },
-		complete: function(data) {
-			loadingimg.remove();
-		}
+		    complete: function(data) {
+			    loadingimg.remove();
+		    }
         });
     }
 }
 
-bind('div.thread-refresh', 'click', function(e) {
-    var button = $('div.load-more-comments');
-    var thread = button.siblings('div.thread');
-    thread.css("min-height", thread.height());
-    thread.data('numShowing', 0);
-    thread.children().remove();
-    loadMoreComments();
+bind('div.thread-filters select', 'change', function(e) {
+    var value = $(this).val();
+    alert('changy '+value);
+});
+
+// Returns a dictionary mapping a comment id to the number of new child comments yet to be fetched and rendered
+function getNewCommentsStats(num_comments, callback) {
+    var thread = $('div.thread');
+    var c_id = thread.data('cid');
+    var rendered_so_far = num_comments;
+    action({
+        data: {'action': 'getNewCommentsStats', 'c_id': c_id, 'rendered_so_far': rendered_so_far},
+        success: function(data) {
+            var returned = $.parseJSON(data);
+            callback(returned);
+        }
+    });
+
+}
+
+function updateNewComments(comment_id, num) {
+    var commentdiv = $("div.comment[data-cid='"+comment_id+"']");
+    var show_new_replies = commentdiv.find('div.show-new-replies');
+    show_new_replies.find('span.num-new-replies').text(num);
+    show_new_replies.data('num-new-replies', num);
+    show_new_replies.fadeIn(500);
+}
+
+function fetchAndUpdateNewComments() {
+    var thread = $('div.thread');
+    var num_comments = thread.data('comments');
+    var callback = function(stats) {
+        for(var comment_id in stats) {
+            updateNewComments(comment_id, stats[comment_id]);
+        }
+    }
+    getNewCommentsStats(num_comments, callback);
+}
+
+bind('div.show-new-replies', 'click', function(e) {
+    var num = $(this).data('num-new-replies');
+    var comment = $(this).closest('div.comment')
+    var cid = comment.data('cid');
+    var depth = comment.data('depth');
+    var that = $(this);
+    that.hide();
+    var threaddiv = comment.siblings('div.threaddiv');
+    if (!threaddiv.length) {
+        threaddiv = $('<div class="threaddiv"></div>');
+        comment.after(threaddiv);
+    }
+    if(num > 0) {
+        action({
+           data: {'action': 'getChildComments', 'cid': cid, 'depth': depth, 'num_to_fetch': num},
+           success: function(data) {
+               $(data).prependTo(threaddiv);
+               updateThreadCommentCount();
+           }
+        });
+    }
 });

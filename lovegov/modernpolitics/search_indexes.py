@@ -64,14 +64,14 @@ class GroupIndex(indexes.SearchIndex, indexes.Indexable):
         else:
             return 'False'
 
-class CommentIndex(indexes.SearchIndex, indexes.Indexable):
-    text = indexes.CharField(document=True, use_template=True, template_name='search/indexes/comment.txt')
-
-    def get_model(self):
-        return Comment
-
-    def index_queryset(self):
-        return self.get_model().objects.all()
+#class CommentIndex(indexes.SearchIndex, indexes.Indexable):
+#    text = indexes.CharField(document=True, use_template=True, template_name='search/indexes/comment.txt')
+#
+#    def get_model(self):
+#        return Comment
+#
+#    def index_queryset(self):
+#        return self.get_model().objects.all()
 
 class QuestionIndex(indexes.SearchIndex, indexes.Indexable):
     text = indexes.CharField(document=True, use_template=True, template_name='search/indexes/question.txt')
