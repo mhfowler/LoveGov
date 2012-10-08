@@ -1189,6 +1189,7 @@ class CookieData(LGModel):
     def claimedByProfile(self, user_profile):
         if not self.claimed:
             self.claimed = True
+            self.claimed_by = user_profile
             self.save()
 
             if self.view:
