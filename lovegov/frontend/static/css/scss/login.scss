@@ -1152,7 +1152,7 @@ span.add-to-mailing-list-msg {
 .about-div
 {
   width:1000px;
-  float:left;
+  @include clearfix;
   margin-bottom:20px;
 
   h3
@@ -1270,4 +1270,62 @@ div.screenshots-div {
     font-size: 18px;
   }
 
+}
+
+div.hiw-what-is-lovegov {
+  font-size: 72px;
+}
+
+div.hiw-lovegov-is p {
+  font-size: 40px;
+  line-height: 125%;
+  &.gray {
+    padding:  15px;
+    background-color: $white-gray;
+    @include border-radius(15px);
+    color: $deep-gray;
+  }
+}
+
+div.try-it-out {
+  margin: 60px;
+  text-align: center;
+  span.try-it-out {
+    background-color: $red;
+    color: white;
+    padding: 25px;
+    font-size: 40px;
+    cursor: pointer;
+    @include border-radius(15px);
+    &:hover {
+      background-color: $red-light;
+    }
+  }
+}
+
+div.hiw-section {
+  @include clearfix;
+  margin: 50px 0;
+  clear: left;
+  div.hiw-section-title {
+    color: $red;
+    font-weight: bold;
+    font-size: 48px;
+  }
+  div.hiw-section-body {
+    font-size: 28px;
+  }
+}
+
+div.hiw-left {
+  float: left;
+  width: 70%;
+}
+
+div.hiw-right {
+  text-align: right;
+  float: left;
+  width: 25%;
+  clear: right;
+  margin-left: 40px;
 }
