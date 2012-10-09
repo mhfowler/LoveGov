@@ -4994,3 +4994,11 @@ bind('.twitter_register_button', 'click', function(e) {
         }
     });
 });
+
+bind('.goto_sign_up', 'click', function(e) {
+   var sign_up = $(".sign_up_wrapper");
+    $('body').animate({
+        scrollTop: sign_up.offset().top - 150
+    }, 1000);
+    smoothTransition(sign_up, function() { sign_up.css("height", "auto");}, 1000);
+});

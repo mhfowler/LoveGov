@@ -3,6 +3,11 @@
 @import 'master-mixins';
 @import "compass";
 
+/* mission wrapper */
+div.mission-wrapper {
+  padding:0px 50px;
+}
+
 /* post twitter form */
 div.post-twitter {
 
@@ -372,42 +377,60 @@ div.october-login {
     position:relative;
     left:-7px;
     margin-bottom:40px;
-    @include clearfix;
 
-    div.video-wrapper {
-      text-align:center;
-      div.want-to-learn-more {
-        font-size: 22px;
-        margin-top: 32px;
-        width:800px;
-        a.presidential-matching-link {
-          margin-left: 50px;
-          padding: 17px 25px 13px;
-          color: white;
-          background-color: $red;
-          text-transform: uppercase;
-          &:hover {
-            background-color:$darkish-red;
-            text-decoration:none;
+    div.login-first-page {
+      padding:0px 50px;
+      div.video-wrapper {
+        width:100%;
+        text-align:left;
+        div.want-to-learn-more {
+          font-size: 22px;
+          margin-top: 15px;
+          width:800px;
+          span.new-to-lovegov {
+            font-size:22px;
+          }
+          a.presidential-matching-link {
+            margin-left: 51px;
+            position: relative;
+            top: 12px;
+          }
+        }
+        div.or-sign-up-wrapper {
+          width:800px;
+          margin-left:4px;
+          font-size:16px;
+          span.or-sign-up {
+            float:left;
+          }
+          a.sign-up-button {
+            float:left;
+            margin-left:5px;
           }
         }
       }
-      div.or-sign-up-wrapper {
-        width:800px;
-        margin:auto;
-        font-size:16px;
-        span.or-sign-up {
+      div.sign-up-wrapper {
+        float: left;
+        margin-top: 25px;
+        overflow:hidden;
+        height:0px;
+        div.october-sign-up {
+          padding-top:25px;
+          padding-left:0px;
           float:left;
-        }
-        a.sign-up-button {
-          float:left;
-          margin-left:5px;
+          //text-align:left;
+          width:800px;
         }
       }
-    }
 
-    div.mission-wrapper {
+      div.how-it-works-wrapper {
+        float:left;
+        margin-top:30px;
+      }
 
+      div.mission-wrapper {
+
+      }
     }
 
     div.feed-main {
@@ -417,6 +440,18 @@ div.october-login {
 
   div.screenshots-div {
     display:none;
+  }
+}
+
+a.presidential-matching-link {
+  font-size: 22px;
+  padding: 17px 25px 13px;
+  color: white;
+  background-color: $red;
+  text-transform: uppercase;
+  &:hover {
+    background-color:$darkish-red;
+    text-decoration:none;
   }
 }
 
@@ -466,13 +501,49 @@ div.october-sign-up {
     margin-top: 55px;
     margin-bottom: 35px;
   }
-  div.sign-up-with-email-area {
-    float: left;
-    width:100%;
-    text-align:left;
-    p.sign-up-form-header {
-      color:$red;
-      font-size: 20px;
+  div.lower-area {
+    float:left;
+    div.sign-up-with-email-area {
+      float: left;
+      width:60%;
+      text-align:left;
+      p.sign-up-form-header {
+        color:$red;
+        font-size: 20px;
+      }
+    }
+    div.action-items-area {
+      float:right;
+      width:35%;
+      position: relative;
+      left: 90px;
+      top: 10px;
+      div.action-items-header {
+        font-size:20px;
+        margin-bottom:15px;
+      }
+      div.action-item {
+        width:100%;
+        display:block;
+        margin-bottom:15px;
+        @include clearfix;
+        div.action-item-num {
+          font-size:28px;
+          color:$red;
+          float:left;
+        }
+        div.action-item-text {
+          float:left;
+          margin-left: 30px;
+          padding-top: 8px;
+          font-size: 20px;
+        }
+      }
+      div.conclusion-item {
+        border-top:1px solid $red;
+        padding-top:15px;
+        font-size:20px;
+      }
     }
   }
   div.about-privacy-policy {
@@ -1239,15 +1310,28 @@ div.hiw-what-is-lovegov {
   font-size: 72px;
 }
 
-div.hiw-lovegov-is p {
-  font-size: 40px;
-  line-height: 125%;
-  &.gray {
-    padding:  15px;
-    background-color: $white-gray;
-    @include border-radius(15px);
-    color: $deep-gray;
+div.hiw-lovegov-is {
+  p {
+    font-size: 40px;
+    line-height: 125%;
+    &.gray {
+      padding:  15px;
+      background-color: $white-gray;
+      @include border-radius(15px);
+      color: $deep-gray;
+    }
   }
+}
+
+div.how-it-works-video-wrapper {
+  margin-top:30px;
+  margin-bottom:50px;
+}
+
+div.hiw-call-to-action {
+  margin-bottom:50px;
+  float:left;
+  width:100%;
 }
 
 div.try-it-out {
