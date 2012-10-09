@@ -4995,8 +4995,7 @@ bind('.twitter_register_button', 'click', function(e) {
 });
 
 bind('.goto_sign_up', 'click', function(e) {
-    var sign_up = $(".sign_up_wrapper");
-    var element = sign_up;
+    var element = $(".sign_up_wrapper");
     var old_height = element.height();
     element.css("height", "auto");
     var new_height = element.height();
