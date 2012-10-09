@@ -337,11 +337,12 @@ class AnswerClass:
 #   limit: the max number of comments to render
 #   rendered_so_far: number of comments rendered so far, wrapped in a list so it is mutable (I know)
 #   excluded: a list of comments to exclude from the results, e.g. because they were added by the user and already rendered
+#   order: 'hot' or 'new'
 # Returns:
 #   a string containing the content thread html
 #   the number of actual top-level comments (and their children) actually returned
 #-----------------------------------------------------------------------------------------------------------------------
-def makeThread(request, object, user, depth=0, user_votes=None, user_comments=None, vals={}, start=0, limit=None, rendered_so_far=None, excluded=None):
+def makeThread(request, object, user, depth=0, user_votes=None, user_comments=None, vals={}, start=0, limit=None, rendered_so_far=None, excluded=None, order='hot'):
     """Creates the html for a comment thread."""
     if not user_votes:
         user_votes = Voted.objects.filter(user=user)
@@ -352,7 +353,10 @@ def makeThread(request, object, user, depth=0, user_votes=None, user_comments=No
     if not excluded:
         excluded = []
     # Get all comments that are children of the object
-    comments = Comment.allobjects.filter(on_content=object).order_by('-created_when').exclude(id__in=excluded)[start:]
+    if order=='new':
+        comments = Comment.allobjects.filter(on_content=object).order_by('-created_when').exclude(id__in=excluded)[start:]
+    else:
+        comments = Comment.allobjects.filter(on_content=object).order_by('-upvotes').exclude(id__in=excluded)[start:]
     viewer = vals['viewer']
     top_levels = 0
     if comments:
