@@ -339,7 +339,7 @@ def login(request, to_page='home/', message="", vals={}):
 
 def loginMission(request, vals):
     valsMission(vals)
-    central_html = ajaxRender(template='site/pages/who-are-we.html', vals=vals, request=request)
+    central_html = ajaxRender(template='site/pages/october_login/mission.html', vals=vals, request=request)
     url = request.path
     return loginResponse(request, central_html, url, vals)
 

@@ -284,7 +284,6 @@ function smoothTransition(element, fun, time) {
     fun();
     var new_height = element.height();
     element.css("height", old_height);
-    element.css('height', old_height);
     element.animate({"height":new_height}, {"duration":time, "complete":function(){element.css("height", "auto");}});
 }
 
@@ -4993,4 +4992,23 @@ bind('.twitter_register_button', 'click', function(e) {
             }
         }
     });
+});
+
+bind('.goto_sign_up', 'click', function(e) {
+    var sign_up = $(".sign_up_wrapper");
+    var element = sign_up;
+    var old_height = element.height();
+    element.css("height", "auto");
+    var new_height = element.height();
+    element.css("height", old_height);
+    element.animate({"height":new_height}, {"duration":1000,
+        "complete":function(){
+            element.css("height", "auto");
+            element.css("overflow", "visible");
+        }});
+    setTimeout(function() {
+        $('body').animate({
+            scrollTop: element.offset().top - 150
+        }, 1000);
+    }, 250);
 });
