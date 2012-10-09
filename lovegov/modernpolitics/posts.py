@@ -1947,6 +1947,9 @@ def matchComparison(request,vals={}):
 def ajaxThread(request, vals={}):
     from lovegov.frontend.views import makeThread
     content = Content.objects.get(id=request.POST['c_id'])
+    order = request.POST.get('order')
+    if order!='new':
+        order = 'hot'
     excluded = request.POST.get('new_comments')
     if excluded:
         excluded = json.loads(excluded)
@@ -1954,14 +1957,16 @@ def ajaxThread(request, vals={}):
     limit = int(request.POST.get('limit', 500))
     start = int(request.POST.get('start', 0))
 
-    thread, top_count = makeThread(request, content, user, vals=vals, start=start, limit=limit, excluded=excluded)
+    thread, top_count = makeThread(request, content, user, vals=vals, start=start, limit=limit, excluded=excluded, order=order)
     to_return = {'html':thread, 'top_count': top_count}
     return HttpResponse(json.dumps(to_return))
 
 def getNewCommentsStats(request, vals={}):
     c_id = request.POST.get('c_id')
     content = Content.lg.get_or_none(id=c_id)
-    rendered_so_far = int(request.POST.get('rendered_so_far'))
+    rendered_so_far = request.POST.get('rendered_so_far')
+    if rendered_so_far:
+        rendered_so_far = int(rendered_so_far)
     comments = Comment.objects.filter(root_content=content).order_by('created_when')
     comments = [str(x.on_content.id) for x in comments[rendered_so_far:]]
     return_dict = {}

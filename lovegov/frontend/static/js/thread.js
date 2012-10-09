@@ -160,11 +160,13 @@ function loadMoreComments() {
     if(thread.length) {
         var cid = thread.data('cid');
         var next_start = thread.data('num-showing');
+        var order = getSortValue();
         var div_load_more = button;
         var loadingimg = $('<div style="text-align: center; margin: 20px 0"><img src="/static/images/gifs/ajax-loader.gif"></div>');
         loadingimg.appendTo(thread);
         action({
-            data: {'action': 'ajaxThread', 'c_id': cid, 'limit': num_to_load, 'start': next_start, 'new_comments': JSON.stringify(new_comments)},
+            data: {'action': 'ajaxThread', 'c_id': cid, 'limit': num_to_load, 'start': next_start, 'order': order,
+                'new_comments': JSON.stringify(new_comments)},
             success: function(data)
             {
                 var returned = $.parseJSON(data);
@@ -188,10 +190,16 @@ function loadMoreComments() {
 
 bind('div.thread-filters select', 'change', function(e) {
     var value = $(this).val();
-    alert('changy '+value);
+    clearThread();
+    loadMoreComments();
 });
 
+function getSortValue() {
+    return $('div.thread-filters select').val();
+}
+
 // Returns a dictionary mapping a comment id to the number of new child comments yet to be fetched and rendered
+// Calls callback when done
 function getNewCommentsStats(num_comments, callback) {
     var thread = $('div.thread');
     var c_id = thread.data('cid');
@@ -247,3 +255,12 @@ bind('div.show-new-replies', 'click', function(e) {
         });
     }
 });
+
+function clearThread() {
+    var thread = $('div.thread');
+    thread.children().remove();
+    // clear top-level comment count
+    thread.data('num-showing', 0);
+    // clear total comment count
+    thread.data('comments', 0);
+}
