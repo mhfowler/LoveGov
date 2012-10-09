@@ -1,11 +1,17 @@
 {% extends 'site/pages/feed/feed.html' %}
 
 {% block sort_buttons %}
+    <div class="elections-explanation">
+        Browse All Elections
+    </div>
 {% endblock %}
 
 {% block filter_buttons %}
-    {% include 'site/pages/feed/location_filters.html' with something="elections"%}
+    {% include 'site/pages/feed/location_filters.html' with something="elections" %}
 {% endblock %}
 
 {% block right_button %}
+    <a class="create-a-group create_election_link">
+        create an election
+    </a>
 {% endblock %}

@@ -54,6 +54,8 @@ def scriptUpdate(tag, args=[]):
     elif tag == 'groupviews':
         print "*** UPDATING AGGREGATE GROUP VIEWS ***"
         updateGroupViews()
+        print "*** UPDATING GROUP HOT SCORES ***"
+        updateGroupHotScores()
     elif tag == 'hot_scores':
         print "*** UPDATING HOT SCORES ***"
         updateHotScores()

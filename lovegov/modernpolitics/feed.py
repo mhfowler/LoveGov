@@ -355,6 +355,9 @@ def updateHotScores(debug=False):
         if debug: print q.get_name()
         q.recalculateQuestionHotScore()
 
+def updateGroupHotScores():
+    for g in Group.objects.filter(hidden=False):
+        g.calculateHotScore()
 
 ### update hot feed of a particular user ###
 def updateHotFeeds(debug=False):

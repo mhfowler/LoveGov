@@ -765,7 +765,8 @@ div.questions-header {
     }
     div.sidebar-header {
       width: 640px;
-      font-size:14px;
+      font-size:18px;
+      margin-top:7px;
     }
     div.questions-explanation {
       width:550px;
@@ -775,7 +776,6 @@ div.questions-header {
   div.questions-links {
     float:right;
     width:300px;
-    margin-top: 15px;
     a.question-link {
       display:block;
       padding:8px;
@@ -788,6 +788,7 @@ div.questions-header {
       font-size: 12px;
       &:hover {
         background-color:$dark-gray;
+        text-decoration:none;
       }
     }
   }

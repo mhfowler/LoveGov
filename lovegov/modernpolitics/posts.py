@@ -2133,7 +2133,7 @@ def everythingLoadedHelper(request, vals, feed_items):
 def getGroups(request, vals={}):
     from lovegov.frontend.views_helpers import valsGroup
     viewer = vals['viewer']
-    groups = Group.objects.filter(hidden=False, is_election=False).exclude(group_type="C").order_by("-num_members")
+    groups = Group.objects.filter(hidden=False, is_election=False).exclude(group_type="C")
 
     # filter by location
     state = request.POST['state']
@@ -2144,6 +2144,15 @@ def getGroups(request, vals={}):
         groups = groups.filter(location__state=state)
     else:
         groups = groups.exclude(group_type="S")
+
+    # sort
+    feed_rank = request.POST['feed_rank']
+    if feed_rank == "N":
+        groups = groups.order_by("-created_when")
+    elif feed_rank == "H":
+        groups = groups.order_by("-hot_score")
+    elif feed_rank == "B":
+        groups = groups.order_by("-num_members")
 
     feed_start = int(request.POST['feed_start'])
     groups = groups[feed_start:feed_start+5]

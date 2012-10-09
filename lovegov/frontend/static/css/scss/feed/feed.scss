@@ -353,12 +353,14 @@ div.feed-main
         }
 
         div.feed-location-filters {
+          margin-left:25px;
           height:40px;
-          padding-top:5px;
+          padding-top:4px;
           div.filter-by-location {
             float:left;
             display:inline;
             margin-top:5px;
+            color:$dark-gray;
           }
           div.filter-by-state {
             float:left;

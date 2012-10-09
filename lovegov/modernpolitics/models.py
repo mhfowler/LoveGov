@@ -4674,6 +4674,29 @@ class Group(Content):
     motion_expiration = models.IntegerField(default=7)          # number of days before motion expires and vote close
 
     #-------------------------------------------------------------------------------------------------------------------
+    # calculate hot score by group algo
+    #-------------------------------------------------------------------------------------------------------------------
+    def calculateHotScore(self):
+
+        now = datetime.datetime.now()
+        delta = datetime.timedelta(days=7)
+        week_ago = now - delta
+
+        print self.get_name()
+        score = 0
+
+        num_recent_group_content = Content.objects.filter(posted_to=self, created_when__gt=week_ago).count()
+        score += num_recent_group_content
+        if num_recent_group_content: print str(num_recent_group_content) + " recent content"
+
+        num_recent_members = GroupJoined.objects.filter(group=self, created_when__gt=week_ago).count()
+        score += num_recent_members
+        if num_recent_members: print str(num_recent_members) + " recent members"
+
+        self.hot_score = score
+        self.save()
+
+    #-------------------------------------------------------------------------------------------------------------------
     # get groupview response to question
     #-------------------------------------------------------------------------------------------------------------------
     def getResponseToQuestion(self, question):

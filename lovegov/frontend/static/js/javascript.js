@@ -430,7 +430,13 @@ function initFeedParameters() {
         feed_rank = 'H';
     }
     else {
-        feed_rank = 'N';
+        var best_pages = ['/groups/'];
+        if (best_pages.indexOf(PATH) != -1) {
+            feed_rank = "B";
+        }
+        else {
+            feed_rank = 'N';
+        }
     }
 
     var feed_data = feed_memory[PATH];

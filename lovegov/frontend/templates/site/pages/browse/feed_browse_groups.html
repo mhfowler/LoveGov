@@ -1,6 +1,14 @@
 {% extends 'site/pages/feed/feed.html' %}
 
 {% block sort_buttons %}
+
+    <div class='buttons-container-text'>Sort by:</div>
+
+
+    <div class="sort-button feed_button rank_button" data-rank="N" >New</div>
+    <div class="sort-button feed_button rank_button" data-rank="H">Hot</div>
+    <div class="sort-button feed_button rank_button last-button" data-rank="B">Size</div>
+
 {% endblock %}
 
 {% block filter_buttons %}
@@ -8,4 +16,7 @@
 {% endblock %}
 
 {% block right_button %}
+    <a class="create-a-group create_group_link">
+        create a group
+    </a>
 {% endblock %}
