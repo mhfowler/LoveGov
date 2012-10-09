@@ -284,7 +284,6 @@ function smoothTransition(element, fun, time) {
     fun();
     var new_height = element.height();
     element.css("height", old_height);
-    element.css('height', old_height);
     element.animate({"height":new_height}, {"duration":time, "complete":function(){element.css("height", "auto");}});
 }
 
@@ -5000,5 +4999,14 @@ bind('.goto_sign_up', 'click', function(e) {
     $('body').animate({
         scrollTop: sign_up.offset().top - 150
     }, 1000);
-    smoothTransition(sign_up, function() { sign_up.css("height", "auto");}, 1000);
+    var element = sign_up;
+    var old_height = element.height();
+    element.css("height", "auto");
+    var new_height = element.height();
+    element.css("height", old_height);
+    element.animate({"height":new_height}, {"duration":1000,
+        "complete":function(){
+            element.css("height", "auto");
+            element.css("overflow", "visible");
+        }});
 });
