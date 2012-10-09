@@ -4995,10 +4995,7 @@ bind('.twitter_register_button', 'click', function(e) {
 });
 
 bind('.goto_sign_up', 'click', function(e) {
-   var sign_up = $(".sign_up_wrapper");
-    $('body').animate({
-        scrollTop: sign_up.offset().top - 150
-    }, 1000);
+    var sign_up = $(".sign_up_wrapper");
     var element = sign_up;
     var old_height = element.height();
     element.css("height", "auto");
@@ -5009,4 +5006,9 @@ bind('.goto_sign_up', 'click', function(e) {
             element.css("height", "auto");
             element.css("overflow", "visible");
         }});
+    setTimeout(function() {
+        $('body').animate({
+            scrollTop: element.offset().top - 150
+        }, 1000);
+    }, 250);
 });
