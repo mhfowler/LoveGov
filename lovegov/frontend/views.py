@@ -370,7 +370,7 @@ def presidentialMatching(request, vals):
     vals['obama'] = obama
     vals['mitt'] = mitt
     vals['candidates'] = [obama, mitt]
-    vals['agreement_ids'] = [obama.id, mitt.id]
+    vals['agreement_ids'] = [int(obama.id), int(mitt.id)]
 
     vals['lgpoll'] = getLoveGovPoll()
 
