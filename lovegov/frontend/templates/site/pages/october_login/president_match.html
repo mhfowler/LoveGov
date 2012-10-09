@@ -13,6 +13,7 @@
         <div class="left-side">
             <div class="politician-image">
                 {% include 'site/pieces/avatar.html' with user=user width="150" height="150" hoveroff=1 %}
+                <div class="agreement_thoughts agreement-thoughts heart-gif" data-p_id="{{ user.id }}"></div>
             </div>
             <div class="politician-name">
                 {{ user.get_name }}

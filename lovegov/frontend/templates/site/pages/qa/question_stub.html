@@ -24,7 +24,9 @@
                 </td>
                 <td>
                     {% if single_item %}
-                        <div class="single-item-fetching feed_next"></div>
+                        {% comment %}
+                            <div class="single-item-fetching feed_next"></div>
+                        {% endcomment %}
                     {% else %}
                         {% if your_response %}
                             <a href="#" class="stub-button button-reanswer answer_button dummy_link"> re-answer</a>

@@ -369,6 +369,8 @@ def presidentialMatching(request, vals):
         mitt = getUser("Katy Perry")
     vals['obama'] = obama
     vals['mitt'] = mitt
+    vals['candidates'] = [obama, mitt]
+    vals['agreement_ids'] = [obama.id, mitt.id]
 
     vals['lgpoll'] = getLoveGovPoll()
 
