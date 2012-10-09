@@ -372,6 +372,7 @@ div.october-login {
     position:relative;
     left:-7px;
     margin-bottom:40px;
+    @include clearfix;
 
     div.video-wrapper {
       text-align:center;
@@ -608,12 +609,14 @@ div.presidential-matching {
     padding-top:25px;
     padding-left:0px;
     float:left;
-    position:absolute;
-    top:185px;
     div.october-sign-up {
       padding-left:0px;
       width:795px;
     }
+  }
+  div.how-it-works-wrapper {
+    float:left;
+    margin-top:30px;
   }
 }
 
