@@ -7,7 +7,6 @@
 /* group action buttons */
 div.group-actions
 {
-  margin-top: 6px;
   float:right;
   @include clearfix();
 
@@ -109,7 +108,7 @@ div.group-expanded
 {
   @include clearfix();
   overflow: hidden;
-  min-width: 910px;
+  //min-width: 910px;
 
   div.group-info
   {

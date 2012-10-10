@@ -44,6 +44,22 @@
 
 {% endblock %}
 
+{% block header_right %}
+    <div class="election-buttons group-actions">
+        {% if viewer.politician and not group.system and not viewer.running_for %}
+            {% include 'site/pages/elections/run_for_button.html' %}
+        {% elif viewer.running_for_id == info.election.id %}
+            {% include 'site/pages/elections/run_for_button.html' %}
+        {% endif %}
+        {% include 'site/pages/group/group_follow_button.html' with is_user_following=info.is_user_following %}
+        {% if viewer == info.election.creator %}
+            {% include 'site/pages/elections/invite_to_run_for_button.html' %}
+        {% endif %}
+        {% if not viewer.politician and not group.system and not viewer.running_for %}
+            Are you a politician running for office? <a href="/settings/i_am_a_politician/">Update your profile</a> to run for this election.
+        {% endif %}
+    </div>
+{% endblock %}
 
 {% block header_info %}
 
@@ -67,35 +83,19 @@
                 </div>
             </div>
 
-            <div class="election-buttons group-actions">
-                {% if viewer.politician and not group.system and not viewer.running_for %}
-                    {% include 'site/pages/elections/run_for_button.html' %}
-                {% elif viewer.running_for_id == info.election.id %}
-                    {% include 'site/pages/elections/run_for_button.html' %}
-                {% endif %}
-                {% include 'site/pages/group/group_follow_button.html' with is_user_following=info.is_user_following %}
-                {% if viewer == info.election.creator %}
-                    {% include 'site/pages/elections/invite_to_run_for_button.html' %}
-                {% endif %}
-                {% if not viewer.politician and not group.system and not viewer.running_for %}
-                    Are you a politician running for office? <a href="/settings/i_am_a_politician/">Update your profile</a> to run for this election.
-                {% endif %}
+            <div style="clear:both;"></div>
+        </div>
+    </div>
+
+    <div class="running">
+        {% for user in info.running %}
+            <div class="election-card-wrapper {% if forloop.last %} last {% endif %} {% if forloop.counter < 4 %} first-row {% endif %}">
+                {% include 'site/pages/elections/election_card.html'  %}
             </div>
-
-            <div style="clear:both;"></div>
-        </div>
-
-        <div class="running">
-            {% for user in info.running %}
-                <div class="election-card-wrapper {% if forloop.last %} last {% endif %} {% if forloop.counter < 4 %} first-row {% endif %}">
-                    {% include 'site/pages/elections/election_card.html'  %}
-                </div>
-            {% empty %}
-                <div class="no-one-running"> No one is running in this election yet. </div>
-            {% endfor %}
-            <div style="clear:both;"></div>
-        </div>
-
+        {% empty %}
+            <div class="no-one-running"> No one is running in this election yet. </div>
+        {% endfor %}
+        <div style="clear:both;"></div>
     </div>
 
 {% endblock %}

@@ -6,11 +6,7 @@
         {% include 'site/pages/elections/introduction_election_header.html' with intro_title="Presidential" %}
     {% endif %}
 
-    {% if ABOVE_QUESTIONS_THRESHOLD %}
-        {% include 'site/pages/elections/election_header.html' with info_height="285px" info_expanded=1 no_expand=1 %}
-    {% else %}
-        {% include 'site/pages/elections/election_header.html' with info_height="285px" info_expanded=1 no_expand=1 no_divider=1 %}
-    {% endif %}
+    {% include 'site/pages/elections/election_header.html' with info_height="285px" info_expanded=1 no_expand=1 %}
 
 {% endblock %}
 

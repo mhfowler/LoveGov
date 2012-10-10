@@ -10,6 +10,12 @@
 
     </div>
 
+    <div class="home-header-right">
+        {% block header_right %}
+            this is home header right
+        {% endblock %}
+    </div>
+
     <div class="home_header_info home-header-info" {% if info_height %} data-height="{{ info_height }}" {% else %} data-height="110px" {% endif %}>
         {% block header_info %}
             this is home header expanded shown

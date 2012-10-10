@@ -18,40 +18,47 @@
     <!-- feed tutorial -->
     {% include 'site/pages/helper_bubbles/feedtut/feedtut.html' %}
 
-    <table class="feed-top-bar">
-        <tr>
+    <div class="feed-top-bar">
 
-            <td class="feed-left-buttons">
+        <div class="feed-left-buttons">
 
-                <div class="feed-buttons-container">
+            {% block left_button %}
+                {% if show_create_button %}
+                    <div class="create-button feedtut_create_parent" {% if g_id %} data-g_id="{{ g_id }}" {% endif %}>
+                        post
+                    </div>
+                {% endif %}
+            {% endblock %}
 
-                    {% block sort_buttons %}
+            <div class="feed-buttons-container">
 
-                        <div class='buttons-container-text'>Sort by:</div>
+                {% block sort_buttons %}
 
-
-                        <div class="sort-button feed_button rank_button" data-rank="N" >New</div>
-                        <div class="sort-button feed_button rank_button" data-rank="H">Hot</div>
-                        <div class="sort-button feed_button rank_button last-button" data-rank="B">Best</div>
-                    {% endblock %}
-
-                </div>
-
-                <div class="feed-buttons-container">
-
-                    {% block filter_buttons %}
-
-                        {% if not no_filters %}
+                    <div class='buttons-container-text'>Sort by:</div>
 
 
-                            <div class='buttons-container-text'>Filter by:</div>
+                    <div class="sort-button feed_button rank_button" data-rank="N" >New</div>
+                    <div class="sort-button feed_button rank_button" data-rank="H">Hot</div>
+                    <div class="sort-button feed_button rank_button last-button" data-rank="B">Best</div>
+                {% endblock %}
 
-                            <div class="sort-button feed_button type_button" data-type="N" >News</div>
-                            <div class="sort-button feed_button type_button" data-type="Q">Questions</div>
-                            <div class="sort-button feed_button type_button" data-type="P">Petitions</div>
-                            <div class="sort-button feed_button type_button last-button" data-type="D">Discussions</div>
+            </div>
 
-                            {% comment %}
+            <div class="feed-buttons-container">
+
+                {% block filter_buttons %}
+
+                    {% if not no_filters %}
+
+
+                        <div class='buttons-container-text'>Filter by:</div>
+
+                        <div class="sort-button feed_button type_button" data-type="N" >News</div>
+                        <div class="sort-button feed_button type_button" data-type="Q">Questions</div>
+                        <div class="sort-button feed_button type_button" data-type="P">Petitions</div>
+                        <div class="sort-button feed_button type_button last-button" data-type="D">Discussions</div>
+
+                        {% comment %}
                             {% if like_minded_filter %}
 
                                 <a class="like-minded-text like_minded_link dummy_link" id="like_minded_link_id"> only like-minded </a>
@@ -65,40 +72,28 @@
                             {% endif %}
                             {% endcomment %}
 
-                        {% endif %}
-
-                    {% endblock %}
-
-                </div>
-
-                {% if feedtut %}
-                    {% include 'site/pages/helper_bubbles/helper_robot.html' with tutorial="feed" %}
-                {% endif %}
-
-                <div style="clear:both"></div>
-
-            </td>
-
-            <td>
-                {% block right_button %}
-                    {% if not no_create_button %}
-                        <table class='create-button feedtut_create_parent'>
-                            <tr>
-                                <td class="create-button" {% if g_id %} data-g_id="{{ g_id }}" {% endif %}>
-                                    post
-                                </td>
-                            </tr>
-                        </table>
-
-                        <!-- helper bubble -->
-                        {% include 'site/pages/helper_bubbles/create_helper_bubble.html' with which_bubble="create_helper_bubble" arrow_direction="up" %}
-
                     {% endif %}
-                {% endblock %}
-            </td>
 
-        </tr>
-    </table>
+                {% endblock %}
+
+            </div>
+
+            {% if feedtut %}
+                {% include 'site/pages/helper_bubbles/helper_robot.html' with tutorial="feed" %}
+            {% endif %}
+
+            <div style="clear:both"></div>
+
+        </div>
+
+        <div>
+            {% block right_button %}
+                <!-- helper bubble -->
+                {% include 'site/pages/helper_bubbles/create_helper_bubble.html' with which_bubble="create_helper_bubble" arrow_direction="up" %}
+            {% endblock %}
+        </div>
+
+    </div>
 
     <div class="feed-content-wrapper">
         <div class="feed-content feed_content {% if not no_feed_rules %} feed-rules {% endif %}"></div>
@@ -125,9 +120,6 @@
             <div class="everything_loaded_image_wrapper">
 
             </div>
-            {% comment %}
-            <script src="//www.gmodules.com/ig/ifr?url=http://hosting.gmodules.com/ig/gadgets/file/108222585237173953480/XKCD-1_0_4.xml&amp;up_show_date=0&amp;up_show_summ=1&amp;up_num_entries=1&amp;synd=open&amp;w=940&amp;h=300&amp;title=&amp;border=%23ffffff%7C3px%2C1px+solid+%23999999&amp;output=js"></script>
-            {% endcomment %}
         </div>
     </div>
 

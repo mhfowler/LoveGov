@@ -46,7 +46,7 @@ div.feedtut_feed_item_parent {
   }
 }
 
-table.feedtut_create_parent {
+div.feedtut_create_parent {
   position:relative;
   div.feedtut_create {
     position:absolute;
@@ -117,6 +117,7 @@ div.load-more {
   color:$black;
   text-align:center;
   padding:6px;
+  float:left;
   //margin-top:15px;
 
   //margin-top:20px;
@@ -157,7 +158,7 @@ div.navigation-buttons {
   }
 }
 
-td.create-button
+div.create-button
 {
   @include staticImage('/images/icons/white_create.png');
 /*
@@ -218,25 +219,27 @@ div.feed-main
   div.feed-content.feed-rules {
     //border-left:1px solid $light-gray;
     //border-right:1px solid $light-gray;
+    float:left;
+    width:100%;
 
     div.feed-item-wrapper {
       border-bottom:1px solid $light-gray;
     }
   }
 
-  table.feed-top-bar
+  div.feed-top-bar
   {
     width: 100%;
-    //margin-top:15px;
+    float:left;
     //margin-bottom: 15px;
 
-    td.feed-left-buttons
+    div.feed-left-buttons
     {
-      vertical-align: middle;
-
+      float:left;
       div.feed-buttons-container
       {
         display: block;
+        padding-top:3px;
         float: left;
         margin-right: 20px;
 
@@ -362,7 +365,7 @@ div.feed-main
           margin-left:25px;
           height:40px;
           padding-top:4px;
-          width:405px;
+          width:415px;
           float:left;
           div.filter-by-location {
             float:left;
@@ -417,9 +420,10 @@ div.feed-main
 
     }
 
-    table.create-button
+    div.create-button
     {
-      float: right;
+      float: left;
+      margin-right:15px;
       position:relative;
     }
 
@@ -431,7 +435,8 @@ div.feed-main
   }
 
   div.feed-content-wrapper {
-
+    float: left;
+    width: 100%;
     div.feed-item {
       //display:none;
       color:$black;

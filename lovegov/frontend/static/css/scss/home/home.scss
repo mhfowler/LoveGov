@@ -158,6 +158,10 @@ div.home-reloading {
 div.home-header-top {
   @include clearfix;
   margin-bottom: 7px;
+  float:left;
+  div.group-top {
+    width:800px;
+  }
   div.home-section-title {
     text-transform:uppercase;
     font-size: 20px;
@@ -167,7 +171,16 @@ div.home-header-top {
   div.minimize-button {
     float:right;
   }
-
+}
+div.home-header-info {
+  float:left;
+  div.group-expanded {
+    width:800px;
+  }
+}
+div.home-header-right {
+  float: right;
+  width: 160px;
 }
 
 /* home page stuff */
@@ -213,6 +226,7 @@ table.home
 
     div.home-header
     {
+      float:left;
       width:100%;
       margin-top:8px;
 
@@ -231,6 +245,7 @@ table.home
     div.feed-wrapper
     {
       width:100%;
+      float:left;
     }
   }
 }
@@ -264,6 +279,9 @@ div.expand-info
 }
 div.no-expand-divider {
   border-bottom:1px dotted $dark-gray;
+  float: left;
+  margin-bottom: 15px;
+  width: 100%;
 }
 div.expand-info-wrapper {
   width:100%;
@@ -273,6 +291,7 @@ div.expand-info-wrapper {
     border-bottom:1px dotted $dark-gray;
     height:11px;
     float:left;
+    margin-bottom:20px;
   }
   a.expand-text {
     color:$gray;

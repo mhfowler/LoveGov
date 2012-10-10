@@ -39,44 +39,48 @@
 
 {% endblock %}
 
+{% block header_right %}
+
+    <!-- float right -->
+    <div class="group-actions group_actions">
+
+        {% if info.is_user_admin %}
+            <div class="group-action group-admin group_unadmin hover_text" data-g_id="{{ group.id }}"
+                 data-hover_text="step down" data-original_text="you're a moderator"> you're a moderator </div>
+        {% endif %}
+
+        {% include 'site/pages/group/group_join_button.html' %}
+
+        {% include 'site/pages/group/group_follow_button.html' with is_user_following=info.is_user_following %}
+
+        {% if group.scorecard %}
+            <a href="{{ group.scorecard.get_url }}" class="group-action"> view scorecard </a>
+        {% endif %}
+
+        {% if info.is_user_admin %}
+            {% if group.scorecard %}
+                <a class="group-action group_edit_scorecard" href="{{ group.scorecard.getEditURL }}">edit scorecard</a>
+                <a class="group-action group_remove_scorecard" data-g_id="{{ group.id }}">remove scorecard</a>
+            {% else %}
+                <div class="group-action create_scorecard" data-g_id="{{ group.id }}"> create scorecard </div>
+            {% endif %}
+            <div class="group-action group_invite_members" data-g_id="{{ group.id }}"> invite/add members </div>
+            <a href="{{ group.getSettingsURL }}" class="group-action"> edit group settings </a>
+            {% if num_group_requests > 0 %}
+                <div class="group-action view_group_requests" data-g_id="{{ group.id }}">join requests ({{ info.num_group_requests }})</div>
+            {% endif %}
+        {% endif %}
+
+    </div>
+
+{% endblock %}
+
 
 {% block header_info %}
 
-    <div class="group-expanded">
+    <div class="group-expanded ">
 
         <div class="group-info">
-
-            <!-- float right -->
-            <div class="group-actions group_actions">
-
-                {% if info.is_user_admin %}
-                    <div class="group-action group-admin group_unadmin hover_text" data-g_id="{{ group.id }}"
-                         data-hover_text="step down" data-original_text="you're a moderator"> you're a moderator </div>
-                {% endif %}
-
-                {% include 'site/pages/group/group_join_button.html' %}
-
-                {% include 'site/pages/group/group_follow_button.html' with is_user_following=info.is_user_following %}
-
-                {% if group.scorecard %}
-                    <a href="{{ group.scorecard.get_url }}" class="group-action"> view scorecard </a>
-                {% endif %}
-
-                {% if info.is_user_admin %}
-                    {% if group.scorecard %}
-                        <a class="group-action group_edit_scorecard" href="{{ group.scorecard.getEditURL }}">edit scorecard</a>
-                        <a class="group-action group_remove_scorecard" data-g_id="{{ group.id }}">remove scorecard</a>
-                    {% else %}
-                        <div class="group-action create_scorecard" data-g_id="{{ group.id }}"> create scorecard </div>
-                    {% endif %}
-                    <div class="group-action group_invite_members" data-g_id="{{ group.id }}"> invite/add members </div>
-                    <a href="{{ group.getSettingsURL }}" class="group-action"> edit group settings </a>
-                    {% if num_group_requests > 0 %}
-                        <div class="group-action view_group_requests" data-g_id="{{ group.id }}">join requests ({{ info.num_group_requests }})</div>
-                    {% endif %}
-                {% endif %}
-
-            </div>
 
             <!-- float left -->
             <div class="group-column group-left-column">
