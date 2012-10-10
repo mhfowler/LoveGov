@@ -341,6 +341,7 @@ class AnswerClass:
 # Returns:
 #   a string containing the content thread html
 #   the number of actual top-level comments (and their children) actually returned
+#   a list of the ids of the comments rendered
 #-----------------------------------------------------------------------------------------------------------------------
 def makeThread(request, object, user, depth=0, user_votes=None, user_comments=None, vals={}, start=0, limit=None, rendered_so_far=None, excluded=None, order='hot'):
     """Creates the html for a comment thread."""
@@ -352,12 +353,12 @@ def makeThread(request, object, user, depth=0, user_votes=None, user_comments=No
         rendered_so_far = [0]
     if not excluded:
         excluded = []
+    comment_ids = []
     # Get all comments that are children of the object
     if order=='new':
         comments = Comment.allobjects.filter(on_content=object).order_by('-created_when').exclude(id__in=excluded)[start:]
     else:
         comments = Comment.allobjects.filter(on_content=object).order_by('-upvotes').exclude(id__in=excluded)[start:]
-    viewer = vals['viewer']
     top_levels = 0
     if comments:
         # Start generating a string of html
@@ -370,15 +371,18 @@ def makeThread(request, object, user, depth=0, user_votes=None, user_comments=No
             if c.active or c.num_comments:
                 to_return += "<div class='threaddiv'>"     # open list
                 to_return += renderComment(request, vals, c, depth, user_votes, user_comments)
+                comment_ids.append(c.id)
                 rendered_so_far[0] += 1
                 if depth==0:
                     top_levels += 1
-                to_return += makeThread(request,c,user,depth+1,user_votes,user_comments,vals=vals,limit=limit,rendered_so_far=rendered_so_far)[0]    # recur through children
+                children_to_return, _, children_comment_ids = makeThread(request,c,user,depth+1,user_votes,user_comments,vals=vals,limit=limit,rendered_so_far=rendered_so_far)    # recur through children
+                to_return += children_to_return
+                comment_ids.extend(children_comment_ids)
                 to_return += "</div>"   # close list
-        return to_return, top_levels
+        return to_return, top_levels, comment_ids
     else:
         # No more comments found - return empty string
-        return '', top_levels
+        return '', top_levels, comment_ids
 
 
 def renderComment(request, vals, c, depth, user_votes=None, user_comments=None):

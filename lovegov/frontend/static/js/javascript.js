@@ -5032,9 +5032,4 @@ bind('.goto_sign_up', 'click', function(e) {
             element.css("height", "auto");
             element.css("overflow", "visible");
         }});
-    setTimeout(function() {
-        $('body').animate({
-            scrollTop: element.offset().top - 150
-        }, 1000);
-    }, 250);
 });
