@@ -352,10 +352,18 @@ div.feed-main
           top: -7px;
         }
 
+        div.what-kind-of-group {
+          float:left;
+          margin-left:10px;
+          padding-top:5px;
+        }
+
         div.feed-location-filters {
           margin-left:25px;
           height:40px;
           padding-top:4px;
+          width:405px;
+          float:left;
           div.filter-by-location {
             float:left;
             display:inline;

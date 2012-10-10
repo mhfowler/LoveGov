@@ -262,6 +262,29 @@ div.expand-info
     margin-bottom: 10px;
   }
 }
+div.no-expand-divider {
+  border-bottom:1px dotted $dark-gray;
+}
+div.expand-info-wrapper {
+  width:100%;
+  float:left;
+  span.dotted-line {
+    width:90%;
+    border-bottom:1px dotted $dark-gray;
+    height:11px;
+    float:left;
+  }
+  a.expand-text {
+    color:$gray;
+    float:left;
+    position: relative;
+    margin-left: 14px;
+    &:hover {
+      color:blue;
+      text-decoration:none;
+    }
+  }
+}
 
 div.left-navbar {
   position:relative;
