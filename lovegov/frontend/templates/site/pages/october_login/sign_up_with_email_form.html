@@ -13,26 +13,33 @@
 
     <div class="r-form-inputs">
         <div class="r-form-input">
-            <input type="text" class="r-input name_input" placeholder="Barack Obama" value="{{ name }}"/> <span class="r-label"> full name </span>
+            <span class="r-label"> full name </span>
+            <input type="text" class="r-input name_input" placeholder="Barack Obama" value="{{ name }}"/>
             <span class="r-error"> {{ name_error }} </span>
         </div>
 
         <div class="r-form-input">
-            <input type="text" class="r-input email_input" placeholder="barack@whitehouse.gov" value="{{ email }}"> <span class="r-label" style="margin-left: 36px"> email </span>
+            <span class="r-label"> email </span>
+            <input type="text" class="r-input email_input" placeholder="barack@whitehouse.gov" value="{{ email }}">
             <span class="r-error"> {{ email_error }} </span>
         </div>
 
         <div class="r-form-input">
-            <input type="text" class="r-input email2_input" placeholder="barack@whitehouse.gov"  value="{{ email2 }}"/> <span class="r-label" style="margin-left: 36px"> email </span>
+            <span class="r-label"> email </span>
+            <input type="text" class="r-input email2_input" placeholder="barack@whitehouse.gov"  value="{{ email2 }}"/>
             <span class="r-error"> {{ email2_error }} </span>
         </div>
 
     {% if form_type != 'twitter_register' %}
         <div class="r-form-input">
-            <input type="password" class="r-input password_input"/> <span class="r-label"> password </span>
+            <span class="r-label"> password </span>
+            <input type="password" class="r-input password_input"/>
             <span class="r-error"> {{ password_error }} </span>
+            <div style="clear:both;"></div>
         </div>
     {% endif %}
+
+        <div style="clear:both;"></div>
 
     </div>
 

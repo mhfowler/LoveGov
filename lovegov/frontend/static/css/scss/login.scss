@@ -737,10 +737,13 @@ div.new-register-form {
   text-align: center;
   span.r-error {
     position: absolute;
-    right: -20px;
     line-height: 14px;
-    width: 300px;
     color: $red;
+    width: 165px;
+    text-align: left;
+    position: absolute;
+    top: 12px;
+    left: 473px;
   }
   div.r-form-inputs {
     background-color: #f7f7f7;
@@ -750,12 +753,17 @@ div.new-register-form {
   div.r-form-input {
     position:relative;
     width:100%;
+    float:left;
     margin-bottom:10px;
     span.r-label {
-      margin-left:15px;
       margin-top:7px;
+      width: 160px;
+      text-align: left;
+      float: left;
+      padding-left:45px;
     }
     input.r-input {
+      float:left;
       color:$black;
       padding-left:5px;
       height:35px;
@@ -789,6 +797,7 @@ div.new-register-form {
     span.r-error {
       top: 30px;
       left: -15px;
+      text-align:right;
     }
     input.privacy-checkbox {
       margin-top: 15px;
@@ -805,10 +814,12 @@ div.new-register-form {
       margin-left:24px;
     }
     div.registering-gif {
-      float:left;
       margin-left: 27px;
       margin-top: 16px;
       display:none;
+      position: absolute;
+      top: 0px;
+      left: 107%;
     }
   }
 }
