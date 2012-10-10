@@ -304,7 +304,7 @@ def privacyPolicy(request, vals={}):
     return loginResponse(request, central_html, url, vals)
 
 def termsOfUse(request, vals={}):
-    defl = ajaxRender(template='site/pages/october_login/terms_of_use.html', vals=vals, request=request)
+    central_html = ajaxRender(template='site/pages/october_login/terms_of_use.html', vals=vals, request=request)
     url = request.path
     return loginResponse(request, central_html, url, vals)
 
