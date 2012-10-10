@@ -466,7 +466,7 @@ div.october-sign-up {
     width: 30%;
     float: left;
     a.fb-button {
-      @include staticImage($rel-path:'/images/login/fb-connect2.png');
+      @include staticImage($rel-path:'/images/login/fb-connect.png');
       width:250px;
       height:50px;
       background-repeat:no-repeat;
