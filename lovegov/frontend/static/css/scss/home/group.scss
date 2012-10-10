@@ -74,6 +74,7 @@ span.group-scale
   margin-top: 3px;
   margin-right:15px;
   margin-left:15px;
+  margin-bottom:4px;
 }
 
 span.group-num-members
@@ -81,9 +82,10 @@ span.group-num-members
   font-size: 12px;
   @include inline-block();
   float:left;
-  margin-right:15px;
+  margin-right:20px;
   margin-left:15px;
   margin-top: 3px;
+  margin-bottom:4px;
 }
 span.ampersand {
   font-size: 12px;
