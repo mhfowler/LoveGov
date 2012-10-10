@@ -19,6 +19,12 @@ if len(sys.argv) == 3:
 if len(sys.argv) == 4:
     days_for= int(sys.argv[3])
 
-sendHTMLEmail(subject="LoveGov Daily Summary [summary]", email_html=dailySummaryEmail(days_ago, days_for),
+email_html = email_html=dailySummaryEmail(days_ago, days_for)
+
+TMP_DEBUG = True
+if TMP_DEBUG:
+    print email_html
+
+sendHTMLEmail(subject="LoveGov Daily Summary [summary]", email_html=email_html,
             email_sender="info@lovegov.com", email_recipients=email_recipients)
 

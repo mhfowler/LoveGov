@@ -5,9 +5,9 @@ def printQAids():
     questions = Question.objects.filter(official=True)
     for q in questions:
         print "-----------------------"
-        print str(q.id) + ": " + q.title
+        print enc(str(q.id) + ": " + q.title)
         for a in q.answers.all():
-            print "-$-$-$- " + str(a.id) + ": " + a.answer_text
+            print enc("-$-$-$- " + str(a.id) + ": " + a.answer_text)
 
 ### recalculate location identifiers ###
 def recalculateLocationIdentifiers():
