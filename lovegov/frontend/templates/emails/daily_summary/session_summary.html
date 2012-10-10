@@ -6,7 +6,6 @@
         <li> {{ x.page }}
             {% if x.action %}:{{ x.action }}{% endif %}
             {% if x.duration  %} ({{ x.duration }} seconds) {% endif %}
-            {% comment %}
             {% if x.post_parameters_dict %}
                 <div style="
                 margin-left: 20px;
@@ -21,7 +20,6 @@
                     {% endfor %}
                 </div>
             {% endif %}
-           {% endcomment %}
         </li>
     {% endfor %}
 </ul>
