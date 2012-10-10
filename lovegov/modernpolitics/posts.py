@@ -2167,7 +2167,7 @@ def getGroups(request, vals={}):
     # sort
     feed_rank = request.POST['feed_rank']
     if feed_rank == "N":
-        groups = groups.order_by("-created_when")
+        groups = groups.filter(group_type="U").order_by("-created_when")
     elif feed_rank == "H":
         groups = groups.order_by("-hot_score")
     elif feed_rank == "B":
