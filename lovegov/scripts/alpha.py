@@ -74,6 +74,8 @@ def scriptCreateCongressAnswers(args=None):
                 amendment = LegislationAmendment.lg.get_or_none(amendment_type=chamber,congress_session=session,amendment_number=number)
                 if not amendment:
                     print "+WW+ Couldn't find amendment " + metricName
+
+                bill_or_amendment = amendment
             # Otherwise it's a bill
             else:
                 # Make the number non-existent
@@ -96,6 +98,8 @@ def scriptCreateCongressAnswers(args=None):
                 if not bill:
                     print "+WW+ Couldn't find bill " + metricName
 
+                bill_or_amendment = bill
+
 #            # Get answer text and value from spreadsheet
 #            answer_text = sheet.cell(row,0).value
 #            answer_text = answer_text.encode('utf-8','ignore')
@@ -116,6 +120,7 @@ def scriptCreateCongressAnswers(args=None):
                 answer_value = "+"
             else:
                 answer_value = "-"
+
             # Reset metrics value
             metrics[metricName] = 0
 
@@ -132,11 +137,17 @@ def scriptCreateCongressAnswers(args=None):
                 print "+EE+ Could not find bill or amendment for == " + str(legislation) + " " + str(congress_num)
                 continue
 
+            # the possible vote keys
+            possible_vote_keys = ["+", "-"]
+
             # Collect Votes from Congress Rolls
             for roll in congress_rolls:
                 for vote in roll.votes.all():
-                    if vote.votekey == answer_value:
+                    vote_key = vote.voteKey
+                    if vote_key == answer_value:
                         votes.append(vote)
+                    elif not vote_key in possible_vote_keys:
+                        print enc("+EE+ Vote roll had vote key that wasn't + or - | voter: " + vote.voter.get_name() + "| legislation: " + bill_or_amendment.get_name() )
 
             # For all votes
             for vote in votes:
@@ -151,7 +162,7 @@ def scriptCreateCongressAnswers(args=None):
                 # Look for that answer in the database
                 answer = Answer.lg.get_or_none(id=answer_id)
                 if not answer:
-                    print "+WW+ Couldn't find answer for :: " + answer_id
+                    print "+WW+ Couldn't find answer for :: " + str(answer.id)
                     continue
 
                 # Look for that question in the database
@@ -168,28 +179,6 @@ def scriptCreateCongressAnswers(args=None):
                 # Answer that shit!
                 answerAction(voter,question,"PUB",answer_id)
                 print "+II+ Successful Answer for " + voter.get_name()
-
-#                # Look for that response in the database
-#                responses = voter.view.responses.filter(question=question)
-#                if not responses: # If it doesn't exist, create it
-#                    response = Response(question=question,most_chosen_answer=answer,explanation="")
-#                    response.total_num = 1
-#                    response.most_chosen_num = 1
-#                    response.autoSave(creator=voter)
-#
-#                    voter.view.responses.add(response)
-#
-#                    metrics[metricName] += 1
-#                    print metricName + " " + str(metrics[metricName])
-#                # Otherwise, change the answer
-#                else:
-#                    if len(responses) > 1:
-#                        print "+DD+ Potential duplicate response for user ID #" + str(voter.id) + " and question ID #" + str(question.id)
-#                    response = responses[0]
-#                    response.most_chosen_answer = answer
-#                    response.total_num = 1
-#                    response.most_chosen_num = 1
-#                    response.save()
 
     return metrics
 

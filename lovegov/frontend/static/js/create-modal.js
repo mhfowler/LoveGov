@@ -1,5 +1,5 @@
 // Create button click
-bind('td.create-button', 'click', function(e) {
+bind('.create-button', 'click', function(e) {
     var gid = $(this).data('g_id');
     getModal('create_modal', {'gid': gid, 'selected_group': gid}, function() {
         $('div.create-modal > div').hide();
