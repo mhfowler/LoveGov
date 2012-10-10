@@ -21,15 +21,15 @@ if len(sys.argv) == 4:
 
 email_html = email_html=dailySummaryEmail(days_ago, days_for)
 
-TMP_DEBUG = True
-if TMP_DEBUG:
-    print email_html
-
-attachment_file = open('/tmp/daily_summary_html.html', 'r+')
+attachment_file = open('/tmp/daily_summary_html.html', 'w')
 attachment_file.write(email_html)
+attachment_file.close()
+
+attachment_file = open('/tmp/daily_summary_html.html', 'r')
+attachment_dict = {'file':attachment_file, 'name':'daily_summary.html'}
 
 email_html = "<p> Hey guys it's daily summary time! </p>"
 
 sendHTMLEmail(subject="LoveGov Daily Summary [summary]", email_html=email_html,
-            email_sender="info@lovegov.com", email_recipients=email_recipients, email_attachments=[attachment_file])
+            email_sender="info@lovegov.com", email_recipients=email_recipients, email_attachments=[attachment_dict])
 
