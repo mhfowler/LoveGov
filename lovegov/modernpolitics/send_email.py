@@ -21,16 +21,21 @@ from django.template import Context, loader
 #-----------------------------------------------------------------------------------------------------------------------
 # email backendery
 #-----------------------------------------------------------------------------------------------------------------------
-def sendHTMLEmail(subject, email_sender, email_recipients, email_html=None, template=None, dictionary=None):
+def sendHTMLEmail(subject, email_sender, email_recipients, email_html=None, template=None, dictionary=None, email_attachments=None):
     if not email_html:
         email_html = render_to_string(template,dictionary)
-    emailHelper(subject, email_html, email_sender, email_recipients)
+    emailHelper(subject, email_html, email_sender, email_recipients, email_attachments=email_attachments)
 
-def emailHelper(subject, email_html, email_sender, email_recipients):
+def emailHelper(subject, email_html, email_sender, email_recipients, email_attachments=None):
     email_html = email_html.encode('ascii', 'ignore')
     headers = {'From':'LoveGov <' + email_sender + '>'}
     msg = EmailMessage(subject, email_html, email_sender, email_recipients, headers=headers)
     msg.content_subtype = "html"
+
+    if email_attachments:
+        for f in email_attachments:
+            msg.attach(f.name, f.read(), "text/plain")
+
     try:
         msg.send()
     except Exception, e:
