@@ -2174,7 +2174,7 @@ def getGroups(request, vals={}):
         groups = groups.order_by("-num_members")
 
     feed_start = int(request.POST['feed_start'])
-    groups = groups[feed_start:feed_start+5]
+    groups = groups[feed_start:feed_start+6]
 
     vals['groups'] = groups
     groups_info = []
