@@ -365,7 +365,7 @@ div.no-login-footer.october-footer {
 
 div.october-login {
 
-  width:1000px;
+  width:1100px;
   margin:auto;
   padding:50px;
   min-height:600px;
@@ -382,7 +382,7 @@ div.october-login {
       padding:0px 50px;
       div.video-wrapper {
         width:100%;
-        text-align:left;
+        text-align:center;
         div.want-to-learn-more {
           font-size: 22px;
           margin-top: 15px;
@@ -398,15 +398,11 @@ div.october-login {
         }
         div.or-sign-up-wrapper {
           width:800px;
-          margin-left:4px;
+          margin-left:100px;
           font-size:16px;
-          span.or-sign-up {
-            float:left;
-          }
-          a.sign-up-button {
-            float:left;
-            margin-left:5px;
-          }
+          @include clearfix;
+          text-align: left;
+          display: inline-block;
         }
       }
       div.sign-up-wrapper {
@@ -419,13 +415,12 @@ div.october-login {
           padding-left:0px;
           float:left;
           //text-align:left;
-          width:800px;
+          width:900px;
         }
       }
 
       div.how-it-works-wrapper {
-        float:left;
-        margin-top:30px;
+        margin-top:100px;
       }
 
       div.mission-wrapper {
@@ -456,10 +451,8 @@ a.presidential-matching-link {
 }
 
 div.october-sign-up {
-  width:1000px;
+  width:900px;
   margin:auto;
-  padding-left: 200px;
-  padding-right: 200px;
   div.lg-appeal {
     width:100%;
     float:left;
@@ -469,80 +462,48 @@ div.october-sign-up {
     display:none;
   }
   div.top-buttons {
+    text-align: center;
+    width: 30%;
+    float: left;
     a.fb-button {
-      @include staticImage($rel-path:'/images/login/FB_login.png');
+      @include staticImage($rel-path:'/images/login/fb-connect2.png');
       width:250px;
       height:50px;
-      background-size:250px 50px;
       background-repeat:no-repeat;
-      float:left;
+      background-position: top left;
+      display: inline-block;
     }
     a.twitter-button {
-      @include staticImage($rel-path:'/images/login/Twitter_login.png');
+      @include staticImage($rel-path:'/images/login/tw-connect.png');
       background-repeat:no-repeat;
-      float:right;
+      display: inline-block;
       width:250px;
       height:50px;
       background-size:250px 50px;
-    }
-    a.fb-button:hover {
-      @include staticImage($rel-path:'/images/login/FB_login_hover.png');
-    }
-    a.twitter-button:hover {
-      @include staticImage($rel-path:'/images/login/Twitter_login_hover.png');
     }
   }
   div.left-side-disclaimer {
-    width: 100%;
+    width: 70%;
     float: left;
     font-size: 16px;
     text-align:center;
     color:$dark-gray;
-    margin-top: 55px;
+    margin-top: 30px;
     margin-bottom: 35px;
   }
   div.lower-area {
-    float:left;
+    text-align:center;
     div.sign-up-with-email-area {
-      float: left;
-      width:60%;
+      display: inline-block;
+      width:80%%;
       text-align:left;
+      padding:30px;
+      background-color: #eee;
+      margin-bottom: 25px;
+      @include border-radius(10px);
       p.sign-up-form-header {
         color:$red;
         font-size: 20px;
-      }
-    }
-    div.action-items-area {
-      float:right;
-      width:40%;
-      position: relative;
-      left: 120px;
-      top: 10px;
-      div.action-items-header {
-        font-size:20px;
-        margin-bottom:15px;
-      }
-      div.action-item {
-        width:100%;
-        display:block;
-        margin-bottom:15px;
-        @include clearfix;
-        div.action-item-num {
-          font-size:28px;
-          color:$red;
-          float:left;
-        }
-        div.action-item-text {
-          float:left;
-          margin-left: 30px;
-          padding-top: 8px;
-          font-size: 20px;
-        }
-      }
-      div.conclusion-item {
-        border-top:1px solid $red;
-        padding-top:15px;
-        font-size:20px;
       }
     }
   }
@@ -724,22 +685,25 @@ input.change-password-button {
 
 /* new register form */
 div.new-register-form {
-  width:400px;
+  width:100%;
+  text-align: center;
   span.r-error {
     position: absolute;
-    left: -80px;
-    top: 7px;
+    right: -20px;
     line-height: 14px;
-    width: 76px;
+    width: 300px;
     color: $red;
+  }
+  div.r-form-inputs {
+    background-color: #f7f7f7;
+    padding: 20px;
+    @include border-radius(10px);
   }
   div.r-form-input {
     position:relative;
     width:100%;
-    float:left;
     margin-bottom:10px;
     span.r-label {
-      float:left;
       margin-left:15px;
       margin-top:7px;
     }
@@ -748,7 +712,6 @@ div.new-register-form {
       padding-left:5px;
       height:35px;
       width:300px;
-      float:left;
       @include titleFont();
       font-size: 20px;
     }
@@ -774,14 +737,12 @@ div.new-register-form {
   div.r-bottom {
     position:relative;
     width:100%;
-    margin-top:3px;
-    float:left;
+    margin-top:30px;
     span.r-error {
       top: 30px;
       left: -15px;
     }
     input.privacy-checkbox {
-      float:left;
       margin-top: 15px;
       margin-left: 5px;
     }
@@ -791,11 +752,9 @@ div.new-register-form {
       @include titleFont;
       margin-top: 11px;
       margin-left:10px;
-      float:left;
     }
     a.r-register {
       margin-left:24px;
-      float:left;
     }
     div.registering-gif {
       float:left;

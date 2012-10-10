@@ -6,6 +6,7 @@ bind("div.reply .tab-button.cancel", "click", function(event) {
 
 
 var lockThreadReply = false;
+var comment_id_list = {};
 
 // Save click - append, reply, or new comment
 bind("div.reply .tab-button.save", "click", function(event) {
@@ -37,6 +38,7 @@ bind("div.reply .tab-button.save", "click", function(event) {
                     }
                     lockThreadReply = false;
                     updateThreadCommentCount();
+                    comment_id_list[cid]= true;
                     bindTooltips();
                 }
             });
@@ -171,6 +173,11 @@ function loadMoreComments() {
             {
                 var returned = $.parseJSON(data);
                 var top_count = returned.top_count;
+                var comment_ids = returned.comment_ids;
+                for(i in comment_ids) {
+                    comment_id_list[comment_ids[i]] = true;
+                }
+                console.log(comment_id_list);
                 if(top_count==0) {
                     div_load_more.addClass('disabled');
                     div_load_more.text("there are no more comments to load");
@@ -214,11 +221,14 @@ function getNewCommentsStats(num_comments, callback) {
 
 }
 
-function updateNewComments(comment_id, num) {
+function incrementNewComments(comment_id) {
     var commentdiv = $("div.comment[data-cid='"+comment_id+"']");
     var show_new_replies = commentdiv.find('div.show-new-replies');
-    show_new_replies.find('span.num-new-replies').text(num);
-    show_new_replies.data('num-new-replies', num);
+    var numspan = show_new_replies.find('span.num-new-replies');
+    var num = numspan.text();
+    var newnum = parseInt(num) + 1;
+    numspan.text(newnum);
+    show_new_replies.data('num-new-replies', newnum);
     show_new_replies.fadeIn(500);
 }
 
@@ -226,8 +236,19 @@ function fetchAndUpdateNewComments() {
     var thread = $('div.thread');
     var num_comments = thread.data('comments');
     var callback = function(stats) {
-        for(var comment_id in stats) {
-            updateNewComments(comment_id, stats[comment_id]);
+        for(var parent_id in stats) {
+            var child_id_list = stats[parent_id];
+            if(comment_id_list[parent_id]) {
+                for(var child_id_i in child_id_list) {
+                    var child_id = child_id_list[child_id_i];
+                    if(!comment_id_list[child_id]) {
+                        console.log(child_id+" was not in "+comment_id_list);
+                        incrementNewComments(parent_id);
+                        comment_id_list[child_id] = true;
+                    }
+                }
+            }
+
         }
     }
     getNewCommentsStats(num_comments, callback);

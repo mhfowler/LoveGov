@@ -1957,8 +1957,8 @@ def ajaxThread(request, vals={}):
     limit = int(request.POST.get('limit', 500))
     start = int(request.POST.get('start', 0))
 
-    thread, top_count = makeThread(request, content, user, vals=vals, start=start, limit=limit, excluded=excluded, order=order)
-    to_return = {'html':thread, 'top_count': top_count}
+    thread, top_count, comment_ids = makeThread(request, content, user, vals=vals, start=start, limit=limit, excluded=excluded, order=order)
+    to_return = {'html':thread, 'top_count': top_count, 'comment_ids': comment_ids}
     return HttpResponse(json.dumps(to_return))
 
 def getNewCommentsStats(request, vals={}):
@@ -1968,10 +1968,15 @@ def getNewCommentsStats(request, vals={}):
     if rendered_so_far:
         rendered_so_far = int(rendered_so_far)
     comments = Comment.objects.filter(root_content=content).order_by('created_when')
-    comments = [str(x.on_content.id) for x in comments[rendered_so_far:]]
+    #comments = [str(x.on_content.id) for x in comments[rendered_so_far:]]
     return_dict = {}
     for comment in comments:
-        return_dict[comment] = return_dict.get(comment,0) + 1
+        parent_id = comment.on_content.id
+        child_id = comment.id
+        if parent_id in return_dict.keys():
+            return_dict[parent_id].append(child_id)
+        else:
+            return_dict[parent_id] = [child_id]
     return HttpResponse(json.dumps(return_dict))
 
 def getChildComments(request, vals={}):
