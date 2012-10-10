@@ -423,7 +423,7 @@ div.feed-main
     div.create-button
     {
       float: left;
-      margin-right:15px;
+      margin-right:25px;
       position:relative;
     }
 
@@ -443,6 +443,10 @@ div.feed-main
       margin-bottom:25px;
     }
 
+    div.feed-fetching-wrapper {
+        float:left;
+        width:100%;
+    }
     div.feed-fetching {
       @include staticImage("/images/gifs/fetching.gif");
       width:500px;

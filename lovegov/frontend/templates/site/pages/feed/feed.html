@@ -97,7 +97,10 @@
 
     <div class="feed-content-wrapper">
         <div class="feed-content feed_content {% if not no_feed_rules %} feed-rules {% endif %}"></div>
-        <div class="feed_fetching feed-fetching"></div>
+
+        <div class="feed-fetching-wrapper">
+            <div class="feed_fetching feed-fetching"></div>
+        </div>
 
         {% if not no_load_more %}
             <div class="load-more load_more"> <p> load more </p></div>

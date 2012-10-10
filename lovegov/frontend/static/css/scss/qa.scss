@@ -354,6 +354,7 @@ div.question_stub {
       font-size: 20px;
       color:$black;
       &:hover {
+        text-decoration:none;
         color:black;
       }
     }
