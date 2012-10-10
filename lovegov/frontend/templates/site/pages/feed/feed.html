@@ -23,11 +23,6 @@
         <div class="feed-left-buttons">
 
             {% block left_button %}
-                {% if show_create_button %}
-                    <div class="create-button feedtut_create_parent" {% if g_id %} data-g_id="{{ g_id }}" {% endif %}>
-                        post
-                    </div>
-                {% endif %}
             {% endblock %}
 
             <div class="feed-buttons-container">
@@ -88,6 +83,11 @@
 
         <div>
             {% block right_button %}
+                {% if show_create_button %}
+                    <div class="create-button feedtut_create_parent" {% if g_id %} data-g_id="{{ g_id }}" {% endif %}>
+                        post
+                    </div>
+                {% endif %}
                 <!-- helper bubble -->
                 {% include 'site/pages/helper_bubbles/create_helper_bubble.html' with which_bubble="create_helper_bubble" arrow_direction="up" %}
             {% endblock %}
