@@ -1,7 +1,5 @@
 {% extends 'site/pages/home/focus.html' %}
 
-{% load thumbnail %}
-
 {% block home_header %}
 
     <div class="browse-all">
@@ -9,34 +7,6 @@
         {% if not hide_intros %}
             {% include 'site/pages/groups/introduction_groups_header.html' with intro_title="Join Groups" %}
         {% endif %}
-
-        <div class="questions-header">
-
-            <div class="select-parties">
-
-                <div class="select-parties-header">
-                    Political Parties
-                </div>
-
-                <div class="parties-options party-choices-wrapper">
-                    {% for party in parties %}
-                        <span>
-                            {% thumbnail party.party_label "100x20" as im %}
-                                    <img class="select_party party-choice {% if party in user_parties %} selected {% endif %}" src="{{ im.url }}" data-g_id="{{ party.id }}"/>
-                            {% endthumbnail %}
-                        </span>
-                    {% endfor %}
-                </div>
-
-            </div>
-
-            <a class="create-a-group create_group_link">
-                create a group
-            </a>
-
-            <div style="clear:both;"></div>
-
-        </div>
 
     </div>
 

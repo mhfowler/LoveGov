@@ -7,7 +7,6 @@
 /* group action buttons */
 div.group-actions
 {
-  margin-top: 6px;
   float:right;
   @include clearfix();
 
@@ -24,6 +23,7 @@ div.group-actions
 
     &:hover
     {
+      text-decoration:none;
       background-color:$dark-gray;
       cursor:pointer;
     }
@@ -74,6 +74,7 @@ span.group-scale
   margin-top: 3px;
   margin-right:15px;
   margin-left:15px;
+  margin-bottom:4px;
 }
 
 span.group-num-members
@@ -81,9 +82,10 @@ span.group-num-members
   font-size: 12px;
   @include inline-block();
   float:left;
-  margin-right:15px;
+  margin-right:20px;
   margin-left:15px;
   margin-top: 3px;
+  margin-bottom:4px;
 }
 span.ampersand {
   font-size: 12px;
@@ -109,7 +111,7 @@ div.group-expanded
 {
   @include clearfix();
   overflow: hidden;
-  min-width: 910px;
+  //min-width: 910px;
 
   div.group-info
   {

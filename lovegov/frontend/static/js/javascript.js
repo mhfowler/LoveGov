@@ -430,7 +430,13 @@ function initFeedParameters() {
         feed_rank = 'H';
     }
     else {
-        feed_rank = 'N';
+        var best_pages = ['/groups/'];
+        if (best_pages.indexOf(PATH) != -1) {
+            feed_rank = "B";
+        }
+        else {
+            feed_rank = 'N';
+        }
     }
 
     var feed_data = feed_memory[PATH];
@@ -3033,6 +3039,13 @@ function saveAnswer(stub) {
         if (save_scorecard_answer == 1) {
             data['action'] = 'saveScorecardAnswer'
         }
+
+        // check if should check for agreement thoughts
+        var agreement_ids = container.data("agreement_ids");
+        if (typeof(agreement_ids) != 'undefined') {
+            data['agreement_ids'] = JSON.stringify(agreement_ids);
+        }
+
         // if only unanswered animate hide question
         var only_unanswered = container.data('only_unanswered');
         if (only_unanswered && a_id!=-1) {
@@ -3102,6 +3115,13 @@ function saveAnswer(stub) {
                 var agreement_bargraph = stub.find(".agreement_bargraph_seed");
                 if (agreement_bargraph.length!=0) {
                     initializeDomElement(agreement_bargraph);
+                }
+
+                if (returned.who_agrees) {
+                    $.each(returned.who_agrees, function(i,e) {
+                        var to_show = $('.agreement_thoughts[data-p_id="' + e + '"]');
+                        bubbleThoughts(to_show);
+                    });
                 }
             }
 
@@ -3329,6 +3349,13 @@ bind('div.stats-box.supporter-box', 'click', function(e) {
     var p_id = $('div.stats_object').data('p_id');
     getModal('supporting_user_modal', {'user': p_id});
 });
+
+function bubbleThoughts(div) {
+    div.fadeIn();
+    setTimeout(function() {
+        div.fadeOut();
+    }, 750);
+}
 
 function updateElementsAfterAnswer() {
     $(".update_after_answer").each(function(i,e) {
@@ -4995,8 +5022,7 @@ bind('.twitter_register_button', 'click', function(e) {
 });
 
 bind('.goto_sign_up', 'click', function(e) {
-    var sign_up = $(".sign_up_wrapper");
-    var element = sign_up;
+    var element = $(".sign_up_wrapper");
     var old_height = element.height();
     element.css("height", "auto");
     var new_height = element.height();

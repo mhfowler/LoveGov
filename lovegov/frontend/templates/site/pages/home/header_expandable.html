@@ -1,18 +1,39 @@
 <div class="expandable_wrapper" {% if info_expanded %} data-info_expanded="true" {% endif %}>
-<div class="home_header_top home-header-top">
-    {% block header_top %}
-        this is home header
-    {% endblock %}
+    <div class="home_header_top home-header-top">
+        {% block header_top %}
+            this is home header
+        {% endblock %}
+
+        {% comment %}
     <div class="minimize-button hide_info"> - minimize info </div>
-</div>
+    {% endcomment %}
 
-<div class="home_header_info home-header-info" {% if info_height %} data-height="{{ info_height }}" {% else %} data-height="110px" {% endif %}>
-    {% block header_info %}
-        this is home header expanded shown
-    {% endblock %}
-</div>
+    </div>
 
-<div class="expand-info expand_info">
-    <p class="expand-text"> {% if info_expanded %} &#8211 reduce info {% else %}+ expand info {% endif %} </p>
-</div>
+    <div class="home-header-right">
+        {% block header_right %}
+            this is home header right
+        {% endblock %}
+    </div>
+
+    <div class="home_header_info home-header-info" {% if info_height %} data-height="{{ info_height }}" {% else %} data-height="110px" {% endif %}>
+        {% block header_info %}
+            this is home header expanded shown
+        {% endblock %}
+    </div>
+
+    {% if not no_expand %}
+        {% comment %}
+        <div class="expand-info expand_info">
+            <p class="expand-text"> {% if info_expanded %} &#8211 reduce info {% else %}+ expand info {% endif %} </p>
+        </div>
+        {% endcomment %}
+        <div class="expand-info-wrapper">
+            <span class="dotted-line"></span> <a class="expand-text expand_info"> {% if info_expanded %} &#8211 reduce info {% else %}+ expand info {% endif %} </a>
+        </div>
+    {% else %}
+        {% if not no_divider %}
+            <div class="no-expand-divider"></div>
+        {% endif %}
+    {% endif %}
 </div>

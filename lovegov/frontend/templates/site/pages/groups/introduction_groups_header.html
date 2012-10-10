@@ -1,5 +1,7 @@
 {% extends 'site/pages/dismissible_headers/introduction_header.html' %}
 
+{% load thumbnail %}
+
 {% block introduction_content %}
 
     <p>
@@ -12,5 +14,29 @@
         Political parties, regional communities, and organizations are all groups on LoveGov.
         If you entered your voting address, then you’ve already been added to your city and state groups.
     </p>
+
+    <p>
+        A good place to start is by choosing the political party or parties that you would like to affiliate with.
+    </p>
+
+    <div class="select-parties">
+
+        {% comment %}
+            <div class="select-parties-header">
+                Political Parties
+            </div>
+        {% endcomment %}
+
+        <div class="parties-options party-choices-wrapper">
+            {% for party in parties %}
+                <span>
+                            {% thumbnail party.party_label "100x20" as im %}
+                                <img class="select_party party-choice {% if party in user_parties %} selected {% endif %}" src="{{ im.url }}" data-g_id="{{ party.id }}"/>
+                            {% endthumbnail %}
+                        </span>
+            {% endfor %}
+        </div>
+
+    </div>
 
 {% endblock %}

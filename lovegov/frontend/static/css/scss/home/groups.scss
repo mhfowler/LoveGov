@@ -63,9 +63,10 @@ a.create-a-group {
   width:150px;
   text-align:center;
   //margin-right: 70px;
-  margin-top: 40px;
+  margin-top: 10px;
   &:hover {
     background-color:$red-light;
+    text-decoration:none;
   }
 }
 

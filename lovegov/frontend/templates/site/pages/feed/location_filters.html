@@ -1,7 +1,7 @@
 <div class="feed-location-filters">
 
-    <div class="filter-by-location">
-        Look for {{ something }} in
+    <div class="buttons-container-text">
+        Look for {{ something }} in:
     </div>
 
     <div class="filter-by-state {{ something }}">
@@ -15,8 +15,9 @@
 
     <div class="filter-by-city filter_by_city">
         <input type="text" class="filter-by-city-input filter_by_city_input" id="filter_by_city" placeholder="city"/>
-
+        {% comment %}
         <span class="input-explanation"> press enter to filter by city </span>
+        {% endcomment %}
     </div>
 
     <div style="clear:both;"></div>

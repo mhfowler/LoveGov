@@ -132,13 +132,14 @@ div.election-info {
     width:165px;
   }
 }
+
 div.running {
+  float:left;
   width:100%;
   display:block;
   div.no-one-running {
     margin-top:20px;
     width:100%;
-    text-align:center;
     font-size:48px;
     margin-bottom:30px;
   }
@@ -147,7 +148,7 @@ div.running {
 div.election-leader {
   color:$gray;
   float:left;
-  margin-left:10px;
+  //margin-left:10px;
   margin-top:1px;
   span.leader-name {
     color:$black;

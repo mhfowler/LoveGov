@@ -1,9 +1,9 @@
 {% extends 'site/pages/home/focus.html' %}
 
 {% block home_header %}
-    {% include 'site/pages/group/group_header.html' with info_height="113px" %}
+    {% include 'site/pages/group/group_header.html' with info_height="113px" info_expanded=1 %}
 {% endblock %}
 
 {% block home_feed %}
-    {% include 'site/pages/feed/feed.html' with feed_boxed=1 g_id=group.id %}
+    {% include 'site/pages/feed/feed.html' with feed_boxed=1 g_id=group.id show_create_button=1 %}
 {% endblock %}

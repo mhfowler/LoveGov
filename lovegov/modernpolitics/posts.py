@@ -1082,6 +1082,20 @@ def saveAnswer(request, vals={}):
     from lovegov.frontend.views_helpers import valsQuestionMetrics
     valsQuestionMetrics(question=question, vals=to_return)
 
+    # check for agreement thought ids
+    agreement_json = request.POST.get("agreement_ids")
+    if agreement_json:
+        agreement_ids = json.loads(agreement_json)
+        who_agrees = []
+        for id in agreement_ids:
+            person = UserProfile.objects.get(id=id)
+            person_response = person.getResponseToQuestion(question)
+            if your_response and person_response:
+                agrees = your_response.most_chosen_answer_id == person_response.most_chosen_answer_id
+                if agrees:
+                    who_agrees.append(id)
+        to_return['who_agrees'] = who_agrees
+
     response = HttpResponse(json.dumps(to_return))
     return cookieDataResponse(response, cookie_data, new_cookie)
 
@@ -2143,7 +2157,7 @@ def everythingLoadedHelper(request, vals, feed_items):
 def getGroups(request, vals={}):
     from lovegov.frontend.views_helpers import valsGroup
     viewer = vals['viewer']
-    groups = Group.objects.filter(hidden=False, is_election=False).exclude(group_type="C").order_by("-num_members")
+    groups = Group.objects.filter(hidden=False, is_election=False).exclude(group_type="C")
 
     # filter by location
     state = request.POST['state']
@@ -2155,8 +2169,17 @@ def getGroups(request, vals={}):
     else:
         groups = groups.exclude(group_type="S")
 
+    # sort
+    feed_rank = request.POST['feed_rank']
+    if feed_rank == "N":
+        groups = groups.filter(group_type="U").order_by("-created_when")
+    elif feed_rank == "H":
+        groups = groups.order_by("-hot_score")
+    elif feed_rank == "B":
+        groups = groups.order_by("-num_members")
+
     feed_start = int(request.POST['feed_start'])
-    groups = groups[feed_start:feed_start+5]
+    groups = groups[feed_start:feed_start+6]
 
     vals['groups'] = groups
     groups_info = []

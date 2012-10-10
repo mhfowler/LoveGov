@@ -49,7 +49,7 @@ div.post-twitter {
 
 /* blog */
 div.blog-wrapper {
-  padding: 0px 50px;
+  padding: 0px 0px;
 }
 
 /* october login */
@@ -506,6 +506,42 @@ div.october-sign-up {
         font-size: 20px;
       }
     }
+
+    div.action-items-area {
+      float:right;
+      width:41%;
+      position: relative;
+      left: 120px;
+      top: 10px;
+      div.action-items-header {
+        font-size:20px;
+        margin-bottom:15px;
+        display:none;
+      }
+      div.action-item {
+        width:100%;
+        display:block;
+        margin-bottom:15px;
+        @include clearfix;
+        div.action-item-num {
+          font-size:28px;
+          color:$red;
+          float:left;
+        }
+        div.action-item-text {
+          float:left;
+          margin-left: 30px;
+          padding-top: 8px;
+          font-size: 20px;
+        }
+      }
+      div.conclusion-item {
+        border-top:1px solid $red;
+        padding-top:15px;
+        font-size:20px;
+      }
+    }
+
   }
   div.about-privacy-policy {
     float: left;
@@ -542,6 +578,13 @@ div.presidential-matching {
           float:left;
           div.politician-image {
             float:none;
+            position:relative;
+            div.agreement-thoughts {
+              position:absolute;
+              left:105%;
+              top:-10%;
+              display:none;
+            }
           }
           div.politician-name {
             font-size:21px;
@@ -572,7 +615,7 @@ div.presidential-matching {
       float:right;
       margin-top: 0px;
       text-align: right;
-      width: 200px;
+      width: 160px;
       p.sign-up-text {
         text-align: right;
         float: right;
@@ -598,17 +641,18 @@ div.presidential-matching {
     margin-top:20px;
     width: 100%;
     float:left;
+    height:50px;
     div.presidential-matching-explanation {
       float:left;
-      font-size:21px;
+      font-size:20px;
       color:$dark-gray;
-      width: 800px;
+      width: 700px;
     }
     div.presidential-matching-counter {
       float: right;
       font-size: 33px;
       position: relative;
-      top: -8px;
+      top: -7px;
     }
     div.big-loading {
       @include staticImage("/images/gifs/fetching.gif");
@@ -644,11 +688,12 @@ div.presidential-matching {
     div.october-sign-up {
       padding-left:0px;
       width:795px;
+      float:left;
     }
-  }
-  div.how-it-works-wrapper {
-    float:left;
-    margin-top:30px;
+    div.how-it-works-wrapper {
+      float:left;
+      margin-top:30px;
+    }
   }
 }
 
@@ -668,8 +713,11 @@ div.trial-questions-wrapper {
   div.question_stub div.question_expanded_choose div.answer-actions div.a-action.discuss-question {
     display:none;
   }
-  div.question_stub div.question_expanded_choose div.answers-wrapper div.answer-choice {
-    width:96%;
+  div.question_stub div.question_expanded_choose div.answers-wrapper {
+    width:560px;
+    div.answer-choice {
+      width:96%;
+    }
   }
 }
 
