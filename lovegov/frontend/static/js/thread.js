@@ -270,7 +270,12 @@ bind('div.show-new-replies', 'click', function(e) {
         action({
            data: {'action': 'getChildComments', 'cid': cid, 'depth': depth, 'num_to_fetch': num},
            success: function(data) {
-               $(data).prependTo(threaddiv);
+               var newcomment = $(data);
+               newcomment.prependTo(threaddiv);
+               var oldbgcolor = newcomment.css('background-color');
+               console.log(newcomment);
+               newcomment.css('background-color', '#FFF7DE');
+               //newcomment.animate({'background-color': oldbgcolor}, 10000);
                updateThreadCommentCount();
            }
         });
