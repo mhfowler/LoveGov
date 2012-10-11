@@ -332,7 +332,7 @@ def login(request, to_page='home/', message="", vals={}):
         return twitter
 
    # Otherwise load the login page
-    central_html = ajaxRender(template='site/pages/october_login/video_login.html', vals=vals, request=request)
+    central_html = ajaxRender(template='site/pages/october_login/front_page.html', vals=vals, request=request)
     url = request.path
     return loginResponse(request, central_html, url, vals)
 

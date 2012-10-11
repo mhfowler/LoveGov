@@ -1,22 +1,22 @@
 <div class="hiw-what-is-lovegov">What is LoveGov?</div>
 
-<div class="hiw-lovegov-is"><p>LoveGov is an organizing platform and social network for both politically passionate and politically curious people to
-    <strong>discover causes</strong> they care about, take action, and stay informed.</p>
-    <p class="gray">You answer questions, we match you with politicians, candidates, interest groups, and other LoveGov members based on your beliefs.</p>
-
+{% if front_page %}
     {% comment %}
     <div class="try-it-out"><a href="/presidential_matching"><span class="try-it-out">Try it out</span></a></div>
     {% endcomment %}
 
-    {% comment %}
-    <div class="how-it-works-video-wrapper">
-        <iframe src="http://player.vimeo.com/video/48815262" width="800" height="450" frameborder="0" webkitAllowFullScreen mozallowfullscreen allowFullScreen></iframe>
-    </div>
-    {% endcomment %}
+    {% include 'site/pages/october_login/video_login.html' %}
+
+{% endif %}
+
+<div class="hiw-lovegov-is"><p>LoveGov is an organizing platform and social network for both politically passionate and politically curious people to
+    <strong>discover causes</strong> they care about, take action, and stay informed.</p>
+
+    <p class="gray">You answer questions, we match you with politicians, candidates, interest groups, and other LoveGov members based on your beliefs.</p>
 
 </div>
 
-<div class="hiw-what-is-lovegov" style="margin: 80px 0 40px 0">Who's your candidate crush?</div>
+<div class="hiw-what-is-lovegov" style="margin: 80px 0 40px 0">Who's your match?</div>
 
 <div style="text-align: center"><img src="{{ STATIC_URL }}/images/login/crush.png" style="margin-bottom: 80px;"></div>
 
@@ -57,7 +57,7 @@
 <div class="hiw-section">
     <div class="hiw-section-title">Discover groups that share your passion</div>
     <div class="hiw-section-body"> Join political parties, find groups in your area and get matched to organizations
-        share your beliefs and interests. Or create your own group and gain visibility for your cause.</div>
+        that share your beliefs and interests. Or create your own group and gain visibility for your cause.</div>
 </div>
 
 <div style="text-align: center"><img src="{{ STATIC_URL }}/images/login/group.png" style="margin: 30px 0;"></div>
@@ -69,20 +69,20 @@
         sign petitions, and debate the issues in discussion threads.</div>
 </div>
 
-<div style="width: 20%; float: left; margin-right: 30px;">
-    <img src="{{ STATIC_URL }}/images/about/creatediscuss.png" style="margin-top: 50px;">
-</div>
-
 <div class="hiw-section" style="width: 75%; float: left; clear: none;">
     <div class="hiw-section-title">Share and collaborate with platform tools</div>
     <div class="hiw-section-body">Post news, discuss current events, poll your community, organize your
         group's efforts and coordinate with other groups.</div>
 </div>
 
+<div style="width: 20%; float: right; margin-right: 30px;">
+    <img src="{{ STATIC_URL }}/images/about/creatediscuss.png" style="margin-top: 50px;">
+</div>
+
 <div style="text-align: center"><img src="{{ STATIC_URL }}/images/login/news.png" style="margin: 30px 0;"></div>
 
 <div class="hiw-section">
-    <div class="hiw-section-title">Get facts, not just opinions</div>
+    <div class="hiw-section-title">Get the facts</div>
     <div class="hiw-section-body">LoveGov aggregates publicly available data on legislation, voting records, elections,
         and other resources which can be easily browsed or referenced.
         For instance, we host detailed information on every bill passed by or proposed to the US Congress during the past three congressional sessions.
@@ -90,7 +90,7 @@
 </div>
 
 <div class="hiw-section">
-    <div class="hiw-section-title">Stay relevant</div>
+    <div class="hiw-section-title">Follow politics relevant to you</div>
     <div class="hiw-section-body">
         You can choose what groups and elections to follow, and we'll only show you content posted there.
         We'll also suggest local groups and content.
@@ -104,7 +104,7 @@
 </div>
 
 <div class="hiw-section">
-    <div class="hiw-section-title">See where everyone else stands</div>
+    <div class="hiw-section-title">See where the world stands</div>
     <div class="hiw-section-body">All responses to questions are publicly available, and anyone can post questions 
     to LoveGov. By answering questions, users improve their matches on local,
     state and federal levels and get to have their views heard.</div>
