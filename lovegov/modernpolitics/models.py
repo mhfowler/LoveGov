@@ -3812,7 +3812,7 @@ class Legislation(Content):
     
     # Bill Identifiers
     congress_session = models.ForeignKey(CongressSession)
-    bill_type = models.CharField(max_length=2)
+    bill_type = models.CharField(max_length=2)                              # "hr", "hj", "hc", "sr", "sj", "sc"
     congress_body = models.CharField(max_length=1, default="H")             # can be h or s (house or senate)
     bill_number = models.IntegerField()
     # Bill Times
