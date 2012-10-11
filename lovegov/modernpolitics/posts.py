@@ -1981,7 +1981,8 @@ def getNewCommentsStats(request, vals={}):
     rendered_so_far = request.POST.get('rendered_so_far')
     if rendered_so_far:
         rendered_so_far = int(rendered_so_far)
-    comments = Comment.objects.filter(root_content=content).order_by('created_when')
+    viewer = vals['viewer']
+    comments = Comment.objects.filter(root_content=content).order_by('created_when').exclude(creator=viewer)
     #comments = [str(x.on_content.id) for x in comments[rendered_so_far:]]
     return_dict = {}
     for comment in comments:
