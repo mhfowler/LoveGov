@@ -1,5 +1,15 @@
 from lovegov.modernpolitics.initialize import *
 
+### recalculate bill types  ####
+def recalculateBillTypes():
+    hs = Legislation.objects.filter(bill_type="h")
+    print "changing: " + str(hs.count())
+    for x in hs:
+        x.bill_type = "hr"
+        x.save()
+        print enc(x.get_name())
+
+
 ## print ids for greg ##
 def printQAids():
     questions = Question.objects.filter(official=True)
