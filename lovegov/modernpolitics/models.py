@@ -1341,7 +1341,14 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
             self.updateHotFeed()
 
     def updateHotFeed(self):
-        self.last_updated_hot_feed = datetime.datetime.now()
+
+        # try to avoid multiple hot feed updates running at once
+        now = datetime.datetime.now()
+        safety_delta = datetime.timedelta(minutes=1)
+        if now - self.last_updated_hot_feed < safety_delta:
+            return False
+
+        self.last_updated_hot_feed = now
         self.save()
         self.hot_feed.clear()
         hot_feed_content = self.calculateHotFeedContent()
