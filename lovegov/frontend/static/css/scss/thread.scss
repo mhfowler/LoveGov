@@ -68,13 +68,24 @@ div.comment
     top: 30px;
     left: 27px;
   }
-  div.show-new-replies {
-    float: right;
-    cursor: pointer;
-    display: none;
-    &:hover {
-      text-decoration: underline;
-    }
+
+}
+
+div.show-new-replies {
+  float: right;
+  cursor: pointer;
+  display: none;
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+div.top-show-new-replies {
+  text-align: center;
+  cursor: pointer;
+  display: none;
+  &:hover {
+    text-decoration: underline;
   }
 }
 
