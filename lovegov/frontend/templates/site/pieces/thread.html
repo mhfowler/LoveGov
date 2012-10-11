@@ -1,5 +1,7 @@
 <span class="discuss">Discuss
-    <div class="thread-filters"><label>sort comments by:</label><select><option selected>hot</option><option>new</option></select> </div>
+    <div class="thread-filters"><label>sort comments by:</label>
+        <select><option {% if content.default_sort == 'h' %}selected{% endif %}>hot</option>
+            <option {% if content.default_sort == 'n' %}selected{% endif %}>new</option></select> </div>
 </span>
 {% include 'site/pieces/reply-form.html' with width="100%" depth='-1' content=content class="reply-new" %}
 <!-- comment thread -->
