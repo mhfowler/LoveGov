@@ -1331,9 +1331,14 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
             content = content[start:]
         if end:
             content = content[:end]
-        if content[0].id == content[1].id:
-            from lovegov.modernpolitics.helpers import LGException
-            LGException("Duplicate content in hot feed for: " + self.get_name())
+
+        from lovegov.modernpolitics.helpers import LGException
+        try:
+            if content[0].id == content[1].id:
+                LGException(enc("Duplicate content in hot feed for: " + self.get_name()))
+        except Exception as e:
+            LGException(enc("error catching duplicated hot item for: " + self.get_name() + " | " + str(len(content))))
+
         return content
 
     def updateHotFeedIfOld(self, delta=None):
