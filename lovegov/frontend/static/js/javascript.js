@@ -5033,3 +5033,9 @@ bind('.goto_sign_up', 'click', function(e) {
             element.css("overflow", "visible");
         }});
 });
+
+bind('img#videoscreen_img', 'click', function(e) {
+    $(this).fadeOut(200);
+    var iframe = $('<iframe src="http://player.vimeo.com/video/48815262?autoplay=1" width="800" height="450" frameborder="0" webkitAllowFullScreen mozallowfullscreen allowFullScreen></iframe>');
+    $(this).after(iframe);
+});

@@ -348,6 +348,7 @@ class Content(ActiveModel, Privacy, LocationLevel):
     main_image = models.ForeignKey("UserImage", null=True, blank=True)
     calculated_view = models.ForeignKey("WorldView", null=True, blank=True)     # foreign key to worldview
     last_answered = models.DateTimeField(auto_now_add=True, null=True)          # last time answer question, or have answers calculated
+    default_sort = models.CharField(max_length=1, blank=False, null=False, default='h')
     # RANK, VOTES
     status = models.IntegerField(default=STATUS_CREATION)
     rank = models.DecimalField(default="0.0", max_digits=4, decimal_places=2)       # deprecated
