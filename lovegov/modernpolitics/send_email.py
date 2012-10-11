@@ -141,7 +141,7 @@ def sendWeeklyDigestEmail(user_profile):
     sendLoveGovEmailHelper(user_profile, subject, email_vals, email_template)
 
 def sendWeeklyDigestEmails():
-    u = UserProfile.objects.filter(ghost=False, id__gt=53)
+    u = UserProfile.objects.filter(ghost=False)
     for x in u:
         sendWeeklyDigestEmail(x)
 
