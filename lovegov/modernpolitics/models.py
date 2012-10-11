@@ -2176,8 +2176,6 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
 #            self.networks.add(location_network)
 
 
-        self.setUsername(fb_data['email'])
-
     #-------------------------------------------------------------------------------------------------------------------
     # Gets worldview for user.
     #-------------------------------------------------------------------------------------------------------------------
