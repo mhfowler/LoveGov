@@ -5340,13 +5340,16 @@ class CalculatedGroup(Group):
                 if x.num_answers >= LIKE_MINDED_NUMQ_THRESHOLD:
                     comparison = x.getComparison(viewer)
                     if comparison.result >= LIKE_MINDED_RESULT_THRESHOLD and comparison.num_q >= LIKE_MINDED_NUMQ_THRESHOLD:
-                        self.members.add(x)
-                        found.append(x)
+                        try:
+                            self.members.add(x)
+                            found.append(x)
+                        except:
+                            error_logger.error("Failed to add to like minded " + enc(x.get_name()) + " to " + enc(viewer.get_name()))
                 try:
                     self.processed.add(x)
                     processed_num += 1
                 except:
-                    error_logger.error("Failed to add to like minded " + enc(x.get_name()) + " to " + enc(viewer.get_name()))
+                    error_logger.error("Failed to process like minded " + enc(x.get_name()) + " to " + enc(viewer.get_name()))
 
         if not processed_num:
             viewer.addFinishedTask("L")

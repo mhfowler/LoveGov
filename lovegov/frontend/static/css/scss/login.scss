@@ -390,11 +390,19 @@ div.october-login {
           width:800px;
           span.new-to-lovegov {
             font-size:22px;
+            float: left;
+            padding-top: 11px;
           }
           a.presidential-matching-link {
             margin-left: 51px;
             position: relative;
             top: 12px;
+          }
+          div.or-sign-up-area {
+            margin-top: 30px;
+            text-align: left;
+            float: left;
+            width: 100%;
           }
         }
         div.or-sign-up-wrapper {

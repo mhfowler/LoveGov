@@ -48,6 +48,7 @@ def scriptCreateCongressAnswers(args=None):
     overall_metrics['actions_attempted'] = 0
     overall_metrics['actions_failed'] = 0
     overall_metrics['bills_not_found'] = 0
+    overall_metrics['multiple_bills_found'] = 0
     overall_metrics['invalid_votes'] = 0
     overall_metrics['answer_ids_not_found'] = 0
     overall_metrics['questions_not_found'] = 0
@@ -73,7 +74,7 @@ def scriptCreateCongressAnswers(args=None):
         congress_num = int(congress_session_text.replace("th",""))
         session = CongressSession.lg.get_or_none(session=congress_num)
 
-        bill, amendment, legislation_name = getBillOrAmendment(legislation, session)
+        bill, amendment, legislation_name = getBillOrAmendment(legislation, session, overall_metrics)
         if not bill or amendment:
             overall_metrics['bills_not_found'] += 1
             overall_metrics['actions_failed'] += 1
@@ -114,7 +115,7 @@ def scriptCreateCongressAnswers(args=None):
     return metrics
 
 
-def getBillOrAmendment(legislation, session):
+def getBillOrAmendment(legislation, session, overall_metrics):
 
     # Get legislation value
     # If it's an amendment
@@ -128,7 +129,17 @@ def getBillOrAmendment(legislation, session):
         legislation_name = "Amdt_" + str(session.session) + "_" + chamber + "_" + str(number)
 
         # Find the amendment!
-        amendment = LegislationAmendment.lg.get_or_none(amendment_type=chamber,congress_session=session,amendment_number=number)
+        amendment = LegislationAmendment.objects.filter(amendment_type=chamber,congress_session=session,amendment_number=number)
+
+        if amendment.count() > 1:
+            overall_metrics['multiple_bills_found'] += 1
+
+        print "+WW+ multiple bills found for " + legislation_name + " : "
+        for x in amendment:
+            print enc("- " + x.get_name())
+
+        if amendment:
+            amendment = amendment[0]
 
     # Otherwise it's a bill
     else:
@@ -149,6 +160,15 @@ def getBillOrAmendment(legislation, session):
 
         # Find the bill!
         bill = Legislation.objects.filter(congress_session=session,bill_number=number,bill_type=chamber)
+
+        if bill.count() > 1:
+            overall_metrics['multiple_bills_found'] += 1
+            print "+WW+ multiple bills found for " + legislation_name + " : "
+            for x in bill:
+                print enc("- " + x.get_name())
+
+        if bill:
+            bill = bill[0]
 
     return bill, amendment, legislation_name
 
@@ -186,14 +206,24 @@ def createCongressAnswer(bill, amendment, legislation_name, vote, answer_id, met
             return False
 
         # Collect Votes from Congress Rolls
+        possible_vote_keys = ["+", "-", "0"]
+        found_votes = 0
+        invalid_votes = 0
+        total_votes = 0
         for roll in congress_rolls:
             for vote in roll.votes.all():
-                vote_key = vote.voteKey
+                total_votes += 1
+                vote_key = vote.votekey
                 if vote_key == answer_value:
                     votes.append(vote)
+                    found_votes += 1
+                elif vote_key not in possible_vote_keys:
+                    invalid_votes += 1
+        print "+II+ Votes for " + legislation_name + ": invalid/found/total " + str(invalid_votes) + "/" + str(found_votes) + "/" + str(total_votes)
+
 
         # For all votes
-        for vote in votes:
+        for vote in votes[:5]:
             # Get Voter
             voter = vote.voter
 
