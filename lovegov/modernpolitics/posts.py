@@ -1979,10 +1979,13 @@ def getNewCommentsStats(request, vals={}):
     c_id = request.POST.get('c_id')
     content = Content.lg.get_or_none(id=c_id)
     rendered_so_far = request.POST.get('rendered_so_far')
+    last_toplevel = request.POST.get('last_toplevel')
     if rendered_so_far:
         rendered_so_far = int(rendered_so_far)
     viewer = vals['viewer']
     comments = Comment.objects.filter(root_content=content).order_by('created_when').exclude(creator=viewer)
+    import time
+    comments = [x for x in comments if int(time.mktime(x..timetuple())*1000)]
     #comments = [str(x.on_content.id) for x in comments[rendered_so_far:]]
     return_dict = {}
     for comment in comments:

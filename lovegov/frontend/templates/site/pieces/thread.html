@@ -9,6 +9,7 @@
 {% include 'site/pieces/reply-form.html' with width="100%" depth='-1' content=content class="reply-new" %}
 <!-- comment thread -->
 <div class="thread" data-cid="{{ content.id }}" data-num-showing="0">
+    <div class="top-show-new-replies">show <span class="num-new-replies">0</span> new comments</div>
     {{ thread_html|safe }}
 </div>
 <div class="load-more-comments">load more comments</div>
