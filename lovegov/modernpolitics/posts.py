@@ -1971,7 +1971,7 @@ def ajaxThread(request, vals={}):
     limit = int(request.POST.get('limit', 500))
     start = int(request.POST.get('start', 0))
 
-    thread, top_count, comment_ids = makeThread(request, content, user, vals=vals, start=start, limit=limit, excluded=excluded, order=order)
+    thread, top_count, yet_to_render, comment_ids = makeThread(request, content, user, vals=vals, start=start, limit=limit, excluded=excluded, order=order)
     to_return = {'html':thread, 'top_count': top_count, 'comment_ids': comment_ids}
     return HttpResponse(json.dumps(to_return))
 

@@ -341,6 +341,7 @@ class AnswerClass:
 # Returns:
 #   a string containing the content thread html
 #   the number of actual top-level comments (and their children) actually returned
+#   the number of top-level comments yet to be rendered in the thread
 #   a list of the ids of the comments rendered
 #-----------------------------------------------------------------------------------------------------------------------
 def makeThread(request, object, user, depth=0, user_votes=None, user_comments=None, vals={}, start=0, limit=None, rendered_so_far=None, excluded=None, order='hot'):
@@ -359,6 +360,7 @@ def makeThread(request, object, user, depth=0, user_votes=None, user_comments=No
         comments = Comment.allobjects.filter(on_content=object).order_by('-created_when').exclude(id__in=excluded)[start:]
     else:
         comments = Comment.allobjects.filter(on_content=object).order_by('-upvotes').exclude(id__in=excluded)[start:]
+    yet_to_render = comments.count()
     top_levels = 0
     if comments:
         # Start generating a string of html
@@ -379,10 +381,10 @@ def makeThread(request, object, user, depth=0, user_votes=None, user_comments=No
                 to_return += children_to_return
                 comment_ids.extend(children_comment_ids)
                 to_return += "</div>"   # close list
-        return to_return, top_levels, comment_ids
+        return to_return, top_levels, yet_to_render, comment_ids
     else:
         # No more comments found - return empty string
-        return '', top_levels, comment_ids
+        return '', top_levels, yet_to_render, comment_ids
 
 
 def renderComment(request, vals, c, depth, user_votes=None, user_comments=None):
