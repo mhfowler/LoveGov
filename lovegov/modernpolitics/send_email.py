@@ -153,8 +153,6 @@ def isUnsubscribedToEmail(email):
         return UnsubscribedToEmail.lg.get_or_none(email=email)
 
 
-
-
 def sendTeamEmail(subject, email_html):
     email_recipients = TEAM_EMAILS
     sendHTMLEmail(

@@ -7,6 +7,7 @@ bind("div.reply .tab-button.cancel", "click", function(event) {
 
 var lockThreadReply = false;
 var comment_id_list = {};
+var last_toplevel = Math.floor(new Date().getTime() / 1000);
 
 // Save click - append, reply, or new comment
 bind("div.reply .tab-button.save", "click", function(event) {
@@ -155,6 +156,7 @@ function updateThreadCommentCount() {
     return count;
 }
 
+// paginate
 function loadMoreComments() {
     var button = $('div.load-more-comments');
     var num_to_load = 10;
@@ -212,7 +214,7 @@ function getNewCommentsStats(num_comments, callback) {
     var c_id = thread.data('cid');
     var rendered_so_far = num_comments;
     action({
-        data: {'action': 'getNewCommentsStats', 'c_id': c_id, 'rendered_so_far': rendered_so_far},
+        data: {'action': 'getNewCommentsStats', 'c_id': c_id, 'rendered_so_far': rendered_so_far, 'last_toplevel': last_toplevel},
         success: function(data) {
             var returned = $.parseJSON(data);
             callback(returned);
@@ -222,8 +224,14 @@ function getNewCommentsStats(num_comments, callback) {
 }
 
 function incrementNewComments(comment_id) {
-    var commentdiv = $("div.comment[data-cid='"+comment_id+"']");
-    var show_new_replies = commentdiv.find('div.show-new-replies');
+    var thread = $('div.thread');
+    var c_id = thread.data('cid');
+    if(comment_id==c_id) {
+        var show_new_replies = $('div.thread div.top-show-new-replies');
+    } else {
+        var commentdiv = $("div.comment[data-cid='"+comment_id+"']");
+        var show_new_replies = commentdiv.find('div.show-new-replies');
+    }
     var numspan = show_new_replies.find('span.num-new-replies');
     var num = numspan.text();
     var newnum = parseInt(num) + 1;
@@ -234,11 +242,12 @@ function incrementNewComments(comment_id) {
 
 function fetchAndUpdateNewComments() {
     var thread = $('div.thread');
+    var c_id = thread.data('cid');
     var num_comments = thread.data('comments');
     var callback = function(stats) {
         for(var parent_id in stats) {
             var child_id_list = stats[parent_id];
-            if(comment_id_list[parent_id]) {
+            if(comment_id_list[parent_id] || parent_id==c_id) {
                 for(var child_id_i in child_id_list) {
                     var child_id = child_id_list[child_id_i];
                     if(!comment_id_list[child_id]) {
@@ -248,7 +257,6 @@ function fetchAndUpdateNewComments() {
                     }
                 }
             }
-
         }
     }
     getNewCommentsStats(num_comments, callback);
@@ -282,6 +290,31 @@ bind('div.show-new-replies', 'click', function(e) {
     }
 });
 
+bind('div.top-show-new-replies', 'click', function(e) {
+    var num = $(this).data('num-new-replies');
+    var thread = $('div.thread');
+    var content_id = thread.data('cid');
+    var depth = 0;
+    var that = $(this);
+    that.hide();
+    var threaddiv = $('<div class="threaddiv"></div>');
+    that.after(threaddiv);
+    if(num > 0) {
+        action({
+            data: {'action': 'getChildComments', 'cid': content_id, 'depth': depth, 'num_to_fetch': num},
+            success: function(data) {
+                var newcomment = $(data);
+                newcomment.prependTo(threaddiv);
+                var oldbgcolor = newcomment.css('background-color');
+                console.log(newcomment);
+                newcomment.css('background-color', '#FFF7DE');
+                //newcomment.animate({'background-color': oldbgcolor}, 10000);
+                updateThreadCommentCount();
+            }
+        });
+    }
+});
+
 function clearThread() {
     var thread = $('div.thread');
     thread.children().remove();
@@ -290,3 +323,13 @@ function clearThread() {
     // clear total comment count
     thread.data('comments', 0);
 }
+
+
+bind('div.thread-refresh', 'click', function(e) {
+    var button = $('div.load-more-comments');
+    var thread = button.siblings('div.thread');
+    thread.css("min-height", thread.height());
+    thread.data('numShowing', 0);
+    thread.children().remove();
+    loadMoreComments();
+});
