@@ -1179,14 +1179,16 @@ def parseLegislation(XML):
 
     # Parses all title tags
     if XML.titles:
+        short_found = False
         for title in XML.titles.findChildren('title',recursive=False):
             title_type = title.get('type')
 
             if title_type == 'official':
                 legislation.full_title = truncateField( title.text.encode('utf-8','ignore') , 'Legislation full_title' , 5000 )
 
-            elif title_type == 'short':
+            elif title_type == 'short' and not short_found:
                 legislation.title = truncateField( title.text.encode('utf-8','ignore') , 'Legislation title' , 500 )
+                short_found = True
 
     legislation.save()
 
@@ -1368,6 +1370,7 @@ def parseLegislationAmendment(XML):
     bill_number = XML.amends.get('number')
     if not bill_type or not bill_number:
         return 'Missing type or number in amends tag'
+
     # Find legislation
     legislation = Legislation.lg.get_or_none(bill_type=bill_type,bill_number=bill_number,congress_session=session)
     if not legislation:
