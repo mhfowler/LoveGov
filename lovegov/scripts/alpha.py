@@ -77,19 +77,19 @@ def scriptCreateCongressAnswers(args=None):
             session = CongressSession.lg.get_or_none(session=congress_num)
 
             if not session:
-                print "+WW+ Session not found for: " + legislation
+                print enc("+WW+ Session not found for: " + legislation)
                 continue
 
             bill, amendment, legislation_name = getBillOrAmendment(legislation, session, overall_metrics)
             if not (bill or amendment):
                 overall_metrics['bills_not_found'] += 1
                 overall_metrics['actions_failed'] += 1
-                print "+WW+ Couldn't find bill " + legislation
+                print enc("+WW+ Couldn't find bill " + legislation)
                 continue
             elif bill:
-                print "+II+ FOUND BILL: " + enc(bill.full_title)
+                print enc("+II+ FOUND BILL: " + bill.full_title)
             elif amendment:
-                print "+II+ FOUND AMENDMENT: " + enc(amendment.description)
+                print enc("+II+ FOUND AMENDMENT: " + amendment.description)
 
             createCongressAnswer(bill, amendment, legislation_name, vote, answer_id, metrics)
 
@@ -107,19 +107,19 @@ def scriptCreateCongressAnswers(args=None):
             answer = Answer.lg.get_or_none(id=answer_id)
             if not answer:
                 overall_metrics['answer_ids_not_found'] += 1
-                print "+WW+ answer id not found: " + str(answer_id)
+                print enc("+WW+ answer id not found: " + str(answer_id))
             else:
-                print "+II deleting question.."
+                print enc("+II deleting question..")
 
             questions = answer.question_set.all()
             if not questions:
                 overall_metrics['questions_not_found'] += 1
                 overall_metrics['actions_failed'] += 1
-                print "+WW+ TRYING TO DELETE QUESTION: Couldn't find question for answer ID #" + str(answer.id)
+                print enc("+WW+ TRYING TO DELETE QUESTION: Couldn't find question for answer ID #" + str(answer.id))
                 continue
             if questions.count() > 1:
                 overall_metrics['multiple_questions_found'] += 1
-                print "+WW+ Multiple questions found for this answer"
+                print enc("+WW+ Multiple questions found for this answer")
 
             question = questions[0]
 
@@ -152,7 +152,7 @@ def getBillOrAmendment(legislation, session, overall_metrics):
 
         if amendment.count() > 1:
             overall_metrics['multiple_bills_found'] += 1
-            print "+WW+ multiple bills found for " + legislation_name + " : "
+            print enc("+WW+ multiple bills found for " + legislation_name + " : ")
             for x in amendment:
                 print enc("- " + x.get_name())
 
@@ -181,7 +181,7 @@ def getBillOrAmendment(legislation, session, overall_metrics):
 
         if bill.count() > 1:
             overall_metrics['multiple_bills_found'] += 1
-            print "+WW+ multiple bills found for " + legislation_name + " : "
+            print enc("+WW+ multiple bills found for " + legislation_name + " : ")
             for x in bill:
                 print enc("- " + x.get_name())
 
@@ -206,7 +206,7 @@ def createCongressAnswer(bill, amendment, legislation_name, vote, answer_id, met
         elif vote != "":
             overall_metrics['invalid_votes'] += 1
             overall_metrics['actions_failed'] += 1
-            print "+EE+ Invalid vote for " + legislation_name
+            print enc("+EE+ Invalid vote for " + legislation_name)
             return False
 
         congress_rolls = None
@@ -220,7 +220,7 @@ def createCongressAnswer(bill, amendment, legislation_name, vote, answer_id, met
 
         if not congress_rolls:
             overall_metrics['actions_failed'] += 1
-            print "+EE+ Could not congress roll for == " + legislation_name
+            print enc("+EE+ Could not congress roll for == " + legislation_name)
             return False
 
         # Collect Votes from Congress Rolls
@@ -237,7 +237,7 @@ def createCongressAnswer(bill, amendment, legislation_name, vote, answer_id, met
                     found_votes += 1
                 elif vote_key not in possible_vote_keys:
                     invalid_votes += 1
-        print "+II+ Votes for " + legislation_name + ": invalid/found/total " + str(invalid_votes) + "/" + str(found_votes) + "/" + str(total_votes)
+        print enc("+II+ Votes for " + legislation_name + ": invalid/found/total " + str(invalid_votes) + "/" + str(found_votes) + "/" + str(total_votes))
 
 
         # For all votes
@@ -276,7 +276,7 @@ def createCongressAnswer(bill, amendment, legislation_name, vote, answer_id, met
 
             # Answer that shit!
             answerAction(voter,question,"PUB",answer_id)
-            print "+II+ Successful Answer for " + voter.get_name()
+            print enc("+II+ Successful Answer for " + voter.get_name())
             overall_metrics['answer_actions'] += 1
             num_answers_created += 1
         return True
