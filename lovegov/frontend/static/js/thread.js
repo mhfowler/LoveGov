@@ -162,7 +162,7 @@ function updateThreadCommentCount() {
 // paginate
 function loadMoreComments() {
     var button = $('div.load-more-comments');
-    var num_to_load = 2;
+    var num_to_load = 10;
     var thread = button.siblings('div.thread');
     if(thread.length) {
         var cid = thread.data('cid');
