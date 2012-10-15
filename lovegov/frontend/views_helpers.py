@@ -356,11 +356,12 @@ def makeThread(request, object, user, depth=0, user_votes=None, user_comments=No
         excluded = []
     comment_ids = []
     # Get all comments that are children of the object
+    comments = Comment.allobjects.filter(on_content=object).exclude(id__in=excluded)
     if order=='new':
-        comments = Comment.allobjects.filter(on_content=object).order_by('-created_when').exclude(id__in=excluded)[start:]
+        comments = comments.order_by('-created_when')[start:]
     else:
-        comments = Comment.allobjects.filter(on_content=object).order_by('-upvotes').exclude(id__in=excluded)[start:]
-    yet_to_render = comments.count()
+        comments = comments.order_by('-upvotes', '-created_when')[start:]
+    comment_count = comments.count()
     top_levels = 0
     if comments:
         # Start generating a string of html
@@ -377,13 +378,15 @@ def makeThread(request, object, user, depth=0, user_votes=None, user_comments=No
                 rendered_so_far[0] += 1
                 if depth==0:
                     top_levels += 1
-                children_to_return, _, children_comment_ids = makeThread(request,c,user,depth+1,user_votes,user_comments,vals=vals,limit=limit,rendered_so_far=rendered_so_far)    # recur through children
+                children_to_return, _, _, children_comment_ids = makeThread(request,c,user,depth+1,user_votes,user_comments,vals=vals,limit=limit,rendered_so_far=rendered_so_far)    # recur through children
                 to_return += children_to_return
                 comment_ids.extend(children_comment_ids)
                 to_return += "</div>"   # close list
+        yet_to_render = comment_count - top_levels
         return to_return, top_levels, yet_to_render, comment_ids
     else:
         # No more comments found - return empty string
+        yet_to_render = comment_count - top_levels
         return '', top_levels, yet_to_render, comment_ids
 
 
