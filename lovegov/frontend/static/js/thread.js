@@ -36,7 +36,7 @@ bind("div.reply .tab-button.save", "click", function(event) {
                         $(html).hide().appendTo(reply.closest('div.threaddiv')).fadeIn(500);
                     } else {
                     // new comment
-                        $(html).hide().insertAfter('div.top-show-new-replies').fadeIn(500);
+                        $(html).hide().prependTo('div.thread').fadeIn(500);
                         new_comments.push(cid);
                     }
                     lockThreadReply = false;
@@ -236,7 +236,7 @@ function incrementNewComments(comment_id) {
     var thread = $('div.thread');
     var c_id = thread.data('cid');
     if(comment_id==c_id) {
-        var show_new_replies = $('div.thread div.top-show-new-replies');
+        var show_new_replies = $('div.top-show-new-replies');
     } else {
         var commentdiv = $("div.comment[data-cid='"+comment_id+"']");
         var show_new_replies = commentdiv.find('div.show-new-replies');
@@ -251,7 +251,7 @@ function incrementNewComments(comment_id) {
 
 function setTopNewComments(num) {
     var thread = $('div.thread');
-    var show_new_replies = thread.find('div.top-show-new-replies');
+    var show_new_replies = $('div.top-show-new-replies');
     if(num <= 0) {
         show_new_replies.hide();
         return;
@@ -272,7 +272,6 @@ function fetchAndUpdateNewComments() {
                 for(var child_id_i in child_id_list) {
                     var child_id = child_id_list[child_id_i];
                     if(!comment_id_list[child_id]) {
-                        console.log(child_id+" was not in "+comment_id_list);
                         incrementNewComments(parent_id);
                         comment_id_list[child_id] = true;
                     }
@@ -309,7 +308,6 @@ bind('div.show-new-replies', 'click', function(e) {
                dumpListToSet(new_ids, comment_id_list);
                newcomment.prependTo(threaddiv);
                var oldbgcolor = newcomment.css('background-color');
-               console.log(data);
                newcomment.css('background-color', '#FFF7DE');
                newcomment.animate({'background-color': oldbgcolor}, 10000);
                updateThreadCommentCount();
@@ -326,7 +324,7 @@ bind('div.top-show-new-replies', 'click', function(e) {
     var that = $(this);
     that.hide();
     var threaddiv = $('<div class="threaddiv"></div>');
-    that.after(threaddiv);
+    that.siblings('div.thread').prepend(threaddiv);
     if(num > 0) {
         action({
             data: {'action': 'getChildComments', 'cid': content_id, 'depth': depth, 'num_to_fetch': num},
