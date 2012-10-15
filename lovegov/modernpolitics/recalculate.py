@@ -5,6 +5,7 @@ def deleteAllGhostResponses():
     ghosts = UserProfile.objects.filter(ghost=True)
     responses = Response.objects.filter(creator__in=ghosts)
     count = 0
+    print "total: " + str(responses.count())
     for x in responses:
         x.delete()
         if not count % 20:
