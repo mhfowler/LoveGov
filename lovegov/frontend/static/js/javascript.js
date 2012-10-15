@@ -5027,9 +5027,18 @@ bind('.goto_sign_up', 'click', function(e) {
     element.css("height", "auto");
     var new_height = element.height();
     element.css("height", old_height);
+    $('body').animate({
+        scrollTop: element.offset().top - 25
+    }, 1000);
     element.animate({"height":new_height}, {"duration":1000,
         "complete":function(){
             element.css("height", "auto");
             element.css("overflow", "visible");
         }});
+});
+
+bind('img#videoscreen_img', 'click', function(e) {
+    $(this).fadeOut(200);
+    var iframe = $('<iframe src="http://player.vimeo.com/video/48815262?autoplay=1" width="800" height="450" frameborder="0" webkitAllowFullScreen mozallowfullscreen allowFullScreen></iframe>');
+    $(this).after(iframe);
 });

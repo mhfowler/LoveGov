@@ -68,13 +68,24 @@ div.comment
     top: 30px;
     left: 27px;
   }
-  div.show-new-replies {
-    float: right;
-    cursor: pointer;
-    display: none;
-    &:hover {
-      text-decoration: underline;
-    }
+
+}
+
+div.show-new-replies {
+  float: right;
+  cursor: pointer;
+  display: none;
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+div.top-show-new-replies {
+  text-align: center;
+  cursor: pointer;
+  display: none;
+  &:hover {
+    text-decoration: underline;
   }
 }
 
@@ -201,6 +212,25 @@ span.discuss
       font-size: 14px;
       color:$dark-gray;
       padding: 10px;
+    }
+    div.thread-refresh {
+      position: absolute;
+      left: -195px;
+      top: 159px;
+      font-size: 14px;
+      color:$dark-gray;
+      cursor: pointer;
+      border: 1px solid $gray;
+      padding: 10px;
+      @include border-radius(5px);
+      &:hover {
+        background-color: $yellow-highlight;
+        text-decoration: underline;
+      }
+      &:active {
+        background-color: $red;
+        color: white;
+      }
     }
 }
 

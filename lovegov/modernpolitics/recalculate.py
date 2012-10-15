@@ -1,5 +1,11 @@
 from lovegov.modernpolitics.initialize import *
 
+## recalculate amendment titles ##
+def recalculateAmendmentTitles():
+    for l in LegislationAmendment.objects.all():
+        l.title = l.description
+        l.save()
+
 ## print ids for greg ##
 def printQAids():
     questions = Question.objects.filter(official=True)

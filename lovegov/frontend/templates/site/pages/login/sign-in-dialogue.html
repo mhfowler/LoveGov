@@ -14,9 +14,7 @@
 
     </div>
 
-    <p>
-        OR
-    </p>
+    <img src="/static/images/login/or.png" style="width: 300px; margin: 20px 0;">
 
     <form id="loginform"> {% csrf_token %}
 
@@ -28,8 +26,8 @@
             <div class="signing_in_gif heart-gif"></div>
             <a class="login-button email_login_button log_in_button">log in</a>
             <a class="account-actions forgot-link" id="forgot-password" href="/password_recovery/">forgot password?</a>
-            <span class="login-error login_error">
-            </span>
+            <span class="login-error login_error"></span>
+            <div style="clear:both;"></div>
             {% comment %}
                 <span class="new-to-lg"> Don't have an account? <a href="/sign_up/">Sign up</a>.</span>
             {% endcomment %}

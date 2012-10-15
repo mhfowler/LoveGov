@@ -348,6 +348,7 @@ class Content(ActiveModel, Privacy, LocationLevel):
     main_image = models.ForeignKey("UserImage", null=True, blank=True)
     calculated_view = models.ForeignKey("WorldView", null=True, blank=True)     # foreign key to worldview
     last_answered = models.DateTimeField(auto_now_add=True, null=True)          # last time answer question, or have answers calculated
+    default_sort = models.CharField(max_length=1, blank=False, null=False, default='h')
     # RANK, VOTES
     status = models.IntegerField(default=STATUS_CREATION)
     rank = models.DecimalField(default="0.0", max_digits=4, decimal_places=2)       # deprecated
@@ -1325,7 +1326,7 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
     def getHotFeedContent(self, start=0, end=0):
         content = Content.objects.filter(in_feed=True, ranked_by__user=self).order_by("ranked_by__score")
         if not content:
-            self.updateHotFeed()
+            self.updateHotFeed(force=True)
             return self.getHotFeedContent(start, end)
         if start:
             content = content[start:]
@@ -1348,13 +1349,14 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
         if self.last_updated_hot_feed + delta < now:
             self.updateHotFeed()
 
-    def updateHotFeed(self):
+    def updateHotFeed(self, force=False):
 
         # try to avoid multiple hot feed updates running at once
         now = datetime.datetime.now()
-        safety_delta = datetime.timedelta(minutes=1)
-        if now - self.last_updated_hot_feed < safety_delta:
-            return False
+        if not force:
+            safety_delta = datetime.timedelta(minutes=1)
+            if now - self.last_updated_hot_feed < safety_delta:
+                return False
 
         self.last_updated_hot_feed = now
         self.save()
@@ -3811,7 +3813,7 @@ class Legislation(Content):
     
     # Bill Identifiers
     congress_session = models.ForeignKey(CongressSession)
-    bill_type = models.CharField(max_length=2)
+    bill_type = models.CharField(max_length=2)                              # "hr", "hj", "hc", "sr", "sj", "sc"
     congress_body = models.CharField(max_length=1, default="H")             # can be h or s (house or senate)
     bill_number = models.IntegerField()
     # Bill Times
@@ -5339,13 +5341,16 @@ class CalculatedGroup(Group):
                 if x.num_answers >= LIKE_MINDED_NUMQ_THRESHOLD:
                     comparison = x.getComparison(viewer)
                     if comparison.result >= LIKE_MINDED_RESULT_THRESHOLD and comparison.num_q >= LIKE_MINDED_NUMQ_THRESHOLD:
-                        self.members.add(x)
-                        found.append(x)
+                        try:
+                            self.members.add(x)
+                            found.append(x)
+                        except:
+                            error_logger.error("Failed to add to like minded " + enc(x.get_name()) + " to " + enc(viewer.get_name()))
                 try:
                     self.processed.add(x)
                     processed_num += 1
                 except:
-                    error_logger.error("Failed to add to like minded " + enc(x.get_name()) + " to " + enc(viewer.get_name()))
+                    error_logger.error("Failed to process like minded " + enc(x.get_name()) + " to " + enc(viewer.get_name()))
 
         if not processed_num:
             viewer.addFinishedTask("L")
