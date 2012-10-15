@@ -48,6 +48,7 @@ def scriptCreateCongressAnswers(args=None):
     overall_metrics['actions_attempted'] = 0
     overall_metrics['actions_failed'] = 0
     overall_metrics['bills_not_found'] = 0
+    overall_metrics['multiple_bills_found'] = 0
     overall_metrics['invalid_votes'] = 0
     overall_metrics['answer_ids_not_found'] = 0
     overall_metrics['questions_not_found'] = 0
@@ -69,37 +70,56 @@ def scriptCreateCongressAnswers(args=None):
 
         overall_metrics['actions_attempted'] += 1
 
-        # Get the congress number
-        congress_num = int(congress_session_text.replace("th",""))
-        session = CongressSession.lg.get_or_none(session=congress_num)
-
-        bill, amendment, legislation_name = getBillOrAmendment(legislation, session)
-        if not bill or amendment:
-            overall_metrics['bills_not_found'] += 1
-            overall_metrics['actions_failed'] += 1
-            print "+WW+ Couldn't find bill " + legislation
-            continue
-
         if action == 'a':
+
+            # Get the congress number
+            congress_num = int(congress_session_text.replace("th",""))
+            session = CongressSession.lg.get_or_none(session=congress_num)
+
+            if not session:
+                print enc("+WW+ Session not found for: " + legislation)
+                continue
+
+            bill, amendment, legislation_name = getBillOrAmendment(legislation, session, overall_metrics)
+            if not (bill or amendment):
+                overall_metrics['bills_not_found'] += 1
+                overall_metrics['actions_failed'] += 1
+                print enc("+WW+ Couldn't find bill " + legislation)
+                continue
+            elif bill:
+                print enc("+II+ FOUND BILL: " + bill.full_title)
+            elif amendment:
+                print enc("+II+ FOUND AMENDMENT: " + amendment.description)
+
             createCongressAnswer(bill, amendment, legislation_name, vote, answer_id, metrics)
 
         elif action == 'xr':
-            responses_to_delete = Response.objects.filter(most_chosen_answer_id=answer_id)
+
+            creators = UserProfile.objects.filter(ghost=True)
+            responses_to_delete = Response.objects.filter(most_chosen_answer_id=answer_id, creator__in=creators)
             for x in responses_to_delete:
                 x.delete()
                 print enc("deleted response by: " +  x.creator.get_name() + " | to | " + x.question.get_name())
                 overall_metrics['responses_deleted'] += 1
 
         elif action == 'xq':
+
+            answer = Answer.lg.get_or_none(id=answer_id)
+            if not answer:
+                overall_metrics['answer_ids_not_found'] += 1
+                print enc("+WW+ answer id not found: " + str(answer_id))
+            else:
+                print enc("+II deleting question..")
+
             questions = answer.question_set.all()
             if not questions:
                 overall_metrics['questions_not_found'] += 1
                 overall_metrics['actions_failed'] += 1
-                print "+WW+ TRYING TO DELETE QUESTION: Couldn't find question for answer ID #" + str(answer.id)
+                print enc("+WW+ TRYING TO DELETE QUESTION: Couldn't find question for answer ID #" + str(answer.id))
                 continue
             if questions.count() > 1:
                 overall_metrics['multiple_questions_found'] += 1
-                print "+WW+ Multiple questions found for this answer"
+                print enc("+WW+ Multiple questions found for this answer")
 
             question = questions[0]
 
@@ -114,21 +134,30 @@ def scriptCreateCongressAnswers(args=None):
     return metrics
 
 
-def getBillOrAmendment(legislation, session):
+def getBillOrAmendment(legislation, session, overall_metrics):
 
     # Get legislation value
     # If it's an amendment
     bill = amendment = None
-    if "Amdt" in legislation:
-        # Split the chamber and the number (at .) Format = <chamber>.Amdt.<number>
+    if "amdt" in legislation:
+        # Split the chamber and the number (at .) Format = <chamber>.amdt.<number>
         legislation = legislation.split('.')
         chamber = legislation[0].lower()
         number = int(legislation[2].strip())
 
-        legislation_name = "Amdt_" + str(session.session) + "_" + chamber + "_" + str(number)
+        legislation_name = "amdt_" + str(session.session) + "_" + chamber + "_" + str(number)
 
         # Find the amendment!
-        amendment = LegislationAmendment.lg.get_or_none(amendment_type=chamber,congress_session=session,amendment_number=number)
+        amendment = LegislationAmendment.objects.filter(amendment_type=chamber,congress_session=session,amendment_number=number)
+
+        if amendment.count() > 1:
+            overall_metrics['multiple_bills_found'] += 1
+            print enc("+WW+ multiple bills found for " + legislation_name + " : ")
+            for x in amendment:
+                print enc("- " + x.get_name())
+
+        if amendment:
+            amendment = amendment[0]
 
     # Otherwise it's a bill
     else:
@@ -150,6 +179,15 @@ def getBillOrAmendment(legislation, session):
         # Find the bill!
         bill = Legislation.objects.filter(congress_session=session,bill_number=number,bill_type=chamber)
 
+        if bill.count() > 1:
+            overall_metrics['multiple_bills_found'] += 1
+            print enc("+WW+ multiple bills found for " + legislation_name + " : ")
+            for x in bill:
+                print enc("- " + x.get_name())
+
+        if bill:
+            bill = bill[0]
+
     return bill, amendment, legislation_name
 
 
@@ -168,7 +206,7 @@ def createCongressAnswer(bill, amendment, legislation_name, vote, answer_id, met
         elif vote != "":
             overall_metrics['invalid_votes'] += 1
             overall_metrics['actions_failed'] += 1
-            print "+EE+ Invalid vote for " + legislation_name
+            print enc("+EE+ Invalid vote for " + legislation_name)
             return False
 
         congress_rolls = None
@@ -182,15 +220,25 @@ def createCongressAnswer(bill, amendment, legislation_name, vote, answer_id, met
 
         if not congress_rolls:
             overall_metrics['actions_failed'] += 1
-            print "+EE+ Could not congress roll for == " + legislation_name
+            print enc("+EE+ Could not congress roll for == " + legislation_name)
             return False
 
         # Collect Votes from Congress Rolls
+        possible_vote_keys = ["+", "-", "0"]
+        found_votes = 0
+        invalid_votes = 0
+        total_votes = 0
         for roll in congress_rolls:
             for vote in roll.votes.all():
-                vote_key = vote.voteKey
+                total_votes += 1
+                vote_key = vote.votekey
                 if vote_key == answer_value:
                     votes.append(vote)
+                    found_votes += 1
+                elif vote_key not in possible_vote_keys:
+                    invalid_votes += 1
+        print enc("+II+ Votes for " + legislation_name + ": invalid/found/total " + str(invalid_votes) + "/" + str(found_votes) + "/" + str(total_votes))
+
 
         # For all votes
         for vote in votes:
@@ -228,12 +276,11 @@ def createCongressAnswer(bill, amendment, legislation_name, vote, answer_id, met
 
             # Answer that shit!
             answerAction(voter,question,"PUB",answer_id)
-            print "+II+ Successful Answer for " + voter.get_name()
+            print enc("+II+ Successful Answer for " + voter.get_name())
             overall_metrics['answer_actions'] += 1
             num_answers_created += 1
         return True
 
-#######
 
 
 def scriptCheckPoliticians(args=None):
