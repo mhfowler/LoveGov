@@ -4,10 +4,10 @@
 {% block content-title %}
 
     {% load customtags %}
-    <a class="feed-link-wrapper news_link dummy_link" href="{{ content.getAbsoluteLink }}" data-link_redirect="{{ content.getLinkRedirectURL }}" target="_blank">
+    <a class="feed-link-wrapper news_link dummy_link" href="{{ content.link }}" data-link_redirect="{{ content.getLinkRedirectURL }}" target="_blank">
         <span class="content-title"> {{ content.getFeedTitle }}
             <span class="feed-news-link news_link" data-n_id="{{ content.id }}">
-                {{ content.getAbsoluteLink|domain }}
+                {{ content.link|domain }}
             </span>
         </span>
     </a>
