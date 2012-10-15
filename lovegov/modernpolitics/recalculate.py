@@ -11,6 +11,17 @@ def deleteAllGhostResponses():
             print count
         count +=1
 
+## recalculate which congress rolls are important ##
+def recalculateCongressRollImportance():
+    count = 0
+    rolls = CongressRoll.objects.all()
+    print "total: " + str(rolls.count())
+    for x in rolls:
+        x.setImportance()
+        if not count % 20:
+            print count
+        count +=1
+
 ## recalculate amendment titles ##
 def recalculateAmendmentTitles():
     for l in LegislationAmendment.objects.all():
