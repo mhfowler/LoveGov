@@ -216,29 +216,13 @@ def createCongressAnswer(bill, amendment, legislation_name, vote, answer_id, met
         elif amendment:
             congress_rolls = CongressRoll.objects.filter(amendment=amendment).order_by('datetime')
 
-        votes = []
-
         if not congress_rolls:
             overall_metrics['actions_failed'] += 1
             print enc("+EE+ Could not congress roll for == " + legislation_name)
             return False
 
-        # Collect Votes from Congress Rolls
-        possible_vote_keys = ["+", "-", "0"]
-        found_votes = 0
-        invalid_votes = 0
-        total_votes = 0
-        for roll in congress_rolls:
-            for vote in roll.votes.all():
-                total_votes += 1
-                vote_key = vote.votekey
-                if vote_key == answer_value:
-                    votes.append(vote)
-                    found_votes += 1
-                elif vote_key not in possible_vote_keys:
-                    invalid_votes += 1
-        print enc("+II+ Votes for " + legislation_name + ": invalid/found/total " + str(invalid_votes) + "/" + str(found_votes) + "/" + str(total_votes))
-
+        # get votes from congress rolls
+        votes = getVotesFromRolls(congress_rolls, answer_value=answer_value)
 
         # For all votes
         for vote in votes:
@@ -280,6 +264,27 @@ def createCongressAnswer(bill, amendment, legislation_name, vote, answer_id, met
             overall_metrics['answer_actions'] += 1
             num_answers_created += 1
         return True
+
+def getVotesFromRolls(congress_rolls, answer_value=None):
+
+    votes =[]
+
+    possible_vote_keys = ["+", "-", "0"]
+    found_votes = 0
+    invalid_votes = 0
+    total_votes = 0
+    for roll in congress_rolls:
+        for vote in roll.votes.all():
+            total_votes += 1
+            vote_key = vote.votekey
+            if vote_key == answer_value or not answer_value:
+                votes.append(vote)
+                found_votes += 1
+            elif vote_key not in possible_vote_keys:
+                invalid_votes += 1
+    print enc("+II+ invalid/found/total " + str(invalid_votes) + "/" + str(found_votes) + "/" + str(total_votes))
+
+    return votes
 
 
 

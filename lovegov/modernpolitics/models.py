@@ -3835,9 +3835,9 @@ class Legislation(Content):
     # action relationship is stored in LegislationAction object.  To retrieve them you can use "self.legislation_actions"
 
     def setCongressBody(self):
-        if leg.startswith("h"):
+        if self.bill_type.startswith("h"):
             self.congress_body = "H"
-        elif leg.startswith("s"):
+        elif self.bill_type.startswith("s"):
             self.congress_body = "S"
         self.save()
 
