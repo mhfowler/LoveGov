@@ -28,11 +28,14 @@ def recalculateCongressRollImportance():
     count = 0
     rolls = CongressRoll.objects.all()
     print "total: " + str(rolls.count())
+    num_important = 0
     for x in rolls:
-        x.setImportant()
+        if x.setImportant():
+            num_important += 1
         if not count % 20:
             print count
         count +=1
+    print "# important: " + str(num_important)
 
 ## recalculate amendment titles ##
 def recalculateAmendmentTitles():

@@ -4166,13 +4166,16 @@ class CongressRoll(LGModel):
 
     def setImportant(self):
         if self.legislation:
-            if self.type == 'On Passage Of The Bill':
+            if self.type == 'On Passage of the Bill':
                 self.important = True
                 self.save()
+                return True
         elif self.amendment:
-            if self.type == "On The Amendment":
+            if self.type == "On the Amendment":
                 self.important = True
                 self.save()
+                return True
+        return False
 
 #=======================================================================================================================
 #
