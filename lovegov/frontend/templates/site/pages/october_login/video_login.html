@@ -2,9 +2,25 @@
     <img src="{{ STATIC_URL }}/images/login/videoscreen.png" alt="Click to view 1-minute introductory video" style="cursor: pointer" id="videoscreen_img"></a>
 
     <div class="want-to-learn-more">
+        {% comment %}
         <span class="new-to-lovegov">New to LoveGov?</span>
-        <a class="dummy_link do_ajax_link presidential-matching-link" href="/presidential_matching/">Try our presidential matching</a>
-        or <a class="sign-up-button goto_sign_up">Sign up</a>.
+        <div class="call-to-action">
+            <a href="/presidential_matching/" class="call-to-action-button">Try our matching</a>
+            <img src="{{ STATIC_URL }}/images/login/or.png" style="width: 500px; margin: 5px; padding: 0px 100px;">
+            <a class="dummy_link call-to-action-button red-call-to-action goto_sign_up">Join The Community</a>
+            <div style="clear:both;"></div>
+        </div>
+        {% endcomment %}
+        {% comment %}
+        <div class="new-text">New to LoveGov?</div>
+        {% endcomment %}
+        <div class="call-to-action-horizontal">
+            <a href="/presidential_matching/" class="call-to-action-button">Try our matching</a>
+            <span class="or-text">or</span>
+            <a class="dummy_link call-to-action-button red-call-to-action goto_sign_up">Join The Community</a>
+            <div style="clear:both;"></div>
+        </div>
+        <div style="clear:both;"></div>
     </div>
 </div>
 

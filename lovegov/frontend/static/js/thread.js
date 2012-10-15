@@ -6,8 +6,8 @@ bind("div.reply .tab-button.cancel", "click", function(event) {
 
 
 var lockThreadReply = false;
+// set of rendered comments
 var comment_id_list = {};
-var last_toplevel = Math.floor(new Date().getTime() / 1000);
 
 // Save click - append, reply, or new comment
 bind("div.reply .tab-button.save", "click", function(event) {
@@ -29,12 +29,14 @@ bind("div.reply .tab-button.save", "click", function(event) {
                     var returned = $.parseJSON(data);
                     var html = returned['html'];
                     var cid = returned['cid'];
+                    textarea.val('');
+                    // reply
                     if(depth > 0) {
                         reply.hide();
                         $(html).hide().appendTo(reply.closest('div.threaddiv')).fadeIn(500);
                     } else {
-                        textarea.val('');
-                        $(html).hide().appendTo('div.thread').fadeIn(500);
+                    // new comment
+                        $(html).hide().prependTo('div.thread').fadeIn(500);
                         new_comments.push(cid);
                     }
                     lockThreadReply = false;
@@ -150,10 +152,11 @@ bind('div.load-more-comments', 'click', function(e) {
     }
 });
 
+// updates total and top-level number of comments count
 function updateThreadCommentCount() {
-    var count = $('div.comment').length;
-    $('div.thread').data('comments', count);
-    return count;
+    var total_count = $('div.comment').length;
+    var top_count = $('div.comment.toplevel').length;
+    $('div.thread').data({'comments': total_count, 'tops': top_count});
 }
 
 // paginate
@@ -163,7 +166,7 @@ function loadMoreComments() {
     var thread = button.siblings('div.thread');
     if(thread.length) {
         var cid = thread.data('cid');
-        var next_start = thread.data('num-showing');
+        var next_start = thread.data('tops');
         var order = getSortValue();
         var div_load_more = button;
         var loadingimg = $('<div style="text-align: center; margin: 20px 0"><img src="/static/images/gifs/ajax-loader.gif"></div>');
@@ -175,20 +178,22 @@ function loadMoreComments() {
             {
                 var returned = $.parseJSON(data);
                 var top_count = returned.top_count;
+                var yet_to_get = returned.yet_to_get;
+                thread.data('yet_to_get', yet_to_get);
                 var comment_ids = returned.comment_ids;
+                // add comment ids to dictionary
                 for(i in comment_ids) {
                     comment_id_list[comment_ids[i]] = true;
                 }
-                console.log(comment_id_list);
                 if(top_count==0) {
                     div_load_more.addClass('disabled');
                     div_load_more.text("there are no more comments to load");
                 } else {
+                    // actually render the content
                     $(returned.html).hide().appendTo('div.thread').fadeIn(500);
-                    $('div.thread').data('num-showing', next_start + top_count);
+                    updateThreadCommentCount();
+                    bindTooltips();
                 }
-                updateThreadCommentCount();
-                bindTooltips();
             },
 		    complete: function(data) {
 			    loadingimg.remove();
@@ -207,17 +212,21 @@ function getSortValue() {
     return $('div.thread-filters select').val();
 }
 
-// Returns a dictionary mapping a comment id to the number of new child comments yet to be fetched and rendered
-// Calls callback when done
-function getNewCommentsStats(num_comments, callback) {
+// Returns a dictionary mapping a comment id to the child comments yet to be fetched and rendered for num_comments comments
+// Calls callback with stats object when done
+function getNewCommentsStats(callback) {
     var thread = $('div.thread');
     var c_id = thread.data('cid');
-    var rendered_so_far = num_comments;
+    var curr_tops = thread.data('tops');
+    var yet_to_get = thread.data('yet_to_get');
     action({
-        data: {'action': 'getNewCommentsStats', 'c_id': c_id, 'rendered_so_far': rendered_so_far, 'last_toplevel': last_toplevel},
+        data: {'action': 'getNewCommentsStats', 'c_id': c_id},
         success: function(data) {
             var returned = $.parseJSON(data);
-            callback(returned);
+            var stats = returned.stats;
+            var toplevel_count = returned.toplevel_count;
+            setTopNewComments(toplevel_count - curr_tops - yet_to_get);
+            callback(stats);
         }
     });
 
@@ -227,7 +236,7 @@ function incrementNewComments(comment_id) {
     var thread = $('div.thread');
     var c_id = thread.data('cid');
     if(comment_id==c_id) {
-        var show_new_replies = $('div.thread div.top-show-new-replies');
+        var show_new_replies = $('div.top-show-new-replies');
     } else {
         var commentdiv = $("div.comment[data-cid='"+comment_id+"']");
         var show_new_replies = commentdiv.find('div.show-new-replies');
@@ -240,26 +249,41 @@ function incrementNewComments(comment_id) {
     show_new_replies.fadeIn(500);
 }
 
+function setTopNewComments(num) {
+    var thread = $('div.thread');
+    var show_new_replies = $('div.top-show-new-replies');
+    if(num <= 0) {
+        show_new_replies.hide();
+        return;
+    }
+    var numspan = show_new_replies.find('span.num-new-replies');
+    numspan.text(num);
+    show_new_replies.data('num-new-replies', num);
+    show_new_replies.fadeIn(500);
+}
+
 function fetchAndUpdateNewComments() {
     var thread = $('div.thread');
     var c_id = thread.data('cid');
-    var num_comments = thread.data('comments');
     var callback = function(stats) {
         for(var parent_id in stats) {
             var child_id_list = stats[parent_id];
-            if(comment_id_list[parent_id] || parent_id==c_id) {
+            if(comment_id_list[parent_id]) {
                 for(var child_id_i in child_id_list) {
                     var child_id = child_id_list[child_id_i];
                     if(!comment_id_list[child_id]) {
-                        console.log(child_id+" was not in "+comment_id_list);
                         incrementNewComments(parent_id);
                         comment_id_list[child_id] = true;
                     }
                 }
+//            } else if(c_id==parent_id) {
+//                var new_toplevels_length = stats[parent_id].length;
+//                setTopNewComments(new_toplevels_length);
             }
         }
     }
-    getNewCommentsStats(num_comments, callback);
+
+    getNewCommentsStats(callback);
 }
 
 bind('div.show-new-replies', 'click', function(e) {
@@ -278,12 +302,14 @@ bind('div.show-new-replies', 'click', function(e) {
         action({
            data: {'action': 'getChildComments', 'cid': cid, 'depth': depth, 'num_to_fetch': num},
            success: function(data) {
-               var newcomment = $(data);
+               var returned = $.parseJSON(data);
+               var newcomment = $(returned.html);
+               var new_ids = returned.comment_ids;
+               dumpListToSet(new_ids, comment_id_list);
                newcomment.prependTo(threaddiv);
                var oldbgcolor = newcomment.css('background-color');
-               console.log(newcomment);
                newcomment.css('background-color', '#FFF7DE');
-               //newcomment.animate({'background-color': oldbgcolor}, 10000);
+               newcomment.animate({'background-color': oldbgcolor}, 10000);
                updateThreadCommentCount();
            }
         });
@@ -294,22 +320,25 @@ bind('div.top-show-new-replies', 'click', function(e) {
     var num = $(this).data('num-new-replies');
     var thread = $('div.thread');
     var content_id = thread.data('cid');
-    var depth = 0;
+    var depth = -1;
     var that = $(this);
     that.hide();
     var threaddiv = $('<div class="threaddiv"></div>');
-    that.after(threaddiv);
+    that.siblings('div.thread').prepend(threaddiv);
     if(num > 0) {
         action({
             data: {'action': 'getChildComments', 'cid': content_id, 'depth': depth, 'num_to_fetch': num},
             success: function(data) {
-                var newcomment = $(data);
+                var returned = $.parseJSON(data);
+                var newcomment = $(returned.html);
+                var new_ids = returned.comment_ids;
+                dumpListToSet(new_ids, comment_id_list);
                 newcomment.prependTo(threaddiv);
-                var oldbgcolor = newcomment.css('background-color');
-                console.log(newcomment);
-                newcomment.css('background-color', '#FFF7DE');
-                //newcomment.animate({'background-color': oldbgcolor}, 10000);
                 updateThreadCommentCount();
+                var oldbgcolor = newcomment.css('background-color');
+                newcomment.css('background-color', '#FFF7DE');
+                setTimeout(function() { newcomment.css('background-color', oldbgcolor) }, 5000);
+                //newcomment.animate({'background-color': oldbgcolor}, 10000);
             }
         });
     }
@@ -319,7 +348,7 @@ function clearThread() {
     var thread = $('div.thread');
     thread.children().remove();
     // clear top-level comment count
-    thread.data('num-showing', 0);
+    thread.data('tops', 0);
     // clear total comment count
     thread.data('comments', 0);
 }
@@ -333,3 +362,10 @@ bind('div.thread-refresh', 'click', function(e) {
     thread.children().remove();
     loadMoreComments();
 });
+
+function dumpListToSet(list, set) {
+    for(var i in list) {
+        set[list[i]] = true;
+    }
+    return set;
+}

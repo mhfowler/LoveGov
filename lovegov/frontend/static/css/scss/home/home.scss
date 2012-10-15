@@ -604,6 +604,29 @@ div.new-footer {
     height:30px;
     background-size:30px;
   }
+
+  div.social-medias-wrapper {
+    float:left;
+    width:255px;
+    div.social-media-wrapper {
+      float:left;
+      margin-right:20px;
+      a.facebook-link-button {
+        display:block;
+        margin-bottom:18px;
+      }
+      a.twitter-link-button {
+        display:block;
+        margin-bottom:15px;
+        width: 27%;
+        margin-left:0px;
+      }
+      &.twitter-wrapper {
+        margin-right:0px;
+      }
+    }
+  }
+
   a.footer-link {
     float:left;
     margin-left:40px;

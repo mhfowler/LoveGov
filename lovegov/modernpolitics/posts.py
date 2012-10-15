@@ -1971,22 +1971,17 @@ def ajaxThread(request, vals={}):
     limit = int(request.POST.get('limit', 500))
     start = int(request.POST.get('start', 0))
 
-    thread, top_count, comment_ids = makeThread(request, content, user, vals=vals, start=start, limit=limit, excluded=excluded, order=order)
-    to_return = {'html':thread, 'top_count': top_count, 'comment_ids': comment_ids}
+    thread, top_count, yet_to_render, comment_ids = makeThread(request, content, user, vals=vals, start=start, limit=limit, excluded=excluded, order=order)
+    to_return = {'html':thread, 'top_count': top_count, 'comment_ids': comment_ids, 'yet_to_get': yet_to_render}
     return HttpResponse(json.dumps(to_return))
 
 def getNewCommentsStats(request, vals={}):
     c_id = request.POST.get('c_id')
     content = Content.lg.get_or_none(id=c_id)
-    rendered_so_far = request.POST.get('rendered_so_far')
-    last_toplevel = request.POST.get('last_toplevel')
-    if rendered_so_far:
-        rendered_so_far = int(rendered_so_far)
     viewer = vals['viewer']
-    comments = Comment.objects.filter(root_content=content).order_by('created_when').exclude(creator=viewer)
-    import time
-    comments = [x for x in comments if int(time.mktime(x..timetuple())*1000)]
-    #comments = [str(x.on_content.id) for x in comments[rendered_so_far:]]
+    # number of newest comments to get
+    num = 15
+    comments = Comment.objects.filter(root_content=content).order_by('created_when').exclude(creator=viewer).exclude(on_content=content)[:num]
     return_dict = {}
     for comment in comments:
         parent_id = comment.on_content.id
@@ -1995,19 +1990,25 @@ def getNewCommentsStats(request, vals={}):
             return_dict[parent_id].append(child_id)
         else:
             return_dict[parent_id] = [child_id]
-    return HttpResponse(json.dumps(return_dict))
+    #toplevel_count is the total number of top-level comments for the given content
+    toplevel_count = Comment.objects.filter(on_content=content).count()
+    return HttpResponse(json.dumps({'stats': return_dict, 'toplevel_count': toplevel_count}))
 
 def getChildComments(request, vals={}):
     cid = request.POST.get('cid');
     content = Content.lg.get_or_none(id=cid)
     num_to_fetch = int(request.POST.get('num_to_fetch'))
     depth = int(request.POST.get('depth'))
-    comments = Comment.objects.filter(on_content=content).order_by('-created_when')[:num_to_fetch]
+    viewer = vals['viewer']
+    comments = Comment.objects.filter(on_content=content).order_by('-created_when').exclude(creator=viewer)[:num_to_fetch]
     from lovegov.frontend.views_helpers import renderComment
     result = ''
+    comment_ids = []
     for c in comments:
         result += renderComment(request, vals, c, depth + 1)
-    return HttpResponse(result)
+        comment_ids.append(str(c.id))
+    to_return = json.dumps({'html':result, 'comment_ids': comment_ids})
+    return HttpResponse(to_return)
 
 
 #-----------------------------------------------------------------------------------------------------------------------

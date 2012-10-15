@@ -13,6 +13,64 @@ import xlwt
 import xlutils
 
 #-----------------------------------------------------------------------------------------------------------------------
+# analyze cookie data
+#-----------------------------------------------------------------------------------------------------------------------
+def analyzeCookieData(time_start, time_end):
+
+    registered_within_time_period = filterByCreatedWhen(UserProfile.objects.filter(ghost=False), time_start, time_end)
+    registered_before_time_period = filterByCreatedWhen(UserProfile.objects.filter(ghost=False), None, time_start)
+
+    pa_within_time_period = filterByWhen(PageAccess.objects.all(), time_start, time_end)
+    pa_before_time_period = filterByWhen(PageAccess.objects.all(), None, time_start)
+    old_user_pas = pa_within_time_period.filter(user__in=registered_before_time_period)
+    distinct_ips = [x['ipaddress'] for x in pa_within_time_period.values("ipaddress").distinct()]
+    old_user_ips = [x['ipaddress'] for x in old_user_pas.values("ipaddress").distinct()]
+    old_ips = [x['ipaddress'] for x in pa_before_time_period.values("ipaddress").distinct()]
+    new_ips = set(distinct_ips).difference(set(old_ips))
+    not_old_user_ips = set(distinct_ips).difference(set(old_user_ips))
+
+    cookie_datas = filterByCreatedWhen(CookieData.objects.all(), time_start, time_end)
+    claimed_cookies = cookie_datas.filter(claimed=True)
+    unclaimed_cookies = cookie_datas.filter(claimed=False)
+
+    total_ips_visited = len(distinct_ips)
+    total_new_ips_visited = len(new_ips)
+    total_not_old_user_ips_visited = len(not_old_user_ips)
+    total_cookie_datas = cookie_datas.count()
+    total_claimed_cookie_datas = claimed_cookies.count()
+    total_registered = registered_within_time_period.count()
+    print "total ips visited: " + str(total_ips_visited)
+    print "new ips visited: " + str(total_new_ips_visited)
+    print "ips that aren't of old users: " + str(total_not_old_user_ips_visited)
+    print "total cookie datas: " + str(total_cookie_datas)
+    print "claimed cookie datas (registered with cookie data): " + str(total_claimed_cookie_datas)
+    print "total registered: " + str(total_registered)
+    print "% of new visitors who registred: " + str(total_new_ips_visited / float(total_registered))
+    print "% of new visitors who presidential matched who registered: " + str(total_cookie_datas / float(total_claimed_cookie_datas))
+
+    total_claimed_r = 0
+    claimed_answered_count = 0
+    for x in claimed_cookies:
+        r = x.getView().responses.count()
+        if r:
+            claimed_answered_count += 1
+            total_claimed_r += r
+
+    print "# claimed cookies with atleast one answer: " + str(claimed_answered_count)
+    print "avg num answered for answered claimed: " + str(total_claimed_r / float(claimed_answered_count))
+
+    total_unclaimed_r = 0
+    unclaimed_answered_count = 0
+    for x in unclaimed_cookies:
+        r = x.getView().responses.count()
+        if r:
+            unclaimed_answered_count += 1
+            total_unclaimed_r += r
+
+    print "# unclaimed cookies with atleast one answer: " + str(unclaimed_answered_count)
+    print "avg num answered for answered unclaimed: " + str(total_unclaimed_r / float(unclaimed_answered_count))
+
+#-----------------------------------------------------------------------------------------------------------------------
 # METRICS
 #-----------------------------------------------------------------------------------------------------------------------
 
