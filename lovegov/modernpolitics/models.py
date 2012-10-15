@@ -3831,9 +3831,9 @@ class Legislation(Content):
     # action relationship is stored in LegislationAction object.  To retrieve them you can use "self.legislation_actions"
 
     def setCongressBody(self):
-        if leg.startswith("h"):
+        if self.bill_type.startswith("h"):
             self.congress_body = "H"
-        elif leg.startswith("s"):
+        elif self.bill_type.startswith("s"):
             self.congress_body = "S"
         self.save()
 
@@ -4159,10 +4159,15 @@ class CongressRoll(LGModel):
     question = models.CharField(max_length=1000, null=True)
     required = models.CharField(max_length=10, null=True)
     result = models.CharField(max_length=80, null=True)
+    important = models.BooleanField(default=False)
     # Legislation
     legislation = models.ForeignKey(Legislation, null=True, related_name="bill_votes")
     amendment = models.ForeignKey(LegislationAmendment, null=True, related_name="amendment_votes")
 
+    def setOnPassage(self):
+        if self.type == 'On Passage Of The Bill':
+            self.important = True
+            self.save()
 
 #=======================================================================================================================
 #

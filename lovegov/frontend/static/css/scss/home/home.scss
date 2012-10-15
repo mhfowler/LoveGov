@@ -607,7 +607,7 @@ div.new-footer {
 
   div.social-medias-wrapper {
     float:left;
-    width:255px;
+    width:210px;
     div.social-media-wrapper {
       float:left;
       margin-right:20px;
@@ -617,14 +617,20 @@ div.new-footer {
       }
       a.twitter-link-button {
         display:block;
-        margin-bottom:15px;
-        width: 27%;
+        margin-bottom:16px;
+        width: 31px;
         margin-left:0px;
       }
       &.twitter-wrapper {
         margin-right:0px;
       }
     }
+  }
+
+  div.footer-links-wrapper {
+    float:left;
+    position: relative;
+    left: -55px;
   }
 
   a.footer-link {
