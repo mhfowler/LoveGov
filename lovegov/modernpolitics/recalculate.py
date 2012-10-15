@@ -16,11 +16,12 @@ def deleteAllGhostResponses():
         count +=1
 
 def printSecondsRemaining(started_when, completed, total):
-    now = datetime.datetime.now()
-    seconds_passed = (now - started_when).total_seconds()
-    total_seconds = seconds_passed * total / float(completed)
-    seconds_to_go = total_seconds - seconds_passed
-    print "seconds to go: " + str(seconds_to_go)
+    if completed:
+        now = datetime.datetime.now()
+        seconds_passed = (now - started_when).total_seconds()
+        total_seconds = seconds_passed * total / float(completed)
+        seconds_to_go = total_seconds - seconds_passed
+        print "seconds to go: " + str(seconds_to_go)
 
 ## recalculate which congress rolls are important ##
 def recalculateCongressRollImportance():
