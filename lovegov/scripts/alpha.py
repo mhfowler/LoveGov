@@ -59,7 +59,8 @@ def scriptCreateCongressAnswers(args=None):
     overall_metrics['multiple_congress_rolls_found'] = 0
 
     # For cells in the spreadsheet
-    for row in range(1,sheet.nrows):
+#    for row in range(1,sheet.nrows):
+    for row in range(1,2):
 
         action = sheet.cell(row,0).value
         vote = sheet.cell(row,1).value
