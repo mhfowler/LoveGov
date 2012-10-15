@@ -253,9 +253,12 @@ function incrementNewComments(comment_id) {
 }
 
 function setTopNewComments(num) {
-    if(num <= 0) return;
     var thread = $('div.thread');
     var show_new_replies = thread.find('div.top-show-new-replies');
+    if(num <= 0) {
+        show_new_replies.hide();
+        return;
+    }
     var numspan = show_new_replies.find('span.num-new-replies');
     numspan.text(num);
     show_new_replies.data('num-new-replies', num);

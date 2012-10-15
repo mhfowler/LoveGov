@@ -1999,7 +1999,8 @@ def getChildComments(request, vals={}):
     content = Content.lg.get_or_none(id=cid)
     num_to_fetch = int(request.POST.get('num_to_fetch'))
     depth = int(request.POST.get('depth'))
-    comments = Comment.objects.filter(on_content=content).order_by('-created_when')[:num_to_fetch]
+    viewer = vals['viewer']
+    comments = Comment.objects.filter(on_content=content).order_by('-created_when').exclude(creator=viewer)[:num_to_fetch]
     from lovegov.frontend.views_helpers import renderComment
     result = ''
     comment_ids = []
