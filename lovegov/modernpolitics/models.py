@@ -4164,10 +4164,15 @@ class CongressRoll(LGModel):
     legislation = models.ForeignKey(Legislation, null=True, related_name="bill_votes")
     amendment = models.ForeignKey(LegislationAmendment, null=True, related_name="amendment_votes")
 
-    def setOnPassage(self):
-        if self.type == 'On Passage Of The Bill':
-            self.important = True
-            self.save()
+    def setImportant(self):
+        if self.legislation:
+            if self.type == 'On Passage Of The Bill':
+                self.important = True
+                self.save()
+        elif self.amendment:
+            if self.type == "On The Amendment":
+                self.important = True
+                self.save()
 
 #=======================================================================================================================
 #

@@ -56,6 +56,7 @@ def scriptCreateCongressAnswers(args=None):
     overall_metrics['answer_actions'] = 0
     overall_metrics['responses_deleted'] = 0
     overall_metrics['questions_deleted'] = 0
+    overall_metrics['multiple_congress_rolls_found'] = 0
 
     # For cells in the spreadsheet
     for row in range(1,sheet.nrows):
@@ -129,7 +130,7 @@ def scriptCreateCongressAnswers(args=None):
 
     # print overall metrics
     for k,v in overall_metrics.items():
-        print enc(k + ": " + str(v))
+        print enc(str(k) + ": " + str(v))
 
     return metrics
 
@@ -220,6 +221,9 @@ def createCongressAnswer(bill, amendment, legislation_name, vote, answer_id, met
             overall_metrics['actions_failed'] += 1
             print enc("+EE+ Could not congress roll for == " + legislation_name)
             return False
+        elif congress_rolls.count() > 1:
+            overall_metrics['multiple_congress_rolls_found'] += 1
+            print enc("+EE+ more than one congress roll found for == " + legislation_name)
 
         # get votes from congress rolls
         votes = getVotesFromRolls(congress_rolls, answer_value=answer_value)
