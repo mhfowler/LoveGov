@@ -1,5 +1,16 @@
 from lovegov.modernpolitics.initialize import *
 
+## delete all ghost responses ##
+def deleteAllGhostResponses():
+    ghosts = UserProfile.objects.filter(ghost=True)
+    responses = Response.objects.filter(creator__in=ghosts)
+    count = 0
+    for x in responses:
+        x.delete()
+        if not count % 20:
+            print count
+        count +=1
+
 ## recalculate amendment titles ##
 def recalculateAmendmentTitles():
     for l in LegislationAmendment.objects.all():
