@@ -1326,7 +1326,7 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
     def getHotFeedContent(self, start=0, end=0):
         content = Content.objects.filter(in_feed=True, ranked_by__user=self).order_by("ranked_by__score")
         if not content:
-            self.updateHotFeed()
+            self.updateHotFeed(force=True)
             return self.getHotFeedContent(start, end)
         if start:
             content = content[start:]
@@ -1349,13 +1349,14 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
         if self.last_updated_hot_feed + delta < now:
             self.updateHotFeed()
 
-    def updateHotFeed(self):
+    def updateHotFeed(self, force=False):
 
         # try to avoid multiple hot feed updates running at once
         now = datetime.datetime.now()
-        safety_delta = datetime.timedelta(minutes=1)
-        if now - self.last_updated_hot_feed < safety_delta:
-            return False
+        if not force:
+            safety_delta = datetime.timedelta(minutes=1)
+            if now - self.last_updated_hot_feed < safety_delta:
+                return False
 
         self.last_updated_hot_feed = now
         self.save()
