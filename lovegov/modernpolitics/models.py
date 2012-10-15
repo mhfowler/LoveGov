@@ -3664,10 +3664,6 @@ class News(Content):
         self.save()
         super(News, self).autoSave(creator=creator, privacy=privacy)
 
-    def getAbsoluteLink(self):
-        link = str.replace(str(self.link), 'http://', '')
-        return "http://" + link
-
     def getLinkRedirectURL(self):
             return "/link/" + str(self.id) + '/'
 

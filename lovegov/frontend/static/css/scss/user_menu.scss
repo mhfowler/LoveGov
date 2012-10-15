@@ -12,10 +12,8 @@ div.user-menu {
   }
 
   $triangle-size: 16px;
-
-  display: none;
   width: 350px;
-  height: 175px;
+  display: none;
   z-index: 1;
   background-color: white;
   position: absolute;
@@ -25,6 +23,8 @@ div.user-menu {
   color: $deep-gray;
   border: 1px solid $deep-gray;
   font-size: 16px;
+  word-wrap: break-word;
+
   @include box-shadow($gray 10px 10px 20px);
   div.name {
     color: black;
@@ -40,7 +40,7 @@ div.user-menu {
 
   div.options-row {
     float: left;
-    margin-top: 20px;
+    margin: 10px 0 40px 0;
     color: $red;
     span {
       cursor: pointer;

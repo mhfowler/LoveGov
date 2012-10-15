@@ -501,15 +501,12 @@ div.question_stub {
         min-height:70px;
         @include border-radius(8px);
         &:hover {
-          background-color:$awesome-blue;
+          background-color:$white-gray;
           cursor:pointer;
         }
         &.clicked {
           background-color:$awesome-blue;
           //border:1px solid $green;
-          &:hover {
-            background-color:$awesome-blue;
-          }
         }
         span.answer-text {
           font-size: 18px;
