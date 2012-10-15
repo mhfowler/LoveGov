@@ -32,6 +32,6 @@ def printAmendmentInfo(a):
             print total
 
     for k,v in types.items():
-        print k + ": " + str(v)
+        print enc(str(k) + ": " + str(v))
 
 printAmendmentInfo(a)
