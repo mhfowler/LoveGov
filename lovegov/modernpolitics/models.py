@@ -4163,14 +4163,14 @@ class CongressRoll(LGModel):
     question = models.CharField(max_length=1000, null=True)
     required = models.CharField(max_length=10, null=True)
     result = models.CharField(max_length=80, null=True)
-    on_passage_of_the_bill = models.BooleanField(default=False)
+    important = models.BooleanField(default=False)
     # Legislation
     legislation = models.ForeignKey(Legislation, null=True, related_name="bill_votes")
     amendment = models.ForeignKey(LegislationAmendment, null=True, related_name="amendment_votes")
 
     def setOnPassage(self):
         if self.type == 'On Passage Of The Bill':
-            self.on_passage_of_the_bill = True
+            self.important = True
             self.save()
 
 #=======================================================================================================================

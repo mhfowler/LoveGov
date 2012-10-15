@@ -212,9 +212,9 @@ def createCongressAnswer(bill, amendment, legislation_name, vote, answer_id, met
         congress_rolls = None
         # Get congress rolls from the bill or amendment
         if bill:
-            congress_rolls = CongressRoll.objects.filter(legislation=bill, on_passage_of_the_bill=True).order_by('datetime')
+            congress_rolls = CongressRoll.objects.filter(legislation=bill, important=True).order_by('datetime')
         elif amendment:
-            congress_rolls = CongressRoll.objects.filter(amendment=amendment, on_passage_of_the_bill=True).order_by('datetime')
+            congress_rolls = CongressRoll.objects.filter(amendment=amendment, important=True).order_by('datetime')
 
         if not congress_rolls:
             overall_metrics['actions_failed'] += 1
