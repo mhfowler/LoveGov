@@ -17,7 +17,7 @@ def recalculateCongressRollImportance():
     rolls = CongressRoll.objects.all()
     print "total: " + str(rolls.count())
     for x in rolls:
-        x.setImportance()
+        x.setImportant()
         if not count % 20:
             print count
         count +=1
