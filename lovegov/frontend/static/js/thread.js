@@ -179,9 +179,7 @@ function loadMoreComments() {
                 var returned = $.parseJSON(data);
                 var top_count = returned.top_count;
                 var yet_to_get = returned.yet_to_get;
-                if(thread.data('yet_to_get')=='none') {
-                    thread.data('yet_to_get', yet_to_get);
-                }
+                thread.data('yet_to_get', yet_to_get);
                 var comment_ids = returned.comment_ids;
                 // add comment ids to dictionary
                 for(i in comment_ids) {
@@ -227,7 +225,6 @@ function getNewCommentsStats(callback) {
             var returned = $.parseJSON(data);
             var stats = returned.stats;
             var toplevel_count = returned.toplevel_count;
-            var newCommentCount = toplevel_count - curr_tops -
             setTopNewComments(toplevel_count - curr_tops - yet_to_get);
             callback(stats);
         }
