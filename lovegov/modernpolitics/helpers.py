@@ -208,6 +208,11 @@ def getAllUsers(not_team=False):
         users = users.filter(developer=False)
     return users
 
+def getBill(bill_type, bill_number, session_num):
+    session = CongressSession.objects.get(session=session_num)
+    bill = Legislation.lg.get_or_none(bill_type=bill_type, bill_number=bill_number, congress_session=session)
+    return bill
+
 #-----------------------------------------------------------------------------------------------------------------------
 # convenience methods to get some common things
 #-----------------------------------------------------------------------------------------------------------------------
