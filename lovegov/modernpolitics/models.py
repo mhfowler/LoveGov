@@ -1324,16 +1324,16 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
     # Get hot feed, paginated
     #-------------------------------------------------------------------------------------------------------------------
     def getHotFeedContent(self, start=0, end=0):
+        from lovegov.modernpolitics.helpers import LGException
         content = Content.objects.filter(in_feed=True, ranked_by__user=self).order_by("ranked_by__score")
+
         if not content:
-            self.updateHotFeed(force=True)
-            return self.getHotFeedContent(start, end)
+            LGException(enc(self.get_name()) + " didn't have any content in their hot feed.")
         if start:
             content = content[start:]
         if end:
             content = content[:end]
 
-        from lovegov.modernpolitics.helpers import LGException
         try:
             if content[0].id == content[1].id:
                 LGException(enc("Duplicate content in hot feed for: " + self.get_name()))
@@ -1352,12 +1352,12 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
     def updateHotFeed(self, force=False):
 
         # try to avoid multiple hot feed updates running at once
-        now = datetime.datetime.now()
         if not force:
-            safety_delta = datetime.timedelta(minutes=1)
-            if now - self.last_updated_hot_feed < safety_delta:
+            if self.id in HOT_FEEDS_CURRENTLY_UPDATING:
                 return False
 
+        now = datetime.datetime.now()
+        HOT_FEEDS_CURRENTLY_UPDATING.add(self.id)
         self.last_updated_hot_feed = now
         self.save()
         self.hot_feed.clear()
@@ -1365,6 +1365,7 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
         for score, content in enumerate(hot_feed_content):
             r = RankedContent(content=content, score=score, user=self)
             r.save()
+        HOT_FEEDS_CURRENTLY_UPDATING.discard(self.id)
 
     def getContentRelevantToMyLocation(self):
         from lovegov.modernpolitics.feed import getContentRelevantToLocation
