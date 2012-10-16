@@ -80,6 +80,7 @@ urlpatterns += patterns('',
     (r'^500/$', 'django.views.generic.simple.direct_to_template', {'template': '500.html', 'extra_context': {'STATIC_URL': settings.STATIC_URL}}),
     (r'^404/$', views.error404),
     (r'^robots.txt', 'django.views.generic.simple.direct_to_template', {'template': 'robots.txt'}),
+    (r'^update_hot_feed', viewWrapper(views.updateHotFeedPage, requires_login=True)),
 
     # home pages
     (r'^welcome/$', viewWrapper(views.welcome, requires_login=True)),

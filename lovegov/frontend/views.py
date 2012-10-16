@@ -218,6 +218,10 @@ def goToLoveGov(request, link_id, vals={}):
         error_logger.error("to lovegov with code that does not exist: " + str(link_id))
     return shortcuts.redirect("/home/")
 
+def updateHotFeedPage(request, vals={}):
+    viewer = vals['viewer']
+    return HttpResponse(viewer.updateHotFeed())
+
 #-----------------------------------------------------------------------------------------------------------------------
 # da blog
 #-----------------------------------------------------------------------------------------------------------------------
