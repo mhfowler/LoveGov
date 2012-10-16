@@ -1893,6 +1893,12 @@ bind(".log_in_button", 'click', null, function(event) {
     $(".signing_in_gif").show();
 });
 
+bind('div.sign-up-with-email-area h2.register-title', 'click', function(e) {
+    $('div.r-form-inputs, div.r-bottom').fadeToggle(300);
+    $('div.sign-up-with-email-area').css({'padding': '30px'});
+
+});
+
 /***********************************************************************************************************************
  *
  *      ~October login

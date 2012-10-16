@@ -533,7 +533,7 @@ div.october-sign-up {
     font-size: 16px;
     text-align:center;
     color:$dark-gray;
-    margin-top: 30px;
+    margin-top: 10px;
     margin-bottom: 35px;
   }
   div.lower-area {
@@ -542,7 +542,7 @@ div.october-sign-up {
       display: inline-block;
       width:80%%;
       text-align:left;
-      padding:30px;
+      padding:10px;
       background-color: #eee;
       margin-bottom: 25px;
       @include border-radius(10px);
@@ -712,7 +712,6 @@ div.presidential-matching {
     }
   }
   div.presidential-matching-finished {
-    float:left;
     padding-top:12px;
     font-size:24px;
     color:$black;
@@ -720,6 +719,9 @@ div.presidential-matching {
     padding-bottom:25px;
     //width: 500px;
     display:none;
+    margin-left: 100px;
+    margin-bottom: 30px;
+    border-bottom: 1px double $gray;
   }
   div.bottom-section {
     width: 100%;
@@ -789,6 +791,7 @@ div.new-register-form {
     background-color: #f7f7f7;
     padding: 20px;
     @include border-radius(10px);
+    display: none;
   }
   div.r-form-input {
     position:relative;
@@ -834,6 +837,7 @@ div.new-register-form {
     position:relative;
     width:100%;
     margin-top:30px;
+    display: none;
     span.r-error {
       top: 30px;
       left: -15px;
@@ -1057,14 +1061,18 @@ p.privacy_p
   @include titleFont;
 }
 
+h2.register-title {
+  //margin-bottom:10px;
+  cursor: pointer;
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
 div#register-div {
 
   position:relative;
   top:-40px;
-
-  h2.register-title {
-    margin-bottom:10px;
-  }
 
   input#zip-register-input {
     width:150px;
@@ -1433,4 +1441,13 @@ div.hiw-right {
   width: 25%;
   clear: right;
   margin-left: 40px;
+}
+
+div.registration-benefits {
+  font-size: 16px;
+  margin-bottom: 30px;
+  border-radius: 10px;
+  background-color: $red-light;
+  color: white;
+  padding: 20px;
 }
