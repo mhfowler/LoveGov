@@ -1352,7 +1352,7 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
     def updateHotFeed(self, force=False):
 
         # try to avoid multiple hot feed updates running at once
-        temp_logger.debug(str(HOT_FEEDS_CURRENTLY_UPDATING))
+        temp_logger.debug("hot feed ids: " + str(HOT_FEEDS_CURRENTLY_UPDATING))
         if not force:
             if self.id in HOT_FEEDS_CURRENTLY_UPDATING:
                 return False
