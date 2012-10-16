@@ -550,6 +550,9 @@ div.october-sign-up {
         color:$red;
         font-size: 20px;
       }
+      &:hover {
+        background-color: $orange-light;
+      }
     }
 
     div.action-items-area {
@@ -1064,9 +1067,6 @@ p.privacy_p
 h2.register-title {
   //margin-bottom:10px;
   cursor: pointer;
-  &:hover {
-    text-decoration: underline;
-  }
 }
 
 div#register-div {

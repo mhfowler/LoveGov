@@ -359,6 +359,7 @@ function ajaxReload(theurl)
             $('.main_content').css("top","0px");
             $(".main_content").html(returned.html);
             $('.main_content').show();
+            bindOnReload();
             rebind = returned.rebind;
             bindOnReload();
         }
