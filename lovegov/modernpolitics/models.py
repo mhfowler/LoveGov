@@ -1352,6 +1352,7 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
     def updateHotFeed(self, force=False):
 
         # try to avoid multiple hot feed updates running at once
+        temp_logger.debug(str(HOT_FEEDS_CURRENTLY_UPDATING))
         if not force:
             if self.id in HOT_FEEDS_CURRENTLY_UPDATING:
                 return False
@@ -1365,7 +1366,7 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
         for score, content in enumerate(hot_feed_content):
             r = RankedContent(content=content, score=score, user=self)
             r.save()
-        HOT_FEEDS_CURRENTLY_UPDATING.discard(self.id)
+        #HOT_FEEDS_CURRENTLY_UPDATING.discard(self.id)
 
     def getContentRelevantToMyLocation(self):
         from lovegov.modernpolitics.feed import getContentRelevantToLocation
