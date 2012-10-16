@@ -376,7 +376,12 @@ def presidentialMatching(request, vals):
     if ip and ip!='127.0.0.1':
         import requests
         r = requests.get('http://smart-ip.net/geoip-json/'+ip)
-        city = '<strong>' + str(r.json['city']) + ', ' + str(r.json['region']) + '</strong>'
+        jcity = str(r.json['city'])
+        jregion = str(r.json['region'])
+        if jcity and jregion:
+            city = '<strong>' + jcity + ', ' + jregion + '</strong>'
+        else:
+            city = 'your city'
     else:
         city = 'your city' # default city
 
