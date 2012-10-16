@@ -26,7 +26,8 @@
     </div>
 
     <div class="card-bottom">
-        <a href="{{ user.get_url }}" class="politician-name"> {{ user.get_name }} ({{ user.political_title }})</a>
+        <a href="{{ user.get_url }}" class="politician-name"> {{ user.get_name }}
+            {% if user.political_title != 'Politician' %}({{ user.political_title }}) {% endif %}</a>
         <div style="clear:both;"></div>
     </div>
 
