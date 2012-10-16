@@ -5,6 +5,32 @@ from lovegov.modernpolitics.backend import *
 from lovegov.base_settings import UPDATE
 from operator import attrgetter
 
+def getTimeTuplesByDelta(time_start, time_end, delta):
+    c_time_start = time_start
+    c_time_end = time_start + delta
+    time_tuples =[(time_start, c_time_end)]
+    while c_time_end < time_end:
+        c_time_start += delta
+        c_time_end += delta
+        time_tuples.append((c_time_start, c_time_end))
+    return time_tuples
+
+#-----------------------------------------------------------------------------------------------------------------------
+# follow button vals
+#-----------------------------------------------------------------------------------------------------------------------
+def valsAmIFollowing(viewer, user_profile, vals):
+    vals['is_user_requested'] = False
+    vals['is_user_confirmed'] = False
+    vals['is_user_rejected'] = False
+    user_follow = UserFollow.lg.get_or_none(user=viewer,to_user=user_profile)
+    if user_follow:
+        if user_follow.requested:
+            vals['is_user_requested'] = True
+        if user_follow.confirmed:
+            vals['is_user_confirmed'] = True
+        if user_follow.rejected:
+            vals['is_user_rejected'] = True
+
 #-----------------------------------------------------------------------------------------------------------------------
 # Takes in a viewer and a to_page, stores stuff apropriately and returns page viewer should be redirect to
 #-----------------------------------------------------------------------------------------------------------------------

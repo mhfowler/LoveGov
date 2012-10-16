@@ -15,6 +15,38 @@ import xlutils
 #-----------------------------------------------------------------------------------------------------------------------
 # analyze cookie data
 #-----------------------------------------------------------------------------------------------------------------------
+def registrationConversionAnalytics(time_tuples, output_file):
+    from xlutils import copy
+
+    metrics_template_filepath = os.path.join(PROJECT_PATH, 'logging/metrics/registration_conversion_template.xls')
+
+    rb = open_workbook(metrics_template_filepath,formatting_info=True)
+    wb = xlutils.copy.copy(rb) #a writable copy (I can't read values out of this, only write to it)
+
+    c_row = 1
+
+    w_sheet = wb.get_sheet(0)
+
+    for tuple in time_tuples:
+        time_start = tuple[0]
+        time_end = tuple[1]
+
+        dt = time_start.strftime('%m/%d/%y')
+        w_sheet.write(c_row,1,dt)
+
+        metrics = analyzeCookieData(time_start, time_end)
+        w_sheet.write(c_row,2,metrics['total_ips_visited'])
+        w_sheet.write(c_row,3,metrics['new_ips_visited'])
+        w_sheet.write(c_row,4,metrics['total_registered'])
+        w_sheet.write(c_row,5,metrics['presidential_matched'])
+        w_sheet.write(c_row,6,metrics['registered_with_cookie_data'])
+
+        c_row += 1
+
+    wb.save(output_file)
+
+
+
 def analyzeCookieData(time_start, time_end):
 
     registered_within_time_period = filterByCreatedWhen(UserProfile.objects.filter(ghost=False), time_start, time_end)
@@ -45,8 +77,10 @@ def analyzeCookieData(time_start, time_end):
     print "total cookie datas: " + str(total_cookie_datas)
     print "claimed cookie datas (registered with cookie data): " + str(total_claimed_cookie_datas)
     print "total registered: " + str(total_registered)
-    print "% of new visitors who registred: " + str(total_new_ips_visited / float(total_registered))
-    print "% of new visitors who presidential matched who registered: " + str(total_cookie_datas / float(total_claimed_cookie_datas))
+    if total_registered:
+        print "% of new visitors who registred: " + str(total_new_ips_visited / float(total_registered))
+    if total_claimed_cookie_datas:
+        print "% of new visitors who presidential matched who registered: " + str(total_cookie_datas / float(total_claimed_cookie_datas))
 
     total_claimed_r = 0
     claimed_answered_count = 0
@@ -56,8 +90,9 @@ def analyzeCookieData(time_start, time_end):
             claimed_answered_count += 1
             total_claimed_r += r
 
-    print "# claimed cookies with atleast one answer: " + str(claimed_answered_count)
-    print "avg num answered for answered claimed: " + str(total_claimed_r / float(claimed_answered_count))
+    if claimed_answered_count:
+        print "# claimed cookies with atleast one answer: " + str(claimed_answered_count)
+        print "avg num answered for answered claimed: " + str(total_claimed_r / float(claimed_answered_count))
 
     total_unclaimed_r = 0
     unclaimed_answered_count = 0
@@ -67,8 +102,19 @@ def analyzeCookieData(time_start, time_end):
             unclaimed_answered_count += 1
             total_unclaimed_r += r
 
-    print "# unclaimed cookies with atleast one answer: " + str(unclaimed_answered_count)
-    print "avg num answered for answered unclaimed: " + str(total_unclaimed_r / float(unclaimed_answered_count))
+    if unclaimed_answered_count:
+        print "# unclaimed cookies with atleast one answer: " + str(unclaimed_answered_count)
+        print "avg num answered for answered unclaimed: " + str(total_unclaimed_r / float(unclaimed_answered_count))
+
+    to_return_dict = {
+        'total_ips_visited':total_ips_visited,
+        'new_ips_visited':total_new_ips_visited,
+        'total_registered':total_registered,
+        'registered_with_cookie_data':total_claimed_cookie_datas,
+        'presidential_matched': claimed_answered_count + unclaimed_answered_count
+    }
+
+    return to_return_dict
 
 #-----------------------------------------------------------------------------------------------------------------------
 # METRICS

@@ -40,6 +40,7 @@ DEBUG_TOOLBAR_CONFIG = {
     'SHOW_TOOLBAR_CALLBACK': show_toolbar,
     }
 
+
 ########################################################################################################################
 #    caching
 #
@@ -75,7 +76,7 @@ COMPRESS_ENABLED = False
 #
 ########################################################################################################################
 
-LOCAL_EMAIL = False
+LOCAL_EMAIL = True
 
 if LOCAL_EMAIL:
     EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
