@@ -1,5 +1,48 @@
 from lovegov.modernpolitics.initialize import *
 
+## recalculate official question order ##
+def recalculateOfficialQuestionOrder():
+
+    q = Question.objects.get(id=171412)     # water policy
+    q.official_order = 1
+    q.save()
+
+    q = Question.objects.get(id=170853)     # health insurance
+    q.official_order = 2
+    q.save()
+
+    q = Question.objects.get(id=38)         # offshore drilling
+    q.official_order = 3
+    q.save()
+
+    q = Question.objects.get(id=39)         # search
+    q.official_order = 4
+    q.save()
+
+    q = Question.objects.get(id=46)         # energy efficient technologies for our automobiles
+    q.official_order = 5
+    q.save()
+
+    q = Question.objects.get(id=30)         # funding for its conservation projects
+    q.official_order = 6
+    q.save()
+
+    q = Question.objects.get(id=18)         # economic stimulus package
+    q.official_order = 7
+    q.save()
+
+    q = Question.objects.get(id=26)         # advocacy organizations
+    q.official_order = 8
+    q.save()
+
+    q = Question.objects.get(id=9)          # the Obama Administration's healthcare reform
+    q.official_order = 9
+    q.save()
+
+    q = Question.objects.get(id=4)          # abortion
+    q.official_order = 10
+    q.save()
+
 ## delete all ghost responses ##
 def deleteAllGhostResponses():
     ghosts = UserProfile.objects.filter(ghost=True)
