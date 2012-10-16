@@ -23,7 +23,7 @@
                 and <a href="" class="agg_popup" data-n_id="{{ n_id }}">{{ tally|add:"-1" }} other people</a>
             {% endif %}
             commented on
-            {% include "site/pieces/actions/action_name_snippet.html" with user=to_user you=to_you %}
+            {% include "site/pieces/actions/action_name_snippet.html" with object= you=to_you %}
         </td>
 
     <!-- Voted -->

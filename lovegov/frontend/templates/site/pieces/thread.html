@@ -1,7 +1,9 @@
 <span class="discuss">Discuss
+{% comment %}
 <div class="thread-refresh">
     refresh comment thread
 </div>
+{% endcomment %}
     <div class="thread-filters"><label>sort comments by:</label>
         <select><option {% if content.default_sort == 'h' %}selected{% endif %}>hot</option>
             <option {% if content.default_sort == 'n' %}selected{% endif %}>new</option></select> </div>

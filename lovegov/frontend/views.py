@@ -365,16 +365,22 @@ def loginFAQ(request, vals={}):
 
 def presidentialMatching(request, vals):
 
-    if not LOCAL:
-        obama = UserProfile.objects.get(alias='barack_obama')
-        mitt = UserProfile.objects.get(alias='mitt_romney')
-    else:
-        obama = getUser("Randy Johnson")
-        mitt = getUser("Katy Perry")
+    obama = UserProfile.objects.get(alias='barack_obama')
+    mitt = UserProfile.objects.get(alias='mitt_romney')
     vals['obama'] = obama
     vals['mitt'] = mitt
     vals['candidates'] = [obama, mitt]
     vals['agreement_ids'] = [int(obama.id), int(mitt.id)]
+
+    ip = request.META.get('REMOTE_ADDR', None)
+    if ip and ip!='127.0.0.1':
+        import requests
+        r = requests.get('http://smart-ip.net/geoip-json/'+ip)
+        city = '<strong>' + str(r.json['city']) + ', ' + str(r.json['region']) + '</strong>'
+    else:
+        city = 'your city' # default city
+
+    vals['local_location'] = city
 
     vals['lgpoll'] = getLoveGovPoll()
 
