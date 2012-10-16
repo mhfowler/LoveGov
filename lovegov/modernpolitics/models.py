@@ -1352,9 +1352,10 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
     def updateHotFeed(self, force=False):
 
         # try to avoid multiple hot feed updates running at once
-        temp_logger.debug("hot feed ids: " + str(HOT_FEEDS_CURRENTLY_UPDATING))
         if not force:
             if self.id in HOT_FEEDS_CURRENTLY_UPDATING:
+                from lovegov.modernpolitics.helpers import LGException
+                LGException("Double hot feed calculation blocked for " + self.get_name())
                 return False
 
         now = datetime.datetime.now()
