@@ -4332,6 +4332,7 @@ class Question(Content):
     relevant_info = models.TextField(max_length=1000, blank=True, null=True)
     source = models.TextField(max_length=500, blank=True, null=True)
     official = models.BooleanField()
+    official_order = models.IntegerField(default=100)
     lg_weight = models.IntegerField(default=5)
     answers = models.ManyToManyField(Answer)
 

@@ -177,7 +177,10 @@ def getQuestionItems(viewer, feed_ranking, feed_topic=None, only_unanswered=Fals
         questions = questions.exclude(id__in=q_ids)
 
     # sort & append
-    questions = questionsSortHelper(questions, feed_ranking)
+    if poll and poll.isLoveGovPoll() and feed_ranking == 'N':
+        questions = questions.order_by("official_order")
+    else:
+        questions = questionsSortHelper(questions, feed_ranking)
 
     # paginate
     if num:
