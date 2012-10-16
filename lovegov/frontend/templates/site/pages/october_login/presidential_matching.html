@@ -13,9 +13,9 @@
 
         <div class="top-right-sign-up">
             <p class="sign-up-text">
-                To save your answers and see more matches,
+                To save your answers and get political candidate matches in {{ local_location }},
             </p>
-            <a href="/sign_up/" class="sign-up-button"> sign up </a>
+            <a href="/sign_up/" class="sign-up-button"> SIGN UP  </a>
         </div>
 
     </div>
@@ -41,9 +41,14 @@
     <div class="sign-up-wrapper sign_up_wrapper">
         <div class="presidential-matching-finished presidential_matching_finished">
             <p>
-                To answer more questions and join the LoveGov community, sign up.
+                To save your answers and continue improving your matches, you'll need to create an account. You'll get to
+                compare yourself with Joe Biden and Paul Ryan, local candidates in {{ local_location }}, and other LoveGov users.
+                You'll also get to see detailed break-downs of where your views differ with each candidate by topic. <strong>Signing up is fast and free.</strong>
+
             </p>
         </div>
+
+        <hr style="clear:both">
 
         {% include 'site/pages/october_login/sign_up.html' %}
 

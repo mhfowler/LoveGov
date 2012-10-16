@@ -3277,6 +3277,8 @@ class Notification(Privacy):
             return self.getSupportedVerbose(viewer, vals)
         elif type == 'AD':
             return self.getAddedToScorecardVerbose(viewer, vals)
+        elif type == 'CR':
+            return self.getCreatedVerbose(viewer, vals)
         else:
             return ''
 
@@ -3295,7 +3297,8 @@ class Notification(Privacy):
             'you_acted' : you_acted,
             'to_object' : action.content,
             'value' : action.value,
-            'tally' : self.agg_actions.count()
+            'tally' : self.agg_actions.count(),
+            'private' : action.privacy=='PRI',
         })
 
         return render_to_string('site/pieces/notifications/voted_verbose.html',vals)
@@ -3314,6 +3317,7 @@ class Notification(Privacy):
             'user' : action_user,
             'you_acted' : you_acted,
             'to_object' : action.petition,
+            'private' : action.privacy=='PRI',
         })
 
         return render_to_string('site/pieces/notifications/signed_verbose.html',vals)
@@ -3331,8 +3335,9 @@ class Notification(Privacy):
             'timestamp' : action.when,
             'user' : action_user,
             'you_acted' : you_acted,
-            'to_object' : action.content,
-            'tally' : action.agg_actions.count()
+            'to_object' : action.getTo(),
+            'tally' : self.agg_actions.count(),
+            'private' : action.privacy=='PRI',
         })
 
         return render_to_string('site/pieces/notifications/created_verbose.html',vals)
@@ -3364,7 +3369,8 @@ class Notification(Privacy):
             'shared_object' : action.content,
             'to_object' : to_object,
             'to_you' : to_you,
-            'tally' : self.agg_actions.count()
+            'tally' : self.agg_actions.count(),
+            'private' : action.privacy=='PRI',
         })
 
         return render_to_string('site/pieces/notifications/shared_verbose.html',vals)
@@ -3401,7 +3407,8 @@ class Notification(Privacy):
             'from_user' : group_joined.user,
             'modifier' : action.modifier,
             'group_join' : group_joined,
-            'election': group_joined.group.is_election
+            'election': group_joined.group.is_election,
+            'private' : action.privacy=='PRI',
         })
 
         return render_to_string('site/pieces/notifications/group_joined_verbose.html',vals)
@@ -3440,7 +3447,8 @@ class Notification(Privacy):
             'from_user' : from_user,
             'modifier' : action.modifier,
             'follow' : user_follow,
-            'reverse_follow' : reverse_follow
+            'reverse_follow' : reverse_follow,
+            'private' : action.privacy=='PRI',
         })
 
         return render_to_string('site/pieces/notifications/user_follow_verbose.html',vals)
@@ -3477,6 +3485,7 @@ class Notification(Privacy):
             'from_user' : from_user,
             'modifier' : action.modifier,
             'support' : support_relationship,
+            'private' : action.privacy=='PRI',
         })
 
         return render_to_string('site/pieces/notifications/support_verbose.html',vals)
@@ -3496,7 +3505,8 @@ class Notification(Privacy):
             'from_user' : action_user,
             'you_acted' : you_acted,
             'scorecard' : action.scorecard,
-            'confirmed': action.confirmed
+            'confirmed': action.confirmed,
+            'private' : action.privacy=='PRI',
         })
 
         return render_to_string('site/pieces/notifications/added_to_scorecard_verbose.html',vals)

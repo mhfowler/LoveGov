@@ -15,7 +15,7 @@
                 and <a href="" class="agg_popup" data-n_id="{{ n_id }}">{{ tally|add:"-1" }} other people</a>
             {% endif %}
             liked
-            {{ to_object.get_name }}
+            {% include 'site/pieces/actions/action_object.html' with to_object=to_object %}
         </td>
 
     {% elif value == -1 %}
@@ -28,7 +28,7 @@
                 and <a href="" class="agg_popup" data-n_id="{{ n_id }}">{{ tally|add:"-1" }} other people</a>
             {% endif %}
             disliked
-            {{ to_object.get_name }}
+            {% include 'site/pieces/actions/action_object.html' with to_object=to_object %}
         </td>
         
     {% else %}
@@ -41,7 +41,7 @@
                 and <a href="" class="agg_popup" data-n_id="{{ n_id }}">{{ tally|add:"-1" }} other people</a>
             {% endif %}
             unvoted
-            {{ to_object.get_name }}
+            {% include 'site/pieces/actions/action_object.html' with to_object=to_object %}
         </td>
     {% endif %}
 

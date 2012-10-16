@@ -404,7 +404,7 @@ ACTION_MODIFIERS = (
     ('S', 'stopped_following'),
 )
 
-NOTIFY_TYPES = ['FO','SI','JO','CO','VO','SH', 'SU', 'AD']
+NOTIFY_TYPES = ['FO','SI','JO','CO','VO','SH', 'SU', 'AD', 'CR']
 
 AGGREGATE_NOTIFY_TYPES = ['SI','VO','CO','SH']
 
