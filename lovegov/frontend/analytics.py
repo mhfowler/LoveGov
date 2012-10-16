@@ -27,7 +27,7 @@ def registrationConversionAnalytics(time_tuples, output_file):
 
     w_sheet = wb.get_sheet(0)
 
-    for tuple in time_tuples[:20]:
+    for tuple in time_tuples:
         time_start = tuple[0]
         time_end = tuple[1]
 
