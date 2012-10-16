@@ -1377,32 +1377,39 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
     def calculateHotFeedContent(self):
         self.updateStale()
         content = self.getGroupSubscriptionContent()
-        content = self.getUnstaleContent(content)
-        content_ids = content.values_list("id", flat=True)
+        stale_ids = self.getStaleContentIds()
 
-        petitions = content.filter(type="P").order_by("-status")
+        all_petitions = content.filter(type="P").order_by("-status")
+        petitions = all_petitions.exclude(id__in=stale_ids)
+        stale_petitions = all_petitions.filter(id__in=stale_ids)
 
         now = datetime.datetime.now()
         delta = datetime.timedelta(days=OLDEST_HOT_NEWS_IS_THIS_MANY_DAYS_OLD)
         oldest_news = now - delta
-        news = content.filter(type="N").filter(created_when__gt=oldest_news).order_by("-created_when")
+        all_news = content.filter(type="N").filter(created_when__gt=oldest_news).order_by("-created_when")
+        news = all_news.exclude(id__in=stale_ids)
+        stale_news = all_news.filter(id__in=stale_ids)
 
-        discussions = content.filter(type="D").order_by("-status").order_by("-num_comments")
+        all_discussions = content.filter(type="D").order_by("-status").order_by("-num_comments")
+        discussions = all_discussions.exclude(id__in=stale_ids)
+        stale_discussions = all_discussions.filter(id__in=stale_ids)
 
-        questions = Question.objects.filter(id__in=content_ids).order_by("-status").order_by("-questions_hot_score")
+        all_questions = Question.objects.all().order_by("-status").order_by("-questions_hot_score")
+        questions = all_questions.exclude(id__in=stale_ids)
+        stale_questions = all_questions.filter(id__in=stale_ids)
 
         if not (petitions or news or discussions or questions):
             return list(Content.objects.filter(in_feed=True).order_by("-hot_score"))
 
         hot_feed_stacks = {
-            'P': {'stack':petitions, 'position':0, 'length':len(petitions)},
-            'N': {'stack':news, 'position':0, 'length':len(news)},
-            'Q': {'stack':questions, 'position':0, 'length':len(questions)},
-            'D': {'stack':discussions, 'position':0, 'length':len(discussions)}
+            'P': {'stack':petitions, 'position':0, 'length':len(petitions), 'stale_stack':stale_petitions, 'stale_length':len(stale_petitions)},
+            'N': {'stack':news, 'position':0, 'length':len(news), 'stale_stack':stale_news, 'stale_length':len(stale_news)},
+            'Q': {'stack':questions, 'position':0, 'length':len(questions), 'stale_stack':stale_questions, 'stale_length':len(stale_questions)},
+            'D': {'stack':discussions, 'position':0, 'length':len(discussions), 'stale_stack':stale_discussions, 'stale_length':len(stale_discussions)}
         }
 
         hot_feed_content = []
-        for i in range(1, min(HOT_FEED_SIZE, len(content))):
+        for i in range(1, HOT_FEED_SIZE):
             which_type = getWeightedType()
             which = hot_feed_stacks[which_type]
             stack = which['stack']
@@ -1412,6 +1419,29 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
                 item = stack[position]
                 hot_feed_content.append(item)
                 which['position'] += 1
+
+        # add stale content or extra content to bottom of hot feed (s.t. each content type has at min 10 items)
+        for k,which in hot_feed_stacks.items():
+            no_more_content = False
+            position = which['position']
+            length = which['length']
+            stale_length = which['stale_length']
+            stack = which['stack']
+            stale_stack = which['stale_stack']
+            while position < 10 and not no_more_content:
+                if position < length:
+                    item = stack[position]
+                    hot_feed_content.append(item)
+                    position += 1
+                else:
+                    stale_position = position - length
+                    if stale_position < stale_length:
+                        item = stale_stack[stale_position]
+                        hot_feed_content.append(item)
+                        position += 1
+                    else:
+                        no_more_content = True
+
         return hot_feed_content
 
 
@@ -1469,6 +1499,10 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
             content = Content.objects.filter(in_feed=True)
         stale_ids = self.stale_content.values_list("id", flat=True)
         return content.exclude(id__in=stale_ids)
+
+    def getStaleContentIds(self):
+        stale_ids = self.stale_content.values_list("id", flat=True)
+        return stale_ids
 
     def addDigestedContent(self, content):
         self.digested_content.add(content)
