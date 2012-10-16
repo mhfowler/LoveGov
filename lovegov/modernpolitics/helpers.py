@@ -218,6 +218,14 @@ def getAmendment(amendment_type, amendment_number, session_num):
     amendment = LegislationAmendment.lg.get_or_none(amendment_type=amendment_type, amendment_number=amendment_number, congress_session=session)
     return amendment
 
+def getImportantCongressRollsFromBill(bill):
+    rolls = CongressRoll.objects.filter(important=True, legislation=bill)
+    return rolls
+
+def getImportantCongressRollsFromAmendment(amendment):
+    rolls = CongressRoll.objects.filter(important=True, amendment=amendment)
+    return rolls
+
 #-----------------------------------------------------------------------------------------------------------------------
 # convenience methods to get some common things
 #-----------------------------------------------------------------------------------------------------------------------
