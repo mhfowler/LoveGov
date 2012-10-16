@@ -100,6 +100,19 @@ def getMainTopics(vals=None):
             vals['main_topics'] = main_topics
     return main_topics
 
+def valsAmIFollowing(viewer, user_profile, vals):
+    vals['is_user_requested'] = False
+    vals['is_user_confirmed'] = False
+    vals['is_user_rejected'] = False
+    user_follow = UserFollow.lg.get_or_none(user=viewer,to_user=user_profile)
+    if user_follow:
+        if user_follow.requested:
+            vals['is_user_requested'] = True
+        if user_follow.confirmed:
+            vals['is_user_confirmed'] = True
+        if user_follow.rejected:
+            vals['is_user_rejected'] = True
+
 #-----------------------------------------------------------------------------------------------------------------------
 # fills vals with useres group data
 #-----------------------------------------------------------------------------------------------------------------------
