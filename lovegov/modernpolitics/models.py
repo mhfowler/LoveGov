@@ -1366,7 +1366,7 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
         for score, content in enumerate(hot_feed_content):
             r = RankedContent(content=content, score=score, user=self)
             r.save()
-        #HOT_FEEDS_CURRENTLY_UPDATING.discard(self.id)
+        HOT_FEEDS_CURRENTLY_UPDATING.discard(self.id)
 
     def getContentRelevantToMyLocation(self):
         from lovegov.modernpolitics.feed import getContentRelevantToLocation
