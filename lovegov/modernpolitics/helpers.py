@@ -100,6 +100,19 @@ def getMainTopics(vals=None):
             vals['main_topics'] = main_topics
     return main_topics
 
+def valsAmIFollowing(viewer, user_profile, vals):
+    vals['is_user_requested'] = False
+    vals['is_user_confirmed'] = False
+    vals['is_user_rejected'] = False
+    user_follow = UserFollow.lg.get_or_none(user=viewer,to_user=user_profile)
+    if user_follow:
+        if user_follow.requested:
+            vals['is_user_requested'] = True
+        if user_follow.confirmed:
+            vals['is_user_confirmed'] = True
+        if user_follow.rejected:
+            vals['is_user_rejected'] = True
+
 #-----------------------------------------------------------------------------------------------------------------------
 # fills vals with useres group data
 #-----------------------------------------------------------------------------------------------------------------------
@@ -217,6 +230,35 @@ def getAmendment(amendment_type, amendment_number, session_num):
     session = CongressSession.objects.get(session=session_num)
     amendment = LegislationAmendment.lg.get_or_none(amendment_type=amendment_type, amendment_number=amendment_number, congress_session=session)
     return amendment
+
+def getImportantCongressRollsFromBill(bill):
+    rolls = CongressRoll.objects.filter(important=True, legislation=bill)
+    return rolls
+
+def getImportantCongressRollsFromAmendment(amendment):
+    rolls = CongressRoll.objects.filter(important=True, amendment=amendment)
+    return rolls
+
+def getVotesFromRolls(congress_rolls, answer_value=None):
+
+    votes =[]
+
+    possible_vote_keys = ["+", "-", "0"]
+    found_votes = 0
+    invalid_votes = 0
+    total_votes = 0
+    for roll in congress_rolls:
+        for vote in roll.votes.all():
+            total_votes += 1
+            vote_key = vote.votekey
+            if vote_key == answer_value or not answer_value:
+                votes.append(vote)
+                found_votes += 1
+            elif vote_key not in possible_vote_keys:
+                invalid_votes += 1
+    print enc("+II+ invalid/found/total " + str(invalid_votes) + "/" + str(found_votes) + "/" + str(total_votes))
+
+    return votes
 
 #-----------------------------------------------------------------------------------------------------------------------
 # convenience methods to get some common things

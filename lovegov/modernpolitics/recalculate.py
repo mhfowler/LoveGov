@@ -5,11 +5,37 @@ def deleteAllGhostResponses():
     ghosts = UserProfile.objects.filter(ghost=True)
     responses = Response.objects.filter(creator__in=ghosts)
     count = 0
+    total = responses.count()
+    print "total: " + str(total)
+    started_when = datetime.datetime.now()
     for x in responses:
         x.delete()
+        if not count % 100:
+            print count
+            printSecondsRemaining(started_when, count, total)
+        count +=1
+
+def printSecondsRemaining(started_when, completed, total):
+    if completed:
+        now = datetime.datetime.now()
+        seconds_passed = (now - started_when).total_seconds()
+        total_seconds = seconds_passed * total / float(completed)
+        seconds_to_go = total_seconds - seconds_passed
+        print "seconds to go: " + str(seconds_to_go)
+
+## recalculate which congress rolls are important ##
+def recalculateCongressRollImportance():
+    count = 0
+    rolls = CongressRoll.objects.all()
+    print "total: " + str(rolls.count())
+    num_important = 0
+    for x in rolls:
+        if x.setImportant():
+            num_important += 1
         if not count % 20:
             print count
         count +=1
+    print "# important: " + str(num_important)
 
 ## recalculate amendment titles ##
 def recalculateAmendmentTitles():

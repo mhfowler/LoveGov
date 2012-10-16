@@ -53,6 +53,8 @@ def getWeightedType():
         if rand_weight < weight:
             return c_type
 
+HOT_FEEDS_CURRENTLY_UPDATING = set([])
+
 ########################################## COLORS FOR STUFF ############################################################
 
 USER_GROUP_COLORS = ['blue', 'red', 'blue', 'purple']

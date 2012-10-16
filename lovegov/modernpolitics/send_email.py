@@ -140,6 +140,7 @@ def sendWeeklyDigestEmail(user_profile):
     email_template = 'emails/lovegov/weekly_digest/weekly_digest.html'
     sendLoveGovEmailHelper(user_profile, subject, email_vals, email_template)
 
+
 def sendWeeklyDigestEmails():
     u = UserProfile.objects.filter(ghost=False)
     for x in u:

@@ -41,6 +41,9 @@ def getFeedItems(viewer, alias, feed_ranking, feed_types, feed_start, num, like_
     if feed_types:
         feed_type = feed_types[0]
         content = content.filter(type=feed_type)
+        if home_hot_feed and not content:
+            content = Content.objects.filter(type=feed_type)
+            content.order_by("-hot_score")
     else:
         feed_type = None
 

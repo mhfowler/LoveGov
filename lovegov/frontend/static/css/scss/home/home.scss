@@ -618,11 +618,14 @@ div.new-footer {
       a.twitter-link-button {
         display:block;
         margin-bottom:16px;
-        width: 31px;
+        background-size: 31px 30px;
         margin-left:0px;
+        width:100%;
+        background-repeat:no-repeat;
       }
       &.twitter-wrapper {
         margin-right:0px;
+        width:100px;
       }
     }
   }

@@ -1387,8 +1387,9 @@ def getAgreementPeopleListHTML(request, vals={}):
 
 def valsWhoAgrees(viewer, response, which, vals):
 
+    lg = getLoveGovUser()
     if which == 'people':
-        people = UserProfile.objects.filter(ghost=False)
+        people = UserProfile.objects.filter(ghost=False).exclude(id=lg.id)
     elif which == 'congress':
         people = UserProfile.objects.filter(elected_official=True)
     elif which == 'friends':

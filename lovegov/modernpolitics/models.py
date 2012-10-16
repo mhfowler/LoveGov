@@ -1324,16 +1324,16 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
     # Get hot feed, paginated
     #-------------------------------------------------------------------------------------------------------------------
     def getHotFeedContent(self, start=0, end=0):
+        from lovegov.modernpolitics.helpers import LGException
         content = Content.objects.filter(in_feed=True, ranked_by__user=self).order_by("ranked_by__score")
+
         if not content:
-            self.updateHotFeed(force=True)
-            return self.getHotFeedContent(start, end)
+            LGException(enc(self.get_name()) + " didn't have any content in their hot feed.")
         if start:
             content = content[start:]
         if end:
             content = content[:end]
 
-        from lovegov.modernpolitics.helpers import LGException
         try:
             if content[0].id == content[1].id:
                 LGException(enc("Duplicate content in hot feed for: " + self.get_name()))
@@ -1352,12 +1352,14 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
     def updateHotFeed(self, force=False):
 
         # try to avoid multiple hot feed updates running at once
-        now = datetime.datetime.now()
         if not force:
-            safety_delta = datetime.timedelta(minutes=1)
-            if now - self.last_updated_hot_feed < safety_delta:
+            if self.id in HOT_FEEDS_CURRENTLY_UPDATING:
+                from lovegov.modernpolitics.helpers import LGException
+                LGException("Double hot feed calculation blocked for " + self.get_name())
                 return False
 
+        now = datetime.datetime.now()
+        HOT_FEEDS_CURRENTLY_UPDATING.add(self.id)
         self.last_updated_hot_feed = now
         self.save()
         self.hot_feed.clear()
@@ -1365,6 +1367,7 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
         for score, content in enumerate(hot_feed_content):
             r = RankedContent(content=content, score=score, user=self)
             r.save()
+        HOT_FEEDS_CURRENTLY_UPDATING.discard(self.id)
 
     def getContentRelevantToMyLocation(self):
         from lovegov.modernpolitics.feed import getContentRelevantToLocation
@@ -1374,19 +1377,22 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
     def calculateHotFeedContent(self):
         self.updateStale()
         content = self.getGroupSubscriptionContent()
-        content = self.getUnstaleContent(content)
-        content_ids = content.values_list("id", flat=True)
+        stale_ids = self.getStaleContentIds()
 
-        petitions = content.filter(type="P").order_by("-status")
+        all_petitions = content.filter(type="P").order_by("-status")
+        petitions = all_petitions.exclude(id__in=stale_ids)
 
         now = datetime.datetime.now()
         delta = datetime.timedelta(days=OLDEST_HOT_NEWS_IS_THIS_MANY_DAYS_OLD)
         oldest_news = now - delta
-        news = content.filter(type="N").filter(created_when__gt=oldest_news).order_by("-created_when")
+        all_news = content.filter(type="N").filter(created_when__gt=oldest_news).order_by("-created_when")
+        news = all_news.exclude(id__in=stale_ids)
 
-        discussions = content.filter(type="D").order_by("-status").order_by("-num_comments")
+        all_discussions = content.filter(type="D").order_by("-status").order_by("-num_comments")
+        discussions = all_discussions.exclude(id__in=stale_ids)
 
-        questions = Question.objects.filter(id__in=content_ids).order_by("-status").order_by("-questions_hot_score")
+        all_questions = Question.objects.all().order_by("-status").order_by("-questions_hot_score")
+        questions = all_questions.exclude(id__in=stale_ids)
 
         if not (petitions or news or discussions or questions):
             return list(Content.objects.filter(in_feed=True).order_by("-hot_score"))
@@ -1399,7 +1405,7 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
         }
 
         hot_feed_content = []
-        for i in range(1, min(HOT_FEED_SIZE, len(content))):
+        for i in range(1, HOT_FEED_SIZE):
             which_type = getWeightedType()
             which = hot_feed_stacks[which_type]
             stack = which['stack']
@@ -1409,6 +1415,7 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
                 item = stack[position]
                 hot_feed_content.append(item)
                 which['position'] += 1
+
         return hot_feed_content
 
 
@@ -1466,6 +1473,10 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
             content = Content.objects.filter(in_feed=True)
         stale_ids = self.stale_content.values_list("id", flat=True)
         return content.exclude(id__in=stale_ids)
+
+    def getStaleContentIds(self):
+        stale_ids = self.stale_content.values_list("id", flat=True)
+        return stale_ids
 
     def addDigestedContent(self, content):
         self.digested_content.add(content)
@@ -4174,10 +4185,18 @@ class CongressRoll(LGModel):
     legislation = models.ForeignKey(Legislation, null=True, related_name="bill_votes")
     amendment = models.ForeignKey(LegislationAmendment, null=True, related_name="amendment_votes")
 
-    def setOnPassage(self):
-        if self.type == 'On Passage Of The Bill':
-            self.important = True
-            self.save()
+    def setImportant(self):
+        if self.legislation:
+            if self.type == 'On Passage of the Bill':
+                self.important = True
+                self.save()
+                return True
+        elif self.amendment:
+            if self.type == "On the Amendment":
+                self.important = True
+                self.save()
+                return True
+        return False
 
 #=======================================================================================================================
 #

@@ -10,4 +10,5 @@ from lovegov.frontend.analytics import *
 from lovegov.frontend.views import *
 from lovegov.scripts.alpha import scriptCreateCongressAnswers
 
-scriptCreateCongressAnswers()
+m = getUser("Max Fowler")
+sendWeeklyDigestEmail(m)
