@@ -6083,7 +6083,7 @@ class AnalyticsTask(LGModel):
 
         elif self.task_type == 'join_party':
             num = modifiers.get('num')
-            actions = GroupJoined.objects.filter(user=user, confirmed=True, group__type="P")
+            actions = GroupJoined.objects.filter(user=user, confirmed=True, group__group_type="P")
 
             if time_end:
                 actions = actions.filter(created_when__lt=time_end)
@@ -6093,7 +6093,7 @@ class AnalyticsTask(LGModel):
 
         elif self.task_type == 'follow_group':
             num = modifiers.get('num')
-            actions = GroupFollowAction.objects.filter(user=user, modifier="F", group__is_election=False)
+            actions = GroupFollowAction.objects.filter(user=user, modifier="A", group__is_election=False)
 
             if time_end:
                 actions = actions.filter(when__lt=time_end)
@@ -6103,7 +6103,7 @@ class AnalyticsTask(LGModel):
 
         elif self.task_type == 'follow_election':
             num = modifiers.get('num')
-            actions = GroupFollowAction.objects.filter(user=user, modifier="F", group__is_election=True)
+            actions = GroupFollowAction.objects.filter(user=user, modifier="A", group__is_election=True)
 
             if time_end:
                 actions = actions.filter(when__lt=time_end)
@@ -6137,12 +6137,12 @@ class AnalyticsTask(LGModel):
 
         elif self.task_type == 'vote_content':
             num = modifiers.get('num')
-            actions = Voted.objects.filter(user=user)
+            pa = PageAccess.objects.filter(user=user, action='vote')
 
             if time_end:
-                actions = actions.filter(created_when__lt=time_end)
+                pa = pa.filter(when__lt=time_end)
 
-            return actions.count() >= num
+            return pa.count() >= num
 
 
         elif self.task_type == 'follow_user':

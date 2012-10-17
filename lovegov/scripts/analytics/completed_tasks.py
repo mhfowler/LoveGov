@@ -8,7 +8,7 @@ if __name__ == "__main__":
 
     updateUserAnalyticsData()
 
-    start_date = datetime.datetime(year=2012, month=10, day=1, hour=6)
+    start_date = datetime.datetime(year=2012, month=9, day=5, hour=6)
     end_date = datetime.datetime.now()
 
     delta = datetime.timedelta(days=1)
