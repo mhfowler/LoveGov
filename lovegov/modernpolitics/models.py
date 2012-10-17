@@ -1075,6 +1075,16 @@ class BasicInfo(models.Model):
         abstract = True
 
 #=======================================================================================================================
+# Stores analytics data about a user
+#
+#=======================================================================================================================
+class AnalyticsData(models.Model):
+    completed_analytics_tasks = models.ManyToManyField(AnalyticsTask)
+
+    class Meta:
+        abstract = True
+
+#=======================================================================================================================
 # Tuple for storing a users involvement with content
 #=======================================================================================================================
 class Involved(LGModel):
@@ -1216,7 +1226,7 @@ def initView():
     view.save()
     return view
 
-class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
+class UserProfile(FacebookProfileModel, LGModel, BasicInfo, AnalyticsData):
     type = models.CharField(max_length=1,default="U")
     # this is the primary user for this profile, mostly for fb login
     user = models.ForeignKey(User, null=True)
@@ -1308,6 +1318,13 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
 
     def __unicode__(self):
         return self.get_name()
+
+    ### update analytics data for user
+    def updateAnalyticsData(self):
+        self.completed_analytics_tasks.clear()
+        for a in AnalyticsTask.objects.all():
+            if a.checkCompleted(self):
+                self.completed_analytics_tasks.add(a)
 
     #-------------------------------------------------------------------------------------------------------------------
     # Updated like minded group on a schedule.
@@ -1828,7 +1845,6 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
                     total_time += delta
 
         total_minutes = total_time.total_seconds() / 60.0
-        print enc(self.get_name()) + ": " + str(total_minutes)
         return total_time, logged_on
 
     #-------------------------------------------------------------------------------------------------------------------
@@ -5993,22 +6009,57 @@ class CommitteeJoined(GroupJoined):
         super(CommitteeJoined, self).autoSave()
 
 
+#=======================================================================================================================
+# Analytics Tasks, and logic
+#
+#=======================================================================================================================
+class AnalyticsTask(LGModel):
+    task_type = models.CharField(max_length=20)
+    modifiers_json = models.CharField(max_length=500, default=json.dumps({}))
+    description = models.CharField()
+
+    def getModifiersDict(self):
+        return json.loads(self.modifiers_json)
+
+    def checkCompleted(self, user, time_end=None):
+        modifiers = self.getModifiersDict()
+
+        if self.task_type == "create":
+
+            type = modifiers.get('type')
+            num = modifiers.get('num')
+            if not num:
+                num = 1
+            created = Content.objects.filter(creator=user)
+
+            if type:
+                created = created.filter(type=type)
+            else:
+                created = created.filter(type__in=IN_FEED)
+
+            if time_end:
+                created = created.filter(when__lt=time_end)
+
+            return created.count() >= num
 
 
+        elif self.task_type == "pageview":
 
+            page = modifiers.get('page')
+            num = modifiers.get('num')
+            if not num:
+                num = 1
+            pa = PageAccess.objects.filter(user=user)
 
+            if time_end:
+                pa = pa.filter(when__lt=time_end)
 
+            viewed = pa.filter(page=page)
 
+            return viewed.count() >= num
 
-
-
-
-
-
-
-
-
-
+        else:
+            print "Bad task!"
 
 
 #=======================================================================================================================

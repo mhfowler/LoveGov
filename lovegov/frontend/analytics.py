@@ -13,6 +13,111 @@ import xlwt
 import xlutils
 
 #-----------------------------------------------------------------------------------------------------------------------
+# who has done what? analytics
+#-----------------------------------------------------------------------------------------------------------------------
+def initializeAnalyticsTasks():
+
+    # page view tasks
+    PAGE_VIEW_TASKS = [
+        '/welcome/',
+        '/presidential_election/',
+        '/home/',
+        '/groups/',
+        '/elections/',
+        '/legislation/',
+        '/about/',
+        '/blog/',
+        '/questions/',
+        '/friends/',
+        '/congress/histogram/',
+        '/match/',
+        '/like_minded/'
+    ]
+
+    for page in PAGE_VIEW_TASKS:
+        task_type = 'pageview'
+        description = "Has this user seen the page " + page + "?"
+        modifiers_dict = {'page':page, 'num':1}
+        task = AnalyticsTask(task_type=task_type, modifiers_json=json.dumps(modifiers_dict), description=description)
+        task.save()
+
+    # create stuff tasks
+    ANALYTICS_CREATE_INCREMENTS = [1, 2, 5]
+    ANALYTICS_CREATE_TYPES = ['N', 'Q', 'C', 'P', 'D', 'B', 'G']
+
+    for type in ANALYTICS_CREATE_TYPES:
+        for num in ANALYTICS_CREATE_INCREMENTS:
+            task_type = 'create'
+            description = "Has this user created (" + str(num) + ") content of type " + type + "?"
+            modifiers_dict = {'type':type, 'num':num}
+            task = AnalyticsTask(task_type=task_type, modifiers_json=json.dumps(modifiers_dict), description=description)
+            task.save()
+
+
+def analyzeCompletedTasks(time_start, time_end, analytics_tasks):
+
+    users = UserProfile.objects.filter(ghost=False)
+    users = filterByCreatedWhen(users, time_start, time_end)
+
+    to_return = {'num_registered':users.count()}
+    to_return['completed_tasks_numbers'] = completed_tasks_numbers = {}
+
+    for task in analytics_tasks:
+        users_completed = users.filter(completed_analytics_tasks=task)
+        completed_tasks_numbers[task.id] = users_completed.count()
+
+    return to_return
+
+
+
+def completedTasksAnalytics(time_tuples, output_file):
+    from xlutils import copy
+
+    completed_tasks_template_filepath = os.path.join(PROJECT_PATH, 'logging/metrics/completed_tasks_template.xls')
+
+    rb = open_workbook(completed_tasks_template_filepath,formatting_info=True)
+    wb = xlutils.copy.copy(rb) #a writable copy (I can't read values out of this, only write to it)
+
+    c_row = 1
+
+    w_sheet = wb.get_sheet(0)
+
+    analytics_tasks = AnalyticsTask.objects.all()
+
+    # write headers for tasks
+    c_col = 3
+    for task in analytics_tasks:
+        description = task.description
+        w_sheet.write(0,c_col, description)
+        c_col += 1
+
+    # for each time tuple, write start_date, and fill in the number of users who registered during that time and completed each task
+    for tuple in time_tuples:
+        time_start = tuple[0]
+        time_end = tuple[1]
+
+        dt = time_start.strftime('%m/%d/%y')
+        w_sheet.write(c_row,1,dt)
+
+        returned = analyzeCompletedTasks(time_start, time_end, analytics_tasks)
+
+        num_registered = returned['num_registered']
+        w_sheet.write(c_row,2, num_registered)
+
+        completed_tasks_numbers = returned['completed_tasks_numbers']
+        c_col = 3
+        for task in analytics_tasks:
+            num_completed = completed_tasks_numbers.get(task.id)
+            if num_completed is not None:
+                w_sheet.write(c_row, c_col, num_completed)
+            c_col += 1
+
+        c_row += 1
+
+    wb.save(output_file)
+
+
+#-----------------------------------------------------------------------------------------------------------------------
 # analyze cookie data
 #-----------------------------------------------------------------------------------------------------------------------
 def registrationConversionAnalytics(time_tuples, output_file):
