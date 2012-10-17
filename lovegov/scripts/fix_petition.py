@@ -3,7 +3,7 @@ from lovegov.frontend.views import *
 m = getUser('Max Fowler')
 p = Petition.objects.get(creator=m)
 
-"This is a petition to protect freedom of information and the rights given to us by the first amendment." \
+full_text = "This is a petition to protect freedom of information and the rights given to us by the first amendment." \
 "Blocking particular anti-piracy/freedom bills is not enough, this is a petition in support of all measures " \
 "taken to ensure our freedom on the internet and oppose groups and legislation who seek to limit it. \n\n" \
 "Bills like SOPA and PIPA are motivated by the media industries and are intended to ensure the protection " \
@@ -24,3 +24,6 @@ p = Petition.objects.get(creator=m)
 "or passing a constitutional amendment to ensure the freedom of the internet for the future, " \
 "sign this petition to recognize the importance of internet freedom and raise awareness that " \
 "this is a freedom which needs to be protected."
+
+p.full_text = full_text
+p.save()
