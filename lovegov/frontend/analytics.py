@@ -239,13 +239,17 @@ def registrationConversionAnalytics(time_tuples, output_file):
 
         dt = time_start.strftime('%m/%d/%y')
         w_sheet.write(c_row,1,dt)
+        print str(dt)
 
         metrics = analyzeCookieData(time_start, time_end)
-        w_sheet.write(c_row,2,metrics['total_ips_visited'])
-        w_sheet.write(c_row,3,metrics['new_ips_visited'])
-        w_sheet.write(c_row,4,metrics['total_registered'])
-        w_sheet.write(c_row,5,metrics['presidential_matched'])
-        w_sheet.write(c_row,6,metrics['registered_with_cookie_data'])
+        w_sheet.write(c_row,2,metrics['total_ips_visited'])                                 # total ips
+        w_sheet.write(c_row,3,metrics['total_ips_visited'] - metrics['new_ips_visited'])    # old ips
+        w_sheet.write(c_row,4,metrics['total_old_users_logged_in'])                               # returning users
+        w_sheet.write(c_row,5,metrics['new_ips_visited'])                                   # new ips
+        w_sheet.write(c_row,6,metrics['total_registered'])                                  # registrations
+        w_sheet.write(c_row,7,metrics['total_new_users_logged_in'])                               # new log ins
+        w_sheet.write(c_row,8,metrics['presidential_matched'])                              # presidential matched
+        w_sheet.write(c_row,9,metrics['registered_with_cookie_data'])                       # presidential matched and registered
 
         c_row += 1
 
@@ -261,6 +265,9 @@ def analyzeCookieData(time_start, time_end):
     pa_within_time_period = filterByWhen(PageAccess.objects.all(), time_start, time_end)
     pa_before_time_period = filterByWhen(PageAccess.objects.all(), None, time_start)
     old_user_pas = pa_within_time_period.filter(user__in=registered_before_time_period)
+    old_users_logged_in = old_user_pas.values("user").distinct()
+    new_user_pas = pa_within_time_period.filter(user__in=registered_within_time_period)
+    new_users_logged_in = new_user_pas.values("user").distinct()
     distinct_ips = [x['ipaddress'] for x in pa_within_time_period.values("ipaddress").distinct()]
     old_user_ips = [x['ipaddress'] for x in old_user_pas.values("ipaddress").distinct()]
     old_ips = [x['ipaddress'] for x in pa_before_time_period.values("ipaddress").distinct()]
@@ -271,6 +278,8 @@ def analyzeCookieData(time_start, time_end):
     claimed_cookies = cookie_datas.filter(claimed=True)
     unclaimed_cookies = cookie_datas.filter(claimed=False)
 
+    total_old_users_logged_in = old_users_logged_in.count()
+    total_new_users_logged_in = new_users_logged_in.count()
     total_ips_visited = len(distinct_ips)
     total_new_ips_visited = len(new_ips)
     total_not_old_user_ips_visited = len(not_old_user_ips)
@@ -283,6 +292,8 @@ def analyzeCookieData(time_start, time_end):
     print "total cookie datas: " + str(total_cookie_datas)
     print "claimed cookie datas (registered with cookie data): " + str(total_claimed_cookie_datas)
     print "total registered: " + str(total_registered)
+    print "new users logged in: " + str(total_new_users_logged_in)
+    print "old users logged in: " + str(total_old_users_logged_in)
     if total_registered:
         print "% of new visitors who registred: " + str(total_new_ips_visited / float(total_registered))
     if total_claimed_cookie_datas:
@@ -317,7 +328,9 @@ def analyzeCookieData(time_start, time_end):
         'new_ips_visited':total_new_ips_visited,
         'total_registered':total_registered,
         'registered_with_cookie_data':total_claimed_cookie_datas,
-        'presidential_matched': claimed_answered_count + unclaimed_answered_count
+        'presidential_matched': claimed_answered_count + unclaimed_answered_count,
+        'total_new_users_logged_in':total_new_users_logged_in,
+        'total_old_users_logged_in':total_old_users_logged_in
     }
 
     return to_return_dict
