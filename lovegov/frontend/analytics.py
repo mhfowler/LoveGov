@@ -114,16 +114,16 @@ def initializeAnalyticsTasks():
             'description': "Has this user followed (<num>) other users?",
             'increments': [1,5]
         },
-        {
-            'task_type': 'visit_politician',
-            'description': "Has this user visited (<num>) politician profiles?",
-            'increments': [1,2,5]
-        },
-        {
-            'task_type': 'visit_other_profile',
-            'description': "Has this user visited (<num>) other user profiles?",
-            'increments': [1,2,5]
-        },
+#        {
+#            'task_type': 'visit_politician',
+#            'description': "Has this user visited (<num>) politician profiles?",
+#            'increments': [1,2,5]
+#        },
+#        {
+#            'task_type': 'visit_other_profile',
+#            'description': "Has this user visited (<num>) other user profiles?",
+#            'increments': [1,2,5]
+#        },
         {
             'task_type': 'visit_my_profile',
             'description': "Has this user visited their own profile (<num>) times?",
