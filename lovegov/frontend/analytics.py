@@ -57,7 +57,7 @@ def updateUserAnalyticsData():
     users = UserProfile.objects.filter(ghost=False)
     count = 0
     total = users.count()
-    print "total: " + total
+    print "total: " + str(total)
     for u in users:
         print enc(u.get_name())
         u.updateAnalyticsData()
