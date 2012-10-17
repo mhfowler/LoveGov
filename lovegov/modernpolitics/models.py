@@ -1079,7 +1079,7 @@ class BasicInfo(models.Model):
 #
 #=======================================================================================================================
 class AnalyticsData(models.Model):
-    completed_analytics_tasks = models.ManyToManyField(AnalyticsTask)
+    completed_analytics_tasks = models.ManyToManyField("AnalyticsTask")
 
     class Meta:
         abstract = True
@@ -6016,7 +6016,7 @@ class CommitteeJoined(GroupJoined):
 class AnalyticsTask(LGModel):
     task_type = models.CharField(max_length=20)
     modifiers_json = models.CharField(max_length=500, default=json.dumps({}))
-    description = models.CharField()
+    description = models.CharField(max_length=200)
 
     def getModifiersDict(self):
         return json.loads(self.modifiers_json)
