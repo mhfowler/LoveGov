@@ -1,0 +1,1 @@
+nohup ./completed_tasks.py >> /log/completed_tasks.log &
