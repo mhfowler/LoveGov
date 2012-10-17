@@ -364,9 +364,12 @@ def loginFAQ(request, vals={}):
     return loginResponse(request, central_html, url, vals)
 
 def presidentialMatching(request, vals):
-
-    obama = UserProfile.objects.get(alias='barack_obama')
-    mitt = UserProfile.objects.get(alias='mitt_romney')
+    if not LOCAL:
+        obama = UserProfile.objects.get(alias='barack_obama')
+        mitt = UserProfile.objects.get(alias='mitt_romney')
+    else:
+        obama = getUser("Randy Johnson")
+        mitt = getUser("Katy Perry")
     vals['obama'] = obama
     vals['mitt'] = mitt
     vals['candidates'] = [obama, mitt]
