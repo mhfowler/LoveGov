@@ -53,11 +53,12 @@
         </h6>
     </div>
     <div class="legislation_selector_wrapper">
-        {% include 'site/pages/legislation/legislation parameter helpers/leg_session_filter_helper.html' %}
-        {% include 'site/pages/legislation/legislation parameter helpers/leg_type_filter_helper.html' %}
-        {% include 'site/pages/legislation/legislation parameter helpers/leg_committee_filter_helper.html' %}
-        {% include 'site/pages/legislation/legislation parameter helpers/leg_introduced_filter_helper.html' %}
-        {% include 'site/pages/legislation/legislation parameter helpers/leg_sponsor_filter_helper.html' %}
+        {% include 'site/pages/legislation/helpers/leg_session_filter_helper.html' %}
+        {% include 'site/pages/legislation/helpers/leg_type_filter_helper.html' %}
+        {% include 'site/pages/legislation/helpers/leg_subject_filter_helper.html' %}
+        {% include 'site/pages/legislation/helpers/leg_committee_filter_helper.html' %}
+        {% include 'site/pages/legislation/helpers/leg_introduced_filter_helper.html' %}
+        {% include 'site/pages/legislation/helpers/leg_sponsor_filter_helper.html' %}
     </div>
 </div>
 <div class="filter-results">
@@ -66,7 +67,7 @@
             results:
         </h6>
         <div class="legislation-feed-wrapper">
-            {% include 'site/pages/legislation/feed_legislation.html' with special_feed="getLegislation" %}
+
         </div>
     </div>
 </div>

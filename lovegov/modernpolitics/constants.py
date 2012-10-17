@@ -938,7 +938,7 @@ try:
     from modernpolitics.models import Party, UserProfile, Legislation, Committee, CongressSession
     LEGISLATION_PARTIES = Party.objects.filter(parties__sponsored_legislation__isnull=False).distinct()
     LEGISLATION_SPONSORS = UserProfile.objects.distinct().filter(sponsored_legislation__isnull=False)
-    LEGISLATION_BILLNUMBERS = [x['bill_number'] for x in Legislation.objects.values('bill_number').distinct()]
+    LEGISLATION_BILLNUMBERS = Legislation.objects.values('bill_number').values_list('bill_number').distinct()
     LEGISLATION_COMMITTEES = Committee.objects.distinct().filter(legislation_committees__isnull=False)
     LEGISLATION_SESSIONS = CongressSession.objects.all().order_by("-session")
 except:
