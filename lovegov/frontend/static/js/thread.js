@@ -147,9 +147,15 @@ bind('span.flag',"click", function(e) {
 
 // Load more comments click
 bind('div.load-more-comments', 'click', function(e) {
-    if(!$(this).hasClass('disabled')) {
+//    if(!$(this).hasClass('disabled')) {
+//        loadMoreComments();
+//    }
+    loadMoreComments();
+    setInterval(function() {
         loadMoreComments();
-    }
+    }, 5000);
+    $(this).text('loading more comments...')
+    $(this).addClass('disabled');
 });
 
 // updates total and top-level number of comments count
@@ -164,6 +170,10 @@ function loadMoreComments() {
     var button = $('div.load-more-comments');
     var num_to_load = 10;
     var thread = button.siblings('div.thread');
+    if (thread.data('yet_to_get')==0) {
+        button.text('there are no more comments to load');
+        return;
+    }
     if(thread.length) {
         var cid = thread.data('cid');
         var next_start = thread.data('tops');

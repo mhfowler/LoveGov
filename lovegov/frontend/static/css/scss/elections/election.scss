@@ -72,6 +72,7 @@ div.election-card {
     background-color:$light-gray;
     &:hover {
       background-color:$dark-gray;
+      text-decoration: none;
       cursor:pointer;
     }
   }
