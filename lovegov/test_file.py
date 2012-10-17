@@ -1,6 +1,10 @@
 from lovegov.frontend.analytics import *
 from lovegov.frontend.views import *
 
+initializeAnalyticsTasks()
+
+updateUserAnalyticsData()
+
 start_date = datetime.datetime(year=2012, month=9, day=5, hour=6)
 end_date = datetime.datetime.now()
 

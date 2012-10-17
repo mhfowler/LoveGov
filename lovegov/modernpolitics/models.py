@@ -1294,6 +1294,7 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo, AnalyticsData):
     politician = models.BooleanField(default=False)
     elected_official = models.BooleanField(default=False)
     currently_in_office = models.BooleanField(default=False)
+    normal = models.BooleanField(default=True)                  # all users who registered normal, and are real people
     ghost = models.BooleanField(default=False)
     supporters = models.ManyToManyField('UserProfile', related_name='supportees')
     num_supporters = models.IntegerField(default=0)
@@ -3113,6 +3114,7 @@ class UserFollowAction(Action):
         })
 
         return render_to_string('site/pieces/actions/user_follow_verbose.html',vals)
+
 
 #=======================================================================================================================
 # Some action that changes a politician supported relationship
@@ -6025,7 +6027,6 @@ class AnalyticsTask(LGModel):
         modifiers = self.getModifiersDict()
 
         if self.task_type == "create":
-
             type = modifiers.get('type')
             num = modifiers.get('num')
             if not num:
@@ -6044,7 +6045,6 @@ class AnalyticsTask(LGModel):
 
 
         elif self.task_type == "pageview":
-
             page = modifiers.get('page')
             num = modifiers.get('num')
             if not num:
@@ -6057,6 +6057,104 @@ class AnalyticsTask(LGModel):
             viewed = pa.filter(page=page)
 
             return viewed.count() >= num
+
+
+        elif self.task_type == 'answer_question':
+            num = modifiers.get('num')
+            if not num:
+                num = 1
+            responses = user.getView().responses.all()
+
+            if time_end:
+                responses = responses.filter(created_when__lt=time_end)
+
+            return responses.count() >= num
+
+
+        elif self.task_type == 'join_group':
+            num = modifiers.get('num')
+            actions = GroupJoined.objects.filter(user=user, confirmed=True)
+
+            if time_end:
+                actions = actions.filter(created_when__lt=time_end)
+
+            return actions.count() >= num
+
+
+        elif self.task_type == 'join_party':
+            num = modifiers.get('num')
+            actions = GroupJoined.objects.filter(user=user, confirmed=True, group__type="P")
+
+            if time_end:
+                actions = actions.filter(created_when__lt=time_end)
+
+            return actions.count() >= num
+
+
+        elif self.task_type == 'follow_election':
+            num = modifiers.get('num')
+            actions = GroupFollowAction.objects.filter(user=user, modifier="F", group__is_election=False)
+
+            if time_end:
+                actions = actions.filter(when__lt=time_end)
+
+            return actions.count() >= num
+
+
+        elif self.task_type == 'follow_election':
+            num = modifiers.get('num')
+            actions = GroupFollowAction.objects.filter(user=user, modifier="F", group__is_election=True)
+
+            if time_end:
+                actions = actions.filter(when__lt=time_end)
+
+            return actions.count() >= num
+
+
+        elif self.task_type == 'support_politician':
+            num = modifiers.get('num')
+            actions = SupportedAction.objects.filter(user=user, modifier="A")
+
+            if time_end:
+                actions = actions.filter(when__lt=time_end)
+
+            return actions.count() >= num
+
+
+        elif self.task_type == 'submit_address':
+            return user.location is not None
+
+
+        elif self.task_type == 'sign_petition':
+            num = modifiers.get('num')
+            actions = SignedAction.objects.filter(user=user)
+
+            if time_end:
+                actions = actions.filter(when__lt=time_end)
+
+            return actions.count() >= num
+
+
+        elif self.task_type == 'vote_content':
+            num = modifiers.get('num')
+            actions = Voted.objects.filter(user=user)
+
+            if time_end:
+                actions = actions.filter(created_when__lt=time_end)
+
+            return actions.count() >= num
+
+
+        elif self.task_type == 'click_link':
+            num = modifiers.get('num')
+
+            pa = PageAccess.objects.filter(user=user)
+            pa = pa.filter(page__contains="/link/")
+
+            if time_end:
+                pa = pa.filter(when__lt=time_end)
+
+            return pa.count() >= num
 
         else:
             print "Bad task!"

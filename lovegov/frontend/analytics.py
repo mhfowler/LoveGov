@@ -17,6 +17,8 @@ import xlutils
 #-----------------------------------------------------------------------------------------------------------------------
 def initializeAnalyticsTasks():
 
+    AnalyticsTask.objects.all().delete()
+
     # page view tasks
     PAGE_VIEW_TASKS = [
         '/welcome/',
@@ -31,7 +33,8 @@ def initializeAnalyticsTasks():
         '/friends/',
         '/congress/histogram/',
         '/match/',
-        '/like_minded/'
+        '/like_minded/',
+        '/representatives/'
     ]
 
     for page in PAGE_VIEW_TASKS:
@@ -40,6 +43,7 @@ def initializeAnalyticsTasks():
         modifiers_dict = {'page':page, 'num':1}
         task = AnalyticsTask(task_type=task_type, modifiers_json=json.dumps(modifiers_dict), description=description)
         task.save()
+
 
     # create stuff tasks
     ANALYTICS_CREATE_INCREMENTS = [1, 2, 5]
@@ -52,6 +56,66 @@ def initializeAnalyticsTasks():
             modifiers_dict = {'type':type, 'num':num}
             task = AnalyticsTask(task_type=task_type, modifiers_json=json.dumps(modifiers_dict), description=description)
             task.save()
+
+
+    SIMPLE_TASKS = [
+        {
+            'task_type': 'answer_question',
+            'description': "Has this user answered (<num>) questions?",
+            'increments': [1,5,10,15,20,30,40,50]
+        },
+        {
+            'task_type': 'join_group',
+            'description': "Has this user joined (<num>) groups?",
+            'increments': [1,2,3]
+        },
+        {
+            'task_type': 'follow_group',
+            'description': "Has this user followed (<num>) groups?",
+            'increments': [1,2,3]
+        },
+        {
+            'task_type': 'follow_election',
+            'description': "Has this user followed (<num>) elections?",
+            'increments': [1,2]
+        },
+        {
+            'task_type': 'support_politician',
+            'description': "Has this user supported (<num>) politicians?",
+            'increments': [1,2,3]
+        },
+        {
+            'task_type': 'submit_address',
+            'description': "Has this user submitted an address?",
+            'increments': [-1]
+        },
+        {
+            'task_type': 'sign_petition',
+            'description': "Has this user signed (<num>) petitions?",
+            'increments': [1,2,3]
+        },
+        {
+            'task_type': 'vote_content',
+            'description': "Has this user cast (<num>) votes?",
+            'increments': [1,5,10]
+        },
+        {
+            'task_type': 'click_link',
+            'description': "Has this user clicked (<num> news links?",
+            'increments': [1,5,10]
+        },
+    ]
+
+    for simple_task in SIMPLE_TASKS:
+        task_type = simple_task['task_type']
+        description = simple_task['description']
+        increments = simple_task['increments']
+        for num in increments:
+            this_description = description.replace("<num>", str(num))
+            modifiers_dict = {'num':num}
+            task = AnalyticsTask(task_type=task_type, modifiers_json=json.dumps(modifiers_dict), description=this_description)
+            task.save()
+
 
 def updateUserAnalyticsData():
     users = UserProfile.objects.filter(ghost=False)
@@ -108,6 +172,7 @@ def completedTasksAnalytics(time_tuples, output_file):
         time_end = tuple[1]
 
         dt = time_start.strftime('%m/%d/%y')
+        print str(dt)
         w_sheet.write(c_row,1,dt)
 
         returned = analyzeCompletedTasks(time_start, time_end, analytics_tasks)
