@@ -1328,7 +1328,9 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
         content = Content.objects.filter(in_feed=True, ranked_by__user=self).order_by("ranked_by__score")
 
         if not content:
-            LGException(enc(self.get_name()) + " didn't have any content in their hot feed.")
+            self.updateHotFeed(force=True)
+            return self.getHotFeedContent(start, end)
+
         if start:
             content = content[start:]
         if end:
@@ -1355,7 +1357,6 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
         if not force:
             if self.id in HOT_FEEDS_CURRENTLY_UPDATING:
                 from lovegov.modernpolitics.helpers import LGException
-                LGException("Double hot feed calculation blocked for " + self.get_name())
                 return False
 
         now = datetime.datetime.now()
