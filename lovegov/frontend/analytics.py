@@ -53,6 +53,17 @@ def initializeAnalyticsTasks():
             task = AnalyticsTask(task_type=task_type, modifiers_json=json.dumps(modifiers_dict), description=description)
             task.save()
 
+def updateUserAnalyticsData():
+    users = UserProfile.objects.filter(ghost=False)
+    count = 0
+    total = users.count()
+    print "total: " + total
+    for u in users:
+        print enc(u.get_name())
+        u.updateAnalyticsData()
+        if not count % 20:
+            print count
+        count += 1
 
 def analyzeCompletedTasks(time_start, time_end, analytics_tasks):
 
