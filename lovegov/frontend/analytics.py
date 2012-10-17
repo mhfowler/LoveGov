@@ -70,6 +70,11 @@ def initializeAnalyticsTasks():
             'increments': [1,2,3]
         },
         {
+            'task_type': 'join_party',
+            'description': "Has this user joined (<num>) parties?",
+            'increments': [1,2]
+        },
+        {
             'task_type': 'follow_group',
             'description': "Has this user followed (<num>) groups?",
             'increments': [1,2,3]
@@ -101,9 +106,29 @@ def initializeAnalyticsTasks():
         },
         {
             'task_type': 'click_link',
-            'description': "Has this user clicked (<num> news links?",
+            'description': "Has this user clicked (<num>) news links?",
             'increments': [1,5,10]
         },
+        {
+            'task_type': 'follow_user',
+            'description': "Has this user followed (<num>) other users?",
+            'increments': [1,5]
+        },
+        {
+            'task_type': 'visit_politician',
+            'description': "Has this user visited (<num>) politician profiles?",
+            'increments': [1,2,5]
+        },
+        {
+            'task_type': 'visit_other_profile',
+            'description': "Has this user visited (<num>) other user profiles?",
+            'increments': [1,2,5]
+        },
+        {
+            'task_type': 'visit_my_profile',
+            'description': "Has this user visited their own profile (<num>) times?",
+            'increments': [1,5,10]
+        }
     ]
 
     for simple_task in SIMPLE_TASKS:
@@ -118,7 +143,7 @@ def initializeAnalyticsTasks():
 
 
 def updateUserAnalyticsData():
-    users = UserProfile.objects.filter(ghost=False)
+    users = UserProfile.objects.filter(normal=True)
     count = 0
     total = users.count()
     print "total: " + str(total)

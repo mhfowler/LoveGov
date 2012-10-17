@@ -6091,7 +6091,7 @@ class AnalyticsTask(LGModel):
             return actions.count() >= num
 
 
-        elif self.task_type == 'follow_election':
+        elif self.task_type == 'follow_group':
             num = modifiers.get('num')
             actions = GroupFollowAction.objects.filter(user=user, modifier="F", group__is_election=False)
 
@@ -6145,6 +6145,16 @@ class AnalyticsTask(LGModel):
             return actions.count() >= num
 
 
+        elif self.task_type == 'follow_user':
+            num = modifiers.get('num')
+            actions = UserFollow.objects.filter(user=user)
+
+            if time_end:
+                actions = actions.filter(created_when__lt=time_end)
+
+            return actions.count() >= num
+
+
         elif self.task_type == 'click_link':
             num = modifiers.get('num')
 
@@ -6156,9 +6166,68 @@ class AnalyticsTask(LGModel):
 
             return pa.count() >= num
 
+
+        elif self.task_type == 'visit_politician':
+
+            POLITICIAN_URLS = getPeopleURLs(ghost=True)
+
+            num = modifiers.get('num')
+
+            pa = PageAccess.objects.filter(user=user)
+            pa = pa.filter(page__in=POLITICIAN_URLS)
+
+            if time_end:
+                pa = pa.filter(when__lt=time_end)
+
+            pages = pa.values_list('page', flat=True)
+            pages_set = set(pages)
+
+            return len(pages_set) >= num
+
+
+        elif self.task_type == 'visit_other_profile':
+
+            REAL_PEOPLE_URLS = getPeopleURLs(ghost=False, normal=True)
+
+            num = modifiers.get('num')
+
+            my_profile_url = user.get_url()
+            pa = PageAccess.objects.filter(user=user)
+            pa = pa.filter(page__in=REAL_PEOPLE_URLS).exclude(page=my_profile_url)
+
+            if time_end:
+                pa = pa.filter(when__lt=time_end)
+
+            pages = pa.values_list('page', flat=True)
+            pages_set = set(pages)
+
+            return len(pages_set) >= num
+
+
+        elif self.task_type == 'visit_my_profile':
+            num = modifiers.get('num')
+
+            my_profile_url = user.get_url()
+            pa = PageAccess.objects.filter(user=user, page=my_profile_url)
+
+            if time_end:
+                pa = pa.filter(when__lt=time_end)
+
+            return pa.count() >= num
+
+
         else:
             print "Bad task!"
 
+def getPeopleURLs(ghost=False, normal=None):
+    from lovegov.modernpolitics.models import UserProfile
+    people = UserProfile.objects.filter(ghost=ghost)
+    if normal:
+        people = people.filter(normal=True)
+    people_urls = []
+    for x in people:
+        people_urls.append(x.get_url())
+    return people_urls
 
 #=======================================================================================================================
 # For a user to write about their views on a topic.
