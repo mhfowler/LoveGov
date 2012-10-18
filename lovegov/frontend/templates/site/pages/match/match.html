@@ -1,37 +1,22 @@
-<!-- discover / match hub -->
-{% comment %}
-{% include 'site/pages/match/match_intro.html' %}
-{% endcomment %}
-<!-- match boxes -->
+<div class="match-wrapper">
 
-<div class="match-links-wrapper">
+    <div class="match-header-wrapper">
 
-    <a class="match-box left" href="/congress/histogram/">
-        <span class="match-box-text"> Match with congress </span>
-    </a>
+            {% include 'site/pages/match/match_header_link.html' with match_link_url="/match/presidential/" match_link_text="w/presidents" match_link_num=1 %}
 
-    <a class="match-box middle" href="/representatives/">
-        <span class="match-box-text"> Match with reps </span>
-    </a>
+            {% include 'site/pages/match/match_header_link.html' with match_link_url="/match/representatives/" match_link_text="w/reps" match_link_num=2 %}
 
-    <a class="match-box right" href="/friends/">
-        <span class="match-box-text"> Match with friends </span>
-    </a>
+            {% include 'site/pages/match/match_header_link.html' with match_link_url="/match/friends/" match_link_text="w/friends" match_link_num=3 %}
 
+            {% include 'site/pages/match/match_header_link.html' with match_link_url="/match/groups/" match_link_text="w/groups" match_link_num=4 %}
 
-    <a class="match-box left" href="/like_minded/">
-        <span class="match-box-text"> Find like minded </span>
-    </a>
+            {% include 'site/pages/match/match_header_link.html' with match_link_url="/match/congress/" match_link_text="w/congress" match_link_num=5 last_link=1 %}
 
-    <a class="match-box middle " href="/elections/">
-        <span class="match-box-text"> Find elections </span>
-    </a>
+            <div style="clear:both;"></div>
+    </div>
 
-    <a class="match-box right" href="/groups/">
-        <span class="match-box-text"> Find groups </span>
-    </a>
-
-    <div style="clear:both;"></div>
+    <div class="match-body-wrapper">
+        {{ match_body_html }}
+    </div>
 
 </div>
-

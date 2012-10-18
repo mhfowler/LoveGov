@@ -332,7 +332,12 @@ function pushURL(url) {
 
 function selectHeaderLinks() {
     $(".header_link").removeClass("clicked");
-    var header_link = $('.header_link[href="' + PATH + '"]');
+    if (PATH.indexOf("/match/") != -1) {
+        var header_link = $('.header_link[href="/match/"]');
+    }
+    else {
+        var header_link = $('.header_link[href="' + PATH + '"]');
+    }
     header_link.addClass("clicked");
 }
 

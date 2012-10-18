@@ -11,6 +11,33 @@ from lovegov.frontend.views_helpers import *
 from pprint import pprint
 from collections import OrderedDict
 
+######## new match pages
+
+def match(request, section, vals):
+
+    if section == 'representatives':
+        match_body_html = getRepresentativesHTML(request, vals)
+    elif section == 'friends':
+        match_body_html = getFriendsHTML(request, vals)
+    elif section == 'groups':
+        match_body_html = getMatchGroupsHTML(request, vals)
+    elif section == 'lovegov':
+        match_body_html = getLikeMindedHTML(request, vals)
+    elif section == 'congress':
+        match_body_html = getHistogramDetailHTML(request, 'congress', vals)
+
+    vals['match_body_html'] = match_body_html
+    focus_html =  ajaxRender('site/pages/match/match.html', vals, request)
+    url = request.path
+    return homeResponse(request, focus_html, url, vals)
+
+def getMatchGroupsHTML(request, vals):
+    focus_html =  ajaxRender('site/pages/match/match_groups.html', vals, request)
+    return focus_html
+
+
+
+#########
 
 def basicMessage(request,message,vals={}):
     """
@@ -575,7 +602,11 @@ def myElections(request, vals):
     return homeResponse(request, focus_html, url, vals)
 
 def representatives(request, vals):
+    focus_html = getRepresentativesHTML(request, vals)
+    url = request.path
+    return homeResponse(request, focus_html, url, vals)
 
+def getRepresentativesHTML(request, vals):
     viewer = vals['viewer']
     viewer.completeTask("F")
 
@@ -586,16 +617,14 @@ def representatives(request, vals):
     valsFirstLogin(vals)
 
     focus_html =  ajaxRender('site/pages/politicians/representatives.html', vals, request)
-    url = request.path
-    return homeResponse(request, focus_html, url, vals)
-
-def match(request, vals):
-    valsFirstLogin(vals)
-    focus_html =  ajaxRender('site/pages/match/match.html', vals, request)
-    url = request.path
-    return homeResponse(request, focus_html, url, vals)
+    return focus_html
 
 def friends(request, vals):
+    focus_html = getFriendsHTML(request, vals)
+    url = request.path
+    return homeResponse(request, focus_html, url, vals)
+
+def getFriendsHTML(request, vals):
     viewer = vals['viewer']
     friends = viewer.getIFollow().filter(num_answers__gte=10)
     vals['i_follow'] = viewer.i_follow
@@ -611,10 +640,14 @@ def friends(request, vals):
     vals['no_create_button'] = True
 
     focus_html =  ajaxRender('site/pages/friends/friends.html', vals, request)
+    return focus_html
+
+def likeMinded(request, vals):
+    focus_html = getLikeMindedHTML(request, vals)
     url = request.path
     return homeResponse(request, focus_html, url, vals)
 
-def likeMinded(request, vals):
+def getLikeMindedHTML(request, vals):
     viewer = vals['viewer']
     like_minded = viewer.getLikeMindedGroup()
     vals['like_minded'] = like_minded
@@ -625,8 +658,7 @@ def likeMinded(request, vals):
     valsQuestionsThreshold(vals)
 
     focus_html =  ajaxRender('site/pages/like_minded/like_minded.html', vals, request)
-    url = request.path
-    return homeResponse(request, focus_html, url, vals)
+    return focus_html
 
 #-----------------------------------------------------------------------------------------------------------------------
 # qa
@@ -893,20 +925,28 @@ def discussionDetail(request, d_id=-1, vals={}):
 # closeup of histogram
 #-----------------------------------------------------------------------------------------------------------------------
 def histogramDetail(request, alias, vals={}):
+    html = getHistogramDetailHTML(request, alias, vals)
+    url = request.path
+    return framedResponse(request, html, url, vals)
 
-    group = Group.objects.get(alias=alias)
+def getHistogramDetailHTML(request, alias, vals):
+
     viewer = vals['viewer']
+    if alias == 'congress':
+        viewer.completeTask("C")
+
+    if LOCAL:
+        group = getLoveGovGroup()
+    else:
+        group = Group.objects.get(alias=alias)
+
     vals['group'] = group
     getMainTopics(vals)
-
-    if group.alias == 'congress':
-        viewer.completeTask("C")
 
     loadHistogram(20, group.id, 'full', vals=vals)
 
     html = ajaxRender('site/pages/histogram/histogram.html', vals, request)
-    url = group.getHistogramURL()
-    return framedResponse(request, html, url, vals)
+    return html
 
 #-----------------------------------------------------------------------------------------------------------------------
 # About Link
