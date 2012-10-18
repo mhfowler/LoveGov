@@ -1,7 +1,7 @@
 from lovegov.frontend.analytics import *
 from lovegov.frontend.views import *
 
-start_date = datetime.datetime(year=2012, month=4, day=10, hour=6)
+start_date = datetime.datetime(year=2012, month=9, day=25, hour=6)
 end_date = datetime.datetime.now()
 
 delta = datetime.timedelta(days=1)

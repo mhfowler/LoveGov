@@ -1075,6 +1075,16 @@ class BasicInfo(models.Model):
         abstract = True
 
 #=======================================================================================================================
+# Stores analytics data about a user
+#
+#=======================================================================================================================
+class AnalyticsData(models.Model):
+    completed_analytics_tasks = models.ManyToManyField("AnalyticsTask")
+
+    class Meta:
+        abstract = True
+
+#=======================================================================================================================
 # Tuple for storing a users involvement with content
 #=======================================================================================================================
 class Involved(LGModel):
@@ -1216,7 +1226,7 @@ def initView():
     view.save()
     return view
 
-class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
+class UserProfile(FacebookProfileModel, LGModel, BasicInfo, AnalyticsData):
     type = models.CharField(max_length=1,default="U")
     # this is the primary user for this profile, mostly for fb login
     user = models.ForeignKey(User, null=True)
@@ -1284,6 +1294,7 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
     politician = models.BooleanField(default=False)
     elected_official = models.BooleanField(default=False)
     currently_in_office = models.BooleanField(default=False)
+    normal = models.BooleanField(default=True)                  # all users who registered normal, and are real people
     ghost = models.BooleanField(default=False)
     supporters = models.ManyToManyField('UserProfile', related_name='supportees')
     num_supporters = models.IntegerField(default=0)
@@ -1308,6 +1319,13 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
 
     def __unicode__(self):
         return self.get_name()
+
+    ### update analytics data for user
+    def updateAnalyticsData(self):
+        self.completed_analytics_tasks.clear()
+        for a in AnalyticsTask.objects.all():
+            if a.checkCompleted(self):
+                self.completed_analytics_tasks.add(a)
 
     #-------------------------------------------------------------------------------------------------------------------
     # Updated like minded group on a schedule.
@@ -1828,7 +1846,6 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo):
                     total_time += delta
 
         total_minutes = total_time.total_seconds() / 60.0
-        print enc(self.get_name()) + ": " + str(total_minutes)
         return total_time, logged_on
 
     #-------------------------------------------------------------------------------------------------------------------
@@ -3097,6 +3114,7 @@ class UserFollowAction(Action):
         })
 
         return render_to_string('site/pieces/actions/user_follow_verbose.html',vals)
+
 
 #=======================================================================================================================
 # Some action that changes a politician supported relationship
@@ -5993,23 +6011,223 @@ class CommitteeJoined(GroupJoined):
         super(CommitteeJoined, self).autoSave()
 
 
+#=======================================================================================================================
+# Analytics Tasks, and logic
+#
+#=======================================================================================================================
+class AnalyticsTask(LGModel):
+    task_type = models.CharField(max_length=20)
+    modifiers_json = models.CharField(max_length=500, default=json.dumps({}))
+    description = models.CharField(max_length=200)
+
+    def getModifiersDict(self):
+        return json.loads(self.modifiers_json)
+
+    def checkCompleted(self, user, time_end=None):
+        modifiers = self.getModifiersDict()
+
+        if self.task_type == "create":
+            type = modifiers.get('type')
+            num = modifiers.get('num')
+            if not num:
+                num = 1
+            created = Content.objects.filter(creator=user)
+
+            if type:
+                created = created.filter(type=type)
+            else:
+                created = created.filter(type__in=IN_FEED)
+
+            if time_end:
+                created = created.filter(when__lt=time_end)
+
+            return created.count() >= num
 
 
+        elif self.task_type == "pageview":
+            page = modifiers.get('page')
+            num = modifiers.get('num')
+            if not num:
+                num = 1
+            pa = PageAccess.objects.filter(user=user)
+
+            if time_end:
+                pa = pa.filter(when__lt=time_end)
+
+            viewed = pa.filter(page=page)
+
+            return viewed.count() >= num
 
 
+        elif self.task_type == 'answer_question':
+            num = modifiers.get('num')
+            if not num:
+                num = 1
+            responses = user.getView().responses.all()
+
+            if time_end:
+                responses = responses.filter(created_when__lt=time_end)
+
+            return responses.count() >= num
 
 
+        elif self.task_type == 'join_group':
+            num = modifiers.get('num')
+            actions = GroupJoined.objects.filter(user=user, confirmed=True)
+
+            if time_end:
+                actions = actions.filter(created_when__lt=time_end)
+
+            return actions.count() >= num
 
 
+        elif self.task_type == 'join_party':
+            num = modifiers.get('num')
+            actions = GroupJoined.objects.filter(user=user, confirmed=True, group__group_type="P")
+
+            if time_end:
+                actions = actions.filter(created_when__lt=time_end)
+
+            return actions.count() >= num
 
 
+        elif self.task_type == 'follow_group':
+            num = modifiers.get('num')
+            actions = GroupFollowAction.objects.filter(user=user, modifier="A", group__is_election=False)
+
+            if time_end:
+                actions = actions.filter(when__lt=time_end)
+
+            return actions.count() >= num
 
 
+        elif self.task_type == 'follow_election':
+            num = modifiers.get('num')
+            actions = GroupFollowAction.objects.filter(user=user, modifier="A", group__is_election=True)
+
+            if time_end:
+                actions = actions.filter(when__lt=time_end)
+
+            return actions.count() >= num
 
 
+        elif self.task_type == 'support_politician':
+            num = modifiers.get('num')
+            actions = SupportedAction.objects.filter(user=user, modifier="A")
+
+            if time_end:
+                actions = actions.filter(when__lt=time_end)
+
+            return actions.count() >= num
 
 
+        elif self.task_type == 'submit_address':
+            return user.location is not None
 
+
+        elif self.task_type == 'sign_petition':
+            num = modifiers.get('num')
+            actions = SignedAction.objects.filter(user=user)
+
+            if time_end:
+                actions = actions.filter(when__lt=time_end)
+
+            return actions.count() >= num
+
+
+        elif self.task_type == 'vote_content':
+            num = modifiers.get('num')
+            pa = PageAccess.objects.filter(user=user, action='vote')
+
+            if time_end:
+                pa = pa.filter(when__lt=time_end)
+
+            return pa.count() >= num
+
+
+        elif self.task_type == 'follow_user':
+            num = modifiers.get('num')
+            actions = UserFollow.objects.filter(user=user)
+
+            if time_end:
+                actions = actions.filter(created_when__lt=time_end)
+
+            return actions.count() >= num
+
+
+        elif self.task_type == 'click_link':
+            num = modifiers.get('num')
+
+            pa = PageAccess.objects.filter(user=user)
+            pa = pa.filter(page__contains="/link/")
+
+            if time_end:
+                pa = pa.filter(when__lt=time_end)
+
+            return pa.count() >= num
+
+
+        elif self.task_type == 'visit_politician':
+
+            POLITICIAN_URLS = getPeopleURLs(ghost=True)
+
+            num = modifiers.get('num')
+
+            pa = PageAccess.objects.filter(user=user)
+            pa = pa.filter(page__in=POLITICIAN_URLS)
+
+            if time_end:
+                pa = pa.filter(when__lt=time_end)
+
+            pages = pa.values_list('page', flat=True)
+            pages_set = set(pages)
+
+            return len(pages_set) >= num
+
+
+        elif self.task_type == 'visit_other_profile':
+
+            REAL_PEOPLE_URLS = getPeopleURLs(ghost=False, normal=True)
+
+            num = modifiers.get('num')
+
+            my_profile_url = user.get_url()
+            pa = PageAccess.objects.filter(user=user)
+            pa = pa.filter(page__in=REAL_PEOPLE_URLS).exclude(page=my_profile_url)
+
+            if time_end:
+                pa = pa.filter(when__lt=time_end)
+
+            pages = pa.values_list('page', flat=True)
+            pages_set = set(pages)
+
+            return len(pages_set) >= num
+
+
+        elif self.task_type == 'visit_my_profile':
+            num = modifiers.get('num')
+
+            my_profile_url = user.get_url()
+            pa = PageAccess.objects.filter(user=user, page=my_profile_url)
+
+            if time_end:
+                pa = pa.filter(when__lt=time_end)
+
+            return pa.count() >= num
+
+
+        else:
+            print "Bad task!"
+
+def getPeopleURLs(ghost=False, normal=None):
+    from lovegov.modernpolitics.models import UserProfile
+    people = UserProfile.objects.filter(ghost=ghost)
+    if normal:
+        people = people.filter(normal=True)
+    people_urls = []
+    for x in people:
+        people_urls.append(x.get_url())
+    return people_urls
 
 #=======================================================================================================================
 # For a user to write about their views on a topic.

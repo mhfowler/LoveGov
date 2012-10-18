@@ -13,6 +13,212 @@ import xlwt
 import xlutils
 
 #-----------------------------------------------------------------------------------------------------------------------
+# who has done what? analytics
+#-----------------------------------------------------------------------------------------------------------------------
+def initializeAnalyticsTasks():
+
+    AnalyticsTask.objects.all().delete()
+
+    # page view tasks
+    PAGE_VIEW_TASKS = [
+        '/welcome/',
+        '/presidential_election/',
+        '/home/',
+        '/groups/',
+        '/elections/',
+        '/legislation/',
+        '/about/',
+        '/blog/',
+        '/questions/',
+        '/friends/',
+        '/congress/histogram/',
+        '/match/',
+        '/like_minded/',
+        '/representatives/'
+    ]
+
+    for page in PAGE_VIEW_TASKS:
+        task_type = 'pageview'
+        description = "Has this user seen the page " + page + "?"
+        modifiers_dict = {'page':page, 'num':1}
+        task = AnalyticsTask(task_type=task_type, modifiers_json=json.dumps(modifiers_dict), description=description)
+        task.save()
+
+
+    # create stuff tasks
+    ANALYTICS_CREATE_INCREMENTS = [1, 2, 5]
+    ANALYTICS_CREATE_TYPES = ['N', 'Q', 'C', 'P', 'D', 'B', 'G']
+
+    for type in ANALYTICS_CREATE_TYPES:
+        for num in ANALYTICS_CREATE_INCREMENTS:
+            task_type = 'create'
+            description = "Has this user created (" + str(num) + ") content of type " + type + "?"
+            modifiers_dict = {'type':type, 'num':num}
+            task = AnalyticsTask(task_type=task_type, modifiers_json=json.dumps(modifiers_dict), description=description)
+            task.save()
+
+
+    SIMPLE_TASKS = [
+        {
+            'task_type': 'answer_question',
+            'description': "Has this user answered (<num>) questions?",
+            'increments': [1,5,10,15,20,30,40,50]
+        },
+        {
+            'task_type': 'join_group',
+            'description': "Has this user joined (<num>) groups?",
+            'increments': [1,2,3]
+        },
+        {
+            'task_type': 'join_party',
+            'description': "Has this user joined (<num>) parties?",
+            'increments': [1,2]
+        },
+        {
+            'task_type': 'follow_group',
+            'description': "Has this user followed (<num>) groups?",
+            'increments': [1,2,3]
+        },
+        {
+            'task_type': 'follow_election',
+            'description': "Has this user followed (<num>) elections?",
+            'increments': [1,2]
+        },
+        {
+            'task_type': 'support_politician',
+            'description': "Has this user supported (<num>) politicians?",
+            'increments': [1,2,3]
+        },
+        {
+            'task_type': 'submit_address',
+            'description': "Has this user submitted an address?",
+            'increments': [-1]
+        },
+        {
+            'task_type': 'sign_petition',
+            'description': "Has this user signed (<num>) petitions?",
+            'increments': [1,2,3]
+        },
+        {
+            'task_type': 'vote_content',
+            'description': "Has this user cast (<num>) votes?",
+            'increments': [1,5,10]
+        },
+        {
+            'task_type': 'click_link',
+            'description': "Has this user clicked (<num>) news links?",
+            'increments': [1,5,10]
+        },
+        {
+            'task_type': 'follow_user',
+            'description': "Has this user followed (<num>) other users?",
+            'increments': [1,5]
+        },
+#        {
+#            'task_type': 'visit_politician',
+#            'description': "Has this user visited (<num>) politician profiles?",
+#            'increments': [1,2,5]
+#        },
+#        {
+#            'task_type': 'visit_other_profile',
+#            'description': "Has this user visited (<num>) other user profiles?",
+#            'increments': [1,2,5]
+#        },
+        {
+            'task_type': 'visit_my_profile',
+            'description': "Has this user visited their own profile (<num>) times?",
+            'increments': [1,5,10]
+        }
+    ]
+
+    for simple_task in SIMPLE_TASKS:
+        task_type = simple_task['task_type']
+        description = simple_task['description']
+        increments = simple_task['increments']
+        for num in increments:
+            this_description = description.replace("<num>", str(num))
+            modifiers_dict = {'num':num}
+            task = AnalyticsTask(task_type=task_type, modifiers_json=json.dumps(modifiers_dict), description=this_description)
+            task.save()
+
+
+def updateUserAnalyticsData():
+    users = UserProfile.objects.filter(normal=True)
+    count = 0
+    total = users.count()
+    print "total: " + str(total)
+    for u in users:
+        print enc(u.get_name())
+        u.updateAnalyticsData()
+        if not count % 20:
+            print count
+        count += 1
+
+def analyzeCompletedTasks(time_start, time_end, analytics_tasks):
+
+    users = UserProfile.objects.filter(ghost=False)
+    users = filterByCreatedWhen(users, time_start, time_end)
+
+    to_return = {'num_registered':users.count()}
+    to_return['completed_tasks_numbers'] = completed_tasks_numbers = {}
+
+    for task in analytics_tasks:
+        users_completed = users.filter(completed_analytics_tasks=task)
+        completed_tasks_numbers[task.id] = users_completed.count()
+
+    return to_return
+
+
+
+def completedTasksAnalytics(time_tuples, output_file):
+    from xlutils import copy
+
+    completed_tasks_template_filepath = os.path.join(PROJECT_PATH, 'logging/metrics/completed_tasks_template.xls')
+
+    rb = open_workbook(completed_tasks_template_filepath,formatting_info=True)
+    wb = xlutils.copy.copy(rb) #a writable copy (I can't read values out of this, only write to it)
+
+    c_row = 1
+
+    w_sheet = wb.get_sheet(0)
+
+    analytics_tasks = AnalyticsTask.objects.all()
+
+    # write headers for tasks
+    c_col = 3
+    for task in analytics_tasks:
+        description = task.description
+        w_sheet.write(0,c_col, description)
+        c_col += 1
+
+    # for each time tuple, write start_date, and fill in the number of users who registered during that time and completed each task
+    for tuple in time_tuples:
+        time_start = tuple[0]
+        time_end = tuple[1]
+
+        dt = time_start.strftime('%m/%d/%y')
+        print str(dt)
+        w_sheet.write(c_row,1,dt)
+
+        returned = analyzeCompletedTasks(time_start, time_end, analytics_tasks)
+
+        num_registered = returned['num_registered']
+        w_sheet.write(c_row,2, num_registered)
+
+        completed_tasks_numbers = returned['completed_tasks_numbers']
+        c_col = 3
+        for task in analytics_tasks:
+            num_completed = completed_tasks_numbers.get(task.id)
+            if num_completed is not None:
+                w_sheet.write(c_row, c_col, num_completed)
+            c_col += 1
+
+        c_row += 1
+
+    wb.save(output_file)
+
+
+#-----------------------------------------------------------------------------------------------------------------------
 # analyze cookie data
 #-----------------------------------------------------------------------------------------------------------------------
 def registrationConversionAnalytics(time_tuples, output_file):
@@ -33,13 +239,17 @@ def registrationConversionAnalytics(time_tuples, output_file):
 
         dt = time_start.strftime('%m/%d/%y')
         w_sheet.write(c_row,1,dt)
+        print str(dt)
 
         metrics = analyzeCookieData(time_start, time_end)
-        w_sheet.write(c_row,2,metrics['total_ips_visited'])
-        w_sheet.write(c_row,3,metrics['new_ips_visited'])
-        w_sheet.write(c_row,4,metrics['total_registered'])
-        w_sheet.write(c_row,5,metrics['presidential_matched'])
-        w_sheet.write(c_row,6,metrics['registered_with_cookie_data'])
+        w_sheet.write(c_row,2,metrics['total_ips_visited'])                                 # total ips
+        w_sheet.write(c_row,3,metrics['total_ips_visited'] - metrics['new_ips_visited'])    # old ips
+        w_sheet.write(c_row,4,metrics['total_old_users_logged_in'])                               # returning users
+        w_sheet.write(c_row,5,metrics['new_ips_visited'])                                   # new ips
+        w_sheet.write(c_row,6,metrics['total_registered'])                                  # registrations
+        w_sheet.write(c_row,7,metrics['total_new_users_logged_in'])                               # new log ins
+        w_sheet.write(c_row,8,metrics['presidential_matched'])                              # presidential matched
+        w_sheet.write(c_row,9,metrics['registered_with_cookie_data'])                       # presidential matched and registered
 
         c_row += 1
 
@@ -55,6 +265,9 @@ def analyzeCookieData(time_start, time_end):
     pa_within_time_period = filterByWhen(PageAccess.objects.all(), time_start, time_end)
     pa_before_time_period = filterByWhen(PageAccess.objects.all(), None, time_start)
     old_user_pas = pa_within_time_period.filter(user__in=registered_before_time_period)
+    old_users_logged_in = old_user_pas.values("user").distinct()
+    new_user_pas = pa_within_time_period.filter(user__in=registered_within_time_period)
+    new_users_logged_in = new_user_pas.values("user").distinct()
     distinct_ips = [x['ipaddress'] for x in pa_within_time_period.values("ipaddress").distinct()]
     old_user_ips = [x['ipaddress'] for x in old_user_pas.values("ipaddress").distinct()]
     old_ips = [x['ipaddress'] for x in pa_before_time_period.values("ipaddress").distinct()]
@@ -65,6 +278,8 @@ def analyzeCookieData(time_start, time_end):
     claimed_cookies = cookie_datas.filter(claimed=True)
     unclaimed_cookies = cookie_datas.filter(claimed=False)
 
+    total_old_users_logged_in = old_users_logged_in.count()
+    total_new_users_logged_in = new_users_logged_in.count()
     total_ips_visited = len(distinct_ips)
     total_new_ips_visited = len(new_ips)
     total_not_old_user_ips_visited = len(not_old_user_ips)
@@ -77,6 +292,8 @@ def analyzeCookieData(time_start, time_end):
     print "total cookie datas: " + str(total_cookie_datas)
     print "claimed cookie datas (registered with cookie data): " + str(total_claimed_cookie_datas)
     print "total registered: " + str(total_registered)
+    print "new users logged in: " + str(total_new_users_logged_in)
+    print "old users logged in: " + str(total_old_users_logged_in)
     if total_registered:
         print "% of new visitors who registred: " + str(total_new_ips_visited / float(total_registered))
     if total_claimed_cookie_datas:
@@ -111,7 +328,9 @@ def analyzeCookieData(time_start, time_end):
         'new_ips_visited':total_new_ips_visited,
         'total_registered':total_registered,
         'registered_with_cookie_data':total_claimed_cookie_datas,
-        'presidential_matched': claimed_answered_count + unclaimed_answered_count
+        'presidential_matched': claimed_answered_count + unclaimed_answered_count,
+        'total_new_users_logged_in':total_new_users_logged_in,
+        'total_old_users_logged_in':total_old_users_logged_in
     }
 
     return to_return_dict

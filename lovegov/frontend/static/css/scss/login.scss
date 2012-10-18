@@ -540,7 +540,7 @@ div.october-sign-up {
     text-align:center;
     div.sign-up-with-email-area {
       display: inline-block;
-      width:80%%;
+      width:80%;
       text-align:left;
       padding:10px;
       background-color: #eee;
@@ -550,8 +550,9 @@ div.october-sign-up {
         color:$red;
         font-size: 20px;
       }
-      &:hover {
-        background-color: $orange-light;
+      &.has_hover_color:hover {
+        background-color: $gray;
+        cursor:pointer;
       }
     }
 
@@ -1066,7 +1067,6 @@ p.privacy_p
 
 h2.register-title {
   //margin-bottom:10px;
-  cursor: pointer;
 }
 
 div#register-div {

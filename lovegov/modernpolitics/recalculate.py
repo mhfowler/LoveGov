@@ -1,5 +1,21 @@
 from lovegov.modernpolitics.initialize import *
 
+## recalculate who normal users all ##
+def recalculateNormalUsers():
+    ghosts = UserProfile.objects.filter(ghost=True)
+    for g in ghosts:
+        g.normal = False
+        g.save()
+    lg = getLoveGovUser()
+    lg.normal = False
+    lg.save()
+    anon = getAnonUser()
+    anon.normal = False
+    anon.save()
+    trial = getTrialUser()
+    trial.normal = False
+    trial.save()
+
 ## recalculate official question order ##
 def recalculateOfficialQuestionOrder():
 
