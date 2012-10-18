@@ -109,6 +109,8 @@ def viewWrapper(view, requires_login=False):
                 # if no ControllingUser (not logged in) return the Anonymous UserProfile, else returns associated user
                 if controlling_user:
                     user = controlling_user.user_profile
+                    if not user:
+                        LGException(enc("Controlling User without user_profile! controlling_user: " + controlling_user.email + " | id: " + str(controlling_user.id)))
                     vals['prohibited_actions'] = controlling_user.prohibited_actions
                 else:
                     to_page = vals['to_page']
