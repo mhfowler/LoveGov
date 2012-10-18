@@ -4,6 +4,10 @@ bind("div.reply .tab-button.cancel", "click", function(event) {
     $(this).parent("div.reply").hide();
 });
 
+function bindNewComments() {
+    bindTooltips();
+    loadHoverComparison();
+}
 
 var lockThreadReply = false;
 // set of rendered comments
@@ -42,7 +46,7 @@ bind("div.reply .tab-button.save", "click", function(event) {
                     lockThreadReply = false;
                     updateThreadCommentCount();
                     comment_id_list[cid]= true;
-                    bindTooltips();
+                    bindNewComments();
                 }
             });
         // Append to comment
@@ -202,7 +206,7 @@ function loadMoreComments() {
                     // actually render the content
                     $(returned.html).hide().appendTo('div.thread').fadeIn(500);
                     updateThreadCommentCount();
-                    bindTooltips();
+                    bindNewComments();
                 }
             },
 		    complete: function(data) {
@@ -321,6 +325,7 @@ bind('div.show-new-replies', 'click', function(e) {
                newcomment.css('background-color', '#FFF7DE');
                newcomment.animate({'background-color': oldbgcolor}, 10000);
                updateThreadCommentCount();
+               bindNewComments();
            }
         });
     }
@@ -345,6 +350,7 @@ bind('div.top-show-new-replies', 'click', function(e) {
                 dumpListToSet(new_ids, comment_id_list);
                 newcomment.prependTo(threaddiv);
                 updateThreadCommentCount();
+                bindNewComments();
                 var oldbgcolor = newcomment.css('background-color');
                 newcomment.css('background-color', '#FFF7DE');
                 setTimeout(function() { newcomment.css('background-color', oldbgcolor) }, 5000);
