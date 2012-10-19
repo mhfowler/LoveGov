@@ -223,7 +223,7 @@ def createCongressAnswer(bill, amendment, legislation_name, vote, answer_id, met
             overall_metrics['congress_roll_not_found'] += 1
             print enc("+EE+ Could not congress roll for == " + legislation_name)
             return False
-        elif congress_rolls.count() > 1:
+        elif congress_rolls.count() > 2:
             overall_metrics['multiple_congress_rolls_found'] += 1
             print enc("+EE+ more than one congress roll found for == " + legislation_name)
 
