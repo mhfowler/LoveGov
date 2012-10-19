@@ -13,29 +13,72 @@ from collections import OrderedDict
 
 ######## new match pages
 
-def match(request, section, vals):
+def match(request, section=None, vals={}):
 
-    if section == 'representatives':
+    viewer = vals['viewer']
+
+    url = None
+    if not section:
+        section = viewer.getFirstNotCompletedMatchSection()
+        if section:
+            url = '/match/' + section + '/'
+        if not section:
+            url = '/home/'
+            section = 'home'
+        if not request.is_ajax():
+            return shortcuts.redirect(url)
+
+    vals['show_welcome'] = show_welcome = viewer.show_welcome
+    if show_welcome:
+        viewer.show_welcome = False
+        viewer.save()
+
+    if section == 'presidential':
+        match_body_html = getMatchPresidentialHTML(request, vals)
+        viewer.completeMatchSection("P")
+    elif section == 'representatives':
         match_body_html = getRepresentativesHTML(request, vals)
+        viewer.completeMatchSection("R")
     elif section == 'friends':
-        match_body_html = getFriendsHTML(request, vals)
+        match_body_html = getMatchFriendsHTML(request, vals)
+        viewer.completeMatchSection("F")
     elif section == 'groups':
         match_body_html = getMatchGroupsHTML(request, vals)
+        viewer.completeMatchSection("G")
     elif section == 'lovegov':
         match_body_html = getLikeMindedHTML(request, vals)
     elif section == 'congress':
+        vals['match_with_congress'] = 1
         match_body_html = getHistogramDetailHTML(request, 'congress', vals)
+        viewer.completeMatchSection("C")
+    elif section == 'home':
+        match_body_html = getHomeHTML(request, vals)
 
     vals['match_body_html'] = match_body_html
     focus_html =  ajaxRender('site/pages/match/match.html', vals, request)
-    url = request.path
+    if not url:
+        url = request.path
     return homeResponse(request, focus_html, url, vals)
 
 def getMatchGroupsHTML(request, vals):
     focus_html =  ajaxRender('site/pages/match/match_groups.html', vals, request)
     return focus_html
 
+def getMatchPresidentialHTML(request, vals):
+    viewer = vals['viewer']
+    election = Election.objects.get(alias="presidential_election")
+    vals['group'] = election
+    vals['info'] = valsElection(viewer, election, {})
 
+    valsQuestionsThreshold(vals)
+
+    focus_html =  ajaxRender('site/pages/match/match_presidential.html', vals, request)
+    return focus_html
+
+def getMatchFriendsHTML(request, vals):
+    viewer = vals['viewer']
+    focus_html =  ajaxRender('site/pages/match/match_friends.html', vals, request)
+    return focus_html
 
 #########
 
@@ -570,7 +613,11 @@ def welcome(request, vals):
 
 @profile("home.prof")
 def home(request, vals={}):
+    focus_html = getHomeHTML(request, vals)
+    url = request.path
+    return homeResponse(request, focus_html, url, vals)
 
+def getHomeHTML(request, vals):
     viewer = vals['viewer']
     viewer.completeTask("L")
 
@@ -584,10 +631,9 @@ def home(request, vals={}):
     valsLikeMinded(vals)
     valsDismissibleHeader(request, vals)
 
-    # render and return html
     focus_html =  ajaxRender('site/pages/home/home.html', vals, request)
-    url = request.path
-    return homeResponse(request, focus_html, url, vals)
+    return focus_html
+
 
 def myGroups(request, vals):
     viewer = vals['viewer']
@@ -618,7 +664,7 @@ def getRepresentativesHTML(request, vals):
     valsQuestionsThreshold(vals)
     valsFirstLogin(vals)
 
-    focus_html =  ajaxRender('site/pages/politicians/representatives.html', vals, request)
+    focus_html =  ajaxRender('site/pages/match/match_representatives.html', vals, request)
     return focus_html
 
 def friends(request, vals):
@@ -728,7 +774,11 @@ def groupPage(request, g_alias, vals={}):
 
 
 def electionPage(request, election, vals={}):
+    focus_html = getElectionHTML(request, election ,vals)
+    url = request.path
+    return homeResponse(request, focus_html, url, vals)
 
+def getElectionHTML(request, election, vals):
     viewer = vals['viewer']
     if election.alias == 'presidential_election':
         viewer.completeTask("P")
@@ -739,11 +789,12 @@ def electionPage(request, election, vals={}):
     valsQuestionsThreshold(vals)
     valsFirstLogin(vals)
 
-    # render and return html
     focus_html =  ajaxRender('site/pages/elections/election_focus.html', vals, request)
-    url = request.path
-    return homeResponse(request, focus_html, url, vals)
+    return focus_html
 
+def getPresidentialHTML(request, vals):
+    election= Election.objects.get(alias="presidential_election")
+    return getElectionHTML(request, election, vals)
 
 #-----------------------------------------------------------------------------------------------------------------------
 # profile page

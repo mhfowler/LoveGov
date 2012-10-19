@@ -1,18 +1,26 @@
 <div class="match-wrapper">
 
+    {% if show_welcome %}
+        {% include 'site/pages/match/match_introduction_header.html' with no_dismissible_x=1 %}
+    {% endif %}
+
     <div class="match-header-wrapper">
 
-            {% include 'site/pages/match/match_header_link.html' with match_link_url="/match/presidential/" match_link_text="w/presidents" match_link_num=1 %}
+        {% include 'site/pages/match/match_header_link.html' with match_link_url="/match/presidential/" match_link_text="w/presidents" match_link_num=1 %}
 
-            {% include 'site/pages/match/match_header_link.html' with match_link_url="/match/representatives/" match_link_text="w/reps" match_link_num=2 %}
+        {% include 'site/pages/match/match_header_link.html' with match_link_url="/match/representatives/" match_link_text="w/reps" match_link_num=2 %}
 
-            {% include 'site/pages/match/match_header_link.html' with match_link_url="/match/friends/" match_link_text="w/friends" match_link_num=3 %}
+        {% include 'site/pages/match/match_header_link.html' with match_link_url="/match/groups/" match_link_text="w/groups" match_link_num=3 %}
 
-            {% include 'site/pages/match/match_header_link.html' with match_link_url="/match/groups/" match_link_text="w/groups" match_link_num=4 %}
+        {% include 'site/pages/match/match_header_link.html' with match_link_url="/match/friends/" match_link_text="w/friends" match_link_num=4 %}
 
-            {% include 'site/pages/match/match_header_link.html' with match_link_url="/match/congress/" match_link_text="w/congress" match_link_num=5 last_link=1 %}
+        {% include 'site/pages/match/match_header_link.html' with match_link_url="/match/congress/" match_link_text="w/congress" match_link_num=5 last_link=1 %}
 
-            <div style="clear:both;"></div>
+        <div class="get-involved">
+            <a class="dummy_link home_link match_link" href="/home/">Get Involved</a>
+        </div>
+
+        <div style="clear:both;"></div>
     </div>
 
     <div class="match-body-wrapper">

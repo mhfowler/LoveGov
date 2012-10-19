@@ -2,9 +2,11 @@
 
 {% block home_header %}
 
-    {% if presidential_election and not hide_intros %}
-        {% include 'site/pages/elections/introduction_election_header.html' with intro_title="Presidential" %}
-    {% endif %}
+    {% comment %}
+        {% if presidential_election and not hide_intros %}
+            {% include 'site/pages/elections/introduction_election_header.html' with intro_title="Presidential" %}
+        {% endif %}
+    {% endcomment %}
 
     {% include 'site/pages/elections/election_header.html' with info_height="285px" info_expanded=1 no_expand=1 %}
 

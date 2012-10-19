@@ -3,19 +3,12 @@
     <div class="questions-header">
 
         <div class="questions-left">
-            <div class="sidebar-header">
-                Answer questions to define your political views.<br>
-                To match yourself with politicians, take the <a href="{{ lgpoll.get_url }}"> LoveGov Poll </a>.
-                {% comment %}You can also create your own polls and questions.{% endcomment %}
-            </div>
             <!-- topic stat box -->
             {% include 'site/pages/qa/poll_progress_by_topic.html' with poll="" %}
         </div>
 
-        <div class="questions-links">
-            <a href="/presidential_election/" class="question-link"> match with presidential candidates </a>
-            <a href="/representatives/" class="question-link"> match with your representatives </a>
-            <a href="/congress/" class="question-link"> match with congress </a>
+        <div class="questions-explanation">
+                Answer questions to express your political views.
         </div>
 
         <div style="clear:both;"></div>
@@ -24,7 +17,7 @@
 
 
     <div class="questions-wrapper">
-        {% include 'site/pages/qa/feed_browse_questions.html' with special_feed="getQuestions" default_display="choose" %}
+        {% include 'site/pages/qa/feed_browse_questions.html' with special_feed="getQuestions" default_display="choose" show_create_button=1 %}
     </div>
 
     <script> rebind="questions"; </script>

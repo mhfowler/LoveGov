@@ -1,5 +1,11 @@
 {% load thumbnail %}
 
+{% if match_with_congress %}
+    <div class="match-section-header">
+        How do you compare with congress?
+    </div>
+{% endif %}
+
 <div class="histogram-main">
 
     <div class="histogram_wrapper" data-metadata="{{ histogram_metadata }}">
