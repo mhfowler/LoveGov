@@ -7,7 +7,7 @@ if __name__ == "__main__":
     start_date = datetime.datetime(year=2012, month=4, day=10, hour=6)
     end_date = datetime.datetime.now()
 
-    delta = datetime.timedelta(days=1)
+    delta = datetime.timedelta(days=7)
     time_tuples = getTimeTuplesByDelta(start_date, end_date, delta)
 
     output_file = os.path.join(PROJECT_PATH, 'logging/metrics/registration_conversion.xls')
