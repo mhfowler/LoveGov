@@ -1307,7 +1307,7 @@ def facebookHandle(request, to_page="/login/home/", vals={}):
         if auth_to_page: #If it exists
             to_page = auth_to_page
             if not to_page.startswith("/login/"):
-                to_page = "/login/" + to_page
+                to_page = "/login" + to_page
 
         response = shortcuts.redirect(to_page) #Build a response
         response.set_cookie('fb_token', access_token) #Set the facebook authorization cookie

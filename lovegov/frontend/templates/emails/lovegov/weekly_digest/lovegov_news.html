@@ -4,9 +4,13 @@ c{% extends 'emails/lovegov/white_section.html' %}
 {% block white_section %}
 
     <p>
-        {% include 'emails/lovegov/weekly_digest/digest_link.html' with the_link="http://lovegov.com/discussion/331271/" the_title="Comment threads refresh automatically to show new comments (fixed bug from last live discussion)." %}
+
+        {% include 'emails/lovegov/weekly_digest/digest_link.html' with the_link="http://teespring.com/lovegov" the_title="LoveGov T-Shirts are now available here." %}
+
+        {% include 'emails/lovegov/weekly_digest/digest_link.html' with the_link="https://www.vidle.me/watch/ce030" the_title="Vote for LoveGov on Vidle." %}
 
         <div style="clear:both;"></div>
+
     </p>
 
 {% endblock %}

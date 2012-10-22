@@ -12,8 +12,6 @@
         {% include 'emails/lovegov/weekly_digest/popular_content.html' with section_header="Popular Questions" content=popular_questions %}
     {% endif %}
 
-    {% comment %}
-        {% include 'emails/lovegov/weekly_digest/lovegov_news.html' with section_header="LoveGov Updates" %}
-    {% endcomment %}
+    {% include 'emails/lovegov/weekly_digest/lovegov_news.html' with section_header="LoveGov Updates" %}
 
 {% endblock %}

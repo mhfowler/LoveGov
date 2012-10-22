@@ -3,7 +3,7 @@
     <div class="match-section-header">
         <span class="header-text"> How do you match with your friends? </span>
         {% if not viewer.facebook_id %}
-            <a href="/fb/redirect/" class="import-friends"> import friends from facebook </a>
+            <a href="/fb/redirect/match/friends/" class="import-friends"> import friends from facebook </a>
         {% endif %}
     </div>
 
@@ -13,6 +13,7 @@
              data-which="friends">
             matching...
         </div>
+        <div class="no_friends no-friends"> You're not following anyone on LoveGov yet.  <a href="/fb/redirect/match/friends/">Import friends from facebook</a> or find like-minded people below. </div>
     </div>
 
     <div class="match-like-minded-wrapper">

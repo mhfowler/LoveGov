@@ -234,6 +234,11 @@ div.match-wrapper {
       div.avatar-strip {
         float:left;
       }
+      div.no-friends {
+        font-size: 16px;
+        padding-top: 35px;
+        display:none;
+      }
     }
 
     div.like-minded-bottom {
@@ -243,7 +248,7 @@ div.match-wrapper {
 
         div.like-minded-match-header {
           float:left;
-          font-size:24px;
+          font-size:23px;
         }
       }
     }
