@@ -323,8 +323,9 @@ def scriptCheckPoliticians(args=None):
             print "Found " + name
 
 
-def scriptCreateResponses(args=None):
-    path = os.path.join(PROJECT_PATH, 'frontend/excel/' + args[0])
+def scriptCreateResponses(file):
+    path = os.path.join(PROJECT_PATH, 'frontend/excel/' + file)
+    print "path: " + path
     wb = open_workbook(path)
     sheet = wb.sheet_by_index(0)
 
