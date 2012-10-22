@@ -5,7 +5,9 @@ c{% extends 'emails/lovegov/white_section.html' %}
 
     <p>
 
-        {% include 'emails/lovegov/weekly_digest/digest_link.html' with the_link="http://teespring.com/lovegov" the_title="LoveGov T-Shirts are now available here." %}
+        {% comment %}
+            {% include 'emails/lovegov/weekly_digest/digest_link.html' with the_link="http://teespring.com/lovegov" the_title="LoveGov T-Shirts are now available here." %}
+        {% endcomment %}
 
         {% include 'emails/lovegov/weekly_digest/digest_link.html' with the_link="https://www.vidle.me/watch/ce030" the_title="Vote for LoveGov on Vidle." %}
 
