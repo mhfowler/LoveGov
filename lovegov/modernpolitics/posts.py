@@ -11,7 +11,31 @@ from lovegov.modernpolitics.modals import *
 from django.core.files.base import ContentFile
 
 #-----------------------------------------------------------------------------------------------------------------------
-# get html for best matching parties
+# get html for lists for matching with people
+#-----------------------------------------------------------------------------------------------------------------------
+def matchWithPeople(request, vals):
+
+    viewer = vals['viewer']
+    which = request.POST['which']
+
+    if which == 'friends':
+        people = list(viewer.getIFollow())
+
+    for u in people:
+        u.comparison = u.getComparison(viewer)
+
+    people.sort(key=lambda x:x.comparison.result, reverse=True)
+
+    vals['users'] = people
+    vals['display'] = 'strip'
+
+    html = ajaxRender('site/pieces/render_users_helper.html', vals, request)
+    to_return = {'html':html}
+
+    return HttpResponse(json.dumps(to_return))
+
+#-----------------------------------------------------------------------------------------------------------------------
+# get html for lists for matching with groups
 #-----------------------------------------------------------------------------------------------------------------------
 def matchWithGroups(request, vals):
 
@@ -23,11 +47,12 @@ def matchWithGroups(request, vals):
         groups = list(Party.objects.all())
     elif which == 'in_your_area':
         groups = []
-        if viewer.location:
-            if viewer.location.state:
-                groups = Group.objects.filter(location__state=viewer.location.state)
-                if viewer.location.city:
-                    groups = groups.filter(Q(location__city=viewer.location.state) | Q(location__city=None))
+        location = viewer.temp_location or viewer.location
+        if location:
+            if location.state:
+                groups = Group.objects.filter(location__state=location.state)
+                if location.city:
+                    groups = groups.filter(Q(location__city=location.city) | Q(location__city=None))
 
     vals['groups'] = groups
     groups_info = []
@@ -2146,6 +2171,8 @@ def getQuestions(request, vals):
     trial_questions =  request.POST.get('trial_questions')
     if not (to_compare or trial_questions):
         vals['qa_tutorial'] = not viewer.checkTask("Q")
+
+    vals['new_questions'] = not to_compare
 
     html = ajaxRender('site/pages/qa/feed_helper_questions.html', vals, request)
 

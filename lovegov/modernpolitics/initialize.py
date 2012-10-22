@@ -368,6 +368,7 @@ def initializeDB():
     # valid emails
     initializeValidEmails()
     initializeValidRegisterCodes()
+    initializeStateGroups()
     # initialize congress
     if not LOCAL:
         initializeCongress()

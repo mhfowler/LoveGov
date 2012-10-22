@@ -7,7 +7,7 @@
 div.match-wrapper {
 
   float:left;
-  width:100%;
+  width:950px;
 
 
   div.match-header-wrapper {
@@ -90,6 +90,8 @@ div.match-wrapper {
     }
   }
 
+
+
   div.match-body-wrapper {
     float:left;
     width:100%;
@@ -117,13 +119,13 @@ div.match-wrapper {
         margin-right: 20px;
       }
       span.not-your-district {
-        margin-top: 3px;
+        margin-top: 5px;
         float: left;
         margin-right: 15px;
       }
       a.enter-new-address {
         float: left;
-        margin-top: 3px;
+        margin-top: 5px;
       }
     }
     div.reps-wrapper {
@@ -150,8 +152,45 @@ div.match-wrapper {
 
     div.questions-wrapper {
       float:left;
-      div.feed-main {
-        width:100%;
+      div.feed-content-wrapper {
+        border-left: 1px solid $light-gray;
+        border-right: 1px solid $light-gray;
+        border-bottom: 1px solid $light-gray;
+        border-top:1px solid $light-gray;
+        div.feed-item-wrapper {
+          border-top: 1px solid $light-gray;
+        }
+        div.feed-item-wrapper {
+          padding-bottom: 30px;
+          padding-top: 25px;
+
+          div.right-part {
+            margin-left:0px;
+            div.top-comment {
+              margin-left:5px;
+            }
+          }
+        }
+      }
+    }
+
+    div.feed-main {
+      width:100%;
+      div.feed-content-wrapper {
+        margin-top:25px;
+
+        div.above-rule-line {
+          div.main-part {
+            width:615px;
+          }
+        }
+        div.right-part {
+          margin-left:5px;
+          div.top-comment {
+            margin-left:20px;
+          }
+        }
+
       }
     }
 
@@ -169,21 +208,48 @@ div.match-wrapper {
     }
 
     div.feed-main {
-      margin-top: 20px;
+      //margin-top: 20px;
       width: 100%;
       position: relative;
       float: left;
     }
 
-    div.group-expanded {
-      width:785px;
+    div.dismissible-header {
+      float:left;
     }
 
-    div.group-left-column {
-      margin-right:20px;
+    div.election-card {
+      margin-right:15px;
     }
 
-    span.parties-heart-gif {
+    div.google-maps-wrapper {
+      float:left;
+      width:100%;
+    }
+
+    div.people-list-wrapper {
+      float: left;
+      width: 100%;
+      margin-bottom: 30px;
+      div.avatar-strip {
+        float:left;
+      }
+    }
+
+  }
+
+}
+
+div.match-body-wrapper {
+  div.match-groups-section {
+    float: left;
+    width: 100%;
+
+    div.below-match-section-header {
+      padding-bottom: 6px;
+    }
+
+    span.initializing-heart-gif {
       @include staticImage("/images/gifs/ajax-loader.gif");
       width: 15px;
       height: 15px;
@@ -192,13 +258,27 @@ div.match-wrapper {
       float: left;
       margin-left:20px;
       margin-top: 10px;
+      display:block;
     }
 
-    div.best-matched-parties-list-wrapper {
+    div.groups-list-wrapper {
       float:left;
-      min-height: 1440px;
+      min-height: 100px;
+      width:100%;
+      padding-top:20px;
+      padding-bottom:20px;
+      //border-top: 1px solid $light-gray;
+    }
+
+    div.group-expanded {
+      width:785px;
+      div.group-left-column {
+        margin-right:25px;
+      }
+      div.group-text {
+        margin-right:25px;
+      }
     }
 
   }
-
 }

@@ -54,7 +54,7 @@
                 <div class="item-bottom">
 
                     <!-- float right -->
-                    <a href="{{ content.getCommentsURL }}" class="num-comments">
+                    <a href="{{ content.getCommentsURL }}" class="num-comments dummy_link do_ajax_link">
                         {{ content.num_comments }} comment {{ content.num_comments|pluralize }}
                     </a>
                     {% if viewer.facebook_id %}

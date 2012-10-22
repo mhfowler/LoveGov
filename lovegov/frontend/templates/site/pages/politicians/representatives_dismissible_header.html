@@ -3,14 +3,14 @@
 {% block dismissible_content %}
         <div class="find-your-reps find_your_reps">
             <div class="find-your-reps-title">
-                Find your representatives:
+                {% if why_address %}  {{ why_address }} {% else %}Find your representatives: {% endif %}
             </div>
             <div class="find-your-reps-form address_form">
                 <input class="street-input street_input reps-input" type="text" placeholder="street address"/>
                 <input class="city-input city_input reps-input" type="text" placeholder="town/city"/>
                 <input class="state-input state_input reps-input" type="text" placeholder="state"/>
                 <input class="zip-input zip_input reps-input " type="text" placeholder="zip code"/>
-                <a href="#" class="find-button find_address_button dummy_link"> find reps </a>
+                <a href="#" class="find-button find_address_button dummy_link"> {% if button_text %} {{ button_text }} {% else %} find reps {% endif %}</a>
             </div>
             <div class="error-message error_message">
                 Sorry we weren't able to locate your district. Please try submitting the form again or entering

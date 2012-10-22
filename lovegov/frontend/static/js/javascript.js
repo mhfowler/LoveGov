@@ -3074,7 +3074,7 @@ function saveAnswer(stub) {
         // if only unanswered animate hide question
         var only_unanswered = container.data('only_unanswered');
         if (only_unanswered && a_id!=-1) {
-            stub.animate({"height":"0px"}, {
+            stub.animate({"height":"0px", "padding-top":"0px", "padding-bottom":"0px"}, {
                 "duration": 300,
                 "complete":function(){
                     stub.hide();
@@ -3443,10 +3443,6 @@ function postInitialize(element) {
                 $(".sign_up_wrapper").fadeIn();
             }, 0);
         }
-    }
-
-    if (element.hasClass("best_matching_parties_seed")) {
-        $(".parties_heart_gif").hide();
     }
 
     bindOnNewElements();

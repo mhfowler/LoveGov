@@ -80,6 +80,9 @@ def getMatchPresidentialHTML(request, vals):
 
 def getMatchFriendsHTML(request, vals):
     viewer = vals['viewer']
+
+    vals['like_minded_html'] = getLikeMindedHTML(request, vals)
+
     focus_html =  ajaxRender('site/pages/match/match_friends.html', vals, request)
     return focus_html
 
