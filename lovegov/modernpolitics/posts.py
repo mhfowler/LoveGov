@@ -13,12 +13,21 @@ from django.core.files.base import ContentFile
 #-----------------------------------------------------------------------------------------------------------------------
 # get html for best matching parties
 #-----------------------------------------------------------------------------------------------------------------------
-def getBestMatchingParties(request, vals):
+def matchWithGroups(request, vals):
 
     from lovegov.frontend.views_helpers import valsGroup
     viewer = vals['viewer']
 
-    groups = list(Party.objects.all())
+    which = request.POST['which']
+    if which == 'best_matching_parties':
+        groups = list(Party.objects.all())
+    elif which == 'in_your_area':
+        groups = []
+        if viewer.location:
+            if viewer.location.state:
+                groups = Group.objects.filter(location__state=viewer.location.state)
+                if viewer.location.city:
+                    groups = groups.filter(Q(location__city=viewer.location.state) | Q(location__city=None))
 
     vals['groups'] = groups
     groups_info = []

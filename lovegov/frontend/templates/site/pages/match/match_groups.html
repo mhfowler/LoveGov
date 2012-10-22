@@ -1,21 +1,43 @@
 <div class="match-groups">
 
-    <div class="best-matched-parties">
+
+
+    <div class="groups-in-your-area match-groups-section">
+        <div class="match-section-header">
+            How do you match with groups in your area?
+        </div>
+        {% if viewer.location %}
+            {% with location=viewer.location %}
+                <div class="groups-list-wrapper">
+                    <div class="best_matching_parties_seed initialize_self"
+                         data-action="matchWithGroups"
+                         data-which="in_your_area">
+                    </div>
+                    <span class="initializing-heart-gif initialize_loading"></span>
+                </div>
+            {% endwith %}
+        {% else %}
+            <div class="dismissible_wrapper">
+                {% include 'site/pages/politicians/representatives_dismissible_header.html' %}
+            </div>
+        {% endif %}
+    </div>
+
+
+
+    <div class="political-party-matches match-groups-section">
         <div class="match-section-header">
             Which political party do you match best with?
         </div>
-        <div class="best-matched-parties-list-wrapper">
+        <div class="groups-list-wrapper">
             <div class="best_matching_parties_seed initialize_self"
-                 data-action="getBestMatchingParties"
+                 data-action="matchWithGroups"
+                 data-which="best_matching_parties">
             </div>
             <span class="parties-heart-gif initialize_loading"></span>
         </div>
     </div>
 
-    <div class="best-matched-parties">
-        <div class="match-section-header">
-            All groups
-        </div>
-    </div>
+
 
 </div>

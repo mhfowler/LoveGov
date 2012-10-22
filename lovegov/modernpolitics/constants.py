@@ -751,7 +751,7 @@ ACTIONS = [
     'requestPasswordRecovery',
     'emailLogin',
     'twitterRegisterPost',
-    'getBestMatchingParties'
+    'matchWithGroups'
 ]
 
 UNAUTHENTICATED_ACTIONS = [

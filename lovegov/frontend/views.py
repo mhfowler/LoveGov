@@ -61,6 +61,9 @@ def match(request, section=None, vals={}):
     return homeResponse(request, focus_html, url, vals)
 
 def getMatchGroupsHTML(request, vals):
+
+    viewer = vals['viewer']
+
     focus_html =  ajaxRender('site/pages/match/match_groups.html', vals, request)
     return focus_html
 
