@@ -51,7 +51,7 @@ def scriptReparseCongressAnswers():
     ]
     for x in specific_answer_files_relative:
         print enc("+SS+ creating responses based on file: " + x)
-        scriptCreateResponses(x)
+        scriptCreateResponses([x])
 
     print "finished script!"
 
