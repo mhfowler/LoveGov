@@ -1396,6 +1396,7 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo, AnalyticsData):
     def calculateHotFeedContent(self):
         self.updateStale()
         content = self.getGroupSubscriptionContent()
+        content_ids = content.values_list("id", flat=True)
         stale_ids = self.getStaleContentIds()
 
         all_petitions = content.filter(type="P").order_by("-status")
@@ -1411,7 +1412,7 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo, AnalyticsData):
         discussions = all_discussions.exclude(id__in=stale_ids)
 
         all_questions = Question.objects.all().order_by("-status").order_by("-questions_hot_score")
-        questions = all_questions.exclude(id__in=stale_ids)
+        questions = all_questions.filter(id__in=content_ids).exclude(id__in=stale_ids)
 
         if not (petitions or news or discussions or questions):
             return list(Content.objects.filter(in_feed=True).order_by("-hot_score"))
