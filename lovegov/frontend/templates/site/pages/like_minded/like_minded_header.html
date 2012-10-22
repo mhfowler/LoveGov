@@ -59,35 +59,9 @@
                 </div>
                 <div style="clear:both;"></div>
             </div>
-            <div class="like-minded-bottom">
-                <div class="like-minded-bottom-header">
-                    <div class="members-header">
-                        Members
-                    </div>
-                    <a class="view-all-friends" href="{{ like_minded.getHistogramURL }}"> view all </a>
-                    <div class="button-result">
-                        <div class="button_result find_result find-result">
-                            <div class="num_new_found num-found"> 0 </div>
-                            like minded people were found from <span class="num_processed"> 100 </span> checked.
-                        </div>
-                        <div class="button_result clear_result clear-result">
-                            your like minded group was cleared.
-                        </div>
-                        <div class="find_loading find-loading"></div>
-                        <div class="computing-result computing_result">
-                            computing...
-                        </div>
-                    </div>
-                    <div class="total-processed-count">
-                        <span class="total_found" data-num="{{ num_members }}"> {{ num_members }} </span> / <span class="total_processed"> {{ num_processed }} </span>
-                    </div>
-                </div>
-                <div class="like_minded_members like-minded-members">
-                    {% for user in members %}
-                        {% include 'site/pieces/avatar_href.html' with width="50" height="50" %}
-                    {% endfor %}
-                </div>
-            </div>
+
+            {% include 'site/pages/like_minded/like_minded_bottom.html' %}
+
         </div>
     </div>
 

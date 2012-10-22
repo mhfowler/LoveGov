@@ -4,15 +4,17 @@
 @import "compass";
 
 div.avatar-strip {
-  padding-top:10px;
+  padding-top:17px;
   padding-left:10px;
   padding-bottom:5px;
   padding-right:10px;
   width:100%;
-  border:1px solid $gray;
+  //border:1px solid $gray;
 
   div.avatar-image {
     float:left;
+    margin-top:3px;
+    margin-right:15px;
   }
 
   div.avatar-strip-main {
@@ -22,6 +24,8 @@ div.avatar-strip {
     div.avatar-strip-top {
       float:left;
       width:100%;
+      height: 33px;
+      margin-top: 2px;
       span.user-name {
         font-size: 24px;
         float:left;
@@ -69,40 +73,48 @@ div.avatar-strip {
     }
   }
 
-
-  div.before-match {
-    float:left;
-    width: 150px;
-    position:absolute;
-    left:52%;
-    margin-top: 35px;
-    color:$gray;
-    a.view-all-answers {
-      float:left;
-      width:100%;
-      text-decoration:underline;
-    }
-    span.match-from {
-      margin-top: 5px;
-      margin-left: 0px;
-      float: left;
-    }
+  div.avatar-match.scorecard-match {
+    color:$text-blue;
   }
-  div.avatar-match {
-    height: 50px;
-    float:right;
-    line-height: 36px;
+
+
+  div.strip-far-left {
+    width:85px;
+    float:left;
+    margin-right:12px;
     position: relative;
-    top: -15px;
-    color:$red;
-    div.match-number {
-      font-size: 66px;
-      span.match-percent {
-        margin-left:2px;
+    top: 0px;
+
+    div.avatar-match {
+      color:$red;
+      text-align:center;
+      width:100%;
+      div.match-number {
+        font-size: 34px;
+        height: 32px;
+        position: relative;
+        span.match-percent {
+          margin-left:2px;
+        }
       }
     }
+
+    div.before-match {
+      width:100%;
+      float:right;
+      color:$gray;
+      a.view-all-answers {
+        float:left;
+        width:100%;
+        text-decoration:underline;
+      }
+      span.match-from {
+        margin-top: 5px;
+        margin-left: 0px;
+        float: left;
+      }
+    }
+
   }
-  div.avatar-match.scorecard-match {
-      color:$text-blue;
-  }
+
 }

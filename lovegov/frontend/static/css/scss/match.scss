@@ -236,6 +236,22 @@ div.match-wrapper {
       }
     }
 
+    div.like-minded-bottom {
+      border-top:none;
+      div.like-minded-bottom-header {
+        margin-bottom:15px;
+
+        div.like-minded-match-header {
+          float:left;
+          font-size:24px;
+        }
+      }
+    }
+
+    a.import-friends {
+      float:right;
+    }
+
   }
 
 }

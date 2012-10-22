@@ -2,6 +2,33 @@
 
 <div class="avatar-strip">
 
+    {% with comparison=user.comparison %}
+        {% if comparison %}
+            <div class="strip-far-left">
+
+                <div class='avatar-match {% if scorecard_strip %} scorecard-match {% endif %}'>
+                    <div class="match-number">
+                        {{ comparison.result}}<span class="match-percent">%</span>
+                    </div>
+                </div>
+
+                {% if scorecard_strip  %}
+                    <div class="before-match before-scorecard-match">
+                        {% if not scorecard_compare %}
+                            <a class="view-all-answers" href="{{ user.scorecard_comparison_url }}"> view all answers </a>
+                            <span class="match-from"> {{ comparison.num_q }} questions </span>
+                        {% endif %}
+                    </div>
+                {% else %}
+                    <div class="before-match">
+                        <span class="match-from"> {{ comparison.num_q }} questions </span>
+                    </div>
+                {% endif %}
+
+            </div>
+        {% endif %}
+    {% endwith %}
+
     <div class="avatar-image">
         {% include 'site/pieces/avatar.html' with user=user height="50" width="50" %}
     </div>
@@ -27,26 +54,6 @@
             <span class="heart-score"> {{ user.upvotes }}</span>
         </div>
     </div>
-
-
-    {% if scorecard_strip  %}
-        <div class="before-match before-scorecard-match">
-            {% if not scorecard_compare %}
-                <a class="view-all-answers" href="{{ user.scorecard_comparison_url }}"> view all answers </a>
-                <span class="match-from"> {{ user.comparison.num_q }} questions </span>
-            {% endif %}
-       </div>
-    {% else %}
-        <div class="before-match">
-            <span class="match-from"> from {{ user.comparison.num_q }} questions </span>
-        </div>
-    {% endif %}
-
-        <div class='avatar-match {% if scorecard_strip %} scorecard-match {% endif %}'>
-            <div class="match-number">
-                {{ user.comparison.result}}<span class="match-percent">%</span>
-            </div>
-        </div>
 
     <div style="clear:both;"></div>
 </div>

@@ -80,9 +80,7 @@ def getMatchPresidentialHTML(request, vals):
 
 def getMatchFriendsHTML(request, vals):
     viewer = vals['viewer']
-
-    vals['like_minded_html'] = getLikeMindedHTML(request, vals)
-
+    likeMindedVals(request, vals)
     focus_html =  ajaxRender('site/pages/match/match_friends.html', vals, request)
     return focus_html
 
@@ -708,17 +706,25 @@ def likeMinded(request, vals):
     return homeResponse(request, focus_html, url, vals)
 
 def getLikeMindedHTML(request, vals):
+
+    likeMindedVals(request, vals)
+
+    focus_html =  ajaxRender('site/pages/like_minded/like_minded.html', vals, request)
+    return focus_html
+
+def likeMindedVals(request, vals):
     viewer = vals['viewer']
     like_minded = viewer.getLikeMindedGroup()
     vals['like_minded'] = like_minded
     vals['num_members'] = like_minded.members.count()
     vals['num_processed'] = like_minded.processed.count()
-    vals['members'] = like_minded.members.all().order_by("-created_when")
+
+    if LOCAL:
+        vals['members'] = UserProfile.objects.all()
+    else:
+        vals['members'] = like_minded.members.all().order_by("-created_when")
 
     valsQuestionsThreshold(vals)
-
-    focus_html =  ajaxRender('site/pages/like_minded/like_minded.html', vals, request)
-    return focus_html
 
 #-----------------------------------------------------------------------------------------------------------------------
 # qa
