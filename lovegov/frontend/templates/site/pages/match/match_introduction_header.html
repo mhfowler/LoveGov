@@ -1,0 +1,31 @@
+{% extends 'site/pages/dismissible_headers/dismissible_header.html' %}
+
+{% block dismissible_content %}
+
+    <div class="introduction-header">
+
+        <div class="welcome-header">
+
+            <a href="/lovegov/"> <div class="lovegov-robot tooltip-top" title="I'm a robot that's here to help you."></div> </a>
+
+            <div class="right-of-picture">
+                <div class="top-text">
+                    <div class="welcome-header-header"> Welcome to LoveGov! </div>
+                    <a class="dismissible_x hide-intros"> (hide welcome message) </a>
+                </div>
+                <div class="welcome-paragraph">
+                    It's time to get involved in your government. Start by answering questions and seeing how you match with
+                    the presidential candidates. Then click the arrow to advance to the other match sections.
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    {% comment %}
+    <div class="expand-info dismissible_x collapse-introduction">
+        <p class="expand-text">  &#8211 collapse introduction </p>
+    </div>
+    {% endcomment %}
+
+{% endblock %}

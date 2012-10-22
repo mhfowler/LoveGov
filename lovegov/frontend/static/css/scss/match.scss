@@ -1,0 +1,204 @@
+@charset "UTF-8";
+@import 'master-variables';
+@import 'master-mixins';
+
+@import "compass";
+
+div.match-wrapper {
+
+  float:left;
+  width:100%;
+
+
+  div.match-header-wrapper {
+    float:left;
+    width:100%;
+    margin-bottom:15px;
+    padding-left:5px;
+
+    div.match-header-link-wrapper {
+      width:150px;
+      margin-right:0px;
+      float:left;
+      a.match-header-link {
+        text-align:left;
+        width:85px;
+        float:left;
+        padding: 10px 5px;
+        @include border-radius(10px);
+        &:hover {
+          background-color:$light-gray;
+        }
+        &.clicked {
+          background-color:$red;
+          div.match-link-num {
+            color:white;
+          }
+          div.match-link-text {
+            color:white;
+          }
+        }
+        @include clearfix();
+        &.last {
+          margin-right:0px;
+        }
+        div.match-link-num {
+          color:$dark-gray;
+          font-family:$body-fonts;
+          font-size:32px;
+          font-size: 36px;
+          line-height: 30px;
+          margin-left:27px;
+          width:25px;
+        }
+        div.match-link-text {
+          text-align:center;
+          width:65px;
+          color:$black;
+          div.match-word {
+            margin-top:3px;
+          }
+          div.match-description {
+            //margin-top:-4px;
+            margin-top:2px;
+          }
+        }
+      }
+      div.dot-divider {
+        font-size: 72px;
+        line-height: 33px;
+        margin-left: 27px;
+        float: left;
+        color:$light-gray;
+      }
+    }
+    div.get-involved {
+      float: right;
+      margin-top: 18px;
+      font-size: 22px;
+      margin-left: 10px;
+      margin-right:35px;
+      a {
+        color: $black;
+        &:hover {
+          color:blue;
+        }
+      }
+      a.clicked {
+        color:blue;
+      }
+    }
+  }
+
+  div.match-body-wrapper {
+    float:left;
+    width:100%;
+    padding-left: 5px;
+    div.histogram-main {
+      margin-top:0px;
+    }
+
+    div.match-section-header {
+      font-size:24px;
+      float:left;
+      margin-bottom:10px;
+      width:100%;
+    }
+
+    div.below-match-section-header {
+      float:left;
+      width:100%;
+      top:-5px;
+      position: relative;
+      div.reps-where {
+        font-size: 20px;
+        color: $dark-gray;
+        float: left;
+        margin-right: 20px;
+      }
+      span.not-your-district {
+        margin-top: 3px;
+        float: left;
+        margin-right: 15px;
+      }
+      a.enter-new-address {
+        float: left;
+        margin-top: 3px;
+      }
+    }
+    div.reps-wrapper {
+      float:left;
+      margin-top:10px;
+    }
+    div.google-maps-wrapper {
+      margin-top:15px;
+    }
+
+    div.what-would-be-wrapper {
+      width:100%;
+      float:left;
+      div.what-would-be-text {
+        width:780px;
+      }
+    }
+
+    div.match-with-congress {
+      font-size:24px;
+      float:left;
+      margin-bottom:10px;
+    }
+
+    div.questions-wrapper {
+      float:left;
+      div.feed-main {
+        width:100%;
+      }
+    }
+
+    div.the-content {
+      width:100%;
+    }
+
+    div.find-your-reps {
+      margin-bottom: 5px;
+      margin-top: 10px;
+    }
+
+    div.running {
+      height: 405px;
+    }
+
+    div.feed-main {
+      margin-top: 20px;
+      width: 100%;
+      position: relative;
+      float: left;
+    }
+
+    div.group-expanded {
+      width:785px;
+    }
+
+    div.group-left-column {
+      margin-right:20px;
+    }
+
+    span.parties-heart-gif {
+      @include staticImage("/images/gifs/ajax-loader.gif");
+      width: 15px;
+      height: 15px;
+      background-size: 15px 13px;
+      background-repeat: no-repeat;
+      float: left;
+      margin-left:20px;
+      margin-top: 10px;
+    }
+
+    div.best-matched-parties-list-wrapper {
+      float:left;
+      min-height: 1440px;
+    }
+
+  }
+
+}
