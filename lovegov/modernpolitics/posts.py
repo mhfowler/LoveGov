@@ -10,6 +10,31 @@
 from lovegov.modernpolitics.modals import *
 from django.core.files.base import ContentFile
 
+#-----------------------------------------------------------------------------------------------------------------------
+# get html for best matching parties
+#-----------------------------------------------------------------------------------------------------------------------
+def getBestMatchingParties(request, vals):
+
+    from lovegov.frontend.views_helpers import valsGroup
+    viewer = vals['viewer']
+
+    groups = list(Party.objects.all())
+
+    vals['groups'] = groups
+    groups_info = []
+    for count,g in enumerate(groups):
+        group_vals = {}
+        valsGroup(viewer, g, group_vals)
+        groups_info.append({'group':g, 'info':group_vals})
+
+    groups_info.sort(key=lambda x: x['info']['group_comparison'])
+    vals['groups_info'] = groups_info
+
+    html = ajaxRender('site/pages/browse/feed_helper_browse_groups.html', vals, request)
+    return HttpResponse(json.dumps({'html':html, 'num_items':len(groups)}))
+
+
+### twitter register post ###
 def twitterRegisterPost(request, vals):
 
     name = request.POST.get('name')

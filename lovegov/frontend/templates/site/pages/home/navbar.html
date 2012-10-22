@@ -16,22 +16,6 @@
     </div>
     {% endcomment %}
 
-    <div class="navbar-section navbar_section groups_section">
-        <a class="home_link dummy_link left_link section_title" href="/my_groups/" data-sequence="{{ sequence|increment }}">
-            <span class="lil-goob"></span>
-            <div class="navbar_title navbar-title"> My Groups </div> </a>  <span class="red_triangle red-triangle"></span>
-        <div class="navbar_links_wrapper groups_wrapper">
-            {% include 'site/pages/home/navbar_snippet.html' with section_url="/like_minded/" section_title="Like Minded" %}
-            {% for x in group_subscriptions %}
-                {% include 'site/pages/home/navbar_snippet.html' %}
-            {% endfor %}
-            <a href="#" class="create-link create_group_link"> + Create a Group </a>
-            {% comment %}
-            <a href="/groups/" class="create-link"> + Find Groups </a>
-            {% endcomment %}
-        </div>
-    </div>
-
     <div class="navbar-section navbar_section elections_section">
         <a class="home_link dummy_link left_link section_title" href="/my_elections/" data-sequence="{{ sequence|increment }}">
             <span class="lil-goob"></span>
@@ -41,13 +25,30 @@
             {% for x in election_subscriptions %}
                 {% include 'site/pages/home/navbar_snippet.html' %}
             {% endfor %}
-                <a href="#" class="create-link create_election_link"> + Create an Election </a>
             {% comment %}
-            <a href="/elections/" class="create-link"> + Find Elections </a>
+                <a href="#" class="create-link create_election_link"> + Create an Election </a>
             {% endcomment %}
+            <a href="/elections/" class="create-link"> + Find Elections </a>
         </div>
     </div>
 
+    <div class="navbar-section navbar_section groups_section">
+        <a class="home_link dummy_link left_link section_title" href="/my_groups/" data-sequence="{{ sequence|increment }}">
+            <span class="lil-goob"></span>
+            <div class="navbar_title navbar-title"> My Groups </div> </a>  <span class="red_triangle red-triangle"></span>
+        <div class="navbar_links_wrapper groups_wrapper">
+            {% include 'site/pages/home/navbar_snippet.html' with section_url="/like_minded/" section_title="Like Minded" %}
+            {% for x in group_subscriptions %}
+                {% include 'site/pages/home/navbar_snippet.html' %}
+            {% endfor %}
+            {% comment %}
+                <a href="#" class="create-link create_group_link"> + Create a Group </a>
+            {% endcomment %}
+            <a href="/groups/" class="create-link"> + Find Groups </a>
+        </div>
+    </div>
+
+    {% comment %}
     <div class="navbar-section navbar_section discover_section">
         <a class="home_link dummy_link left_link section_title" href="/match/" data-sequence="{{ sequence|increment }}">
             <span class="lil-goob"></span>
@@ -59,6 +60,7 @@
             {% include 'site/pages/home/navbar_snippet.html' with section_url="/friends/" section_title="Match with Friends" %}
         </div>
     </div>
+    {% endcomment %}
 
     {% comment %}
     <div class="navbar-section navbar_section">

@@ -1307,6 +1307,8 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo, AnalyticsData):
     first_login = models.IntegerField(default=1)             # 1 means just registered, after that 0
     first_login_tasks = models.CharField(max_length=50, default="", blank=True)
     num_logins = models.IntegerField(default=0)
+    match_sections_completed = models.CharField(default="", max_length=26)
+    show_welcome = models.BooleanField(default=True)
     # background tasks
     background_tasks = models.CharField(max_length=10, default="", blank=True)
     finished_tasks = models.CharField(max_length=10, default="", blank=True)
@@ -1319,6 +1321,19 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo, AnalyticsData):
 
     def __unicode__(self):
         return self.get_name()
+
+    ### match sections completed
+    def checkMatchSectionCompleted(self, section):
+        return section in self.match_sections_completed
+    def completeMatchSection(self, section):
+        if not self.checkMatchSectionCompleted(section):
+            self.match_sections_completed += section
+            self.save()
+    def getFirstNotCompletedMatchSection(self):
+        for char, name in MATCH_SECTIONS:
+            if not self.checkMatchSectionCompleted(char):
+                return name
+        return None
 
     ### update analytics data for user
     def updateAnalyticsData(self):

@@ -82,6 +82,11 @@ urlpatterns += patterns('',
     (r'^robots.txt', 'django.views.generic.simple.direct_to_template', {'template': 'robots.txt'}),
     (r'^update_hot_feed', viewWrapper(views.updateHotFeedPage, requires_login=True)),
 
+    # new home page
+    (r'^$', viewWrapper(views.match, requires_login=True)),
+    (r'^home/$', viewWrapper(views.match, requires_login=True), {'section':"home"}),
+    (r'^match/(?P<section>\w+)/$', viewWrapper(views.match, requires_login=True)),
+
     # home pages
     (r'^welcome/$', viewWrapper(views.welcome, requires_login=True)),
     (r'^home/$', viewWrapper(views.home, requires_login=True)),
@@ -92,7 +97,6 @@ urlpatterns += patterns('',
     (r'^friends/$', viewWrapper(views.friends, requires_login=True)),
     (r'^questions/$', viewWrapper(views.questions, requires_login=True)),
     (r'^discover/$', viewWrapper(views.match, requires_login=True)),
-    (r'^match/$', viewWrapper(views.match, requires_login=True)),
     (r'^my_groups/$', viewWrapper(views.myGroups, requires_login=True)),
     (r'^my_elections/$', viewWrapper(views.myElections, requires_login=True)),
     (r'^like_minded/$', viewWrapper(views.likeMinded, requires_login=True)),
@@ -101,7 +105,6 @@ urlpatterns += patterns('',
     (r'^home/$', viewWrapper(views.redirect, requires_login=True)),
     (r'^web/$', viewWrapper(views.web, requires_login=True)),
     (r'^about/$', viewWrapper(views.about, requires_login=True)),
-    (r'^about/(\w+)/$', viewWrapper(views.about, requires_login=True)),
     (r'^settings/$', viewWrapper(views.account,requires_login=True)),
     (r'^settings/(?P<section>\S+)/$', viewWrapper(views.account,requires_login=True)),
     (r'^search/(?P<term>.*)/$', viewWrapper(views.search, requires_login=True)),
@@ -166,7 +169,7 @@ urlpatterns += patterns('',
     # REDIRECT
     (r'^popup_redirect/$', views.popupRedirect),
     (r'(?P<alias>\w+)/$', views.aliasDowncast),
-    (r'.*/$', views.error404),
-    (r'^$', views.redirect, {'page':"/home/"})
+    (r'.*/$', views.error404)
+
 
 )

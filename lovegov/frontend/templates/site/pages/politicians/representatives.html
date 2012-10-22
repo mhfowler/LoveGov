@@ -4,16 +4,9 @@
 
     <div class="representatives">
 
-        {% if not hide_intros %}
-            {% if not congressmen %}
-                {% include 'site/pages/politicians/representatives_dismissible_header.html' %}
-                <div class="break-area" style="margin-top:40px;"></div>
-            {% endif %}
-
-            {% include 'site/pages/politicians/introduction_representatives_header.html' with intro_title="Your Reps" %}
-        {% endif %}
-
-        {% if hide_intros or congressmen %}
+        {% if congressmen %}
+            {% include 'site/pages/politicians/representatives_header_and_dismissible.html' %}
+        {% else %}
             {% include 'site/pages/politicians/representatives_header_and_dismissible.html' %}
         {% endif %}
 

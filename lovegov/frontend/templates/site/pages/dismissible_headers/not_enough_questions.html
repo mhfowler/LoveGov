@@ -1,4 +1,6 @@
-{% include 'site/pages/dismissible_headers/not_enough_questions_warning.html' %}
+{% if not no_threshold_warning %}
+    {% include 'site/pages/dismissible_headers/not_enough_questions_warning.html' %}
+{% endif %}
 
 <div class="questions-wrapper temp_questions_feed">
     {% include 'site/pages/qa/feed_browse_questions.html' with special_feed="getQuestions" default_display="choose" only_unanswered=1 no_create_button=1 poll_id=lgpoll.id %}

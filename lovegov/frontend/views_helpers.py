@@ -41,7 +41,7 @@ def loginRedirectToPage(request, viewer, to_page):
 
     num_logins = viewer.num_logins
     if not num_logins:
-        to_page = '/welcome/'
+        to_page = '/'
     viewer.incrementNumLogins()
 
     viewer.updateHotFeedIfOld()
@@ -512,6 +512,7 @@ def getGroupTuples(viewer, question, response):
 # fill dictionary for a particular group
 #-----------------------------------------------------------------------------------------------------------------------
 def valsGroup(viewer, group, vals):
+
     # Set group and group comparison
     vals['group'] = group
     comparison = group.getComparison(viewer)

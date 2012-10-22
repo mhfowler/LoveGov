@@ -20,6 +20,15 @@ import random
 
 LOCAL = settings.LOCAL
 
+########################################## MATCH SECTIONS ##############################################################
+
+MATCH_SECTIONS = [
+            ('P','presidential'),
+            ('R','representatives'),
+            ('G','groups'),
+            ('F','friends'),
+            ('C','congress')]
+
 ########################################## HOT FEED ####################################################################
 
 HOT_FEED_GOES_REALLY_STALE_IN_THIS_MUCH_TIME = datetime.timedelta(minutes=5)
@@ -741,7 +750,8 @@ ACTIONS = [
     'getPresidentialMatchingCount',
     'requestPasswordRecovery',
     'emailLogin',
-    'twitterRegisterPost'
+    'twitterRegisterPost',
+    'getBestMatchingParties'
 ]
 
 UNAUTHENTICATED_ACTIONS = [

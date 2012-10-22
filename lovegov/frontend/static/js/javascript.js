@@ -325,6 +325,10 @@ bind(".do_ajax_link", 'click', null, function(event) {
     ajaxReload($(this).attr("href"), true);
 });
 
+bind(".match_link", 'click', null, function(event) {
+    selectMatchLink($(this).attr('href'));
+});
+
 function pushURL(url) {
     History.pushState( {k:1}, "LoveGov: Beta", url);
     PATH = url;
@@ -332,8 +336,20 @@ function pushURL(url) {
 
 function selectHeaderLinks() {
     $(".header_link").removeClass("clicked");
-    var header_link = $('.header_link[href="' + PATH + '"]');
+    if (PATH.indexOf("/match/") != -1 || PATH == '/home/') {
+        var header_link = $('.header_link[href="/"]');
+        selectMatchLink(PATH);
+    }
+    else {
+        var header_link = $('.header_link[href="' + PATH + '"]');
+    }
     header_link.addClass("clicked");
+}
+
+function selectMatchLink(url) {
+    $(".match_link").removeClass("clicked");
+    var match_link = $('.match_link[href="' + url+ '"]');
+    match_link.addClass("clicked");
 }
 
 function ajaxReload(theurl)
@@ -3427,6 +3443,10 @@ function postInitialize(element) {
                 $(".sign_up_wrapper").fadeIn();
             }, 0);
         }
+    }
+
+    if (element.hasClass("best_matching_parties_seed")) {
+        $(".parties_heart_gif").hide();
     }
 
     bindOnNewElements();
