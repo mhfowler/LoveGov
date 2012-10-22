@@ -20,18 +20,6 @@ from django.template.loader import render_to_string
 from xlrd import open_workbook
 
 ########################################################################################################################
-#-----------------------------------------------------------------------------------------------------------------------
-#   generates Politician objects for each candidates in spreadsheet
-#   answers questions for them
-#-----------------------------------------------------------------------------------------------------------------------
-def scriptCreatePresidentialCandidates(args=None):
-    path = os.path.join(PROJECT_PATH, 'frontend/excel/Presidential_Candidates.xls')
-    wb = open_workbook(path)
-    sheet = wb.sheet_by_index(0)
-    createPoliticianProfiles(sheet)
-    answerQuestions(sheet)
-
-
 
 def scriptReparseCongressAnswers():
 
@@ -47,18 +35,26 @@ def scriptReparseCongressAnswers():
     print "finished script!"
 
 
-def scriptAnswerFromManualResearch():
-    specific_answer_files_relative= [
-        'HouseCandidateAnswers_CT.xls',
-        'HouseCandidateAnswers_MA.xls',
-        'HouseCandidateAnswers_ME.xls',
-        'HouseCandidateAnswers_NH.xls',
-        'HouseCandidateAnswers_RI.xls',
-        ]
-    for x in specific_answer_files_relative:
-        print enc("+SS+ creating responses based on file: " + x)
-        scriptCreateResponses(x)
+#-----------------------------------------------------------------------------------------------------------------------
+#   generates Politician objects for each candidates in spreadsheet
+#   answers questions for them
+#-----------------------------------------------------------------------------------------------------------------------
+def scriptCreatePresidentialCandidates(args=None):
+    path = os.path.join(PROJECT_PATH, 'frontend/excel/Presidential_Candidates.xls')
+    wb = open_workbook(path)
+    sheet = wb.sheet_by_index(0)
+    createPoliticianProfiles(sheet)
+    answerQuestions(sheet)
 
+
+def scriptAnswerFromManualResearch():
+
+    manual_research_folder = os.path.join(PROJECT_PATH, 'frontend/excel/manual_research/')
+    manual_research_file_names = os.listdir(manual_research_folder)
+    for x in manual_research_file_names:
+        path = os.path.join(manual_research_folder, x)
+        print enc("+SS+ creating responses based on file: " + path)
+        scriptCreateResponses(path)
 
 
 def scriptCreateCongressAnswers(args=None):
@@ -323,8 +319,9 @@ def scriptCheckPoliticians(args=None):
             print "Found " + name
 
 
-def scriptCreateResponses(file):
-    path = os.path.join(PROJECT_PATH, 'frontend/excel/' + file)
+
+
+def scriptCreateResponses(path):
     print "path: " + path
     wb = open_workbook(path)
     sheet = wb.sheet_by_index(0)
@@ -336,7 +333,7 @@ def scriptCreateResponses(file):
     print "+II+ = Information"
     print "======================"
 
-# For all cells in the spreadsheet
+    # For all cells in the spreadsheet
     for row in range(1,sheet.nrows):
         for column in range(2,sheet.ncols):
             # Get politician Name
@@ -368,10 +365,7 @@ def scriptCreateResponses(file):
                 print "+WW+ Successfully created and confirmed " + name
                 politician = politician.user_profile
 
-            # Get and print answer text
-#            answer_text = sheet.cell(row,column).value
-#            answer_text = answer_text.encode('utf-8','ignore')
-#            print answer_text
+            # get answer id
             answer_id = sheet.cell(row,column).value
 
             # Check for answer text
