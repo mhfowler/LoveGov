@@ -11,6 +11,7 @@
 from lovegov.scripts.createPresidentialCandidates import answerQuestions
 from lovegov.scripts.createPresidentialCandidates import createPoliticianProfiles
 from lovegov.modernpolitics.backend import *
+from lovegov.modernpolitics.recalculate import *
 from lovegov.base_settings import PROJECT_PATH
 from django.template.loader import render_to_string
 
@@ -29,6 +30,33 @@ def scriptCreatePresidentialCandidates(args=None):
     sheet = wb.sheet_by_index(0)
     createPoliticianProfiles(sheet)
     answerQuestions(sheet)
+
+
+
+def scriptReparseCongressAnswers():
+
+    print "+SS+ DELETING ALL GHOST RESPONSES"
+    deleteAllGhostResponses()
+
+    print "+SS+ REANSWERING QUESTIONS BASED ON LEGISLATION"
+    scriptCreateCongressAnswers()
+
+    print "+SS+ REANSWERING SPECIFIC STATES MY MANUAL RESEARCH"
+    specific_answer_files_relative= [
+        'HouseCandidateAnswers_CT.xls',
+        'HouseCandidateAnswers_MA.xls',
+        'HouseCandidateAnswers_ME.xls',
+        'HouseCandidateAnswers_NH.xls',
+        'HouseCandidateAnswers_RI.xls',
+    ]
+    for x in specific_answer_files_relative:
+        print enc("+SS+ creating responses based on file: " + x)
+        scriptCreateResponses(x)
+
+    print "finished script!"
+
+
+
 
 def scriptCreateCongressAnswers(args=None):
     # Open the spreadsheet and shit

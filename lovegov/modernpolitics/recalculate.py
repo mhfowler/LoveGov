@@ -71,7 +71,7 @@ def deleteAllGhostResponses():
         x.delete()
         if not count % 100:
             print count
-            printSecondsRemaining(started_when, count, total)
+            #printSecondsRemaining(started_when, count, total)
         count +=1
 
 def printSecondsRemaining(started_when, completed, total):
