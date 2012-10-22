@@ -716,16 +716,25 @@ div.presidential-matching {
     }
   }
   div.presidential-matching-finished {
-    padding-top:12px;
+    padding:20px;
     font-size:24px;
     color:$black;
-    width:750px;
     padding-bottom:25px;
     //width: 500px;
     display:none;
-    margin-left: 100px;
     margin-bottom: 30px;
     border-bottom: 1px double $gray;
+    @include border-radius(10px);
+    @include background-image(linear-gradient(#eee, white));
+    @include clearfix;
+    div.login-candidate {
+      display:inline-block;
+      img {
+        height: 125px;
+        margin: 10px 10px 4px 0;
+        max-width: 110px;
+      }
+    }
   }
   div.bottom-section {
     width: 100%;
@@ -1449,5 +1458,5 @@ div.registration-benefits {
   border-radius: 10px;
   background-color: $red-light;
   color: white;
-  padding: 20px;
+  padding: 30px;
 }

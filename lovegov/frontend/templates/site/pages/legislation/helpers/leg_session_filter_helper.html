@@ -1,6 +1,6 @@
-<div class="session_select">
+<div class="session_selector">
     <h3>Congressional Session</h3>
-    <select multiple class="session_selector" data-selector="session_filter">
+    <select multiple class="session_select" data-selector="session_filter">
         <optgroup label="Congress Sessions" id="bill_sessions">
             {% for session_number in sessions %}
                 <option class="bill-sessions" value='{{ session_number.session }}'>{{ session_number.session }}</option>

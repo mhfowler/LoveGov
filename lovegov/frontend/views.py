@@ -366,18 +366,16 @@ def loginFAQ(request, vals={}):
     return loginResponse(request, central_html, url, vals)
 
 def presidentialMatching(request, vals):
-    if not LOCAL:
-        obama = UserProfile.objects.get(alias='barack_obama')
-        mitt = UserProfile.objects.get(alias='mitt_romney')
-    else:
-        obama = getUser("Randy Johnson")
-        mitt = getUser("Katy Perry")
+#    if not LOCAL:
+    obama = UserProfile.lg.get_or_none(alias='barack_obama') or getUser("Randy Johnson")
+    mitt = UserProfile.lg.get_or_none(alias='mitt_romney') or getUser("Katy Perry")
     vals['obama'] = obama
     vals['mitt'] = mitt
     vals['candidates'] = [obama, mitt]
     vals['agreement_ids'] = [int(obama.id), int(mitt.id)]
 
     ip = request.META.get('REMOTE_ADDR', None)
+    jregion = None
     if ip and ip!='127.0.0.1':
         import requests
         r = requests.get('http://smart-ip.net/geoip-json/'+ip)
@@ -391,6 +389,14 @@ def presidentialMatching(request, vals):
         city = 'your city' # default city
 
     vals['local_location'] = city
+    if jregion:
+        from modernpolitics.constants import STATES
+        stateDict = dict([reversed(x) for x in STATES])
+        stateAbbr = stateDict.get(jregion)
+        if stateAbbr:
+            senators = getSensFromState(stateAbbr)
+            if senators:
+              vals['local_candidate1'], vals['local_candidate2'] = senators
 
     vals['lgpoll'] = getLoveGovPoll()
 
