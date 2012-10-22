@@ -42,19 +42,22 @@ def scriptReparseCongressAnswers():
     scriptCreateCongressAnswers()
 
     print "+SS+ REANSWERING SPECIFIC STATES MY MANUAL RESEARCH"
+    scriptAnswerFromManualResearch()
+
+    print "finished script!"
+
+
+def scriptAnswerFromManualResearch():
     specific_answer_files_relative= [
         'HouseCandidateAnswers_CT.xls',
         'HouseCandidateAnswers_MA.xls',
         'HouseCandidateAnswers_ME.xls',
         'HouseCandidateAnswers_NH.xls',
         'HouseCandidateAnswers_RI.xls',
-    ]
+        ]
     for x in specific_answer_files_relative:
         print enc("+SS+ creating responses based on file: " + x)
         scriptCreateResponses([x])
-
-    print "finished script!"
-
 
 
 
