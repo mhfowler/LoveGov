@@ -4025,8 +4025,8 @@ function facebookShareMatches(obamaMatch, romneyMatch) {
         },
         'success': function(data) {
             window.open('http://www.facebook.com/dialog/feed?app_id='+FACEBOOK_APP_ID+'&link=http://lovegov.com/'+url+
-                '&picture=http://lovegov.com'+data+'&name=Check out my matches'+
-                '&description= on LoveGov'+
+                '&picture=http://dev.lovegov.com'+data+'&name=Check out my presidential matches on LoveGov'+
+                '&description=How do you compare?'+
                 '&redirect_uri=http://lovegov.com/popup_redirect&display=popup',
                 '_blank','width=450,height=300');
         }
