@@ -61,7 +61,7 @@ def matchWithGroups(request, vals):
         valsGroup(viewer, g, group_vals)
         groups_info.append({'group':g, 'info':group_vals})
 
-    groups_info.sort(key=lambda x: x['info']['group_comparison'])
+    groups_info.sort(key=lambda x: x['info']['group_comparison'].result)
     vals['groups_info'] = groups_info
 
     html = ajaxRender('site/pages/browse/feed_helper_browse_groups.html', vals, request)

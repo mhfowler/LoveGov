@@ -3446,7 +3446,9 @@ function postInitialize(element) {
     }
 
     if (element.hasClass("match_with_friends_seed")) {
-        $(".no_friends").show();
+        if (element.children().length == 0) {
+            $(".no_friends").show();
+        }
     }
 
     bindOnNewElements();
