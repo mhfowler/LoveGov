@@ -61,6 +61,7 @@ urlpatterns += patterns('',
     (r'^fb/redirect(\S*)$', views.facebookRedirect),                                    # redirects you to facebook
     (r'^fb/authorize/$', views.facebookAuthorize),
     (r'^fb/handle/$', viewWrapper(views.facebookHandle)),
+    (r'^fb/connect/$', viewWrapper(views.facebookConnect, requires_login=True)),
 
     # twitter authentication
     (r'^twitter/redirect/$', viewWrapper(twitter.twitterTryLogin)),                      # redirect to twitter, and back to handle

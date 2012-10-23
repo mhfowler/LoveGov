@@ -1297,7 +1297,8 @@ def facebookHandle(request, to_page="/login/home/", vals={}):
     returned_state = request.GET.get('state')
     if cookie_state and returned_state == cookie_state: #If this is the correct authorization state
         code = request.GET.get('code') #Get the associated code
-        redirect_uri = getRedirectURI(request,'/fb/handle/') #Set the redirect URI
+
+        redirect_uri = getRedirectURI(request, request.path) #Set the redirect URI
 
         access_token = fbGetAccessToken(request, code, redirect_uri) #Retrieve access token
         if not access_token: #If there's no access token, it's being logged so return the login page
@@ -1306,7 +1307,7 @@ def facebookHandle(request, to_page="/login/home/", vals={}):
         auth_to_page = request.COOKIES.get('auth_to_page') #Get the authorization to_page from Cookies
         if auth_to_page: #If it exists
             to_page = auth_to_page
-            if not to_page.startswith("/login/"):
+            if not to_page.startswith("/login/") and not to_page in ['/fb/connect/']:
                 to_page = "/login" + to_page
 
         response = shortcuts.redirect(to_page) #Build a response
@@ -1319,12 +1320,17 @@ def facebookHandle(request, to_page="/login/home/", vals={}):
 
     return shortcuts.redirect(to_page) #If this is the wrong state, go to default to_page
 
-def facebookRedirect(request, to_page="/login/home/", vals={}):
-    fb_link, fb_state = fbGetRedirect(request, vals)
+def facebookRedirect(request, to_page="/login/home/", redirect_uri=None, vals={}):
+    fb_link, fb_state = fbGetRedirect(request, redirect_uri=redirect_uri, vals=vals)
     response = shortcuts.redirect(fb_link)
     response.set_cookie("fb_state", fb_state)
     response.set_cookie("auth_to_page", to_page)
     return response
+
+# the return side of the above redirect
+def facebookConnect(request, vals):
+    return connectWithFacebook(request, vals=vals)
+
 
 def facebookAuthorize(request, vals={}, scope=""):
 
