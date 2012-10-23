@@ -500,10 +500,12 @@ a.section_title.clicked {
     overflow:hidden;
 
     a.create-link {
-      float:right;
+      float:left;
       font-size: 12px;
       margin-right:50px;
       padding-right:5px;
+      margin-top: 5px;
+      margin-left: 13px;
     }
 
     div.create-wrapper {
