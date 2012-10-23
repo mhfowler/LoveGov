@@ -752,7 +752,8 @@ ACTIONS = [
     'emailLogin',
     'twitterRegisterPost',
     'matchWithGroups',
-    'matchWithPeople'
+    'matchWithPeople',
+    'getMatchCard',
 ]
 
 UNAUTHENTICATED_ACTIONS = [
@@ -891,7 +892,8 @@ ANONYMOUS_PROHIBITED_ACTIONS = [
     'removeScorecard',
     'completeTask',
     'getBillSubjects',
-    'clientSideAnalytics'
+    'clientSideAnalytics',
+    'getMatchCard',
     ]
 
 SILENT_FAIL_ACTIONS = [

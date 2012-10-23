@@ -67,6 +67,14 @@ def matchWithGroups(request, vals):
     html = ajaxRender('site/pages/browse/feed_helper_browse_groups.html', vals, request)
     return HttpResponse(json.dumps({'html':html, 'num_items':len(groups)}))
 
+def getMatchCard(request, vals):
+    obamaMatch = request.POST.get('obamaMatch')
+    romneyMatch = request.POST.get('romneyMatch')
+    if not obamaMatch or not romneyMatch:
+        return HttpResponseBadRequest("Missing match data")
+    from helpers import generateMatchImage
+    url = generateMatchImage(obamaMatch, romneyMatch)
+    return HttpResponse(url)
 
 ### twitter register post ###
 def twitterRegisterPost(request, vals):

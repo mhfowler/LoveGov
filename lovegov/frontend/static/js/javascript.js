@@ -4016,6 +4016,23 @@ bind( '.facebook_share_button' , 'click' , null , function(e)
 });
 
 
+function facebookShareMatches(obamaMatch, romneyMatch) {
+    action({
+        'data': {
+            'action': 'getMatchCard',
+            'obamaMatch': obamaMatch,
+            'romneyMatch': romneyMatch,
+        },
+        'success': function(data) {
+            window.open('http://www.facebook.com/dialog/feed?app_id='+FACEBOOK_APP_ID+'&link=http://lovegov.com/'+url+
+                '&picture=http://lovegov.com'+data+'&name=Check out my matches'+
+                '&description= on LoveGov'+
+                '&redirect_uri=http://lovegov.com/popup_redirect&display=popup',
+                '_blank','width=450,height=300');
+        }
+    })
+}
+
 
 /***********************************************************************************************************************
  *
