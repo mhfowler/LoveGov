@@ -671,7 +671,7 @@ def valsRepsHeader(vals):
     congressmen = viewer.getRepresentatives(location)
 
     if LOCAL and location:
-        bush = getUser("George Bush")
+        bush = viewer
         congressmen = [bush, bush, bush]
     vals['congressmen'] = congressmen
     for x in congressmen:
