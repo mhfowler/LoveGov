@@ -2551,10 +2551,14 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo, AnalyticsData):
         return content
 
     def filterContentOnlyMyContent(self, content):
-        my_content = self.getGroupSubscriptionContent()
-        my_content_ids = my_content.values_list("id", flat=True)
-        content = content.filter(id__in=my_content_ids)
+        my_subscriptions = self.getSubscriptions()
+        content = content.filter(posted_to__in=my_subscriptions)
         return content
+
+    def getGroupSubscriptionsQuestions(self):
+        viewer_subscriptions = self.getSubscriptions()
+        questions = Question.objects.filter(posted_to__in=viewer_subscriptions)
+        return questions
 
     #-------------------------------------------------------------------------------------------------------------------
     # Returns a list of all Users who are (confirmed) following this user.
