@@ -638,7 +638,7 @@ def generateMatchImage(obamaMatch,romneyMatch):
     urlpath = settings.STATIC_URL+fpath
     import os
     if os.path.isfile(filepath):
-        return filepath
+        return urlpath
     i=Image.new('RGB',(400,400),'white')
     if(romneyMatch > obamaMatch):
         template = 'romney_template'
