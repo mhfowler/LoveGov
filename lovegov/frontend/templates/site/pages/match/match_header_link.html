@@ -1,17 +1,8 @@
 <div class="match-header-link-wrapper">
-    <a class="match-header-link dummy_link home_link match_link {% if last_link %} last {% endif %}" href="{{ match_link_url }}">
+    <a class="match-header-link dummy_link home_link match_link {% if match_char in match_sections_completed %}visited{% endif %}" href="{{ match_link_url }}">
         <div class="match-link-num"> {{ match_link_num }} </div>
         <div class="match-link-text">
-            {% comment %}
-            <div class="match-word"> match </div>
-            {% endcomment %}
             <div class="match-description"> {{ match_link_text }} </div>
         </div>
-        <div style="clear:both;"></div>
     </a>
-    {% if not last_link %}
-        <div class="dot-divider">
-            .
-        </div>
-    {% endif %}
 </div>

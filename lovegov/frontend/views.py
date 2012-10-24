@@ -28,8 +28,23 @@ def match(request, section=None, vals={}):
         if not request.is_ajax():
             return shortcuts.redirect(url)
 
+    progress_down = ''
+    lastNotDone = viewer.getFirstNotCompletedMatchSection()
+    if lastNotDone=='presidential':
+        progress_down = ''
+    elif lastNotDone=='representatives':
+        progress_down = 'one-down'
+    elif lastNotDone=='groups':
+        progress_down = 'two-down'
+    elif lastNotDone=='friends':
+        progress_down = 'three-down'
+    elif lastNotDone=='congress':
+        progress_down = 'four-down'
+    else:
+        progress_down = 'five-down'
+
+
     vals['show_welcome'] = show_welcome = viewer.show_welcome
-    vals['show_welcome'] = True
     if show_welcome:
         viewer.show_welcome = False
         viewer.save()
@@ -46,8 +61,6 @@ def match(request, section=None, vals={}):
     elif section == 'groups':
         match_body_html = getMatchGroupsHTML(request, vals)
         viewer.completeMatchSection("G")
-    elif section == 'lovegov':
-        match_body_html = getLikeMindedHTML(request, vals)
     elif section == 'congress':
         vals['match_with_congress'] = 1
         match_body_html = getHistogramDetailHTML(request, 'congress', vals)
@@ -55,6 +68,8 @@ def match(request, section=None, vals={}):
     elif section == 'home':
         match_body_html = getHomeHTML(request, vals)
 
+    vals['progress_down'] = progress_down
+    vals['match_sections_completed'] = viewer.match_sections_completed
     vals['match_body_html'] = match_body_html
     focus_html =  ajaxRender('site/pages/match/match.html', vals, request)
     if not url:

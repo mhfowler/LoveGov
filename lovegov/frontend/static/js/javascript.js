@@ -1900,7 +1900,10 @@ bind(".r_register", 'click', null, function(event) {
                 window.location.href = "/hello/";
             }
             else {
-                form.replaceWith(returned.html);
+                var returnedHtml = $(returned.html);
+                form.replaceWith(returnedHtml);
+                returnedHtml.children().show();
+
             }
         }
     });

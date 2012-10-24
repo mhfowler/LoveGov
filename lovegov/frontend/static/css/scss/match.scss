@@ -15,22 +15,67 @@ div.match-wrapper {
     width:100%;
     margin-bottom:15px;
     padding-left:5px;
+    margin-top: 20px;
+    div.match-progress {
+      position: absolute;
+      height: 45px;
+      width: 800px;
+      border: 1px dashed $deep-gray;
+      @include transition(2s);
+      //@include background-image(linear-gradient(left, $red, #d1e0ec 10%, #d1e0ec));
+      //&.one-down {
+      //  @include background-image(linear-gradient(left, $red, $red 10%, #d1e0ec 30%, #d1e0ec));
+      //}
+      //&.two-down {
+      //  @include background-image(linear-gradient(left, $red, $red 25%, #d1e0ec 40%, #d1e0ec));
+      //}
+      //&.three-down {
+      //  @include background-image(linear-gradient(left, $red, $red 40%, #d1e0ec 60%, #d1e0ec));
+      //}
+      //&.four-down {
+      //  @include background-image(linear-gradient(left, $red, $red 50%, #d1e0ec 80%, #d1e0ec));
+      //}
+      //&.five-down {
+      //  @include background-image(linear-gradient(left, $red, $red 60%, #d1e0ec 90%, #d1e0ec));
+      //}
+      background-color: white;
+      //&.one-down {
+      //  @include background-image(linear-gradient(left, $red, $red 10%, #d1e0ec 30%, #d1e0ec));
+      //}
+      //&.two-down {
+      //  @include background-image(linear-gradient(left, $red, $red 25%, #d1e0ec 40%, #d1e0ec));
+      //}
+      //&.three-down {
+      //  @include background-image(linear-gradient(left, $red, $red 40%, #d1e0ec 60%, #d1e0ec));
+      //}
+      //&.four-down {
+      //  @include background-image(linear-gradient(left, $red, $red 50%, #d1e0ec 80%, #d1e0ec));
+      //}
+      //&.five-down {
+      //  @include background-image(linear-gradient(left, $red, $red 60%, #d1e0ec 90%, #d1e0ec));
+      //}
+      z-index: -1;
+      margin-top: 9px;
+      margin-left:43px;
+      @include border-radius(5px);
+    }
 
     div.match-header-link-wrapper {
-      width:150px;
-      margin-right:0px;
-      float:left;
+      margin-right:5px;
+      display: inline-block;
+      position: relative;
+      top: -7px;
+      width: 100px;
       a.match-header-link {
         text-align:left;
         width:85px;
         float:left;
         padding: 10px 5px;
+        border: 1px solid black;
+        background-color: white;
         @include border-radius(10px);
         &:hover {
-          background-color:$light-gray;
-        }
-        &.clicked {
-          background-color:$red;
+          background-color: $red-light;
           div.match-link-num {
             color:white;
           }
@@ -38,6 +83,25 @@ div.match-wrapper {
             color:white;
           }
         }
+        &:active {
+          background-color: $yellow;
+          div.match-link-num {
+            color:black;
+          }
+          div.match-link-text {
+            color:black;
+          }
+        }
+        &.clicked, &.visited {
+          background-color:$awesome-blue;
+          div.match-link-num {
+            color:$deep-gray;
+          }
+          div.match-link-text {
+            color:black;
+          }
+        }
+
         @include clearfix();
         &.last {
           margin-right:0px;
@@ -45,8 +109,7 @@ div.match-wrapper {
         div.match-link-num {
           color:$dark-gray;
           font-family:$body-fonts;
-          font-size:32px;
-          font-size: 36px;
+          font-size: 38px;
           line-height: 30px;
           margin-left:27px;
           width:25px;
@@ -59,38 +122,33 @@ div.match-wrapper {
           }
           div.match-description {
             //margin-top:-4px;
-            margin-top:2px;
+            margin-top:5px;
           }
         }
-      }
-      div.dot-divider {
-        font-size: 72px;
-        line-height: 33px;
-        margin-left: 27px;
-        float: left;
-        color:$light-gray;
       }
     }
     div.get-involved {
       float: right;
-      margin-top: 18px;
+      margin-top: -5px;
       font-size: 22px;
       margin-left: 10px;
       margin-right:35px;
-      a {
-        color: $black;
-        &:hover {
-          color:blue;
-        }
-      }
-      a.clicked {
-        color:blue;
+      @include border-radius(40px);
+      background-color: $awesome-blue;
+      padding: 20px;
+      border: 3px solid #555;
+      text-transform:uppercase;
+      color: black;
+      &:hover {
+        @include transition(0.2s);
+        border: 3px solid black;
+        background-color: white;
       }
     }
     img {
       float: left;
-      height: 60px;
-      margin: 0 20px 0 10px;
+      height: 100px;
+      margin: -17px 20px 0 10px;
     }
   }
 
