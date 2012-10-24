@@ -8,7 +8,9 @@
 
         <div class="match-progress {{progress_down}}"></div>
 
-        <img src="{{ STATIC_URL }}/images/matchwithheart.png">
+        <div class="heart-wrapper">
+            <img src="{{ STATIC_URL }}/images/matchwithheart.png">
+        </div>
 
         {% include 'site/pages/match/match_header_link.html' with match_link_url="/match/presidential/" match_link_text="Presidents" match_link_num=1 match_char="P" %}
 
@@ -18,12 +20,10 @@
 
         {% include 'site/pages/match/match_header_link.html' with match_link_url="/match/friends/" match_link_text="Friends" match_link_num=4 match_char="F" %}
 
-        {% include 'site/pages/match/match_header_link.html' with match_link_url="/match/congress/" match_link_text="US Congress" match_link_num=5 last_link=1 match_char="C" %}
+        {% include 'site/pages/match/match_header_link.html' with match_link_url="/match/congress/" match_link_text="Congress" match_link_num=5 last_link=1 match_char="C" %}
 
-        <a class="dummy_link home_link match_link" href="/home/">
-        <div class="get-involved">
-            <div class="glyphicon-sprite sprite-glyphicon_355_announcement-png" style="display:inline-block; margin-right: 10px;"></div>Get involved
-        </div>
+        <a class="dummy_link home_link match_link get-involved" href="/home/">
+                <div class="glyphicon-sprite sprite-glyphicon_355_announcement-png" style="display:inline-block; margin-right: 10px;"></div>Get involved
         </a>
 
         <div style="clear:both;"></div>
