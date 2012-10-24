@@ -106,7 +106,7 @@ def matchWithGroups(request, vals):
         valsGroup(viewer, g, group_vals)
         groups_info.append({'group':g, 'info':group_vals})
 
-    groups_info.sort(key=lambda x: x['info']['group_comparison'].result)
+    groups_info.sort(key=lambda x: x['info']['group_comparison'].result, reverse=True)
 
     # paginate
     feed_start = int(request.POST['feed_start'])
