@@ -11,3 +11,6 @@ from lovegov.frontend.views import *
 #output_file = os.path.join(PROJECT_PATH, 'logging/metrics/registration_conversion.xls')
 #
 #registrationConversionAnalytics(time_tuples, output_file)
+
+m = getUser("Max Fowler")
+sendWeeklyDigestEmail(m)
