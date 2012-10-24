@@ -622,7 +622,10 @@ function getFBInviteFriends() {
             success: function(data)
             {
                 var returned = $.parseJSON(data);
-                invite_wrapper.html(returned.html)
+                if (returned.success) {
+                    $(".invite_friends_sidebar").show();
+                    invite_wrapper.html(returned.html);
+                }
             }
         });
     }

@@ -3112,9 +3112,13 @@ def messagePolitician(request, vals={}):
 #-----------------------------------------------------------------------------------------------------------------------
 def getFBInviteFriends(request, vals={}):
     from lovegov.frontend.views_helpers import valsFBFriends
-    valsFBFriends(request, vals)
+    fb_friends = valsFBFriends(request, vals)
+    if fb_friends:
+        success = True
+    else:
+        success = False
     html =  ajaxRender('site/pages/friends/fb_invite_friends_helper.html', vals, request)
-    return HttpResponse(json.dumps({'html':html}))
+    return HttpResponse(json.dumps({'html':html, 'success':success}))
 
 #-----------------------------------------------------------------------------------------------------------------------
 # calculate like minded group members
