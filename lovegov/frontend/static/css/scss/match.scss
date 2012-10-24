@@ -9,7 +9,6 @@ div.match-wrapper {
   float:left;
   width:950px;
 
-
   div.match-header-wrapper {
     float:left;
     width:100%;
@@ -153,12 +152,14 @@ div.match-wrapper {
     div.questions-wrapper {
       float:left;
       div.feed-content-wrapper {
+        /*
         border-left: 1px solid $light-gray;
         border-right: 1px solid $light-gray;
         border-bottom: 1px solid $light-gray;
         border-top:1px solid $light-gray;
+        */
         div.feed-item-wrapper {
-          border-top: 1px solid $light-gray;
+          //border-top: 1px solid $light-gray;
         }
         div.feed-item-wrapper {
           padding-bottom: 30px;
@@ -172,6 +173,11 @@ div.match-wrapper {
           }
         }
       }
+    }
+
+    div.representatives {
+      float: left;
+      margin-bottom: 15px;
     }
 
     div.feed-main {
@@ -205,6 +211,8 @@ div.match-wrapper {
 
     div.running {
       height: 405px;
+      float: left;
+      margin-bottom: 15px;
     }
 
     div.feed-main {
@@ -231,6 +239,7 @@ div.match-wrapper {
       float: left;
       width: 100%;
       margin-bottom: 30px;
+
       div.avatar-strip {
         float:left;
       }
@@ -238,6 +247,24 @@ div.match-wrapper {
         font-size: 16px;
         padding-top: 35px;
         display:none;
+      }
+
+    }
+
+    div.match-feed {
+      position: relative;
+      top: -15px;
+      div.feed-top-bar {
+        display:none;
+      }
+      div.feed-content-wrapper {
+        margin-top:0px;
+      }
+      div.feed-main {
+        min-height:0px;
+      }
+      div.load-more {
+        margin-top:15px;
       }
     }
 
@@ -255,6 +282,12 @@ div.match-wrapper {
 
     a.import-friends {
       float:right;
+    }
+
+    div.histogram-main {
+      div.feed-main div.feed-content-wrapper div.everything_loaded_wrapper {
+        text-align:left;
+      }
     }
 
   }

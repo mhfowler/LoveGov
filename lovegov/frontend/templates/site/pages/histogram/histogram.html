@@ -72,7 +72,9 @@
                 <h3> <span class="num_members"> All </span>
                     Members
                     <span class="in_percentile"></span> </h3>
+                    {% comment %}
                     <div class="heart-gif histogram_loading_members"></div>
+                    {% endcomment %}
             </div>
 
             <div class="identical-avatars-header">
@@ -83,17 +85,15 @@
         </div>
 
         <div class="group-members-wrapper">
-            <div class="members-avatars">
-                <div class="members_wrapper">
 
-                </div>
-                <div class="get-more-members get_more_members">
-
-                </div>
+            <div class="members-avatars members_feed">
+                {% include 'site/pages/feed/feed_no_top.html' with special_feed="getMembersByUIDS" data_u_ids="all" data_g_id=group.id default_display="strip" %}
             </div>
 
-            <div class="identical-avatars identical_wrapper">
+            <div class="identical-avatars identical_members_feed">
+                {% include 'site/pages/feed/feed_no_top.html' with special_feed="getMembersByUIDS" data_u_ids="" data_g_id=group.id default_display="avatar" no_everything_loaded=1 no_fetching=1 %}
             </div>
+
         </div>
 
         <div style="clear:both"></div>

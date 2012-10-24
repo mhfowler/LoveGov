@@ -11,12 +11,50 @@ from lovegov.modernpolitics.modals import *
 from django.core.files.base import ContentFile
 
 #-----------------------------------------------------------------------------------------------------------------------
+# get members of group / histogram by uids
+#-----------------------------------------------------------------------------------------------------------------------
+def getMembersByUIDS(request, vals):
+
+    u_ids = request.POST.get("u_ids")
+    g_id = request.POST.get("g_id")
+
+    if u_ids == 'all':
+        group = Group.objects.get(id=g_id)
+        people = group.getMembers()
+
+    elif not u_ids:
+        people = []
+
+    else:
+        u_ids = json.loads(u_ids)
+        people = UserProfile.objects.filter(id__in=u_ids)
+
+    # paginate
+    feed_start = int(request.POST['feed_start'])
+    feed_end = feed_start+10
+    no_more_items = feed_end >= len(people)
+    people = people[feed_start:feed_end]
+    num_items = len(people)
+
+    viewer = vals['viewer']
+    for u in people:
+        u.comparison = u.getComparison(viewer)
+
+    vals['users'] = people
+    vals['display'] = request.POST.get("display") or "strip"
+
+    html = ajaxRender('site/pieces/render_users_helper.html', vals, request)
+    to_return = {'html':html, 'no_more_items':no_more_items, 'num_items':num_items}
+
+    return HttpResponse(json.dumps(to_return))
+
+#-----------------------------------------------------------------------------------------------------------------------
 # get html for lists for matching with people
 #-----------------------------------------------------------------------------------------------------------------------
 def matchWithPeople(request, vals):
 
     viewer = vals['viewer']
-    which = request.POST['which']
+    which = request.POST.get('which') or 'friends'
 
     if which == 'friends':
         people = list(viewer.getIFollow())
@@ -26,11 +64,18 @@ def matchWithPeople(request, vals):
 
     people.sort(key=lambda x:x.comparison.result, reverse=True)
 
+    # paginate
+    feed_start = int(request.POST['feed_start'])
+    feed_end = feed_start+10
+    no_more_items = feed_end >= len(people)
+    people = people[feed_start:feed_end]
+    num_items = len(people)
+
     vals['users'] = people
     vals['display'] = 'strip'
 
     html = ajaxRender('site/pieces/render_users_helper.html', vals, request)
-    to_return = {'html':html}
+    to_return = {'html':html, 'no_more_items':no_more_items, 'num_items':num_items}
 
     return HttpResponse(json.dumps(to_return))
 
@@ -62,11 +107,20 @@ def matchWithGroups(request, vals):
         groups_info.append({'group':g, 'info':group_vals})
 
     groups_info.sort(key=lambda x: x['info']['group_comparison'].result)
+
+    # paginate
+    feed_start = int(request.POST['feed_start'])
+    feed_end = feed_start+10
+    no_more_items = feed_end >= len(groups_info)
+    groups_info = groups_info[feed_start:feed_end]
+    num_items = len(groups_info)
+
     vals['groups_info'] = groups_info
 
     html = ajaxRender('site/pages/browse/feed_helper_browse_groups.html', vals, request)
-    return HttpResponse(json.dumps({'html':html, 'num_items':len(groups)}))
+    return HttpResponse(json.dumps({'html':html, 'num_items':num_items, 'no_more_items':no_more_items}))
 
+## get fb match card
 def getMatchCard(request, vals):
     obamaMatch = request.POST.get('obamaMatch')
     romneyMatch = request.POST.get('romneyMatch')
@@ -2091,7 +2145,7 @@ def getFeed(request, vals):
     path = request.POST['path']
     alias = path.replace("/","")
     viewer = vals['viewer']
-    content = getFeedItems(viewer=viewer, alias=alias, feed_ranking=feed_ranking,
+    content, no_more_items = getFeedItems(viewer=viewer, alias=alias, feed_ranking=feed_ranking,
         feed_types=feed_types, feed_start=feed_start, num=10, like_minded=like_minded)
 
     viewer.seeContents(content)     # count which content is seen
@@ -2104,7 +2158,7 @@ def getFeed(request, vals):
 
     everything_loaded = everythingLoadedHelper(request, vals, feed_items)
 
-    to_return = {'html':html, 'num_items':num_items, 'everything_loaded':everything_loaded}
+    to_return = {'html':html, 'num_items':num_items, 'everything_loaded':everything_loaded, 'no_more_items':no_more_items}
     return HttpResponse(json.dumps(to_return))
 
 # generates a list of (content, vote) tuples for each piece of content in list

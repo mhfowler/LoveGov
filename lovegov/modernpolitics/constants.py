@@ -754,6 +754,7 @@ ACTIONS = [
     'matchWithGroups',
     'matchWithPeople',
     'getMatchCard',
+    'getMembersByUIDS'
 ]
 
 UNAUTHENTICATED_ACTIONS = [
