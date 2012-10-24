@@ -106,7 +106,10 @@ def matchWithGroups(request, vals):
         valsGroup(viewer, g, group_vals)
         groups_info.append({'group':g, 'info':group_vals})
 
-    groups_info.sort(key=lambda x: x['info']['group_comparison'].result, reverse=True)
+    if which == 'best_matching_parties':
+        groups_info.sort(key=lambda x: x['info']['group_comparison'].result, reverse=True)
+    else:
+        groups_info.sort(key=lambda x: x['group'].num_members, reverse=True)
 
     # paginate
     feed_start = int(request.POST['feed_start'])
