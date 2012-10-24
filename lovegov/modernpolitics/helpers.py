@@ -663,5 +663,5 @@ def generateMatchImage(obamaMatch,romneyMatch):
         romneyX = 265
     draw.text((obamaX,290), str(obamaMatch), fill="#EF503B", font=sonus72)
     draw.text((romneyX,290), str(romneyMatch), fill="#EF503B", font=sonus72)
-    i.save(urlpath,'PNG')
+    i.save(filepath,'PNG')
     return urlpath
