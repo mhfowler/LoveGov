@@ -91,6 +91,8 @@ FIRST_LOGIN_TASKS=['P', # match with presidents
 
 QUESTIONS_THRESHOLD = 15
 
+MIN_NUM_Q_IDENTICAL = 5
+
 ########################################################################################################################
 
 DOMAIN = 'http://lovegov.com'

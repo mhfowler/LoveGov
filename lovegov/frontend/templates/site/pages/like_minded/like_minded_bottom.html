@@ -1,4 +1,4 @@
-<div class="like-minded-bottom">
+<div class="like-minded-bottom like_minded_bottom">
     <div class="like-minded-bottom-header">
         {% if not match_friends_page %}
             <div class="members-header like-minded-bottom-label">
@@ -11,22 +11,30 @@
             </div>
         {% endif %}
         <div class="button-result">
-            <div class="button_result find_result find-result">
-                <div class="num_new_found num-found"> 0 </div>
-                like minded people were found from <span class="num_processed"> 100 </span> checked.
-            </div>
-            <div class="button_result clear_result clear-result">
-                your like minded group was cleared.
-            </div>
-            <div class="find_loading find-loading"></div>
-            <div class="computing-result computing_result">
-                computing...
-            </div>
+                <div class="find_loading find-loading"></div>
+                <div class="computing-result computing_result"> computing... </div>
+                <div class="button_result find_result find-result">
+                    <div class="num_new_found num-found"> 0 </div> like minded people were found from <span class="num_processed"> 100 </span> checked.
+                </div>
+                {% comment %}
+                <div class="button_result clear_result clear-result">
+                    your like minded group was cleared.
+                </div>
+                {% endcomment %}
         </div>
         <div class="total-processed-count">
             <span class="total_found" data-num="{{ num_members }}"> {{ num_members }} </span> / <span class="total_processed"> {{ num_processed }} </span>
         </div>
     </div>
+    {% if match_friends_page %}
+        <div class="match-friends-lm-explanation">
+            <a class="clear-button like-minded-button clear_like_minded"> update </a>
+            <p class="lm-explanation">
+                Below are all the people on LoveGov who answered questions similarly to you.<br>
+                Every one of them shares atleast 15 questions with you and is atleast 75% similar.
+            </p>
+        </div>
+    {% endif %}
     <div class="like_minded_members like-minded-members">
         {% for user in members %}
             {% include 'site/pieces/avatar_href.html' with width="50" height="50" %}

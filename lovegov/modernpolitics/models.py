@@ -4896,12 +4896,13 @@ class Group(Content):
                     comparison = comparison.getTopicBucket(topic)
                 else:
                     comparison = comparison.getTotalBucket()
-                if comparison.getNumQuestions():
+                num_q = comparison.getNumQuestions()
+                if num_q:
                     result = comparison.getSimilarityPercent()
                     bucket = getBucket(result, bucket_list)
                     buckets[bucket]['num'] += 1
                     buckets[bucket]['u_ids'].append(x.id)
-                    if result == 100:
+                    if result == 100 and num_q >= MIN_NUM_Q_IDENTICAL:
                         identical += 1
                         identical_uids.append(x.id)
 

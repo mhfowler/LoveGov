@@ -277,6 +277,23 @@ div.match-wrapper {
       div.like-minded-bottom-header {
         margin-bottom:15px;
 
+        div.button-result {
+          margin-top: 10px;
+          margin-left:15px;
+          div.button_result {
+            position: relative;
+            float: left;
+            top: -3px;
+            left:0px;
+            &.clear-result {
+              margin-left: 85px;
+            }
+          }
+        }
+        div.total-processed-count {
+          margin-top:7px;
+        }
+
         div.like-minded-match-header {
           float:left;
           font-size:23px;
@@ -291,6 +308,41 @@ div.match-wrapper {
     div.histogram-main {
       div.feed-main div.feed-content-wrapper div.everything_loaded_wrapper {
         text-align:left;
+      }
+    }
+
+    div.match-friends-lm-explanation {
+      float: left;
+      width: 100%;
+      padding: 15px;
+      border: 1px dotted gray;
+      margin-bottom: 25px;
+      margin-top: 5px;
+
+      p.lm-explanation {
+        float:left;
+        width: 80%;
+        font-size: 17px;
+        margin-bottom:0px;
+      }
+
+      a.like-minded-button {
+        display:block;
+        padding:7px;
+        width:80px;
+        color:white;
+        text-transform:uppercase;
+        @include border-radius(7px);
+        margin-top: 7px;
+        text-align: center;
+        float: left;
+        margin-right: 25px;
+        margin-left: 10px;
+        background-color:$blue;
+        &:hover {
+          background-color:$blue-light;
+          text-decoration:none;
+        }
       }
     }
 

@@ -4387,9 +4387,9 @@ function findNewLikeMinded() {
                     like_minded_request_sending = false;
                     var returned = $.parseJSON(data);
 
-                    var like_minded_header = $(".like_minded_header");
+                    var like_minded_bottom = $(".like_minded_bottom");
                     // if on like minded page, update stuff visually
-                    if (like_minded_header.length != 0) {
+                    if (like_minded_bottom.length != 0) {
                         $(".computing_result").hide();
                         $(".find_loading").hide();
                         var num_new = returned.num_new_members;
