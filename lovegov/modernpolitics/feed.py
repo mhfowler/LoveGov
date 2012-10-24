@@ -158,7 +158,8 @@ def getQuestionItems(viewer, feed_ranking, feed_topic=None, only_unanswered=Fals
 
     # questions & check for p_id (filter by poll)
     if not poll:
-        questions = Question.objects.all()
+        viewer_subscriptions = viewer.getSubscriptions()
+        questions = Question.objects.all().filter(posted_to__in=viewer_subscriptions)
     else:
         questions = poll.questions.all()
     question_items=[]
