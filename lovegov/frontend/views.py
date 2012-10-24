@@ -29,6 +29,7 @@ def match(request, section=None, vals={}):
             return shortcuts.redirect(url)
 
     vals['show_welcome'] = show_welcome = viewer.show_welcome
+    vals['show_welcome'] = True
     if show_welcome:
         viewer.show_welcome = False
         viewer.save()

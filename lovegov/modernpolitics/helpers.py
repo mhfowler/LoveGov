@@ -633,10 +633,12 @@ def calculate_age(born):
 
 def generateMatchImage(obamaMatch,romneyMatch):
     filename = 'card'+str(obamaMatch)+'x'+str(romneyMatch)+'.png'
-    filepath = settings.STATIC_ROOT+'images/matchcards/'+filename
+    fpath = 'images/matchcards/'+filename
+    filepath = settings.STATIC_ROOT+fpath
+    urlpath = settings.STATIC_URL+fpath
     import os
     if os.path.isfile(filepath):
-        return filepath
+        return urlpath
     i=Image.new('RGB',(400,400),'white')
     if(romneyMatch > obamaMatch):
         template = 'romney_template'
@@ -662,4 +664,4 @@ def generateMatchImage(obamaMatch,romneyMatch):
     draw.text((obamaX,290), str(obamaMatch), fill="#EF503B", font=sonus72)
     draw.text((romneyX,290), str(romneyMatch), fill="#EF503B", font=sonus72)
     i.save(filepath,'PNG')
-    return filepath
+    return urlpath

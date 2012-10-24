@@ -52,7 +52,6 @@ div.match-wrapper {
         }
         div.match-link-text {
           text-align:center;
-          width:65px;
           color:$black;
           div.match-word {
             margin-top:3px;
@@ -86,6 +85,11 @@ div.match-wrapper {
       a.clicked {
         color:blue;
       }
+    }
+    img {
+      float: left;
+      height: 60px;
+      margin: 0 20px 0 10px;
     }
   }
 
