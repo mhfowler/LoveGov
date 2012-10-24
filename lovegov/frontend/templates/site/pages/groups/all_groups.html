@@ -2,13 +2,15 @@
 
 {% block home_header %}
 
-    <div class="browse-all">
+    {% comment %}
+        <div class="browse-all">
 
-        {% if not hide_intros %}
-            {% include 'site/pages/groups/introduction_groups_header.html' with intro_title="Join Groups" %}
-        {% endif %}
-
-    </div>
+            {% if not hide_intros %}
+                {% include 'site/pages/groups/introduction_groups_header.html' with intro_title="Join Groups" %}
+            {% endif %}
+    
+        </div>
+    {% endcomment %}
 
 {% endblock %}
 
