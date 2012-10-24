@@ -247,7 +247,7 @@ def responsesSortHelper(question_items, ranking):
             else:
                 to_return=them.created_when
             return to_return
-        question_items.sort(key=lambda x:recentComparison(x))
+        question_items.sort(key=lambda x:recentComparison(x), reverse=True)
     elif ranking == 'I':
         def importanceComparison(item):
             you = item['you']
