@@ -75,6 +75,7 @@ def getMatchPresidentialHTML(request, vals):
     vals['info'] = valsElection(viewer, election, {})
 
     valsQuestionsThreshold(vals)
+    getMainTopics(vals)
 
     focus_html =  ajaxRender('site/pages/match/match_presidential.html', vals, request)
     return focus_html

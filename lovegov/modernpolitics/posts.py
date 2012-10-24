@@ -2239,6 +2239,9 @@ def getQuestions(request, vals):
 
     vals['new_questions'] = not to_compare
 
+    for q in question_items:
+        q['question'].my_response = q.get('you')
+
     html = ajaxRender('site/pages/qa/feed_helper_questions.html', vals, request)
 
     everything_loaded = everythingLoadedHelper(request, vals, question_items)

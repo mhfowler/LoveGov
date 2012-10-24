@@ -7,7 +7,7 @@
             <a class="view-all-friends like-minded-bottom-label" href="{{ like_minded.getHistogramURL }}"> view all </a>
         {% else %}
             <div class="like-minded-match-header">
-                Who thinks like you on LoveGov?
+                <a href="/like_minded/" class="like-minded-link dummy_link do_ajax_link">Who thinks like you on LoveGov?</a>
             </div>
         {% endif %}
         <div class="button-result">
@@ -27,12 +27,13 @@
         </div>
     </div>
     {% if match_friends_page %}
-        <div class="match-friends-lm-explanation">
+        <div class="match-friends-lm-explanation dismissible_header">
             <a class="clear-button like-minded-button clear_like_minded"> update </a>
             <p class="lm-explanation">
                 Below are all the people on LoveGov who answered questions similarly to you.<br>
                 Every one of them shares atleast 15 questions with you and is atleast 75% similar.
             </p>
+            <a class="dismissible_x lm-x">X</a>
         </div>
     {% endif %}
     <div class="like_minded_members like-minded-members">
