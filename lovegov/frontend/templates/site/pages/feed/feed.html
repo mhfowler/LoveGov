@@ -13,6 +13,9 @@
         {% if single_item %} data-single_item="1" {% endif %}
         {% if like_minded_filter %} data-like_minded="" {% endif %}
         {% if agreement_ids %} data-agreement_ids="{{ agreement_ids }}" {% endif %}
+        {% if data_which %} data-which="{{ data_which }}" {% endif %}
+        {% if data_u_ids %} data-u_ids="{{ data_u_ids }}" {% endif %}
+        {% if data_g_id %} data-g_id="{{ data_g_id }}" {% endif %}
         >
 
     <!-- feed tutorial -->
@@ -98,9 +101,11 @@
     <div class="feed-content-wrapper">
         <div class="feed-content feed_content {% if not no_feed_rules %} feed-rules {% endif %}"></div>
 
-        <div class="feed-fetching-wrapper">
-            <div class="feed_fetching feed-fetching"></div>
-        </div>
+        {% if not no_fetching %}
+            <div class="feed-fetching-wrapper">
+                <div class="feed_fetching feed-fetching"></div>
+            </div>
+        {% endif %}
 
         {% if not no_load_more %}
             <div class="load-more load_more"> <p> load more </p></div>
@@ -113,17 +118,20 @@
             </div>
         {% endif %}
 
-        <div class="everything_loaded_wrapper">
-            <div class="reached_the_end everything-loaded-header everything_loaded_header">
-                You reached the end of the feed, so here's a politician.
-            </div>
-            <div class="nothing_there everything-loaded-header everything_loaded_header">
-                This feed doesn't have any content, so here's a picture of a politician.
-            </div>
-            <div class="everything_loaded_image_wrapper">
+        {% if not no_everything_loaded %}
+            <div class="everything_loaded_wrapper">
+                <div class="reached_the_end everything-loaded-header everything_loaded_header">
+                    You reached the end of the feed, so here's a politician.
+                </div>
+                <div class="nothing_there everything-loaded-header everything_loaded_header">
+                    This feed doesn't have any content, so here's a picture of a politician.
+                </div>
+                <div class="everything_loaded_image_wrapper">
 
+                </div>
             </div>
-        </div>
+        {% endif %}
+
     </div>
 
 </div>

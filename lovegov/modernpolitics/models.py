@@ -2551,10 +2551,14 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo, AnalyticsData):
         return content
 
     def filterContentOnlyMyContent(self, content):
-        my_content = self.getGroupSubscriptionContent()
-        my_content_ids = my_content.values_list("id", flat=True)
-        content = content.filter(id__in=my_content_ids)
+        my_subscriptions = self.getSubscriptions()
+        content = content.filter(posted_to__in=my_subscriptions)
         return content
+
+    def getGroupSubscriptionsQuestions(self):
+        viewer_subscriptions = self.getSubscriptions()
+        questions = Question.objects.filter(posted_to__in=viewer_subscriptions)
+        return questions
 
     #-------------------------------------------------------------------------------------------------------------------
     # Returns a list of all Users who are (confirmed) following this user.
@@ -4892,12 +4896,13 @@ class Group(Content):
                     comparison = comparison.getTopicBucket(topic)
                 else:
                     comparison = comparison.getTotalBucket()
-                if comparison.getNumQuestions():
+                num_q = comparison.getNumQuestions()
+                if num_q:
                     result = comparison.getSimilarityPercent()
                     bucket = getBucket(result, bucket_list)
                     buckets[bucket]['num'] += 1
                     buckets[bucket]['u_ids'].append(x.id)
-                    if result == 100:
+                    if result == 100 and num_q >= MIN_NUM_Q_IDENTICAL:
                         identical += 1
                         identical_uids.append(x.id)
 

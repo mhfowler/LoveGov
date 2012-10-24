@@ -326,13 +326,6 @@ def scriptCreateResponses(path):
     wb = open_workbook(path)
     sheet = wb.sheet_by_index(0)
 
-    print "Tags:"
-    print "======================"
-    print "+EE+ = Error"
-    print "+WW+ = Warning"
-    print "+II+ = Information"
-    print "======================"
-
     # For all cells in the spreadsheet
     for row in range(1,sheet.nrows):
         for column in range(2,sheet.ncols):
@@ -386,5 +379,5 @@ def scriptCreateResponses(path):
                 # Answer that mamma jamma
                 answerAction(politician,question,"PUB",answer_id)
 
-                print "+II+ Successfully answered question for " + politician_name[0]
+                #print "+II+ Successfully answered question for " + politician_name[0]
 

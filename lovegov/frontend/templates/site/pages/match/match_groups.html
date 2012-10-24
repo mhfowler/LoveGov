@@ -20,14 +20,9 @@
             {% endwith %}
         </div>
 
-        <div class="groups-list-wrapper">
+        <div class="groups-list-wrapper match-feed">
             {% if location %}
-                    <div class="local_groups_seed initialize_self"
-                         data-action="matchWithGroups"
-                         data-which="in_your_area">
-                        matching...
-                    </div>
-
+                    {% include 'site/pages/feed/feed_no_top.html' with special_feed="matchWithGroups" data_which="in_your_area" %}
             {% endif %}
         </div>
     </div>
@@ -38,12 +33,8 @@
         <div class="match-section-header">
             Which political party do you match best with?
         </div>
-        <div class="groups-list-wrapper">
-            <div class="best_matching_parties_seed initialize_self"
-                 data-action="matchWithGroups"
-                 data-which="best_matching_parties">
-                matching...
-            </div>
+        <div class="groups-list-wrapper match-feed">
+            {% include 'site/pages/feed/feed_no_top.html' with special_feed="matchWithGroups" data_which="best_matching_parties" %}
         </div>
     </div>
 

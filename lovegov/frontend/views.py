@@ -90,6 +90,7 @@ def getMatchPresidentialHTML(request, vals):
     vals['info'] = valsElection(viewer, election, {})
 
     valsQuestionsThreshold(vals)
+    getMainTopics(vals)
 
     focus_html =  ajaxRender('site/pages/match/match_presidential.html', vals, request)
     return focus_html
@@ -736,7 +737,7 @@ def likeMindedVals(request, vals):
     vals['num_processed'] = like_minded.processed.count()
 
     if LOCAL:
-        vals['members'] = UserProfile.objects.all()
+        vals['members'] = UserProfile.objects.all()[:10]
     else:
         vals['members'] = like_minded.members.all().order_by("-created_when")
 

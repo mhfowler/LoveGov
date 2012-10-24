@@ -35,7 +35,7 @@ def getFeedItems(viewer, alias, feed_ranking, feed_types, feed_start, num, like_
     else:
         content = getContentFromAlias(alias, viewer)
         if not content:
-            return []
+            return [], True
 
     # filter
     if feed_types:
@@ -52,8 +52,10 @@ def getFeedItems(viewer, alias, feed_ranking, feed_types, feed_start, num, like_
         content = sortHelper(content, feed_ranking, feed_type)
 
     # paginate
-    content = content[feed_start:feed_start+num]
-    return content
+    feed_end = feed_start + num
+    no_more_items = feed_end >= len(content)
+    content = content[feed_start:feed_end]
+    return content, no_more_items
 
 
 def getContentFromAlias(alias, viewer):
@@ -71,7 +73,7 @@ def getContentFromAlias(alias, viewer):
         content = Content.objects.filter(posted_to_id__in=elections_ids)
     elif alias ==  'my_groups':
         content = viewer.getGroupSubscriptionContent()
-    elif alias == 'representatives':
+    elif alias == 'representatives' or 'matchrepresentatives':
         representatives = viewer.getRepresentatives(location=viewer.temp_location)
         content = getLegislationFromCongressmen(representatives)
     elif alias == 'congress':
@@ -156,7 +158,7 @@ def getQuestionItems(viewer, feed_ranking, feed_topic=None, only_unanswered=Fals
 
     # questions & check for p_id (filter by poll)
     if not poll:
-        questions = Question.objects.all()
+        questions = viewer.getGroupSubscriptionsQuestions()
     else:
         questions = poll.questions.all()
     question_items=[]
@@ -245,7 +247,7 @@ def responsesSortHelper(question_items, ranking):
             else:
                 to_return=them.created_when
             return to_return
-        question_items.sort(key=lambda x:recentComparison(x))
+        question_items.sort(key=lambda x:recentComparison(x), reverse=True)
     elif ranking == 'I':
         def importanceComparison(item):
             you = item['you']
