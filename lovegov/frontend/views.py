@@ -21,7 +21,10 @@ def match(request, section=None, vals={}):
     if not section:
         section = viewer.getFirstNotCompletedMatchSection()
         if section:
-            url = '/match/' + section + '/'
+            if section == 'getInvolved':
+                url = "/home/"
+            else:
+                url = '/match/' + section + '/'
         if not section:
             url = '/home/'
             section = 'home'
@@ -73,6 +76,7 @@ def match(request, section=None, vals={}):
         progress_down = 'five-down'
     else:
         progress_down = 'all-down'
+
 
     vals['progress_down'] = progress_down
     vals['match_sections_completed'] = viewer.match_sections_completed
