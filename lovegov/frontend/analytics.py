@@ -13,6 +13,124 @@ import xlwt
 import xlutils
 
 #-----------------------------------------------------------------------------------------------------------------------
+# percentage analytics
+#-----------------------------------------------------------------------------------------------------------------------
+
+# users is an unordered list of users,
+# fun is a function which takes in a user and returns a number
+# resolution, is the percentage resolution we want to check at
+# RETURNS: list of tuples, (percent, #above)
+def getPercentageAnalyticsResults(users, fun, resolution=100):
+    for x in users:
+        x.analytics_result = fun(x)
+    users.sort(key=lambda x: x.analytics_result)
+    to_return = []
+    total_users = len(users)
+    users_increment = total_users / float(resolution)
+    percent_increment = 100 / resolution
+    users_index = 0
+    float_users_index = 0
+    percent = 100
+    while users_index < total_users:
+        c_user = users[users_index]
+        result = c_user.analytics_result
+        to_return.append((percent, result))
+        float_users_index += users_increment
+        users_index = int(float_users_index)
+        percent -= percent_increment
+    return to_return
+
+
+def getPercentageAnalyticsFunction(args_dict):
+    which = args_dict['which']
+    if which == 'time_on_site':
+        def getMinutesOnSite(user):
+            time_start = user.created_when
+            time_end = time_start + datetime.timedelta(days=1)
+            total_time, logged_in = user.getTimeOnSite(time_start, time_end)
+            total_minutes = total_time.total_seconds() / 60.0
+            return total_minutes
+        return getMinutesOnSite
+    elif which == 'num_answers':
+        def getNumAnswers(user):
+            return user.getView().responses.count()
+        return getNumAnswers
+
+
+def singlePercentageAnalytics(w_sheet, time_start=None, time_end=None, resolution=100):
+
+    # write time_start and time_end to top
+    if time_start:
+        dt = time_start.strftime('%m/%d/%y')
+        w_sheet.write(0,1, dt)
+    if time_end:
+        dt = time_start.strftime('%m/%d/%y')
+        w_sheet.write(1,1, dt)
+
+    # write resolutions to header
+    percentage_increment = 100 / resolution
+    c_percent = 100
+    c_col = 3
+    while c_percent > 0:
+        w_sheet.write(0,c_col, c_percent)
+        c_col += 1
+        c_percent -= percentage_increment
+
+    # users before time start and time end
+    users = filterByCreatedWhen(UserProfile.objects.filter(ghost=False), time_start, time_end)
+    users = list(users)
+
+    PERCENTAGE_ANALYTICS = [
+        {"which": "time_on_site", "description": "Minutes spent on site on first day after registering."},
+        {"which": "num_answers", "description": "Number of questions answered."}
+    ]
+
+    # for each analytic, write description, then get results, and then write results to sheet
+    c_row = 1
+    for args_dict in PERCENTAGE_ANALYTICS:
+
+        w_sheet.write(c_row,2, args_dict['description'])
+
+        fun = getPercentageAnalyticsFunction(args_dict)
+        results = getPercentageAnalyticsResults(users, fun, resolution)
+        c_col = 3
+        for r in results:
+            percent = r[0]
+            result =r[1]
+            w_sheet.write(c_row,c_col, result)
+
+        c_row += 1
+
+
+def percentageAnalytics(time_tuples, resolution, output_file):
+
+    from xlutils import copy
+
+    percentage_analytics_template_filepath = os.path.join(PROJECT_PATH, 'logging/metrics/percentage_analytics_template.xls')
+
+    rb = open_workbook(percentage_analytics_template_filepath,formatting_info=True)
+    wb = xlutils.copy.copy(rb) #a writable copy (I can't read values out of this, only write to it)
+
+    sheet_index = 0
+
+    # for each time tuple, write results to a separate sheet
+    for tuple in time_tuples:
+
+        time_start = tuple[0]
+        time_end = tuple[1]
+
+        dt = time_start.strftime('%m/%d/%y')
+        print "analyzing for: " + str(dt)
+
+        w_sheet = wb.add_sheet(str(dt).replace("/", "."))
+        singlePercentageAnalytics(w_sheet, time_start=time_start, time_end=time_end, resolution=resolution)
+
+        sheet_index += 1
+
+    # save it
+    wb.save(output_file)
+
+#-----------------------------------------------------------------------------------------------------------------------
 # who has done what? analytics
 #-----------------------------------------------------------------------------------------------------------------------
 def initializeAnalyticsTasks():

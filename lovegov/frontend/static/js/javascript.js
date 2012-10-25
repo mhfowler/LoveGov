@@ -4862,7 +4862,7 @@ bind('.see_congratulations','click', function() {
 
 bind('.first_answer_questions','click', function() {
     $('body').animate({
-        scrollTop: 470
+        scrollTop: 800
     }, 1000);
 });
 
