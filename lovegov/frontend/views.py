@@ -34,6 +34,7 @@ def match(request, section=None, vals={}):
         viewer.show_welcome = False
         viewer.save()
 
+
     if section == 'presidential':
         match_body_html = getMatchPresidentialHTML(request, vals)
         viewer.completeMatchSection("P")
@@ -133,7 +134,9 @@ def framedResponse(request, html, url, vals={}, rebind="home"):
         return HttpResponse(json.dumps(to_return))
     else:
         vals['center'] = html
-        vals['notifications_num'] = vals['viewer'].getNotifications(new=True).count()
+        viewer = vals.get("viewer")
+        if viewer:
+            vals['notifications_num'] = viewer.getNotifications(new=True).count()
         frame(request, vals)
         return renderToResponseCSRF(template='site/frame/frame.html', vals=vals, request=request)
 

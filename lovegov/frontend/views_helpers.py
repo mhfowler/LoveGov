@@ -196,9 +196,10 @@ def valsQuestionsThreshold(vals):
 # gets frame values and puts in dictionary.
 #-----------------------------------------------------------------------------------------------------------------------
 def frame(request, vals):
-    userProfile = vals['viewer']
-    vals['new_notification_count'] = userProfile.getNumNewNotifications()
-    vals['firstLogin'] = userProfile.checkFirstLogin()
+    userProfile = vals.get('viewer')
+    if userProfile:
+        vals['new_notification_count'] = userProfile.getNumNewNotifications()
+        vals['firstLogin'] = userProfile.checkFirstLogin()
 
 #-----------------------------------------------------------------------------------------------------------------------
 # gets values for right side bar and puts in dictionary

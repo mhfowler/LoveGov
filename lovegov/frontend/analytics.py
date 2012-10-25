@@ -13,6 +13,139 @@ import xlwt
 import xlutils
 
 #-----------------------------------------------------------------------------------------------------------------------
+# percentage analytics
+#-----------------------------------------------------------------------------------------------------------------------
+
+# users is an unordered list of users,
+# fun is a function which takes in a user and returns a number
+# resolution, is the percentage resolution we want to check at
+# RETURNS: list of tuples, (percent, #above)
+def getPercentageAnalyticsResults(users, fun, resolution=100):
+
+    for x in users:
+        x.analytics_result = fun(x)
+    users.sort(key=lambda x: x.analytics_result)
+
+    to_return = []
+    total_users = len(users)
+
+    indicies = []
+    for x in range(0,resolution):
+        index = int(total_users * x / float(resolution))
+        indicies.append(index)
+    indicies.append(total_users - 1)
+
+    if len(indicies) != (resolution+1):
+        print "1 off error :("
+
+    c_percent = 100
+    percent_increment = 100 / resolution
+    for index in indicies:
+        c_user = users[index]
+        result = c_user.analytics_result
+        to_return.append((c_percent, result))
+        c_percent -= percent_increment
+
+    return to_return
+
+
+def getPercentageAnalyticsFunction(args_dict):
+    which = args_dict['which']
+    if which == 'time_on_site':
+        def getMinutesOnSite(user):
+            time_start = user.created_when
+            time_end = time_start + datetime.timedelta(days=1)
+            total_time, logged_in = user.getTimeOnSite(time_start, time_end)
+            total_minutes = total_time.total_seconds() / 60.0
+            return total_minutes
+        return getMinutesOnSite
+    elif which == 'num_answers':
+        def getNumAnswers(user):
+            return user.getView().responses.count()
+        return getNumAnswers
+
+
+def singlePercentageAnalytics(w_sheet, starting_row, time_start=None, time_end=None, resolution=100):
+
+    # write time_start and time_end to top
+    if time_start:
+        dt = time_start.strftime('%m/%d/%y')
+        w_sheet.write(starting_row,0, dt)
+    if time_end:
+        dt = time_end.strftime('%m/%d/%y')
+        w_sheet.write(starting_row,1, dt)
+
+    # users before time start and time end
+    users = filterByCreatedWhen(UserProfile.objects.filter(ghost=False), time_start, time_end)
+    users = list(users)
+
+    # write number of users to sheet
+    num_users = len(users)
+    w_sheet.write(starting_row,2, num_users)
+
+    PERCENTAGE_ANALYTICS = [
+        {"which": "time_on_site", "description": "Minutes spent on site on first day after registering."},
+        {"which": "num_answers", "description": "Number of questions answered."}
+    ]
+
+    # for each analytic, write description, then get results, and then write results to sheet
+    c_row = starting_row + 1
+    for args_dict in PERCENTAGE_ANALYTICS:
+
+        w_sheet.write(c_row,3, args_dict['description'])
+
+        fun = getPercentageAnalyticsFunction(args_dict)
+        results = getPercentageAnalyticsResults(users, fun, resolution)
+        c_col = 4
+        for r in results:
+            percent = r[0]
+            result =r[1]
+            w_sheet.write(c_row,c_col, result)
+            c_col += 1
+
+        c_row += 1
+
+    return c_row
+
+
+def percentageAnalytics(time_tuples, resolution, output_file):
+
+    from xlutils import copy
+
+    percentage_analytics_template_filepath = os.path.join(PROJECT_PATH, 'logging/metrics/percentage_analytics_template.xls')
+
+    rb = open_workbook(percentage_analytics_template_filepath,formatting_info=True)
+    wb = xlutils.copy.copy(rb) #a writable copy (I can't read values out of this, only write to it)
+
+    # write to 1 sheet
+    w_sheet = wb.get_sheet(0)
+
+    # write resolutions to header
+    percentage_increment = 100 / resolution
+    c_percent = 100
+    c_col = 3
+    while c_percent >= 0:
+        w_sheet.write(0,c_col, c_percent)
+        c_col += 1
+        c_percent -= percentage_increment
+
+
+    # for each time tuple, write results farther down the sheet
+    starting_row = 1
+    for tuple in time_tuples:
+
+        time_start = tuple[0]
+        time_end = tuple[1]
+
+        dt = time_start.strftime('%m/%d/%y')
+        print "analyzing for: " + str(dt)
+
+        starting_row = singlePercentageAnalytics(w_sheet, starting_row, time_start=time_start, time_end=time_end, resolution=resolution)
+
+    # save it
+    wb.save(output_file)
+
+#-----------------------------------------------------------------------------------------------------------------------
 # who has done what? analytics
 #-----------------------------------------------------------------------------------------------------------------------
 def initializeAnalyticsTasks():
