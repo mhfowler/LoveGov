@@ -33,9 +33,11 @@
         <input type="checkbox" class="only-unanswered-checkbox only_unanswered" {% if only_unanswered %} checked="checked" {% endif %} />
     {% endif %}
 
-    {% if not no_help_button %}
-        {% include 'site/pages/helper_bubbles/helper_robot.html' with tutorial="qa" %}
-    {% endif %}
+    {% comment %}
+        {% if not no_help_button %}
+            {% include 'site/pages/helper_bubbles/helper_robot.html' with tutorial="qa" %}
+        {% endif %}
+    {% endcomment %}
 
 {% endblock %}
 

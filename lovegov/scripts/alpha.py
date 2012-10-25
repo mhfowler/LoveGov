@@ -11,6 +11,7 @@
 from lovegov.scripts.createPresidentialCandidates import answerQuestions
 from lovegov.scripts.createPresidentialCandidates import createPoliticianProfiles
 from lovegov.modernpolitics.backend import *
+from lovegov.modernpolitics.recalculate import *
 from lovegov.base_settings import PROJECT_PATH
 from django.template.loader import render_to_string
 
@@ -19,6 +20,21 @@ from django.template.loader import render_to_string
 from xlrd import open_workbook
 
 ########################################################################################################################
+
+def scriptReparseCongressAnswers():
+
+    print "+SS+ DELETING ALL GHOST RESPONSES"
+    deleteAllGhostResponses()
+
+    print "+SS+ REANSWERING QUESTIONS BASED ON LEGISLATION"
+    scriptCreateCongressAnswers()
+
+    print "+SS+ REANSWERING SPECIFIC STATES MY MANUAL RESEARCH"
+    scriptAnswerFromManualResearch()
+
+    print "finished script!"
+
+
 #-----------------------------------------------------------------------------------------------------------------------
 #   generates Politician objects for each candidates in spreadsheet
 #   answers questions for them
@@ -29,6 +45,17 @@ def scriptCreatePresidentialCandidates(args=None):
     sheet = wb.sheet_by_index(0)
     createPoliticianProfiles(sheet)
     answerQuestions(sheet)
+
+
+def scriptAnswerFromManualResearch():
+
+    manual_research_folder = os.path.join(PROJECT_PATH, 'frontend/excel/manual_research/')
+    manual_research_file_names = os.listdir(manual_research_folder)
+    for x in manual_research_file_names:
+        path = os.path.join(manual_research_folder, x)
+        print enc("+SS+ creating responses based on file: " + path)
+        scriptCreateResponses(path)
+
 
 def scriptCreateCongressAnswers(args=None):
     # Open the spreadsheet and shit
@@ -292,19 +319,14 @@ def scriptCheckPoliticians(args=None):
             print "Found " + name
 
 
-def scriptCreateResponses(args=None):
-    path = os.path.join(PROJECT_PATH, 'frontend/excel/' + args[0])
+
+
+def scriptCreateResponses(path):
+    print "path: " + path
     wb = open_workbook(path)
     sheet = wb.sheet_by_index(0)
 
-    print "Tags:"
-    print "======================"
-    print "+EE+ = Error"
-    print "+WW+ = Warning"
-    print "+II+ = Information"
-    print "======================"
-
-# For all cells in the spreadsheet
+    # For all cells in the spreadsheet
     for row in range(1,sheet.nrows):
         for column in range(2,sheet.ncols):
             # Get politician Name
@@ -336,10 +358,7 @@ def scriptCreateResponses(args=None):
                 print "+WW+ Successfully created and confirmed " + name
                 politician = politician.user_profile
 
-            # Get and print answer text
-#            answer_text = sheet.cell(row,column).value
-#            answer_text = answer_text.encode('utf-8','ignore')
-#            print answer_text
+            # get answer id
             answer_id = sheet.cell(row,column).value
 
             # Check for answer text
@@ -360,5 +379,5 @@ def scriptCreateResponses(args=None):
                 # Answer that mamma jamma
                 answerAction(politician,question,"PUB",answer_id)
 
-                print "+II+ Successfully answered question for " + politician_name[0]
+                #print "+II+ Successfully answered question for " + politician_name[0]
 

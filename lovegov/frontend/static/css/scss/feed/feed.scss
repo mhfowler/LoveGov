@@ -199,6 +199,7 @@ a.view-all {
   padding:8px;
   color:$black;
   &:hover {
+    text-decoration:none;
     background-color:$dark-gray;
   }
 }

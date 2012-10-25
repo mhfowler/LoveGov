@@ -1,7 +1,7 @@
 {% extends 'site/pages/home/focus.html' %}
 
 {% block home_header %}
-
+    {% comment %}
     {% if see_congratulations %}
         {% include 'site/pages/dismissible_headers/congratulations_header.html' %}
     {% elif not hide_intros %}
@@ -11,6 +11,7 @@
             {% include 'site/pages/dismissible_headers/dismissible_header_switch.html' %}
         </div>
     {% endif %}
+    {% endcomment %}
 
 {% endblock %}
 

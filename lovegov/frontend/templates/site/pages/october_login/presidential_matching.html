@@ -40,12 +40,32 @@
 
     <div class="sign-up-wrapper sign_up_wrapper">
         <div class="presidential-matching-finished presidential_matching_finished">
-            <p>
-                To save your answers and continue improving your matches, you'll need to create an account. You'll get to
-                compare yourself with Joe Biden and Paul Ryan, local candidates in {{ local_location|safe }}, and other LoveGov users.
-                You'll also get to see detailed break-downs of where your views differ with each candidate by topic. <strong>Signing up is fast and free.</strong>
+                To save your answers and continue improving your matches, you'll need to create an account.
+            <div style="float: left; width: 60%">
+                <p style="font-size: 40px; margin-top: 20px;">Get matched with:</p>
+                <ul>
+                    <li>Local and national political candidates
+                    <li>Current members of Congress</li>
+                    <li>Other LoveGov users - friends, groups, and strangers</li>
+                <p style="margin-top:40px;"><strong>Signing up is fast and free.</strong></p>
 
-            </p>
+            </div>
+            <div style="float: left; width:40%; text-align:center; font-size: 12px; margin-top: 20px">
+                <div class="login-candidate"><img src="{{ STATIC_URL }}/images/presidentialCandidates/johnson.jpg" title="Gary Johnson"><br>Gary Johnson</div>
+                <div class="login-candidate"><img src="{{ STATIC_URL }}/images/presidentialCandidates/biden.jpg" title="Joe Biden"><br>Joe Biden</div>
+                {% if local_candidate1 %}
+                    <div class="login-candidate">{% include 'site/pieces/avatar.html' with user=local_candidate1 height=125px hoveroff=1 naked=1 %}<br>{{ local_candidate1.get_name }}</div>
+                {% else %}
+                    <div class="login-candidate"><img src="{{ STATIC_URL }}/images/presidentialCandidates/goode.jpg" title="Virgil Goode"><br>Virgil Goode</div>
+                {% endif %}
+                <div class="login-candidate"><img src="{{ STATIC_URL }}/images/presidentialCandidates/stein.jpg" title="Jill Stein"><br>Jill Stein</div>
+                <div class="login-candidate"><img src="{{ STATIC_URL }}/images/presidentialCandidates/ryan.jpg" title="Paul Ryan"><br>Paul Ryan</div>
+                {% if local_candidate2 %}
+                    <div class="login-candidate">{% include 'site/pieces/avatar.html' with user=local_candidate2 height=125px hoveroff=1 naked=1 %}<br>{{ local_candidate2.get_name }}</div>
+                {% else %}
+                    <div class="login-candidate"><img src="{{ STATIC_URL }}/images/presidentialCandidates/paul.jpg" title="Ron Paul"><br>Virgil Goode</div>
+                {% endif %}
+            </div>
         </div>
 
         {% include 'site/pages/october_login/sign_up.html' %}

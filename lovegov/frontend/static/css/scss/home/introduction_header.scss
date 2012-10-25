@@ -85,6 +85,58 @@ div.introduction-header {
 
   width:100%;
 
+  div.welcome-header {
+    float:left;
+    width:100%;
+    border: 1px dotted $light-gray;
+    padding: 20px;
+    margin-bottom: 20px;
+    margin-top: 10px;
+
+    div.lovegov-robot {
+      float:left;
+    }
+
+    div.right-of-picture {
+      float:left;
+      width:800px;
+
+      div.top-text {
+        float:left;
+        width:100%;
+        div.welcome-header-header {
+          float:left;
+          font-size: 30px;
+          margin-left: 30px;
+          margin-top: 0px;
+        }
+        a.hide-intros {
+          float: left;
+          margin-top: 11px;
+          margin-left: 31px;
+        }
+        a.x-button {
+          display:none;
+          float:right;
+          color:$black;
+          font-size:24px;
+          &:hover {
+            color:$red;
+          }
+        }
+      }
+
+      div.welcome-paragraph {
+        float:left;
+        width:100%;
+        margin-top:5px;
+        font-size:16px;
+        padding-left:33px;
+      }
+
+    }
+  }
+
   div.where-am-i {
 
     width: 475px;
@@ -96,18 +148,19 @@ div.introduction-header {
       div.lovegov-robot {
         float:left;
       }
-      div.where-am-i-text {
-        float:left;
-        font-size: 30px;
-        margin-left: 30px;
-        margin-top: 16px;
-      }
       a.hide-intros {
         float: left;
         margin-top: 27px;
         margin-left: 31px;
       }
     }
+    div.where-am-i-text {
+      float:left;
+      font-size: 30px;
+      margin-left: 30px;
+      margin-top: 16px;
+    }
+
     div.where-am-i-content {
       float:left;
       width:100%;

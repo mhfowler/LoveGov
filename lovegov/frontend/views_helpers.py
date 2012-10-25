@@ -41,7 +41,7 @@ def loginRedirectToPage(request, viewer, to_page):
 
     num_logins = viewer.num_logins
     if not num_logins:
-        to_page = '/welcome/'
+        to_page = '/'
     viewer.incrementNumLogins()
 
     viewer.updateHotFeedIfOld()
@@ -196,9 +196,10 @@ def valsQuestionsThreshold(vals):
 # gets frame values and puts in dictionary.
 #-----------------------------------------------------------------------------------------------------------------------
 def frame(request, vals):
-    userProfile = vals['viewer']
-    vals['new_notification_count'] = userProfile.getNumNewNotifications()
-    vals['firstLogin'] = userProfile.checkFirstLogin()
+    userProfile = vals.get('viewer')
+    if userProfile:
+        vals['new_notification_count'] = userProfile.getNumNewNotifications()
+        vals['firstLogin'] = userProfile.checkFirstLogin()
 
 #-----------------------------------------------------------------------------------------------------------------------
 # gets values for right side bar and puts in dictionary
@@ -457,7 +458,7 @@ def getQuestionStats(vals, poll=None):
         vals['poll'] = poll
         questions = poll.questions.all()
     else:
-        questions = Question.objects.all()
+        questions = viewer.getGroupSubscriptionsQuestions()
     for t in getMainTopics():
         stat = {'topic':t}
         q_ids = questions.filter(main_topic=t).values_list('id', flat=True)
@@ -512,6 +513,7 @@ def getGroupTuples(viewer, question, response):
 # fill dictionary for a particular group
 #-----------------------------------------------------------------------------------------------------------------------
 def valsGroup(viewer, group, vals):
+
     # Set group and group comparison
     vals['group'] = group
     comparison = group.getComparison(viewer)
@@ -670,7 +672,7 @@ def valsRepsHeader(vals):
     congressmen = viewer.getRepresentatives(location)
 
     if LOCAL and location:
-        bush = getUser("George Bush")
+        bush = viewer
         congressmen = [bush, bush, bush]
     vals['congressmen'] = congressmen
     for x in congressmen:

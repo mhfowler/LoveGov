@@ -1,0 +1,18 @@
+<div class="match-friends">
+
+    <div class="match-section-header">
+        <span class="header-text"> How do you match with your friends? </span>
+        {% if not viewer.facebook_id %}
+            <a href="/fb/redirect/fb/connect/" class="import-friends"> import friends from facebook </a>
+        {% endif %}
+    </div>
+
+    <div class="people-list-wrapper match-feed">
+        {% include 'site/pages/feed/feed_friends.html' with special_feed="matchWithPeople" %}
+    </div>
+
+    <div class="match-like-minded-wrapper">
+        {% include 'site/pages/like_minded/like_minded_bottom.html' with match_friends_page=1 %}
+    </div>
+
+</div>

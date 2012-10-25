@@ -122,6 +122,37 @@ def fbLogin(request, vals={}, refresh=False):
         return user_prof
 
 
+
+
+def connectWithFacebook(request, to_page="/match/friends/", vals={}):
+
+    viewer = vals['viewer']
+
+    me = fbGet(request, 'me')
+
+    if not me: #If there's no access token
+        raise LGException(enc("fb connect: no me returned by fb for " + viewer.get_name()))
+
+    elif 'error' in me: #If there's
+        raise LGException(enc("fb connect: fb error for " + viewer.get_name()))
+
+    else:
+        fb_id = me['id']
+        already = UserProfile.objects.filter(facebook_id=fb_id)
+        if already:
+            raise LGException(enc(viewer.get_name() + " tried to connect profile with fb account that was already connected to some other profile. " + str(fb_id)))
+        else:
+            viewer.facebook_id = fb_id
+            viewer.refreshFB(me)
+            fbMakeFriends(request, vals)
+            if not viewer.profile_image:
+                temp_file = saveFBProfPic(request)
+                viewer.setProfileImage(file(temp_file))
+            viewer.save()
+            return shortcuts.redirect("/login" + to_page.replace("/login/", "/"))
+
+
+
 #-----------------------------------------------------------------------------------------------------------------------
 # Get something from facebook api.
 #-----------------------------------------------------------------------------------------------------------------------

@@ -287,7 +287,7 @@ div.expand-info-wrapper {
   width:100%;
   float:left;
   span.dotted-line {
-    width:90%;
+    width:89%;
     border-bottom:1px dotted $dark-gray;
     height:11px;
     float:left;
@@ -500,10 +500,12 @@ a.section_title.clicked {
     overflow:hidden;
 
     a.create-link {
-      float:right;
+      float:left;
       font-size: 12px;
       margin-right:50px;
       padding-right:5px;
+      margin-top: 5px;
+      margin-left: 13px;
     }
 
     div.create-wrapper {
@@ -517,6 +519,7 @@ a.section_title.clicked {
   div.invite-friends-sidebar {
     margin-top:20px;
     margin-bottom:25px;
+    display:none;
     //min-height:305px;
   }
 

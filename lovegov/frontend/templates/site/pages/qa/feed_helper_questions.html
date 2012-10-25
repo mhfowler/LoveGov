@@ -1,5 +1,17 @@
-{% for x in question_items %}
-    {% with question=x.question your_response=x.you compare_responses=x.compare_responses  first_question=forloop.first %}
-        {% include 'site/pages/qa/question_stub.html' %}
-    {% endwith %}
-{% endfor %}
+{% if not new_questions %}
+
+    {% for x in question_items %}
+        {% with question=x.question your_response=x.you compare_responses=x.compare_responses  first_question=forloop.first %}
+            {% include 'site/pages/qa/question_stub.html' %}
+        {% endwith %}
+    {% endfor %}
+
+{% else %}
+
+    {% for x in question_items %}
+        {% with content=x.question my_vote=x.my_vote first_item=forloop.first %}
+            {% include "site/pages/feed/feed_items/question_item.html" %}
+        {% endwith %}
+    {% endfor %}
+
+{% endif %}

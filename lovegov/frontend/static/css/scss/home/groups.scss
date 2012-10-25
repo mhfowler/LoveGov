@@ -163,6 +163,7 @@ div.like-minded-header {
           background-color:$blue;
           &:hover {
             background-color:$blue-light;
+            text-decoration:none;
           }
         }
       }
@@ -209,84 +210,87 @@ div.like-minded-header {
         }
       }
     }
-    div.like-minded-bottom {
-      margin-top: 12px;
-      width:100%;
-      float:left;
-      border-top:1px solid $gray;
-      div.like-minded-bottom-header {
-        margin-top:6px;
-        width:100%;
-        height: 30px;
-        float:left;
-        div.members-header {
-          float:left;
-          font-size: 20px;
-        }
-        a.view-all-friends {
-          float:left;
-          margin-left: 15px;
-          margin-top: 4px;
-        }
-        div.button-result {
-          float:left;
-          margin-top: 5px;
-          margin-left: 40px;
-          div.find-result {
-            display:none;
-            color:green;
-            position: absolute;
-            left: 235px;
-            margin-left:30px;
-            div.num-found {
-              @include inline-block;
-            }
-            &.toggle {
-              color:blue;
-            }
-          }
-          div.clear-result {
-            display:none;
-            color:$red;
-            position: absolute;
-            left: 235px;
-          }
-          div.find-loading {
-            @include staticImage("/images/gifs/ajax-loader.gif");
-            width: 15px;
-            height: 15px;
-            background-size: 15px 13px;
-            background-repeat: no-repeat;
-            display:none;
-            margin-left:40px;
-            float:left;
-          }
-          div.computing-result {
-            float:left;
-            margin-left:40px;
-            margin-top: -3px;
-            display:none;
-          }
-        }
-        div.total-processed-count {
-          float:right;
-          margin-top:6px;
-        }
-      }
-      div.like-minded-members {
-        float:left;
-        width:100%;
-        a.href-avatar {
-          float:left;
-          margin-right: 20px;
-          margin-bottom: 15px;
-          margin-top: 2px;
-        }
-      }
-    }
   }
 
   div.no-members {
     margin-top:10px;
+  }
+}
+
+
+
+div.like-minded-bottom {
+  margin-top: 12px;
+  width:100%;
+  float:left;
+  border-top:1px solid $gray;
+  div.like-minded-bottom-header {
+    margin-top:6px;
+    width:100%;
+    height: 30px;
+    float:left;
+    div.members-header {
+      float:left;
+      font-size: 20px;
+    }
+    a.view-all-friends {
+      float:left;
+      margin-left: 15px;
+      margin-top: 4px;
+    }
+    div.button-result {
+      float:left;
+      margin-top: 5px;
+      margin-left: 40px;
+      div.find-result {
+        display:none;
+        color:green;
+        position: absolute;
+        left: 235px;
+        margin-left:30px;
+        div.num-found {
+          @include inline-block;
+        }
+        &.toggle {
+          color:blue;
+        }
+      }
+      div.clear-result {
+        display:none;
+        color:$red;
+        position: absolute;
+        left: 235px;
+      }
+      div.find-loading {
+        @include staticImage("/images/gifs/ajax-loader.gif");
+        width: 15px;
+        height: 15px;
+        background-size: 15px 13px;
+        background-repeat: no-repeat;
+        display:none;
+        margin-left:40px;
+        float:left;
+      }
+      div.computing-result {
+        float:left;
+        margin-left:40px;
+        margin-top: -3px;
+        display:none;
+      }
+    }
+    div.total-processed-count {
+      float:right;
+      margin-top:6px;
+    }
+  }
+  div.like-minded-members {
+    float:left;
+    width:100%;
+    a.href-avatar {
+      float:left;
+      margin-right: 20px;
+      margin-bottom: 15px;
+      margin-top: 2px;
+    }
   }
 }

@@ -1,0 +1,12 @@
+{% for x in groups_info %}
+
+    <div class="group-item-wrapper">
+        <div class="num-label">
+            {{ x.num }}
+        </div>
+        {% with info=x.info group=x.group  %}
+            {% include 'site/pages/group/group_header.html' with info_height="113px" %}
+        {% endwith %}
+    </div>
+
+{% endfor %}

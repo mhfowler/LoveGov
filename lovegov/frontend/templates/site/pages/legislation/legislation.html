@@ -47,7 +47,7 @@
             <span>sponsor</span>
         </div>
     </div>
-    <div class="feed_button search_button search-button">
+    <div class="get_legislation_feed_button search_button search-button">
         <h6 class="no-hover">
             search
         </h6>
@@ -63,11 +63,8 @@
 </div>
 <div class="filter-results">
     <div class="results-heading-">
-        <h6 class="no-hover">
-            results:
-        </h6>
         <div class="legislation-feed-wrapper">
-
+            {% include 'site/pages/legislation/feed_legislation.html' with special_feed="getLegislation" %}
         </div>
     </div>
 </div>

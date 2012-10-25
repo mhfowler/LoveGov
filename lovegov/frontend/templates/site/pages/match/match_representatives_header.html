@@ -1,0 +1,46 @@
+<div class="representatives-header">
+
+    <div class="displayed_wrapper">
+
+        <div class="match-section-header"> How do you compare with your state representatives? </div>
+
+        <div class="below-match-section-header" {% if not congressmen %} style="display:none" {% endif %}>
+            <div class="reps-where"> {{ location.state }} [District {{ location.district }}] </div>
+
+            <span class="not-your-district"> not your district? </span>
+            <a class="enter-new-address enter_new_address dummy_link">
+                enter a different address.
+            </a>
+        </div>
+
+        <div class="dismissible_wrapper">
+            {% with dismissible_hide=congressmen %}
+                {% include 'site/pages/politicians/representatives_dismissible_header.html' %}
+            {% endwith %}
+        </div>
+
+        <div class="reps-wrapper">
+            {% for user in congressmen %}
+                <div class="congressman-wrapper {% if forloop.first %} first {% endif %}">
+                    {% include 'site/pages/elections/election_card.html' %}
+                </div>
+            {% endfor %}
+        </div>
+
+        <div class="google-maps-wrapper">
+            <div id="map_canvas" class="google-map"> </div>
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+    rebind="representatives";
+    {% if state and district and latitude and longitude %}
+        reps_latitude = {{ latitude }};
+        reps_longitude = {{ longitude }};
+        reps_state = "{{ state }}";
+        reps_district = {{ district }};
+    {% endif %}
+</script>

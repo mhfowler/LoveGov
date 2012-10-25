@@ -1,37 +1,37 @@
-<!-- discover / match hub -->
-{% comment %}
-{% include 'site/pages/match/match_intro.html' %}
-{% endcomment %}
-<!-- match boxes -->
+<div class="match-wrapper">
 
-<div class="match-links-wrapper">
+    {% if show_welcome %}
+        {% include 'site/pages/match/match_introduction_header.html' with no_dismissible_x=1 %}
+    {% endif %}
 
-    <a class="match-box left" href="/congress/histogram/">
-        <span class="match-box-text"> Match with congress </span>
-    </a>
+    <div class="match-header-wrapper">
 
-    <a class="match-box middle" href="/representatives/">
-        <span class="match-box-text"> Match with reps </span>
-    </a>
+        <div class="match-progress-wrapper"><div class="match-progress {{ progress_down }}"></div></div>
 
-    <a class="match-box right" href="/friends/">
-        <span class="match-box-text"> Match with friends </span>
-    </a>
+        <a href="/match/presidential">
+        <div class="heart-wrapper">
+        </div>
+        </a>
 
+        {% include 'site/pages/match/match_header_link.html' with match_link_url="/match/presidential/" match_link_text="Presidents" match_link_num=1 match_char="P" %}
 
-    <a class="match-box left" href="/like_minded/">
-        <span class="match-box-text"> Find like minded </span>
-    </a>
+        {% include 'site/pages/match/match_header_link.html' with match_link_url="/match/representatives/" match_link_text="My Reps" match_link_num=2 match_char="R" %}
 
-    <a class="match-box middle " href="/elections/">
-        <span class="match-box-text"> Find elections </span>
-    </a>
+        {% include 'site/pages/match/match_header_link.html' with match_link_url="/match/groups/" match_link_text="Groups" match_link_num=3 match_char="G" %}
 
-    <a class="match-box right" href="/groups/">
-        <span class="match-box-text"> Find groups </span>
-    </a>
+        {% include 'site/pages/match/match_header_link.html' with match_link_url="/match/friends/" match_link_text="Friends" match_link_num=4 match_char="F" %}
 
-    <div style="clear:both;"></div>
+        {% include 'site/pages/match/match_header_link.html' with match_link_url="/match/congress/" match_link_text="Congress" match_link_num=5 last_link=1 match_char="C" %}
+
+        <a class="dummy_link home_link match_link get-involved" href="/home/">
+                <div class="glyphicon-sprite sprite-glyphicon_355_announcement-png" style="display:inline-block; margin-right: 10px;"></div>Get involved
+        </a>
+
+        <div style="clear:both;"></div>
+    </div>
+
+    <div class="match-body-wrapper">
+        {{ match_body_html }}
+    </div>
 
 </div>
-

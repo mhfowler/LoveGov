@@ -11,6 +11,107 @@ from lovegov.frontend.views_helpers import *
 from pprint import pprint
 from collections import OrderedDict
 
+######## new match pages
+
+def match(request, section=None, vals={}):
+
+    viewer = vals['viewer']
+
+    url = None
+    if not section:
+        section = viewer.getFirstNotCompletedMatchSection()
+        if section:
+            if section == 'getInvolved':
+                url = "/home/"
+            else:
+                url = '/match/' + section + '/'
+        if not section:
+            url = '/home/'
+            section = 'getInvolved'
+        if not request.is_ajax():
+            return shortcuts.redirect(url)
+
+
+    vals['show_welcome'] = show_welcome = viewer.show_welcome
+    if show_welcome:
+        viewer.show_welcome = False
+        viewer.save()
+
+
+    if section == 'presidential':
+        match_body_html = getMatchPresidentialHTML(request, vals)
+        viewer.completeMatchSection("P")
+    elif section == 'representatives':
+        match_body_html = getRepresentativesHTML(request, vals)
+        viewer.completeMatchSection("R")
+    elif section == 'friends':
+        match_body_html = getMatchFriendsHTML(request, vals)
+        viewer.completeMatchSection("F")
+    elif section == 'groups':
+        match_body_html = getMatchGroupsHTML(request, vals)
+        viewer.completeMatchSection("G")
+    elif section == 'congress':
+        vals['match_with_congress'] = 1
+        match_body_html = getHistogramDetailHTML(request, 'congress', vals)
+        viewer.completeMatchSection("C")
+    elif section == 'getInvolved':
+        if viewer.getFirstNotCompletedMatchSection()=='getInvolved':
+            viewer.completeMatchSection("I")
+        match_body_html = getHomeHTML(request, vals)
+
+    lastNotDone = viewer.getFirstNotCompletedMatchSection()
+
+    progress_down = ''
+    if lastNotDone=='presidential':
+        progress_down = ''
+    elif lastNotDone=='representatives':
+        progress_down = 'one-down'
+    elif lastNotDone=='groups':
+        progress_down = 'two-down'
+    elif lastNotDone=='friends':
+        progress_down = 'three-down'
+    elif lastNotDone=='congress':
+        progress_down = 'four-down'
+    elif lastNotDone=='getInvolved':
+        progress_down = 'five-down'
+    else:
+        progress_down = 'all-down'
+
+
+    vals['progress_down'] = progress_down
+    vals['match_sections_completed'] = viewer.match_sections_completed
+    vals['match_body_html'] = match_body_html
+    focus_html =  ajaxRender('site/pages/match/match.html', vals, request)
+    if not url:
+        url = request.path
+    return homeResponse(request, focus_html, url, vals)
+
+def getMatchGroupsHTML(request, vals):
+
+    viewer = vals['viewer']
+
+    focus_html =  ajaxRender('site/pages/match/match_groups.html', vals, request)
+    return focus_html
+
+def getMatchPresidentialHTML(request, vals):
+    viewer = vals['viewer']
+    election = Election.objects.get(alias="presidential_election")
+    vals['group'] = election
+    vals['info'] = valsElection(viewer, election, {})
+
+    valsQuestionsThreshold(vals)
+    getMainTopics(vals)
+
+    focus_html =  ajaxRender('site/pages/match/match_presidential.html', vals, request)
+    return focus_html
+
+def getMatchFriendsHTML(request, vals):
+    viewer = vals['viewer']
+    likeMindedVals(request, vals)
+    focus_html =  ajaxRender('site/pages/match/match_friends.html', vals, request)
+    return focus_html
+
+#########
 
 def basicMessage(request,message,vals={}):
     """
@@ -37,7 +138,9 @@ def framedResponse(request, html, url, vals={}, rebind="home"):
         return HttpResponse(json.dumps(to_return))
     else:
         vals['center'] = html
-        vals['notifications_num'] = vals['viewer'].getNotifications(new=True).count()
+        viewer = vals.get("viewer")
+        if viewer:
+            vals['notifications_num'] = viewer.getNotifications(new=True).count()
         frame(request, vals)
         return renderToResponseCSRF(template='site/frame/frame.html', vals=vals, request=request)
 
@@ -366,18 +469,16 @@ def loginFAQ(request, vals={}):
     return loginResponse(request, central_html, url, vals)
 
 def presidentialMatching(request, vals):
-    if not LOCAL:
-        obama = UserProfile.objects.get(alias='barack_obama')
-        mitt = UserProfile.objects.get(alias='mitt_romney')
-    else:
-        obama = getUser("Randy Johnson")
-        mitt = getUser("Katy Perry")
+#    if not LOCAL:
+    obama = UserProfile.lg.get_or_none(alias='barack_obama') or getUser("Randy Johnson")
+    mitt = UserProfile.lg.get_or_none(alias='mitt_romney') or getUser("Katy Perry")
     vals['obama'] = obama
     vals['mitt'] = mitt
     vals['candidates'] = [obama, mitt]
     vals['agreement_ids'] = [int(obama.id), int(mitt.id)]
 
     ip = request.META.get('REMOTE_ADDR', None)
+    jregion = None
     if ip and ip!='127.0.0.1':
         import requests
         r = requests.get('http://smart-ip.net/geoip-json/'+ip)
@@ -391,6 +492,14 @@ def presidentialMatching(request, vals):
         city = 'your city' # default city
 
     vals['local_location'] = city
+    if jregion:
+        from modernpolitics.constants import STATES
+        stateDict = dict([reversed(x) for x in STATES])
+        stateAbbr = stateDict.get(jregion)
+        if stateAbbr:
+            senators = getSensFromState(stateAbbr)
+            if senators:
+              vals['local_candidate1'], vals['local_candidate2'] = senators
 
     vals['lgpoll'] = getLoveGovPoll()
 
@@ -541,9 +650,12 @@ def welcome(request, vals):
     url = request.path
     return homeResponse(request, focus_html, url, vals)
 
-@profile("home.prof")
 def home(request, vals={}):
+    focus_html = getHomeHTML(request, vals)
+    url = request.path
+    return homeResponse(request, focus_html, url, vals)
 
+def getHomeHTML(request, vals):
     viewer = vals['viewer']
     viewer.completeTask("L")
 
@@ -557,10 +669,9 @@ def home(request, vals={}):
     valsLikeMinded(vals)
     valsDismissibleHeader(request, vals)
 
-    # render and return html
     focus_html =  ajaxRender('site/pages/home/home.html', vals, request)
-    url = request.path
-    return homeResponse(request, focus_html, url, vals)
+    return focus_html
+
 
 def myGroups(request, vals):
     viewer = vals['viewer']
@@ -577,7 +688,11 @@ def myElections(request, vals):
     return homeResponse(request, focus_html, url, vals)
 
 def representatives(request, vals):
+    focus_html = getRepresentativesHTML(request, vals)
+    url = request.path
+    return homeResponse(request, focus_html, url, vals)
 
+def getRepresentativesHTML(request, vals):
     viewer = vals['viewer']
     viewer.completeTask("F")
 
@@ -587,17 +702,15 @@ def representatives(request, vals):
     valsQuestionsThreshold(vals)
     valsFirstLogin(vals)
 
-    focus_html =  ajaxRender('site/pages/politicians/representatives.html', vals, request)
-    url = request.path
-    return homeResponse(request, focus_html, url, vals)
-
-def match(request, vals):
-    valsFirstLogin(vals)
-    focus_html =  ajaxRender('site/pages/match/match.html', vals, request)
-    url = request.path
-    return homeResponse(request, focus_html, url, vals)
+    focus_html =  ajaxRender('site/pages/match/match_representatives.html', vals, request)
+    return focus_html
 
 def friends(request, vals):
+    focus_html = getFriendsHTML(request, vals)
+    url = request.path
+    return homeResponse(request, focus_html, url, vals)
+
+def getFriendsHTML(request, vals):
     viewer = vals['viewer']
     friends = viewer.getIFollow().filter(num_answers__gte=10)
     vals['i_follow'] = viewer.i_follow
@@ -613,22 +726,33 @@ def friends(request, vals):
     vals['no_create_button'] = True
 
     focus_html =  ajaxRender('site/pages/friends/friends.html', vals, request)
+    return focus_html
+
+def likeMinded(request, vals):
+    focus_html = getLikeMindedHTML(request, vals)
     url = request.path
     return homeResponse(request, focus_html, url, vals)
 
-def likeMinded(request, vals):
+def getLikeMindedHTML(request, vals):
+
+    likeMindedVals(request, vals)
+
+    focus_html =  ajaxRender('site/pages/like_minded/like_minded.html', vals, request)
+    return focus_html
+
+def likeMindedVals(request, vals):
     viewer = vals['viewer']
     like_minded = viewer.getLikeMindedGroup()
     vals['like_minded'] = like_minded
     vals['num_members'] = like_minded.members.count()
     vals['num_processed'] = like_minded.processed.count()
-    vals['members'] = like_minded.members.all().order_by("-created_when")
+
+    if LOCAL:
+        vals['members'] = UserProfile.objects.all()[:10]
+    else:
+        vals['members'] = like_minded.members.all().order_by("-created_when")
 
     valsQuestionsThreshold(vals)
-
-    focus_html =  ajaxRender('site/pages/like_minded/like_minded.html', vals, request)
-    url = request.path
-    return homeResponse(request, focus_html, url, vals)
 
 #-----------------------------------------------------------------------------------------------------------------------
 # qa
@@ -696,7 +820,11 @@ def groupPage(request, g_alias, vals={}):
 
 
 def electionPage(request, election, vals={}):
+    focus_html = getElectionHTML(request, election ,vals)
+    url = request.path
+    return homeResponse(request, focus_html, url, vals)
 
+def getElectionHTML(request, election, vals):
     viewer = vals['viewer']
     if election.alias == 'presidential_election':
         viewer.completeTask("P")
@@ -707,11 +835,12 @@ def electionPage(request, election, vals={}):
     valsQuestionsThreshold(vals)
     valsFirstLogin(vals)
 
-    # render and return html
     focus_html =  ajaxRender('site/pages/elections/election_focus.html', vals, request)
-    url = request.path
-    return homeResponse(request, focus_html, url, vals)
+    return focus_html
 
+def getPresidentialHTML(request, vals):
+    election= Election.objects.get(alias="presidential_election")
+    return getElectionHTML(request, election, vals)
 
 #-----------------------------------------------------------------------------------------------------------------------
 # profile page
@@ -895,20 +1024,28 @@ def discussionDetail(request, d_id=-1, vals={}):
 # closeup of histogram
 #-----------------------------------------------------------------------------------------------------------------------
 def histogramDetail(request, alias, vals={}):
+    html = getHistogramDetailHTML(request, alias, vals)
+    url = request.path
+    return framedResponse(request, html, url, vals)
 
-    group = Group.objects.get(alias=alias)
+def getHistogramDetailHTML(request, alias, vals):
+
     viewer = vals['viewer']
+    if alias == 'congress':
+        viewer.completeTask("C")
+
+    if LOCAL:
+        group = getLoveGovGroup()
+    else:
+        group = Group.objects.get(alias=alias)
+
     vals['group'] = group
     getMainTopics(vals)
-
-    if group.alias == 'congress':
-        viewer.completeTask("C")
 
     loadHistogram(20, group.id, 'full', vals=vals)
 
     html = ajaxRender('site/pages/histogram/histogram.html', vals, request)
-    url = group.getHistogramURL()
-    return framedResponse(request, html, url, vals)
+    return html
 
 #-----------------------------------------------------------------------------------------------------------------------
 # About Link
@@ -1188,7 +1325,8 @@ def facebookHandle(request, to_page="/login/home/", vals={}):
     returned_state = request.GET.get('state')
     if cookie_state and returned_state == cookie_state: #If this is the correct authorization state
         code = request.GET.get('code') #Get the associated code
-        redirect_uri = getRedirectURI(request,'/fb/handle/') #Set the redirect URI
+
+        redirect_uri = getRedirectURI(request, request.path) #Set the redirect URI
 
         access_token = fbGetAccessToken(request, code, redirect_uri) #Retrieve access token
         if not access_token: #If there's no access token, it's being logged so return the login page
@@ -1197,8 +1335,8 @@ def facebookHandle(request, to_page="/login/home/", vals={}):
         auth_to_page = request.COOKIES.get('auth_to_page') #Get the authorization to_page from Cookies
         if auth_to_page: #If it exists
             to_page = auth_to_page
-            if not to_page.startswith("/login/"):
-                to_page = "/login/" + to_page
+            if not to_page.startswith("/login/") and not to_page in ['/fb/connect/']:
+                to_page = "/login" + to_page
 
         response = shortcuts.redirect(to_page) #Build a response
         response.set_cookie('fb_token', access_token) #Set the facebook authorization cookie
@@ -1210,12 +1348,17 @@ def facebookHandle(request, to_page="/login/home/", vals={}):
 
     return shortcuts.redirect(to_page) #If this is the wrong state, go to default to_page
 
-def facebookRedirect(request, to_page="/login/home/", vals={}):
-    fb_link, fb_state = fbGetRedirect(request, vals)
+def facebookRedirect(request, to_page="/login/home/", redirect_uri=None, vals={}):
+    fb_link, fb_state = fbGetRedirect(request, redirect_uri=redirect_uri, vals=vals)
     response = shortcuts.redirect(fb_link)
     response.set_cookie("fb_state", fb_state)
     response.set_cookie("auth_to_page", to_page)
     return response
+
+# the return side of the above redirect
+def facebookConnect(request, vals):
+    return connectWithFacebook(request, vals=vals)
+
 
 def facebookAuthorize(request, vals={}, scope=""):
 

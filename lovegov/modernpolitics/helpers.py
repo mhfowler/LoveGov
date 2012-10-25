@@ -24,6 +24,7 @@ import sunlight
 from sunlight.errors import BadRequestException
 from curses.ascii import isalnum
 from urlparse import urlsplit
+import Image
 
 browser_logger = logging.getLogger('browserlogger')
 
@@ -630,26 +631,37 @@ def calculate_age(born):
         return today.year - born.year
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+def generateMatchImage(obamaMatch,romneyMatch):
+    filename = 'card'+str(obamaMatch)+'x'+str(romneyMatch)+'.png'
+    fpath = 'images/matchcards/'+filename
+    filepath = settings.STATIC_ROOT+fpath
+    urlpath = settings.STATIC_URL+fpath
+    import os
+    if os.path.isfile(filepath):
+        return urlpath
+    i=Image.new('RGB',(400,400),'white')
+    if(romneyMatch > obamaMatch):
+        template = 'romney_template'
+    elif obamaMatch > romneyMatch:
+        template = 'obama_template'
+    else:
+        template = 'both_template'
+    template_path = settings.STATIC_ROOT+'images/matchcards/'+template+'.png'
+    t = Image.open(template_path)
+    i.paste(t,(0,0))
+    import ImageFont, ImageDraw
+    draw = ImageDraw.Draw(i)
+    sonusPath = settings.STATIC_ROOT+'fonts/SonusLight.ttf'
+    sonus72 = ImageFont.truetype(sonusPath, 72)
+    if obamaMatch >= 10:
+        obamaX = 70
+    else:
+        obamaX = 90
+    if romneyMatch >= 10:
+        romneyX = 245
+    else:
+        romneyX = 265
+    draw.text((obamaX,290), str(obamaMatch), fill="#EF503B", font=sonus72)
+    draw.text((romneyX,290), str(romneyMatch), fill="#EF503B", font=sonus72)
+    i.save(filepath,'PNG')
+    return urlpath

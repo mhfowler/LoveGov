@@ -54,23 +54,23 @@ function loadBillSelect2() {
         placeholder: "Search for bill subjects",
         transport: $.post,
         minimumInputLength: 1,
-        ajax: {
-            url: '/action/',
-            data: function(term, page) {
-                return {
-                    'action': 'getBillSubjects',
-                    'term': term,
-                    'page': page
-                }
-            },
-            results: function(data, page) {
-                var returned = $.parseJSON(data);
-                return {'results': returned.subjects};
-            }
-        },
+//        ajax: {
+//            url: '/action/',
+//            data: function(term, page) {
+//                return {
+//                    'action': 'getBillSubjects',
+//                    'term': term,
+//                    'page': page
+//                }
+//            },
+//            results: function(data, page) {
+//                var returned = $.parseJSON(data);
+//                return {'results': returned.subjects};
+//            }
+//        },
         quietMillis: 200,
-        dataType: 'json',
-        multiple: true,
+        //dataType: 'json',
+        //multiple: true,
         change: updateFeed
 
     });
@@ -168,3 +168,8 @@ function shortenLongText() {
         });
     }
 }
+
+bind('.get_legislation_feed_button', 'click', function(e) {
+   var container = $('.feed_main');
+    refreshFeed(container);
+});

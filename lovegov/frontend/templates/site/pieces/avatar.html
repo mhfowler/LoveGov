@@ -7,6 +7,7 @@
         width: string representing the width of the avatar image in pixels (e.g. '40')
         height: string representing the height of the avatar image in pixels (e.g. '40')
         hoveroff: if True, turns off hover comparison
+        naked: if True, doesn't include avatar-box div
      -->
 
 
@@ -16,7 +17,9 @@
 {% load thumbnail %}
 {% load customtags %}
 
+{% if not naked %}
 <div class="avatar-box">
+{% endif %}
 
     {% with width|add:"x"|add:height as geometry %}
 
@@ -46,4 +49,6 @@
 
     {% endwith %}
 
+{% if not naked %}
 </div>
+{% endif %}

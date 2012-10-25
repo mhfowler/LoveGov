@@ -10,6 +10,143 @@
 from lovegov.modernpolitics.modals import *
 from django.core.files.base import ContentFile
 
+#-----------------------------------------------------------------------------------------------------------------------
+# get members of group / histogram by uids
+#-----------------------------------------------------------------------------------------------------------------------
+def getMembersByUIDS(request, vals):
+
+    u_ids = request.POST.get("u_ids")
+    g_id = request.POST.get("g_id")
+
+    if u_ids == 'all':
+        group = Group.objects.get(id=g_id)
+        people = group.getMembers()
+
+    elif not u_ids:
+        people = []
+
+    else:
+        u_ids = json.loads(u_ids)
+        people = UserProfile.objects.filter(id__in=u_ids)
+
+    # paginate
+    feed_start = int(request.POST['feed_start'])
+    feed_end = feed_start+10
+    no_more_items = feed_end >= len(people)
+    people = people[feed_start:feed_end]
+    num_items = len(people)
+
+    viewer = vals['viewer']
+    for u in people:
+        u.comparison = u.getComparison(viewer)
+
+    vals['users'] = people
+    vals['display'] = request.POST.get("display") or "strip"
+
+    html = ajaxRender('site/pieces/render_users_helper.html', vals, request)
+    to_return = {'html':html, 'no_more_items':no_more_items, 'num_items':num_items}
+
+    return HttpResponse(json.dumps(to_return))
+
+#-----------------------------------------------------------------------------------------------------------------------
+# get html for lists for matching with people
+#-----------------------------------------------------------------------------------------------------------------------
+def matchWithPeople(request, vals):
+
+    viewer = vals['viewer']
+    which = request.POST.get('which') or 'friends'
+
+    if which == 'friends':
+        people = viewer.getIFollow()
+
+    people = list(people)
+
+    for u in people:
+        u.comparison = u.getComparison(viewer)
+
+    def peopleSort(person):
+        result = person.comparison.result
+        if person.comparison.num_q > 5:
+            result *= 100
+        return result
+
+    people.sort(key=lambda x:peopleSort(x), reverse=True)
+
+    # paginate
+    feed_start = int(request.POST['feed_start'])
+    feed_end = feed_start+5
+    no_more_items = feed_end >= len(people)
+    people = people[feed_start:feed_end]
+    num_items = len(people)
+
+    vals['users'] = people
+    vals['display'] = 'strip'
+
+    html = ajaxRender('site/pieces/render_users_helper.html', vals, request)
+    to_return = {'html':html, 'no_more_items':no_more_items, 'num_items':num_items}
+
+    return HttpResponse(json.dumps(to_return))
+
+#-----------------------------------------------------------------------------------------------------------------------
+# get html for lists for matching with groups
+#-----------------------------------------------------------------------------------------------------------------------
+def matchWithGroups(request, vals):
+
+    from lovegov.frontend.views_helpers import valsGroup
+    viewer = vals['viewer']
+
+    which = request.POST['which']
+    if which == 'best_matching_parties':
+        groups = list(Party.objects.all())
+    elif which == 'in_your_area':
+        groups = []
+        location = viewer.temp_location or viewer.location
+        if location:
+            if location.state:
+                groups = Group.objects.filter(location__state=location.state)
+                if location.city:
+                    groups = groups.filter(Q(location__city=location.city) | Q(location__city=None))
+
+    vals['groups'] = groups
+    groups_info = []
+    for count,g in enumerate(groups):
+        group_vals = {}
+        valsGroup(viewer, g, group_vals)
+        groups_info.append({'group':g, 'info':group_vals})
+
+    if which == 'best_matching_parties':
+        groups_info.sort(key=lambda x: x['info']['group_comparison'].result, reverse=True)
+    else:
+        groups_info.sort(key=lambda x: x['group'].num_members, reverse=True)
+
+    # paginate
+    feed_start = int(request.POST['feed_start'])
+    feed_end = feed_start+3
+    no_more_items = feed_end >= len(groups_info)
+    groups_info = groups_info[feed_start:feed_end]
+    num_items = len(groups_info)
+
+    vals['groups_info'] = groups_info
+
+    html = ajaxRender('site/pages/browse/feed_helper_browse_groups.html', vals, request)
+    return HttpResponse(json.dumps({'html':html, 'num_items':num_items, 'no_more_items':no_more_items}))
+
+## get fb match card
+def getMatchCard(request, vals):
+    viewer = vals['viewer']
+    obamaMatch = request.POST.get('obamaMatch')
+    romneyMatch = request.POST.get('romneyMatch')
+    if not obamaMatch or not romneyMatch:
+        obamaMatch = viewer.getComparison(getUser("Barack Obama")).result
+        romneyMatch = viewer.getComparison(getUser("Mitt Romney")).result
+        if not obamaMatch or not romneyMatch:
+            return HttpResponseBadRequest("Missing match data")
+    from helpers import generateMatchImage
+    url = generateMatchImage(obamaMatch, romneyMatch)
+    to_return = {"url": url, "obamaMatch": obamaMatch, "romneyMatch": romneyMatch}
+    return HttpResponse(json.dumps(to_return))
+
+### twitter register post ###
 def twitterRegisterPost(request, vals):
 
     name = request.POST.get('name')
@@ -2024,7 +2161,7 @@ def getFeed(request, vals):
     path = request.POST['path']
     alias = path.replace("/","")
     viewer = vals['viewer']
-    content = getFeedItems(viewer=viewer, alias=alias, feed_ranking=feed_ranking,
+    content, no_more_items = getFeedItems(viewer=viewer, alias=alias, feed_ranking=feed_ranking,
         feed_types=feed_types, feed_start=feed_start, num=10, like_minded=like_minded)
 
     viewer.seeContents(content)     # count which content is seen
@@ -2037,7 +2174,7 @@ def getFeed(request, vals):
 
     everything_loaded = everythingLoadedHelper(request, vals, feed_items)
 
-    to_return = {'html':html, 'num_items':num_items, 'everything_loaded':everything_loaded}
+    to_return = {'html':html, 'num_items':num_items, 'everything_loaded':everything_loaded, 'no_more_items':no_more_items}
     return HttpResponse(json.dumps(to_return))
 
 # generates a list of (content, vote) tuples for each piece of content in list
@@ -2112,6 +2249,11 @@ def getQuestions(request, vals):
     trial_questions =  request.POST.get('trial_questions')
     if not (to_compare or trial_questions):
         vals['qa_tutorial'] = not viewer.checkTask("Q")
+
+    vals['new_questions'] = not to_compare
+
+    for q in question_items:
+        q['question'].my_response = q.get('you')
 
     html = ajaxRender('site/pages/qa/feed_helper_questions.html', vals, request)
 
@@ -2986,9 +3128,13 @@ def messagePolitician(request, vals={}):
 #-----------------------------------------------------------------------------------------------------------------------
 def getFBInviteFriends(request, vals={}):
     from lovegov.frontend.views_helpers import valsFBFriends
-    valsFBFriends(request, vals)
+    fb_friends = valsFBFriends(request, vals)
+    if fb_friends:
+        success = True
+    else:
+        success = False
     html =  ajaxRender('site/pages/friends/fb_invite_friends_helper.html', vals, request)
-    return HttpResponse(json.dumps({'html':html}))
+    return HttpResponse(json.dumps({'html':html, 'success':success}))
 
 #-----------------------------------------------------------------------------------------------------------------------
 # calculate like minded group members

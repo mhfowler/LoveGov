@@ -364,10 +364,12 @@ def initializeDB():
     initializePresidentialElection2012()
     initializePresidentialCandidates2012()
     initializeSomeTestElections()
+    recalcTestPolls()
     #randomWhales()
     # valid emails
     initializeValidEmails()
     initializeValidRegisterCodes()
+    initializeStateGroups()
     # initialize congress
     if not LOCAL:
         initializeCongress()
@@ -378,6 +380,11 @@ def initializeDB():
         initializeVotingRecord()
         scriptCreateCongressAnswers()
 
+def recalcTestPolls():
+    e = Election.objects.all()[0]
+    for q in Question.objects.all():
+        q.posted_to = e
+        q.save()
 
 def initializeGovernmentDatabase():
     from scripts.alpha import scriptCreateCongressAnswers

@@ -1,0 +1,13 @@
+
+<div class="match-section-header">
+        How do you compare with the presidential candidates?
+</div>
+
+<div class="running">
+    {% for user in info.running %}
+        <div class="election-card-wrapper {% if forloop.last %} last {% endif %} {% if forloop.counter < 4 %} first-row {% endif %}">
+            {% include 'site/pages/elections/election_card.html'  %}
+        </div>
+    {% endfor %}
+    <div style="clear:both;"></div>
+</div>

@@ -1,0 +1,42 @@
+<div class="match-groups">
+
+    {% with location=viewer.temp_location %}
+    <div class="groups-in-your-area match-groups-section">
+        <div class="match-section-header">
+            How do you match with groups in your area?
+        </div>
+
+        <div class="below-match-section-header" {% if not location %} style="display:none" {% endif %}>
+            <div class="reps-where"> {{ location.getVerbose}} </div>
+            <span class="not-your-district"> not your location? </span>
+            <a class="enter-new-address enter_new_address dummy_link">
+                enter a different address.
+            </a>
+        </div>
+
+        <div class="dismissible_wrapper">
+            {% with dismissible_hide=location %}
+                {% include 'site/pages/politicians/representatives_dismissible_header.html' with why_address="Find groups in you area: " button_text="find groups" %}
+            {% endwith %}
+        </div>
+
+        <div class="groups-list-wrapper match-feed">
+            {% if location %}
+                    {% include 'site/pages/feed/feed_no_top.html' with special_feed="matchWithGroups" data_which="in_your_area" %}
+            {% endif %}
+        </div>
+    </div>
+    {% endwith %}
+
+
+    <div class="political-party-matches match-groups-section">
+        <div class="match-section-header">
+            Which political party do you match best with?
+        </div>
+        <div class="groups-list-wrapper match-feed">
+            {% include 'site/pages/feed/feed_no_top.html' with special_feed="matchWithGroups" data_which="best_matching_parties" %}
+        </div>
+    </div>
+
+
+</div>

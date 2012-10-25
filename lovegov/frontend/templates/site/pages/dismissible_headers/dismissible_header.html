@@ -13,5 +13,7 @@
     </div>
     {% endcomment %}
 
-    <div class="x-img dismissible_x"></div>
+    {% if not no_dismissible_x %}
+        <div class="x-img dismissible_x"></div>
+    {% endif %}
 </div>

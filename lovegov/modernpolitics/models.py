@@ -1307,6 +1307,8 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo, AnalyticsData):
     first_login = models.IntegerField(default=1)             # 1 means just registered, after that 0
     first_login_tasks = models.CharField(max_length=50, default="", blank=True)
     num_logins = models.IntegerField(default=0)
+    match_sections_completed = models.CharField(default="", max_length=26)
+    show_welcome = models.BooleanField(default=True)
     # background tasks
     background_tasks = models.CharField(max_length=10, default="", blank=True)
     finished_tasks = models.CharField(max_length=10, default="", blank=True)
@@ -1319,6 +1321,19 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo, AnalyticsData):
 
     def __unicode__(self):
         return self.get_name()
+
+    ### match sections completed
+    def checkMatchSectionCompleted(self, section):
+        return section in self.match_sections_completed
+    def completeMatchSection(self, section):
+        if not self.checkMatchSectionCompleted(section):
+            self.match_sections_completed += section
+            self.save()
+    def getFirstNotCompletedMatchSection(self):
+        for char, name in MATCH_SECTIONS:
+            if not self.checkMatchSectionCompleted(char):
+                return name
+        return None
 
     ### update analytics data for user
     def updateAnalyticsData(self):
@@ -2536,10 +2551,14 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo, AnalyticsData):
         return content
 
     def filterContentOnlyMyContent(self, content):
-        my_content = self.getGroupSubscriptionContent()
-        my_content_ids = my_content.values_list("id", flat=True)
-        content = content.filter(id__in=my_content_ids)
+        my_subscriptions = self.getSubscriptions()
+        content = content.filter(posted_to__in=my_subscriptions)
         return content
+
+    def getGroupSubscriptionsQuestions(self):
+        viewer_subscriptions = self.getSubscriptions()
+        questions = Question.objects.filter(posted_to__in=viewer_subscriptions)
+        return questions
 
     #-------------------------------------------------------------------------------------------------------------------
     # Returns a list of all Users who are (confirmed) following this user.
@@ -4877,12 +4896,13 @@ class Group(Content):
                     comparison = comparison.getTopicBucket(topic)
                 else:
                     comparison = comparison.getTotalBucket()
-                if comparison.getNumQuestions():
+                num_q = comparison.getNumQuestions()
+                if num_q:
                     result = comparison.getSimilarityPercent()
                     bucket = getBucket(result, bucket_list)
                     buckets[bucket]['num'] += 1
                     buckets[bucket]['u_ids'].append(x.id)
-                    if result == 100:
+                    if result == 100 and num_q >= MIN_NUM_Q_IDENTICAL:
                         identical += 1
                         identical_uids.append(x.id)
 
