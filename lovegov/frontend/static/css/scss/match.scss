@@ -15,7 +15,7 @@ div.match-wrapper {
     margin-bottom:15px;
     padding-left:5px;
     margin-top: 20px;
-    div.match-progress {
+    div.match-progress-wrapper {
       position: absolute;
       height: 45px;
       width: 800px;
@@ -57,6 +57,29 @@ div.match-wrapper {
       margin-top: 9px;
       margin-left:43px;
       @include border-radius(5px);
+      div.match-progress {
+        height: 100%;
+        width: 0;
+        background-color: #D5D2D2;
+        &.one-down {
+          width: 140px;
+        }
+        &.two-down {
+          width: 250px;
+        }
+        &.three-down {
+          width: 350px;
+        }
+        &.four-down {
+          width: 460px;
+        }
+        &.five-down {
+          width: 560px;
+        }
+        &.all-down {
+          width: 100%;
+        }
+      }
     }
 
     div.match-header-link-wrapper {
@@ -89,11 +112,23 @@ div.match-wrapper {
         &.clicked {
           background-color:$awesome-blue;
           border:3px solid $black;
+          padding-top: 13px;
+          padding-left: 3px;
           div.match-link-num {
             color:$deep-gray;
           }
           div.match-link-text {
             color:black;
+          }
+        }
+        &.visited {
+          background-color: white;
+          border: 1px solid black;
+          &.clicked {
+            background-color:$awesome-blue;
+            border:3px solid $black;
+            padding-top: 13px;
+            padding-left: 3px;
           }
         }
 

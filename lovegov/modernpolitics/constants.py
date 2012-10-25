@@ -27,7 +27,8 @@ MATCH_SECTIONS = [
             ('R','representatives'),
             ('G','groups'),
             ('F','friends'),
-            ('C','congress')]
+            ('C','congress'),
+            ('I','getInvolved')]
 
 ########################################## HOT FEED ####################################################################
 
