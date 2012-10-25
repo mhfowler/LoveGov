@@ -123,9 +123,11 @@
                 <div class="reached_the_end everything-loaded-header everything_loaded_header">
                     You reached the end of the feed, so here's a politician.
                 </div>
-                <div class="nothing_there everything-loaded-header everything_loaded_header">
-                    This feed doesn't have any content, so here's a picture of a politician.
-                </div>
+                    <div class="nothing_there everything-loaded-header everything_loaded_header">
+                        {% block nothing_there %}
+                            This feed doesn't have any content, so here's a picture of a politician.
+                        {% endblock %}
+                    </div>
                 <div class="everything_loaded_image_wrapper">
 
                 </div>

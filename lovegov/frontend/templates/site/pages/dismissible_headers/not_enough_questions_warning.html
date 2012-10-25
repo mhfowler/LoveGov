@@ -8,7 +8,10 @@
         {% else %}
             <div class="what-would-be-text strong-match">
                 You've answered enough questions that your matches ought to tell you something. <br>
+                {% comment %}
                 Your match strength will continue to improve as you answer more <a href="/questions/"> questions </a>.
+                {% endcomment %}
+                To advance to the next match step <a href="{{ DOMAIN }}" class="next-step-link">click here</a>.
             </div>
         {% endif %}
         <span class="questions-progress">

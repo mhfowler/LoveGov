@@ -113,7 +113,7 @@ def matchWithGroups(request, vals):
 
     # paginate
     feed_start = int(request.POST['feed_start'])
-    feed_end = feed_start+5
+    feed_end = feed_start+3
     no_more_items = feed_end >= len(groups_info)
     groups_info = groups_info[feed_start:feed_end]
     num_items = len(groups_info)
