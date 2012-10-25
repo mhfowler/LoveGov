@@ -4052,7 +4052,7 @@ bind( '.facebook_share_button' , 'click' , null , function(e)
 });
 
 
-bind('facebook-share-match-results', 'click', function(e) {
+bind('div.facebook-share-match-results', 'click', function(e) {
     facebookShareMatches(null, null);
 });
 
