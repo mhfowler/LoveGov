@@ -288,6 +288,7 @@ def updateUserAnalyticsData():
             print count
         count += 1
 
+
 def analyzeCompletedTasks(time_start, time_end, analytics_tasks):
 
     users = UserProfile.objects.filter(ghost=False)

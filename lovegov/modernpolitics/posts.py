@@ -57,16 +57,24 @@ def matchWithPeople(request, vals):
     which = request.POST.get('which') or 'friends'
 
     if which == 'friends':
-        people = list(viewer.getIFollow())
+        people = viewer.getIFollow()
+
+    people = list(people)
 
     for u in people:
         u.comparison = u.getComparison(viewer)
 
-    people.sort(key=lambda x:x.comparison.result, reverse=True)
+    def peopleSort(person):
+        result = person.comparison.result
+        if person.comparison.num_q > 5:
+            result *= 100
+        return result
+
+    people.sort(key=lambda x:peopleSort(x), reverse=True)
 
     # paginate
     feed_start = int(request.POST['feed_start'])
-    feed_end = feed_start+10
+    feed_end = feed_start+5
     no_more_items = feed_end >= len(people)
     people = people[feed_start:feed_end]
     num_items = len(people)
