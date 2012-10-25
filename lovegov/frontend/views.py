@@ -27,7 +27,7 @@ def match(request, section=None, vals={}):
             section = 'home'
         if not request.is_ajax():
             return shortcuts.redirect(url)
-        
+
 
     vals['show_welcome'] = show_welcome = viewer.show_welcome
     if show_welcome:
