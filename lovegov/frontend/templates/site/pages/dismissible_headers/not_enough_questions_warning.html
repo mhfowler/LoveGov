@@ -12,6 +12,9 @@
                 Your match strength will continue to improve as you answer more <a href="/questions/"> questions </a>.
                 {% endcomment %}
                 To advance to the next match step <a href="/match/" class="next-step-link">click here</a>.
+                {% if user.facebook_id %}
+                    <p>Or <a class="facebook-share-match-results">share your match results</a> on Facebook.</p>
+                {% endif %}
             </div>
         {% endif %}
         <span class="questions-progress">

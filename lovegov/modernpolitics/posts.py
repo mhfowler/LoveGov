@@ -125,13 +125,18 @@ def matchWithGroups(request, vals):
 
 ## get fb match card
 def getMatchCard(request, vals):
+    viewer = vals['viewer']
     obamaMatch = request.POST.get('obamaMatch')
     romneyMatch = request.POST.get('romneyMatch')
     if not obamaMatch or not romneyMatch:
-        return HttpResponseBadRequest("Missing match data")
+        obamaMatch = viewer.getComparison(getUser("Barack Obama")).result
+        romneyMatch = viewer.getComparison(getUser("Mitt Romney")).result
+        if not obamaMatch or not romneyMatch:
+            return HttpResponseBadRequest("Missing match data")
     from helpers import generateMatchImage
     url = generateMatchImage(obamaMatch, romneyMatch)
-    return HttpResponse(url)
+    to_return = {"url": url, "obamaMatch": obamaMatch, "romneyMatch": romneyMatch}
+    return HttpResponse(json.dumps(to_return))
 
 ### twitter register post ###
 def twitterRegisterPost(request, vals):
