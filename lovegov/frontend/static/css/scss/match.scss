@@ -107,8 +107,9 @@ div.match-wrapper {
         padding-top: 15px;
 
         &:hover {
-          background-color: $light-gray;
+          background-color: $white-gray;
         }
+
         &.clicked {
           background-color:$awesome-blue;
           border:3px solid $black;
@@ -129,6 +130,12 @@ div.match-wrapper {
             border:3px solid $black;
             padding-top: 13px;
             padding-left: 3px;
+            &:hover {
+              background-color: $awesome-blue;
+            }
+          }
+          &:hover {
+            background-color: $white-gray;
           }
         }
 
