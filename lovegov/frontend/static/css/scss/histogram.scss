@@ -8,6 +8,10 @@
     display:none;
   }
 
+  div.feed-main {
+      width:100%;
+  }
+
   @include main-div();
   margin-top:25px;
 
