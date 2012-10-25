@@ -27,7 +27,7 @@ def match(request, section=None, vals={}):
                 url = '/match/' + section + '/'
         if not section:
             url = '/home/'
-            section = 'home'
+            section = 'getInvolved'
         if not request.is_ajax():
             return shortcuts.redirect(url)
 
@@ -54,7 +54,7 @@ def match(request, section=None, vals={}):
         vals['match_with_congress'] = 1
         match_body_html = getHistogramDetailHTML(request, 'congress', vals)
         viewer.completeMatchSection("C")
-    elif section == 'home':
+    elif section == 'getInvolved':
         if viewer.getFirstNotCompletedMatchSection()=='getInvolved':
             viewer.completeMatchSection("I")
         match_body_html = getHomeHTML(request, vals)
