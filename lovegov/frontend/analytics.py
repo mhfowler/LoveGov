@@ -76,7 +76,8 @@ def singlePercentageAnalytics(w_sheet, starting_row, time_start=None, time_end=N
         w_sheet.write(starting_row,1, dt)
 
     # users before time start and time end
-    users = filterByCreatedWhen(UserProfile.objects.filter(ghost=False), time_start, time_end)
+    users = UserProfile.objects.filter(ghost=False)
+    users = filterByCreatedWhen(users, time_start, time_end)
     users = list(users)
 
     # write number of users to sheet
@@ -123,7 +124,7 @@ def percentageAnalytics(time_tuples, resolution, output_file):
     # write resolutions to header
     percentage_increment = 100 / resolution
     c_percent = 100
-    c_col = 3
+    c_col = 4
     while c_percent >= 0:
         w_sheet.write(0,c_col, c_percent)
         c_col += 1
