@@ -184,7 +184,15 @@ div.match-wrapper {
       height: 100px;
       width:100px;
       margin: -17px 24px 0 10px;
+      @include staticImage('images/matchwithheart.png');
+      background-size: cover;
+      cursor: pointer;
+      &:hover {
+        @include staticImage('images/matchwithheart-dark.png');
+        background-size: cover;
+      }
     }
+
   }
 
 
