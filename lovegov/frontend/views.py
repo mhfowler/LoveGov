@@ -28,21 +28,6 @@ def match(request, section=None, vals={}):
         if not request.is_ajax():
             return shortcuts.redirect(url)
 
-    progress_down = ''
-    lastNotDone = viewer.getFirstNotCompletedMatchSection()
-    if lastNotDone=='presidential':
-        progress_down = ''
-    elif lastNotDone=='representatives':
-        progress_down = 'one-down'
-    elif lastNotDone=='groups':
-        progress_down = 'two-down'
-    elif lastNotDone=='friends':
-        progress_down = 'three-down'
-    elif lastNotDone=='congress':
-        progress_down = 'four-down'
-    else:
-        progress_down = 'five-down'
-
 
     vals['show_welcome'] = show_welcome = viewer.show_welcome
     if show_welcome:
@@ -66,7 +51,27 @@ def match(request, section=None, vals={}):
         match_body_html = getHistogramDetailHTML(request, 'congress', vals)
         viewer.completeMatchSection("C")
     elif section == 'home':
+        if viewer.getFirstNotCompletedMatchSection()=='getInvolved':
+            viewer.completeMatchSection("I")
         match_body_html = getHomeHTML(request, vals)
+
+    lastNotDone = viewer.getFirstNotCompletedMatchSection()
+
+    progress_down = ''
+    if lastNotDone=='presidential':
+        progress_down = ''
+    elif lastNotDone=='representatives':
+        progress_down = 'one-down'
+    elif lastNotDone=='groups':
+        progress_down = 'two-down'
+    elif lastNotDone=='friends':
+        progress_down = 'three-down'
+    elif lastNotDone=='congress':
+        progress_down = 'four-down'
+    elif lastNotDone=='getInvolved':
+        progress_down = 'five-down'
+    else:
+        progress_down = 'all-down'
 
     vals['progress_down'] = progress_down
     vals['match_sections_completed'] = viewer.match_sections_completed
@@ -638,7 +643,6 @@ def welcome(request, vals):
     url = request.path
     return homeResponse(request, focus_html, url, vals)
 
-@profile("home.prof")
 def home(request, vals={}):
     focus_html = getHomeHTML(request, vals)
     url = request.path
