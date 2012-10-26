@@ -146,6 +146,12 @@ def getMatchCard(request, vals):
     to_return = {"url": url, "obamaMatch": obamaMatch, "romneyMatch": romneyMatch}
     return HttpResponse(json.dumps(to_return))
 
+def hideFacebookShareMatches(request, vals):
+    viewer = vals['viewer']
+    viewer.show_share_matches = False
+    viewer.save()
+    return HttpResponse('+')
+
 ### twitter register post ###
 def twitterRegisterPost(request, vals):
 

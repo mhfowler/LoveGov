@@ -4070,9 +4070,24 @@ bind( '.facebook_share_button' , 'click' , null , function(e)
 });
 
 
-bind('div.facebook-share-match-results', 'click', function(e) {
-    facebookShareMatches(null, null);
+bind('.facebook-share-match-results', 'click', function(e) { facebookShareMatches(); });
+
+bind('.hide-facebook-share-match-results', 'click', function(e) {
+    action({
+        'data': {
+            'action': 'hideFacebookShareMatches'
+        }
+    });
+    $(this).parent().fadeOut(300);
 });
+
+function showFacebookShareMatches() {
+    $('.facebook-share-match-results').parent().fadeIn(300);
+}
+
+function hideFacebookShareMatches() {
+    $('.facebook-share-match-results').parent().fadeOut(300);
+}
 
 function facebookShareMatches(obamaMatch, romneyMatch) {
     action({
@@ -4087,7 +4102,7 @@ function facebookShareMatches(obamaMatch, romneyMatch) {
             var romneyMatch = returned.romneyMatch;
             var obamaMatch = returned.obamaMatch;
             window.open('http://www.facebook.com/dialog/feed?app_id='+FACEBOOK_APP_ID+'&link=http://lovegov.com/'+
-                '&picture=http://dev.lovegov.com'+url+'&name=Compare your presidential matches with me on LoveGov'+
+                '&picture='+window.location.hostname+url+'&name=Compare your presidential matches with me on LoveGov'+
                 '&description=I\'m '+obamaMatch+'% Obama, '+romneyMatch+'% Romney. How do you compare?'+
                 '&redirect_uri=http://lovegov.com/popup_redirect&display=popup',
                 '_blank','width=450,height=300');
