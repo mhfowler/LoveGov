@@ -8,8 +8,8 @@
                 <a href="/fb/redirect/fb/connect/" class="import-friends"> import friends from facebook </a>
             {% endif %}
         {% endcomment %}
-        {% if viewer.facebook_id %}
-            <a class="facebook-share-match-results" style="float:right; font-size:12px; text-align: right;">Share your presidential<br>match results on Facebook</a>
+        {% if viewer.facebook_id and viewer.getNumResponses >= 15 %}
+            <a class="facebook-share-match-results" style="float:right; font-size:12px; text-align: right;">Share your presidential<br>match results on Facebook - {{ viewer.getNumResponses }}</a>
         {% endif %}
 
     </div>
