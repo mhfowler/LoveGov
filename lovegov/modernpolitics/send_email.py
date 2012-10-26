@@ -126,6 +126,7 @@ def sendNewLoveGovEmails():
             print enc("+II+ sent email to: " + x.get_name())
 
 
+
 def sendWeeklyDigestEmail(user_profile):
 
     from lovegov.frontend.views_helpers import getWeeklyDigestQuestions, getWeeklyDigestNews
