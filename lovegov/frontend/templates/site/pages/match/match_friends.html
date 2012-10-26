@@ -2,9 +2,13 @@
 
     <div class="match-section-header">
         <span class="header-text"> How do you match with your friends? </span>
-        {% if not viewer.facebook_id %}
-            <a href="/fb/redirect/fb/connect/" class="import-friends"> import friends from facebook </a>
-        {% endif %}
+
+        {% comment %}
+            {% if not viewer.facebook_id %}
+                <a href="/fb/redirect/fb/connect/" class="import-friends"> import friends from facebook </a>
+            {% endif %}
+        {% endcomment %}
+
     </div>
 
     <div class="people-list-wrapper match-feed">
