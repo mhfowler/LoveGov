@@ -757,7 +757,8 @@ ACTIONS = [
     'matchWithGroups',
     'matchWithPeople',
     'getMatchCard',
-    'getMembersByUIDS'
+    'getMembersByUIDS',
+    'stepDownAsAdmin'
 ]
 
 UNAUTHENTICATED_ACTIONS = [

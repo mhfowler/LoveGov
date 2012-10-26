@@ -8,7 +8,7 @@
 
     {% macro content_detail_title content %}
         <div class="item-title-wrapper">
-            <a h ="{{ content.get_url }}" class="item-title"> {{ content.getFeedTitle }} </a>
+            <a href="{{ content.get_url }}" class="item-title"> {{ content.getFeedTitle }} </a>
             <div class="posted-in"> posted in </div>
             {% with group=content.posted_to %}
                 <a href="{{ group.get_url }}" class="posted-in-group"> {{ group.get_name }} </a>

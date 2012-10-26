@@ -393,6 +393,11 @@ div.account-right
   div.member-select-container
   {
     margin-bottom:15px;
+    .select2-container-multi .select2-choices .select2-search-field input {
+      height: 35px;
+      top: 2px;
+      left: 6px;
+    }
   }
 
   div.admin-submit-container
