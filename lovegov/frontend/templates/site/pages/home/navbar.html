@@ -84,7 +84,7 @@
     {% endif %}
 
     {% if viewer.facebook_id and viewer.show_share_matches %}
-        <div style="margin: 25px 0; {% if viewer.getNumResponses < 15 %}display: none {% endif %}">
+        <div class="fb-match-share-wrapper" style="{% if viewer.getNumResponses < 15 %}display: none {% endif %}">
             <a class="hide-facebook-share-match-results" style="float: right">hide</a>
             <a class="facebook-share-match-results">Share your match results on Facebook</a>
         </div>
