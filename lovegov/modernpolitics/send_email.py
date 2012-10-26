@@ -116,6 +116,16 @@ def sendNewLoveGovEmail(user_profile):
     email_template = 'emails/lovegov/new_lovegov.html'
     sendLoveGovEmailHelper(user_profile, subject, email_vals, email_template)
 
+def sendNewLoveGovEmails():
+    users = UserProfile.objects.filter(ghost=False)
+    for x in users:
+        if not x.checkEmailSubscription("A"):
+            print "+XX+ not subscribed: " + enc(x.get_name())
+        else:
+            sendNewLoveGovEmail(x)
+            print enc("+II+ sent email to: " + x.get_name())
+
+
 def sendWeeklyDigestEmail(user_profile):
 
     from lovegov.frontend.views_helpers import getWeeklyDigestQuestions, getWeeklyDigestNews

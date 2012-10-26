@@ -1,0 +1,33 @@
+{% extends 'emails/lovegov/white_section.html' %}
+
+{% block white_section %}
+
+    <p>
+        Hi {{ user_profile.first_name }},
+    </p>
+
+    <p>
+        We are writing to let you know that <a href="http://lovegov.com" style="text-decoration:none;">LoveGov</a> has recently undergone a significant update.
+    </p>
+
+    <p>
+        Over the last month we received
+        a lot of feedback that the site was difficult to navigate and at times overwhelming. In this new build we tried to simplify
+        the site's layout in order to make it easier to understand and easier to use.
+    </p>
+
+    <p>
+        Have any ideas of how we could improve the site? Thought of a new feature you think we should build?
+        <a href="http://lovegov.com/improving_lovegov/" target="_blank" style="text-decoration:none;">Tell us what you think.</a>
+        LoveGov will always be a work in progress and your feedback is an important part of the process.
+    </p>
+
+    <p>
+        Love,
+    </p>
+
+    <p>
+        The LoveGov team
+    </p>
+
+{% endblock %}
