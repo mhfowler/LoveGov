@@ -596,10 +596,15 @@ div.fb-match-share-wrapper {
     float: left;
     display: block;
     width: 75px;
+    color: black;
   }
   div.glyphicon-sprite {
     @include opacity(0.25);
     cursor: pointer;
+    position: relative;
+    left: 8px;
+    margin-top: 35px;
+    float: right;
   }
 }
 

@@ -85,9 +85,9 @@
 
     {% if viewer.facebook_id and viewer.show_share_matches %}
         <div class="fb-match-share-wrapper" style="{% if viewer.getNumResponses < 15 %}display: none {% endif %}">
-            <a class="hide-facebook-share-match-results" style="float: right">hide</a>
+            <a class="hide-facebook-share-match-results" style="float: right; color: gray; font-size: 11px;">x</a>
             <a class="facebook-share-match-results">Share your match results on Facebook</a>
-            <div class="glyphicon-sprite sprite-glyphicon_222_share-png facebook-share-match-results" style="float: right; margin-top: 10px;"></div>
+            <div class="glyphicon-sprite sprite-glyphicon_222_share-png facebook-share-match-results"></div>
         </div>
     {% endif %}
 
