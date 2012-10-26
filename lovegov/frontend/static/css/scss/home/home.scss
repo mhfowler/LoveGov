@@ -589,9 +589,6 @@ div.fb-match-share-wrapper {
   border: 1px solid $light-gray;
   padding: 15px;
   @include clearfix;
-  &:hover {
-    background-color: $white-gray;
-  }
   a.facebook-share-match-results {
     float: left;
     display: block;
