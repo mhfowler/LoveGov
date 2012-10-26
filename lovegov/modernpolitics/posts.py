@@ -1861,7 +1861,11 @@ def posttogroup(request, vals={}):
 # Makes a set of users into moderators for a given group
 #
 #-----------------------------------------------------------------------------------------------------------------------
-def removeAdmin(request, vals={}):
+def stepDownAsAdmin(request, vals):
+    viewer = vals['viewer']
+    return removeAdmin(request, vals, admin_id=viewer.id)
+
+def removeAdmin(request, vals={}, admin_id=None):
     viewer = vals['viewer']
 
     if not 'g_id' in request.POST:
@@ -1876,11 +1880,14 @@ def removeAdmin(request, vals={}):
     if viewer not in group.admins.all():
         HttpResponseForbidden("You do not have permission to remove an admin for this group")
 
-    if not 'admin_id' in request.POST:
-        errors_logger.error("Group admin removal without user ID for group #" + str(group.id) + " by user #" + str(viewer.id))
-        return HttpResponse("Group admin removal without user ID")
+    if not admin_id:
+        if not 'admin_id' in request.POST:
+            errors_logger.error("Group admin removal without user ID for group #" + str(group.id) + " by user #" + str(viewer.id))
+            return HttpResponse("Group admin removal without user ID")
+        else:
+            admin_id = request.POST['admin_id']
 
-    admin_remove = UserProfile.lg.get_or_none(id=request.POST['admin_id'])
+    admin_remove = UserProfile.lg.get_or_none(id=admin_id)
     if not admin_remove:
         errors_logger.error("User with user ID #" + str(request.POST['follow_id']) + " does not exist.  Given to addAdmin by user #" + str(viewer.id))
         return HttpResponse("User with given ID does not exist")

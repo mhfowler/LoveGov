@@ -758,6 +758,7 @@ ACTIONS = [
     'matchWithPeople',
     'getMatchCard',
     'getMembersByUIDS',
+    'stepDownAsAdmin',
     'hideFacebookShareMatches',
 ]
 

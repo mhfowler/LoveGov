@@ -2736,6 +2736,24 @@ bind('.remove_admin_self' , 'click' , null , function(e)
     });
 });
 
+bind('.group_unadmin' , 'click', null , function(e)
+{
+    var button = $(this);
+    var g_id = button.data("g_id");
+    if (confirm("Are you sure you want to stop being a moderator of this group?")) {
+        action({
+            data:
+            {
+                'action': 'stepDownAsAdmin',
+                'g_id': g_id
+            },
+            success: function(data) {
+                location.reload();
+            }
+        });
+    }
+});
+
 function removeAdmin(admin_id,g_id,success)
 {
     action({
