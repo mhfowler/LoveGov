@@ -588,12 +588,18 @@ div.fb-match-share-wrapper {
   @include border-radius(0px);
   border: 1px solid $light-gray;
   padding: 15px;
+  @include clearfix;
   &:hover {
     background-color: $white-gray;
   }
-  .facebook-share-match-results {
+  a.facebook-share-match-results {
+    float: left;
     display: block;
     width: 75px;
+  }
+  div.glyphicon-sprite {
+    @include opacity(0.25);
+    cursor: pointer;
   }
 }
 
