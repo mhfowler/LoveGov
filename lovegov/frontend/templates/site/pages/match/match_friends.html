@@ -5,6 +5,10 @@
         {% if not viewer.facebook_id %}
             <a href="/fb/redirect/fb/connect/" class="import-friends"> import friends from facebook </a>
         {% endif %}
+        {% if viewer.facebook_id %}
+            <a class="facebook-share-match-results" style="float:right; font-size:12px; text-align: right;">Share your presidential<br>match results on Facebook</a>
+        {% endif %}
+
     </div>
 
     <div class="people-list-wrapper match-feed">
