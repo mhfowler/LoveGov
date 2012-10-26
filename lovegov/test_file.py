@@ -23,6 +23,6 @@ from lovegov.frontend.views import *
 #output_file = os.path.join(PROJECT_PATH, 'logging/metrics/percentage_analytics_landmarks.xls')
 #
 #percentageAnalytics(time_tuples=time_tuples, resolution=20, output_file=output_file)
-
-m = getUser("Maximus Fowler")
-sendNewLoveGovEmail(m)
+#
+#m = getUser("Maximus Fowler")
+#sendNewLoveGovEmail(m)
