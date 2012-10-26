@@ -76,7 +76,7 @@ COMPRESS_ENABLED = False
 #
 ########################################################################################################################
 
-LOCAL_EMAIL = True
+LOCAL_EMAIL = False
 
 if LOCAL_EMAIL:
     EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'

@@ -458,7 +458,7 @@ def getQuestionStats(vals, poll=None):
         vals['poll'] = poll
         questions = poll.questions.all()
     else:
-        questions = viewer.getGroupSubscriptionsQuestions()
+        questions = viewer.getAllMyQuestions()
     for t in getMainTopics():
         stat = {'topic':t}
         q_ids = questions.filter(main_topic=t).values_list('id', flat=True)

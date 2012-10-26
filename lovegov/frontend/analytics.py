@@ -91,20 +91,22 @@ def singlePercentageAnalytics(w_sheet, starting_row, time_start=None, time_end=N
 
     # for each analytic, write description, then get results, and then write results to sheet
     c_row = starting_row + 1
-    for args_dict in PERCENTAGE_ANALYTICS:
 
-        w_sheet.write(c_row,3, args_dict['description'])
+    if num_users:
+        for args_dict in PERCENTAGE_ANALYTICS:
 
-        fun = getPercentageAnalyticsFunction(args_dict)
-        results = getPercentageAnalyticsResults(users, fun, resolution)
-        c_col = 4
-        for r in results:
-            percent = r[0]
-            result =r[1]
-            w_sheet.write(c_row,c_col, result)
-            c_col += 1
+            w_sheet.write(c_row,3, args_dict['description'])
 
-        c_row += 1
+            fun = getPercentageAnalyticsFunction(args_dict)
+            results = getPercentageAnalyticsResults(users, fun, resolution)
+            c_col = 4
+            for r in results:
+                percent = r[0]
+                result =r[1]
+                w_sheet.write(c_row,c_col, result)
+                c_col += 1
+
+            c_row += 1
 
     return c_row
 

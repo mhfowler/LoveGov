@@ -2559,9 +2559,9 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo, AnalyticsData):
         content = content.filter(posted_to__in=my_subscriptions)
         return content
 
-    def getGroupSubscriptionsQuestions(self):
+    def getAllMyQuestions(self):
         viewer_subscriptions = self.getSubscriptions()
-        questions = Question.objects.filter(posted_to__in=viewer_subscriptions)
+        questions = Question.objects.filter(Q(official=True) | Q(posted_to__in=viewer_subscriptions))
         return questions
 
     #-------------------------------------------------------------------------------------------------------------------
