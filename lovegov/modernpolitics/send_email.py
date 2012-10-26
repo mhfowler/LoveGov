@@ -109,6 +109,13 @@ def sendLaunchEmail(user_profile):
     email_template = 'emails/lovegov/launch.html'
     sendLoveGovEmailHelper(user_profile, subject, email_vals, email_template)
 
+
+def sendNewLoveGovEmail(user_profile):
+    subject = u'Same LoveGov, New Look'
+    email_vals = {}
+    email_template = 'emails/lovegov/new_lovegov.html'
+    sendLoveGovEmailHelper(user_profile, subject, email_vals, email_template)
+
 def sendWeeklyDigestEmail(user_profile):
 
     from lovegov.frontend.views_helpers import getWeeklyDigestQuestions, getWeeklyDigestNews
