@@ -1,5 +1,5 @@
 {% load customtags %}
-<div class="left-navbar">
+<div class="left-navbar" xmlns="http://www.w3.org/1999/html">
 
     <div class="home_reloading home-reloading"></div>
 
@@ -78,6 +78,14 @@
         <a class="home_link left_link section_title" href="/friends/" data-sequence="{{ sequence|increment }}"> <div class="navbar_title navbar-title"> Friends  </div> </a>
     </div>
     {% endcomment %}
+
+    {% if viewer.facebook_id and viewer.show_share_matches %}
+        <div class="fb-match-share-wrapper" style="{% if viewer.getNumResponses < 15 %}display: none {% endif %}">
+            <a class="hide-facebook-share-match-results" style="float: right; color: gray; font-size: 11px;">x</a>
+            <a class="facebook-share-match-results">Share your match results on Facebook</a>
+            <div class="glyphicon-sprite sprite-glyphicon_222_share-png facebook-share-match-results"></div>
+        </div>
+    {% endif %}
 
     {% if viewer.facebook_id %}
         {% include 'site/pages/friends/fb_invite_sidebar.html' %}

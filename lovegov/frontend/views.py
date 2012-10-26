@@ -37,7 +37,6 @@ def match(request, section=None, vals={}):
         viewer.show_welcome = False
         viewer.save()
 
-
     if section == 'presidential':
         match_body_html = getMatchPresidentialHTML(request, vals)
         viewer.completeMatchSection("P")
