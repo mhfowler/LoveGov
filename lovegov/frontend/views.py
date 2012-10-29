@@ -322,6 +322,11 @@ def goToLoveGov(request, link_id, vals={}):
         error_logger.error("to lovegov with code that does not exist: " + str(link_id))
     return shortcuts.redirect("/home/")
 
+def lgAlias(request, alias, vals={}):
+    lg_alias = LoveGovAlias(alias=alias, ipaddress=request.META.get('REMOTE_ADDR'))
+    lg_alias.save()
+    return shortcuts.redirect("/")
+
 def updateHotFeedPage(request, vals={}):
     viewer = vals['viewer']
     return HttpResponse(viewer.updateHotFeed())
