@@ -1,6 +1,7 @@
 import os
 from lovegov.base_settings import *
 
+LOCAL_EMAIL = True
 LOCAL = True
 DEBUG = True
 TEMPLATE_DEBUG = True
@@ -75,8 +76,6 @@ COMPRESS_ENABLED = False
 #    email during dev
 #
 ########################################################################################################################
-
-LOCAL_EMAIL = True
 
 if LOCAL_EMAIL:
     EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'

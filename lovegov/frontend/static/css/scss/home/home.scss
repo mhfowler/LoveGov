@@ -540,6 +540,7 @@ a.section_title.clicked {
     }
   }
 
+
 }
 
 
@@ -582,7 +583,27 @@ div.dismissible-header {
   }
 }
 
-
+div.fb-match-share-wrapper {
+  margin: 25px 0;
+  @include border-radius(0px);
+  border: 1px solid $light-gray;
+  padding: 15px;
+  @include clearfix;
+  a.facebook-share-match-results {
+    float: left;
+    display: block;
+    width: 75px;
+    color: black;
+  }
+  div.glyphicon-sprite {
+    @include opacity(0.25);
+    cursor: pointer;
+    position: relative;
+    left: 8px;
+    margin-top: 35px;
+    float: right;
+  }
+}
 
 /* new footer */
 div.new-footer {

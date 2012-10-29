@@ -423,6 +423,8 @@ def urlToObjectOld(url):
         return Group.lg.get_or_none(id=alias)
     elif type == 'blog':
         return BlogEntry.lg.get_or_none(id=int(split[2]))
+    elif type == 'scorecard':
+        return Scorecard.lg.get_or_none(id=alias)
 
 #-----------------------------------------------------------------------------------------------------------------------
 # Convenience method for rendering a template to string.

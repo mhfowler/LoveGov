@@ -757,7 +757,9 @@ ACTIONS = [
     'matchWithGroups',
     'matchWithPeople',
     'getMatchCard',
-    'getMembersByUIDS'
+    'getMembersByUIDS',
+    'stepDownAsAdmin',
+    'hideFacebookShareMatches',
 ]
 
 UNAUTHENTICATED_ACTIONS = [

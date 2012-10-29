@@ -1287,6 +1287,7 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo, AnalyticsData):
     private_follow = models.BooleanField(default=False)
     email_subscriptions = models.CharField(max_length=40, default="AW", blank=True)
     digested_content = models.ManyToManyField("Content", related_name="digested_by")            # content which was sent to this user in a digest email
+    show_share_matches = models.BooleanField(default=True)
     # Government Stuff
     political_title = models.CharField(max_length=100, default="Citizen")
     primary_role = models.ForeignKey("OfficeHeld", null=True)
@@ -1710,6 +1711,9 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo, AnalyticsData):
         self.num_answers = 0
         self.save()
         self.getView().clearResponses()
+
+    def getNumResponses(self):
+        return self.getView().responses.count()
 
     def clearTasks(self):
         self.first_login_tasks = ""

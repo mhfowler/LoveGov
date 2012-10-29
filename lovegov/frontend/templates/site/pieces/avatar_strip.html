@@ -12,18 +12,9 @@
                     </div>
                 </div>
 
-                {% if scorecard_strip  %}
-                    <div class="before-match before-scorecard-match">
-                        {% if not scorecard_compare %}
-                            <a class="view-all-answers" href="{{ user.scorecard_comparison_url }}"> view all answers </a>
-                            <span class="match-from"> {{ comparison.num_q }} questions </span>
-                        {% endif %}
-                    </div>
-                {% else %}
-                    <div class="before-match">
-                        <span class="match-from"> {{ comparison.num_q }} questions </span>
-                    </div>
-                {% endif %}
+                <div class="before-match">
+                    <span class="match-from"> {{ comparison.num_q }} questions </span>
+                </div>
 
             </div>
         {% endif %}
@@ -54,6 +45,10 @@
             <span class="heart-score"> {{ user.upvotes }}</span>
         </div>
     </div>
+
+    {% if scorecard_strip %}
+        <a class="view-all-answers" href="{{ user.scorecard_comparison_url }}"> view all answers </a>
+    {% endif %}
 
     <div style="clear:both;"></div>
 </div>

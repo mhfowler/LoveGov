@@ -74,6 +74,7 @@ div.content-admin-actions {
   border-left: none;
   border-right: none;
   padding: 10px;
+  float: left;
   span.content-admin-action-delete {
     cursor: pointer;
     color: $text-blue-light;
