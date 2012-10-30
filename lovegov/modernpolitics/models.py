@@ -376,6 +376,9 @@ class Content(ActiveModel, Privacy, LocationLevel):
         else:
             return ""
 
+    def getStatus(self):
+        return self.status
+
     #-------------------------------------------------------------------------------------------------------------------
     # Gets url for viewing detail of this content.
     #-------------------------------------------------------------------------------------------------------------------
@@ -443,7 +446,8 @@ class Content(ActiveModel, Privacy, LocationLevel):
         elif self.type =='S':
             return "Scorecard: " + self.get_name()
         elif self.type=='Q':
-            return "Question: " + self.get_name()
+            #return "Question: " + self.get_name()
+            return self.get_name()
         elif self.type=='D':
             return "Discussion: " + self.get_name()
         elif self.type=='L':
@@ -4382,6 +4386,9 @@ class Question(Content):
     # scores for questions feed
     num_responses = models.IntegerField(default=0)
     questions_hot_score = models.IntegerField(default=0)
+
+    def getStatus(self):
+        return self.num_responses
 
     def updateTopPoll(self):
         polls = Poll.objects.filter(questions=self).order_by("-status")
