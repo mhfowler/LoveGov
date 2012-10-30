@@ -123,6 +123,9 @@ div.group-expanded
       @include grayText();
       font-size: 18px;
       margin-bottom: 2px;
+      &:hover {
+        text-decoration:none;
+      }
     }
 
     div.group-column
