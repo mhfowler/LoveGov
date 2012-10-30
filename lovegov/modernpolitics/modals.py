@@ -129,6 +129,10 @@ def getGroupDescriptionModal(group,request,vals):
     vals['group'] = group
     return ajaxRender('site/pages/group/description_modal.html', vals,request)
 
+def getGroupModeratorsModal(group,request,vals):
+    vals['group'] = group
+    vals['moderators'] = group.admins.all()
+    return ajaxRender('site/pages/group/moderators_modal.html', vals,request)
 
 def getPetitionSignersModal(petition, request, vals):
     vals['petition'] = petition

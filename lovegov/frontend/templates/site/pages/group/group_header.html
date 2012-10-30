@@ -101,11 +101,6 @@
 
                 </div>
 
-                {% comment %}
-                    <div class="group-histogram">
-                        {% include 'site/pages/histogram/histogram_mini.html' with histogram_metadata=info.histogram_metadata buckets=info.buckets %}
-                    </div>
-                {% endcomment %}
 
                 <div class="group-topic-comparison">
                     <div class="hundred"> 100% </div>
@@ -118,54 +113,65 @@
 
             </div>
 
+            <div class="group-upper-info">
 
-            <div class="group-column group-text inline_editable">
-                <div class="group-info-title-wrapper">
-                    <div class="group-info-title">Description</div>
-                    {% if info.is_user_admin %}
-                        <a href="{{ group.getSettingsURL }}" class="edit-link pencil-button not_editing_display"></a>
-                    {% endif %}
-                    <div style="clear:both;"></div>
-                </div>
-                <div class="group-full-text inline_editable" data-model="Content" data-id="{{ group.id }}">
-                    <div class="inline-div being_edited not_editing_display">
-                        <div class="text_unexpanded">
-                            {{ group.full_text|urlize|truncate_chars:200|linebreaksbr }}
-                        </div>
-                        <div class="text_expanded">
-                            {{ group.full_text|urlize|linebreaksbr }}
-                        </div>
+                <div class="group-column group-text inline_editable">
+                    <div class="group-info-title-wrapper">
+                        <div class="group-info-title">Description</div>
+                        {% if info.is_user_admin %}
+                            <a href="{{ group.getSettingsURL }}" class="edit-link pencil-button not_editing_display"></a>
+                        {% endif %}
+                        <div style="clear:both;"></div>
                     </div>
-                    {% if info.is_user_admin %}
-                        <div class="inline-edit-input inline_edit doing_editing_display">
-                            <textarea type="text" maxlength="1000" class="edit_input group-description-edit" name="full_text">{{ group.full_text }}</textarea>
-                            <a href="" class="edit-link cancel_inline_edit dummy_link">cancel</a>
-                            <a href="" class="edit-link submit_inline_edit dummy_link">save</a>
+                    <div class="group-full-text inline_editable" data-model="Content" data-id="{{ group.id }}">
+                        <div class="inline-div being_edited not_editing_display">
+                            <div class="text_unexpanded">
+                                {{ group.full_text|urlize|truncate_chars:200|linebreaksbr }}
+                            </div>
                         </div>
-                    {% endif %}
+                        {% if info.is_user_admin %}
+                            <div class="inline-edit-input inline_edit doing_editing_display">
+                                <textarea type="text" maxlength="1000" class="edit_input group-description-edit" name="full_text">{{ group.full_text }}</textarea>
+                                <a href="" class="edit-link cancel_inline_edit dummy_link">cancel</a>
+                                <a href="" class="edit-link submit_inline_edit dummy_link">save</a>
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <a class="see-more group_description_modal dummy_link" data-g_id="{{ group.id }}">
+                        see full description
+                    </a>
                 </div>
 
-                <a class="see-more group_description_modal dummy_link" data-g_id="{{ group.id }}">
-                    see full description
-                </a>
+
+                <div class="group-column group-people">
+
+                    {% if info.group_admins %}
+                        <div class="group-moderators">
+
+                            <div class="group-info-title">Moderators</div>
+                            {% for admin in info.group_admins %}
+                                <a href="{{ admin.get_url }}">{% include 'site/pieces/avatar-with-name.html' with user=admin height="30" width="30" %}</a>
+                            {% empty %}
+                                <p>
+                                    Apply to become a moderator.
+                                </p>
+                            {% endfor %}
+
+                        </div>
+
+                        <a class="see-more group_moderators_modal dummy_link" data-g_id="{{ group.id }}">
+                            see all
+                        </a>
+                    {% endif %}
+
+                </div>
+
             </div>
 
-
-            <div class="group-column group-people">
-
-                {% if info.group_admins %}
-                    <div class="group-moderators">
-
-                        <div class="group-info-title">Moderators</div>
-                        {% for admin in info.group_admins %}
-                            <a href="{{ admin.get_url }}">{% include 'site/pieces/avatar-with-name.html' with user=admin height="30" width="30" %}</a>
-                        {% endfor %}
-
-                    </div>
-                {% endif %}
-
+            <div class="group-lower-info">
                 <div class="group-members {% if not info.group_admins %} no-admins {% endif %}">
-                    <a href="{{ group.getHistogramURL }}"><div class="group-info-title">Members</div></a>
+                    <div class="group-info-title">Members</div>
                     {% for member in info.group_members %}
                         <div class="group-member-avatar">
                             <a href="{{ member.get_url }}">{% include 'site/pieces/avatar.html' with user=member width="30" height="30" %}</a>
@@ -177,7 +183,6 @@
                 <a href="{{ group.getHistogramURL }}" class="see-more">
                     see all members
                 </a>
-
             </div>
 
         </div>

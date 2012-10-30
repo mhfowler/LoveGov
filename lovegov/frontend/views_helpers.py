@@ -533,10 +533,7 @@ def valsGroup(viewer, group, vals):
 
     # Get the list of all members and truncate it to be the number of members showing
     group_members = group.getMembers().order_by("-created_when")
-    if admins:
-        num_members_display = 16
-    else:
-        num_members_display = 24
+    num_members_display = 22
     vals['group_members'] = group_members[:num_members_display]
 
     # Get the number of group Follow Requests
