@@ -10,6 +10,6 @@ if __name__ == "__main__":
     delta = datetime.timedelta(days=7)
     time_tuples = getTimeTuplesByDelta(start_date, end_date, delta)
 
-    output_file = os.path.join(PROJECT_PATH, 'logging/metrics/registration_conversion.xls')
+    output_file = os.path.join(PROJECT_PATH, 'logging/metrics/registration_conversion_10-30.xls')
 
     registrationConversionAnalytics(time_tuples, output_file)
