@@ -248,6 +248,9 @@ div.group-expanded
       min-height: 100px;
       overflow:hidden;
       margin-right: 30px;
+      &.no-admins {
+        width:491px;
+      }
 
       div.group-info-title-wrapper {
         width:100%;

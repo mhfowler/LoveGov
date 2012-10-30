@@ -115,7 +115,7 @@
 
             <div class="group-upper-info">
 
-                <div class="group-column group-text inline_editable">
+                <div class="group-column group-text inline_editable {% if info.no_admins %} no-admins {% endif %}">
                     <div class="group-info-title-wrapper">
                         <div class="group-info-title">Description</div>
                         {% if info.is_user_admin %}
@@ -143,10 +143,10 @@
                     </a>
                 </div>
 
+                {% if not info.no_admins %}
 
-                <div class="group-column group-people">
+                    <div class="group-column group-people">
 
-                    {% if info.group_admins %}
                         <div class="group-moderators">
 
                             <div class="group-info-title">Moderators</div>
@@ -163,9 +163,10 @@
                         <a class="see-more group_moderators_modal dummy_link" data-g_id="{{ group.id }}">
                             see all
                         </a>
-                    {% endif %}
 
-                </div>
+                    </div>
+
+                {% endif %}
 
             </div>
 

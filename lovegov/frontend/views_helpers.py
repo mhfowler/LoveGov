@@ -529,7 +529,8 @@ def valsGroup(viewer, group, vals):
             break
 
     # Get list of all Admins
-    vals['group_admins'] = group.admins.all()[:2]
+    vals['group_admins'] = group_admins = group.admins.all()[:2]
+    vals['no_admins'] = not group_admins
 
     # Get the list of all members and truncate it to be the number of members showing
     group_members = group.getMembers().order_by("-created_when")
