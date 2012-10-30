@@ -1318,7 +1318,7 @@ def legislationDetail(request, l_id, vals={}):
 
     contentDetail(request, legislation, vals)
     html = ajaxRender('site/pages/content_detail/legislation_detail.html', vals, request)
-    url = legislation.get_url
+    url = legislation.get_url()
     return framedResponse(request, html, url, vals)
 
 #-----------------------------------------------------------------------------------------------------------------------
