@@ -5747,6 +5747,7 @@ class toLoveGov(LGModel):
 class LoveGovAlias(LGModel):
     alias = models.CharField(max_length=100)
     ipaddress = models.IPAddressField()
+    when = models.DateTimeField(auto_now_add=True)
 
 class UnsubscribedToEmail(LGModel):
     email = models.EmailField()
