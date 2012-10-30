@@ -966,6 +966,16 @@ def summaryEmail(time_start, time_end):
     registered.order_by("created_when")
     vals['registered'] = registered
 
+    # conversion analytics
+    conversion_analytics = analyzeCookieData(time_start, time_end)
+    vals['num_ips_visited'] = conversion_analytics['total_ips_visited']
+    vals['num_new_ips_visited'] = conversion_analytics['new_ips_visited']
+    vals['num_registered'] = conversion_analytics['total_registered']
+    vals['num_registered_and_logged_in'] = conversion_analytics['total_new_users_logged_in']
+    vals['num_presidential_matched'] = conversion_analytics['presidential_matched']
+    vals['num_presidential_matched_and_registered'] = conversion_analytics['registered_with_cookie_data']
+    vals['num_returning_visited'] = conversion_analytics['total_old_users_logged_in']
+
     # load times
     vals['load_times_html'] = loadTimes(time_start, time_end)
 
