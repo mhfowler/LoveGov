@@ -18,7 +18,7 @@
         <div class="lower-area">
             <img src="{{ STATIC_URL }}/images/login/or.png" style="width: 300px; margin: 5px 20px; margin-bottom: 20px;">
             <div style="text-align: center">
-                <div class="sign-up-with-email-area has_hover_color">
+                <div class="sign-up-with-email-area {% if to_page != '/sign_up/' %} has_hover_color {% endif %}" {% if to_page == '/sign_up/' %} style="padding:30px;"{% endif %}>
                     <div class="sign-up-form-wrapper">
                         {% include 'site/pages/october_login/sign_up_with_email_form.html' %}
                     </div>
@@ -28,12 +28,14 @@
         </div>
     </div>
 
+    {% comment %}
     <div class="registration-benefits">
-    <div style="font-size: 48px; margin-bottom: 15px; text-align: center;">But wait, there's more!</div>
+        <div style="font-size: 48px; margin-bottom: 15px; text-align: center;">But wait, there's more!</div>
 
-        <p>Signing up with your Facebook, Twitter, or email gives you access to a number of community organizing tools, allowing you
-            and your interest group to share news, host discussions, create petitions, and much more. Read on to learn how it works.
+            <p>Signing up with your Facebook, Twitter, or email gives you access to a number of community organizing tools, allowing you
+                and your interest group to share news, host discussions, create petitions, and much more. Read on to learn how it works.
+        </div>
     </div>
-    </div>
+    {% endcomment %}
 
 </div>
