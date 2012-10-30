@@ -4387,9 +4387,6 @@ class Question(Content):
     num_responses = models.IntegerField(default=0)
     questions_hot_score = models.IntegerField(default=0)
 
-    def getStatus(self):
-        return self.num_responses
-
     def updateTopPoll(self):
         polls = Poll.objects.filter(questions=self).order_by("-status")
         if polls:
