@@ -520,6 +520,9 @@ div.match-body-wrapper {
       }
       div.group-text {
         margin-right:25px;
+        &.no-admins {
+          width:485px;
+        }
       }
     }
 
