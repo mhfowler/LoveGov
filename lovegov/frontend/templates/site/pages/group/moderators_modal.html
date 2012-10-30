@@ -1,0 +1,11 @@
+<div class='group-description-modal'>
+
+    <div class="group-title"> {{ group.get_name }} Moderators </div>
+
+    <div class="group-moderators-wrapper">
+        {% for user in moderators %}
+            {% include 'site/pieces/avatar_strip.html' %}
+        {% endfor %}
+    </div>
+
+</div>
