@@ -1353,7 +1353,7 @@ function getFeed(container) {
         var u_ids = getValueFromKey(container, 'u_ids');
         var g_id = getValueFromKey(container, 'g_id');
         var display = getValueFromKey(container, 'default_display');
-        data = {'action': feed, 'feed_start':feed_start, 'u_ids':u_ids, 'g_id':g_id, 'display':display};
+        data = {'action': feed, 'feed_start':feed_start, 'u_ids':u_ids, 'g_id':g_id, 'display':display, 'log-ignore':true};
     }
     else {
         var which = getValueFromKey(container, 'which');
