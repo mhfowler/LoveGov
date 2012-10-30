@@ -49,7 +49,7 @@
             {% if posted_to %}
                 <a class="feed-item-thin-top-text" href="{{ posted_to.get_url }}"> {{ posted_to.get_name }} </a>
             {% else %}
-                <a class="feed-item-thin-top-text"> not posted to group </a>
+                <a style="float: left;width: 45%;height: 10px;"></a>
             {% endif %}
         {% endwith %}
         <a href="{{ item.get_url }}" class="feed-item-thin-title"><h3>{{ item.getTitleDisplay }}</h3></a>
