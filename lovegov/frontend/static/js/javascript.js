@@ -840,16 +840,16 @@ function expandInfoToggle(wrapper, animate)
     else if( info_expanded )
     {   // Set expanded to false and un-expand the info
         wrapper.data('info_expanded', false);
-        wrapper.find(".text_expanded").hide();
-        wrapper.find(".text_unexpanded").show();
+        //wrapper.find(".text_expanded").hide();
+        //wrapper.find(".text_unexpanded").show();
         info_div.animate({"height":reduced_height}, animation_time);
         wrapper.find(".expand_info").html('+ expand info');
     }
     else
     {   // Otherwise set expanded to true and expand the info
         wrapper.data('info_expanded', true);
-        wrapper.find(".text_expanded").show();
-        wrapper.find(".text_unexpanded").hide();
+        //wrapper.find(".text_expanded").show();
+        //wrapper.find(".text_unexpanded").hide();
         expandAnimation(info_div,animation_time);
         wrapper.find(".expand_info").html('&#8211 reduce info');
     }
@@ -1353,7 +1353,7 @@ function getFeed(container) {
         var u_ids = getValueFromKey(container, 'u_ids');
         var g_id = getValueFromKey(container, 'g_id');
         var display = getValueFromKey(container, 'default_display');
-        data = {'action': feed, 'feed_start':feed_start, 'u_ids':u_ids, 'g_id':g_id, 'display':display};
+        data = {'action': feed, 'feed_start':feed_start, 'u_ids':u_ids, 'g_id':g_id, 'display':display, 'log-ignore':true};
     }
     else {
         var which = getValueFromKey(container, 'which');
@@ -2485,6 +2485,11 @@ bind('.group_description_modal' , 'click' , null , function(event)
     getModal('group_description' , { 'g_id': g_id });
 });
 
+bind('.group_moderators_modal' , 'click' , null , function(event)
+{
+    var g_id = $(this).data('g_id');
+    getModal('group_moderators' , { 'g_id': g_id });
+});
 
 /***********************************************************************************************************************
  *

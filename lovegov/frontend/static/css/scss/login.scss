@@ -745,6 +745,12 @@ div.presidential-matching {
     padding-top:25px;
     padding-left:0px;
     float:left;
+    a.create-an-account {
+      &:hover {
+        color:$text-blue;
+        text-decoration:none;
+      }
+    }
     div.how-it-works-wrapper {
       float:left;
       margin-top:30px;
@@ -773,6 +779,21 @@ div.trial-questions-wrapper {
     div.answer-choice {
       width:96%;
     }
+  }
+  div.right-part {
+    display:none;
+  }
+  div.item-bottom {
+    display:none;
+  }
+  div.group-posted-to {
+    display:none;
+  }
+  div.left-part {
+    display:none;
+  }
+  div.agreement_bargraph_seed {
+    display:none;
   }
 }
 

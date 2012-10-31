@@ -376,6 +376,9 @@ class Content(ActiveModel, Privacy, LocationLevel):
         else:
             return ""
 
+    def getStatus(self):
+        return self.status
+
     #-------------------------------------------------------------------------------------------------------------------
     # Gets url for viewing detail of this content.
     #-------------------------------------------------------------------------------------------------------------------
@@ -443,7 +446,8 @@ class Content(ActiveModel, Privacy, LocationLevel):
         elif self.type =='S':
             return "Scorecard: " + self.get_name()
         elif self.type=='Q':
-            return "Question: " + self.get_name()
+            #return "Question: " + self.get_name()
+            return self.get_name()
         elif self.type=='D':
             return "Discussion: " + self.get_name()
         elif self.type=='L':
@@ -5747,6 +5751,11 @@ class toLoveGov(LGModel):
     date = models.DateTimeField(auto_now_add=True)
     from_where = models.CharField(max_length=100, null=True)
     clicks = models.IntegerField(default=0)
+
+class LoveGovAlias(LGModel):
+    alias = models.CharField(max_length=100)
+    ipaddress = models.IPAddressField()
+    when = models.DateTimeField(auto_now_add=True)
 
 class UnsubscribedToEmail(LGModel):
     email = models.EmailField()

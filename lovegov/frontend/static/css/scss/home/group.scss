@@ -123,6 +123,9 @@ div.group-expanded
       @include grayText();
       font-size: 18px;
       margin-bottom: 2px;
+      &:hover {
+        text-decoration:none;
+      }
     }
 
     div.group-column
@@ -234,6 +237,7 @@ div.group-expanded
       float:left;
       text-align:center;
       &:hover {
+        text-decoration:none;
         background-color:$dark-gray;
       }
     }
@@ -244,6 +248,9 @@ div.group-expanded
       min-height: 100px;
       overflow:hidden;
       margin-right: 30px;
+      &.no-admins {
+        width:491px;
+      }
 
       div.group-info-title-wrapper {
         width:100%;
@@ -264,7 +271,7 @@ div.group-expanded
       }
 
       div.group-full-text {
-        height: 263px;
+        height: 87px;
         margin-bottom: 10px;
         overflow: hidden;
 
@@ -283,7 +290,11 @@ div.group-expanded
       {
         margin-bottom: 10px;
         width: 160px;
-        height: 100px;
+        height: 116px;
+        div.avatar-with-name {
+          margin-bottom: 12px;
+          margin-top: 8px;
+        }
       }
 
       div.group-members
@@ -306,6 +317,31 @@ div.group-expanded
         }
       }
     }
+
+    div.group-upper-info {
+      float: left;
+      height: 167px;
+    }
+
+    div.group-lower-info {
+      float: left;
+      height: 163px;
+      width: 490px;
+      div.group-members {
+        float: left;
+        height: 134px;
+        width: 100%;
+        div.group-member-avatar
+          {
+          margin-right: 14px;
+          margin-top: 10px;
+          margin-bottom: 5px;
+          float: left;
+        }
+      }
+    }
+
+
   }
 
   div.group-pinned-content

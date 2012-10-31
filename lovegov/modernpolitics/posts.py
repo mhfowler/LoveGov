@@ -3497,6 +3497,12 @@ def getModal(request,vals={}):
         group = Group.objects.get(id=g_id)
         modal_html = getGroupDescriptionModal(group,request,vals)
 
+    ## get all group moderators ##
+    elif modal_name == 'group_moderators':
+        g_id = request.POST['g_id']
+        group = Group.objects.get(id=g_id)
+        modal_html = getGroupModeratorsModal(group,request,vals)
+
     ## see all signers ##
     elif modal_name == 'see_all_signers_modal':
         p_id = request.POST['p_id']
