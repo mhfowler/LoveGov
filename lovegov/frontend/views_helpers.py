@@ -383,7 +383,12 @@ def makeThread(request, object, user, depth=0, user_votes=None, user_comments=No
         excluded = []
     comment_ids = []
     # Get all comments that are children of the object
-    comments = Comment.allobjects.filter(on_content=object).exclude(id__in=excluded)
+
+    from django.db.models import Q
+    if object.type=='C' and depth==0:
+        comments = Comment.allobjects.filter(id=object.id)
+    else:
+        comments = Comment.allobjects.filter(on_content=object).exclude(id__in=excluded)
     if order=='new':
         comments = comments.order_by('-created_when')[start:]
     else:
@@ -400,10 +405,14 @@ def makeThread(request, object, user, depth=0, user_votes=None, user_comments=No
             # If comment hasn't been deleted OR it has responses
             if c.active or c.num_comments:
                 to_return += "<div class='threaddiv'>"     # open list
+                if c.id==object.id:
+                    vals['highlighted'] = 'true'
+                else:
+                    vals['highlighted'] = None
                 to_return += renderComment(request, vals, c, depth, user_votes, user_comments)
                 comment_ids.append(c.id)
                 rendered_so_far[0] += 1
-                if depth==0:
+                if depth==0 or (object.type=='C' and depth==1) :
                     top_levels += 1
                 children_to_return, _, _, children_comment_ids = makeThread(request,c,user,depth+1,user_votes,user_comments,vals=vals,limit=limit,rendered_so_far=rendered_so_far)    # recur through children
                 to_return += children_to_return

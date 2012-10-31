@@ -1,4 +1,4 @@
-<div class="comment {% if depth|divisibleby:'2' %}level1 {% else %}level2 {% endif %} {% if depth < 1 %}toplevel {% endif %}" data-cid="{{comment.id}}" data-depth={{ depth }}>
+<div class="comment {% if depth|divisibleby:'2' %}level1 {% else %}level2 {% endif %} {% if depth < 1 %}toplevel {% endif %} {% if highlighted %}highlighted{% endif %}" data-cid="{{comment.id}}" data-depth={{ depth }}>
     <div class="comment-username feed-username">
         {% load thumbnail %}
         {% if comment.active %}
@@ -38,6 +38,12 @@
         <div class="reply-action">
             reply
         </div>
+        <a href="{{ comment.permalink }}">
+        <div class="permalink">
+            permalink
+        </div>
+        </a>
+
         {% if creator.you %}
             <div class="append-action" data-cid="{{comment.id}}">
                 append

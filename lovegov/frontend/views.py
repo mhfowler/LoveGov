@@ -927,13 +927,14 @@ def thread(request, c_id, vals={}):
 #-----------------------------------------------------------------------------------------------------------------------
 # detail of petition with attached forum
 #-----------------------------------------------------------------------------------------------------------------------
-def petitionDetail(request, p_id, vals={}, signerLimit=8):
+def petitionDetail(request, p_id, c_id=None, vals={}, signerLimit=8):
 
     petition = Petition.lg.get_or_none(id=p_id)
     if not petition:
         return HttpResponse("This petition does not exist")
 
     viewer = vals['viewer']
+    vals['c_id'] = c_id
     valsPetition(viewer, petition, vals)
 
     contentDetail(request=request, content=petition, vals=vals)
@@ -944,10 +945,11 @@ def petitionDetail(request, p_id, vals={}, signerLimit=8):
 #-----------------------------------------------------------------------------------------------------------------------
 # detail of motion with attached forum
 #-----------------------------------------------------------------------------------------------------------------------
-def motionDetail(request, m_id, vals={}):
+def motionDetail(request, m_id, c_id=None, vals={}):
 
     motion = Motion.objects.get(id=m_id)
     vals['motion'] = motion
+    vals['c_id'] = c_id
 
     contentDetail(request=request, content=motion, vals=vals)
     html = ajaxRender('site/pages/content/motion/motion_detail.html', vals, request)
@@ -958,6 +960,31 @@ def motionDetail(request, m_id, vals={}):
 #-----------------------------------------------------------------------------------------------------------------------
 # detail of news with attached forum
 #-----------------------------------------------------------------------------------------------------------------------
+
+def commentDetail(request, type, content_id, comment_id, vals={}):
+    vals['onComment'] = comment_id
+    comment = Comment.lg.get_or_none(id=comment_id, root_content__id=content_id)
+    if not comment:
+        c = Content.lg.get_or_none(id=content_id)
+        if c:
+            return HttpResponseRedirect(c.get_url())
+        else:
+            return HttpResponseBadRequest("Requested content does not exist")
+    if type == 'news':
+        return newsDetail(request, content_id, vals=vals)
+    elif type == 'question':
+        return questionDetail(request, content_id, vals=vals)
+    elif type == 'poll':
+        return pollDetail(request, content_id, vals=vals)
+    elif type == 'discussion':
+        return discussionDetail(request, content_id, vals=vals)
+    elif type == 'motion':
+        return motionDetail(request, content_id, vals=vals)
+    elif type == 'petition':
+        return petitionDetail(request, content_id, vals=vals)
+    else:
+        return error404(request, vals=vals)
+
 def newsDetail(request, n_id, vals={}):
     news = News.objects.get(id=n_id)
     vals['news'] = news
@@ -971,7 +998,7 @@ def newsDetail(request, n_id, vals={}):
 #-----------------------------------------------------------------------------------------------------------------------
 # detail of question with attached forum
 #-----------------------------------------------------------------------------------------------------------------------
-def questionDetail(request, q_id=None, vals={}):
+def questionDetail(request, q_id=None, c_id=None, vals={}):
 
     viewer = vals['viewer']
     if not q_id:
@@ -992,7 +1019,7 @@ def questionDetail(request, q_id=None, vals={}):
 #-----------------------------------------------------------------------------------------------------------------------
 # detail for a poll
 #-----------------------------------------------------------------------------------------------------------------------
-def pollDetail(request, p_id=-1, vals={}):
+def pollDetail(request, p_id=-1, c_id=None, vals={}):
 
     viewer = vals['viewer']
     poll = Poll.objects.get(id=p_id)
@@ -1013,7 +1040,7 @@ def pollDetail(request, p_id=-1, vals={}):
 #-----------------------------------------------------------------------------------------------------------------------
 # detail for a discussion
 #-----------------------------------------------------------------------------------------------------------------------
-def discussionDetail(request, d_id=-1, vals={}):
+def discussionDetail(request, d_id=-1, c_id=None, vals={}):
 
     viewer = vals['viewer']
     discussion = Discussion.objects.get(id=d_id)

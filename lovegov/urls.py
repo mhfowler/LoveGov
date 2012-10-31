@@ -113,6 +113,7 @@ urlpatterns += patterns('',
     (r'^search/(?P<term>.*)/$', viewWrapper(views.search, requires_login=True)),
 
     # detail pages
+    (r'^(?P<type>\w+)/(?P<content_id>\d+)/comment/(?P<comment_id>\d+)/$', viewWrapper(views.commentDetail, requires_login=True)),
     (r'^profile/$', viewWrapper(views.profile, requires_login=True)),
     (r'^profile/(\S+)/$', viewWrapper(views.profile, requires_login=True)),
     (r'^question/(\d+)/$', viewWrapper(views.questionDetail, requires_login=True)),

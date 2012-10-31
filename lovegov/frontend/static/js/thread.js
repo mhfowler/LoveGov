@@ -178,6 +178,10 @@ function loadMoreComments() {
         button.text('there are no more comments to load');
         return;
     }
+    var onComment = thread.data('onComment');
+    if(onComment) {
+        alert(onComment);
+    }
     if(thread.length) {
         var cid = thread.data('cid');
         var next_start = thread.data('tops');
