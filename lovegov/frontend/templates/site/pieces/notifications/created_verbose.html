@@ -17,7 +17,7 @@
             and <a href="" class="agg_popup" data-n_id="{{ n_id }}">{{ tally|add:"-1" }} other people</a>
         {% endif %}
         commented on
-        {% with obj=to_object.downcast.on_content %}
+        {% with obj=to_object.downcast.on_content.downcast %}{{ obj.id }}
         <a href="{{ obj.get_url }}">{{ obj.get_name }}</a>
         {% endwith %}
     </td>
