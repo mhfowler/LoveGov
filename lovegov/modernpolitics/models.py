@@ -391,7 +391,7 @@ class Content(ActiveModel, Privacy, LocationLevel):
 
     def get_url(self):
         if self.type=='C':
-            return self.downcast().root_content.get_url()
+            return self.downcast().get_url()
         elif self.type=='R':
             return self.downcast().question.get_url()
         elif self.type=='P':
