@@ -10,15 +10,20 @@
 </span>
 {% include 'site/pieces/reply-form.html' with width="100%" depth='-1' content=content class="reply-new" %}
 <!-- comment thread -->
+{% if onComment %}
+    You are looking at a single comment in the discussion. <br><a href="{{ content.get_url }}#comments">Show entire comment thread</a>
+{% endif %}
 <div class="top-show-new-replies">show <span class="num-new-replies">0</span> new comments</div>
-<div class="thread" data-cid="{{ content.id }}" data-tops="0" data-comments="0" data-yet_to_get="none">
+<div class="thread" data-cid="{% if onComment %}{{ onComment }}{% else %}{{ content.id }}{% endif %}" data-tops="0" data-comments="0" data-yet_to_get="none" data-is_permalink="{% if onComment %}true{% else %}false{% endif %}">
     {{ thread_html|safe }}
 </div>
 <div class="load-more-comments">load more comments</div>
 <script type="text/javascript">
     $(document).ready(function() {
         loadMoreComments();
+        {% if not onComment %}
         setInterval(fetchAndUpdateNewComments, 10000);
+        {% endif %}
     });
     // New comments loaded - prevents them from being loaded again
     var new_comments = [];
