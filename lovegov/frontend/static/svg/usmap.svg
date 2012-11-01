@@ -29,13 +29,16 @@
     path {
       cursor: pointer;
       fill:#F0F0F0;
-      stroke: #CCC;
+      stroke: #ADADAD;
       stroke-opacity:1;
       stroke-width:0.5;
       stroke-miterlimit:4;
       stroke-dasharray:none
     }
     path:hover {
+      fill: #EF503B;
+    }
+    path.selected {
       fill: #EF503B;
     }
   </style>
