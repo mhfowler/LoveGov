@@ -5158,7 +5158,7 @@ bind('.goto_sign_up', 'click', function(e) {
     var new_height = element.height();
     element.css("height", old_height);
     $('body').animate({
-        scrollTop: element.offset().top - 25
+        scrollTop: element.offset().top - 290
     }, 1000);
     element.animate({"height":new_height}, {"duration":1000,
         "complete":function(){
