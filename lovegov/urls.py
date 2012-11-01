@@ -91,6 +91,8 @@ urlpatterns += patterns('',
     (r'^match/$', viewWrapper(views.match, requires_login=True)),
 
     # home pages
+    (r'^my_city/$', viewWrapper(views.myCity, requires_login=True)),
+    (r'^my_state/$', viewWrapper(views.myState, requires_login=True)),
     (r'^welcome/$', viewWrapper(views.welcome, requires_login=True)),
     (r'^home/$', viewWrapper(views.home, requires_login=True)),
     (r'^groups/$', viewWrapper(views.browseGroups, requires_login=True)),

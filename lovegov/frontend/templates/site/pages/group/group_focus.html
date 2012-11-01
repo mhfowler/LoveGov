@@ -3,10 +3,16 @@
 {% block home_header %}
 
     {% if first_state_group %}
-        {% include 'site/pages/group/introduction_state_group_header.html' with no_dismissible_x=1 %}
+        <div class="first-state-group">
+            {% include 'site/pages/group/introduction_state_group_header.html' with no_dismissible_x=1 %}
+        </div>
+    {% elif first_city_group %}
+        <div class="first-state-group">
+            {% include 'site/pages/group/introduction_state_group_header.html' with no_dismissible_x=1 %}
+        </div>
     {% endif %}
 
-    {% include 'site/pages/group/group_header.html' with info_height="113px" info_expanded=1 %}
+    {% include 'site/pages/group/group_header.html' with info_height="113px" info_expanded=0 %}
 {% endblock %}
 
 {% block home_feed %}

@@ -1,19 +1,53 @@
-{% extends 'site/pages/dismissible_headers/introduction_header.html' %}
+{% extends 'site/pages/dismissible_headers/dismissible_header.html' %}
 
-{% block introduction_content %}
+{% block dismissible_content %}
 
-    <p class="introduction-text">
-        This is your home page, a feed of the most popular news, questions, and discussions on LoveGov.
-    <p>
-        All of the content here was posted to specific groups or elections by other LoveGov users.
-        <a href="/groups/"> Join groups </a> and <a href="/elections/"> follow elections </a> to find
-        content specifically relevant to you.
-    <p>
+    <div class="introduction-header">
 
-    </p>
-        Check out your <a href="/like_minded/" class="home_link dummy_link">like minded group page</a>
-        to see a feed of content posted only by people who match similarly to you.
-        {% comment %}<a class="like_minded_link dummy_link" id="like_minded_link_id2">like-minded</a> {% endcomment %}
-    </p>
+        <div class="welcome-header">
+
+            <a href="/lovegov/"> <div class="lovegov-robot tooltip-top" title="I'm a robot that's here to help you."></div> </a>
+
+            {% comment %}
+            <div class="right-of-picture">
+                <div class="top-text">
+                    <div class="welcome-header-header"> Welcome to LoveGov! </div>
+                    <a class="dismissible_x hide-intros"> (hide welcome message) </a>
+                </div>
+                <div class="welcome-paragraph">
+                    It's time to get involved in your government. Start by <a class="first_answer_questions dummy_link">answering questions</a> and seeing how you match with
+                    the presidential candidates. Then click through the stages below to complete our matching and join our community.
+                </div>
+            </div>
+            {% endcomment %}
+
+            <div class="right-of-picture">
+                <div class="top-text">
+                    <div class="welcome-header-header"> This is your home page. </div>
+                    <a class="dismissible_x hide-intros"> (hide welcome message) </a>
+                </div>
+                <div class="welcome-paragraph">
+                    <p>
+                        Here you can find news, questions and petitions that were posted to groups and elections that you are following.
+                    </p>
+
+                    {% comment %}
+                    <p>
+                        <a href="/groups/"> Join groups </a> and <a href="/elections/"> follow elections </a> to find
+                        content relevant to you.
+                    </p>
+                    {% endcomment %}
+
+                    <p style="margin-bottom:0px;">
+                    Check out your <a href="/like_minded/" class="home_link dummy_link">like minded group page</a>
+                    to see a feed of content posted by people who match similarly to you.
+                    </p>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
 
 {% endblock %}

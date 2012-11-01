@@ -27,12 +27,16 @@
                     <a class="dismissible_x hide-intros"> (hide welcome message) </a>
                 </div>
                 <div class="welcome-paragraph">
-                    <p>
-                        Start by <a class="first_answer_questions dummy_link">answering questions</a> to define your political views.
-                    </p>
-                    <p>
+                    {% if not ABOVE_QUESTIONS_THRESHOLD %}
+                    <div>
+                        Start by <a class="first_answer_questions dummy_link">answering questions</a> to define your political views (they're at the bottom of the page).
+                    </div>
+                    <div>
                         Then click through the stages below and see how you compare with your political world.
-                    </p>
+                    </div>
+                    {% else %}
+                        Click through the stages below and see how you compare with your political world.
+                    {% endif %}
                 </div>
             </div>
 

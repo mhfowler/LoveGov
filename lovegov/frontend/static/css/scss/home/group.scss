@@ -4,14 +4,56 @@
 
 @import "compass";
 
+/* first state group header */
+div.first-state-group {
+  div.dismissible-header {
+    div.the-content {
+      width:100%;
+    }
+  }
+  div.introduction-header {
+    width:720px;
+    div.welcome-header {
+      height:127px;
+      div.right-of-picture {
+        width: 600px;
+      }
+    }
+  }
+  div.what-next {
+    float: left;
+    width: 240px;
+    border: 1px dotted #E0E0E0;
+    padding: 10px;
+    padding-right: 0px;
+    margin-bottom: 20px;
+    padding-top: 20px;
+    margin-top: 10px;
+    padding-left: 0px;
+    height: 127px;
+    div.welcome-list-header {
+      font-size: 20px;
+      padding-left: 18px;
+    }
+    ul.next-steps-list {
+      padding-left:37px;
+      margin: 5px 0;
+      padding: 0 0 0 33px;
+      font-size: 15px;
+    }
+  }
+}
+
+
+
 /* group action buttons */
 div.group-actions
-{
+  {
   float:right;
   @include clearfix();
 
   .group-action
-  {
+    {
     padding:5px;
     background-color:$light-gray;
     width:160px;
@@ -22,7 +64,7 @@ div.group-actions
     @include border-radius(8px);
 
     &:hover
-    {
+      {
       text-decoration:none;
       background-color:$dark-gray;
       cursor:pointer;
@@ -53,7 +95,7 @@ div.group-actions
 
 
 span.group-title
-{
+  {
   text-transform: uppercase;
   font-weight: bold;
   font-size: 16px;
@@ -66,7 +108,7 @@ span.group-title
 }
 
 span.group-scale
-{
+  {
   color: $dark-gray;
   font-size: 12px;
   @include inline-block();
@@ -78,7 +120,7 @@ span.group-scale
 }
 
 span.group-num-members
-{
+  {
   font-size: 12px;
   @include inline-block();
   float:left;
@@ -103,23 +145,23 @@ span.group-num-followers {
 
 
 div.group-top
-{
+  {
   @include inline-block();
 }
 
 div.group-expanded
-{
+  {
   @include clearfix();
   overflow: hidden;
   //min-width: 910px;
 
   div.group-info
-  {
+    {
     @include clearfix();
     margin-bottom: 20px;
 
     div.group-info-title
-    {
+      {
       @include grayText();
       font-size: 18px;
       margin-bottom: 2px;
@@ -129,7 +171,7 @@ div.group-expanded
     }
 
     div.group-column
-    {
+      {
       @include clearfix();
       float:left;
       margin-right: 30px;
@@ -139,7 +181,7 @@ div.group-expanded
     }
 
     div.group-image
-    {
+      {
       float: left;
       height: 100px;
       width: 140px;
@@ -148,13 +190,13 @@ div.group-expanded
     }
 
     div.group-match
-    {
+      {
       float: left;
       height: 100px;
       color: $red;
 
       div.match-number
-      {
+        {
         font-size: 64px;
         font-weight: bold;
         height: 64px;
@@ -167,7 +209,7 @@ div.group-expanded
       }
 
       div.match-title
-      {
+        {
         width: 100%;
         font-size: 20px;
         height: 20px;
@@ -176,7 +218,7 @@ div.group-expanded
     }
 
     div.group-histogram
-    {
+      {
       width:250px;
       height: 199px;
       position:relative;
@@ -191,13 +233,13 @@ div.group-expanded
       position:relative;
 
       div.hundred {
-          position:absolute;
-          top:-19px;
-          left:0px;
-          border-bottom:1px solid $gray;
-          width:40px;
-          display:none;
-          //width:100%;
+        position:absolute;
+        top:-19px;
+        left:0px;
+        border-bottom:1px solid $gray;
+        width:40px;
+        display:none;
+        //width:100%;
       }
 
       div.group-header-topic-bar {
@@ -243,7 +285,7 @@ div.group-expanded
     }
 
     div.group-text
-    {
+      {
       width: 300px;
       min-height: 100px;
       overflow:hidden;
@@ -265,7 +307,7 @@ div.group-expanded
       }
 
       textarea.group-description-edit
-      {
+        {
         width:300px;
         height:210px;
       }
@@ -285,9 +327,9 @@ div.group-expanded
     }
 
     div.group-people
-    {
-      div.group-moderators
       {
+      div.group-moderators
+        {
         margin-bottom: 10px;
         width: 160px;
         height: 116px;
@@ -298,7 +340,7 @@ div.group-expanded
       }
 
       div.group-members
-      {
+        {
         width: 160px;
         height: 190px;
 
@@ -310,7 +352,7 @@ div.group-expanded
         }
 
         div.group-member-avatar
-        {
+          {
           margin-right:10px;
           margin-bottom:10px;
           float: left;
@@ -345,7 +387,7 @@ div.group-expanded
   }
 
   div.group-pinned-content
-  {
+    {
     padding: 10px;
     div.pinned-wrapper {
       position:relative;
@@ -442,7 +484,7 @@ div.group-histogram {
   }
 
   div.histogram-title
-  {
+    {
     @include rounded-bottom(18px);
     position:relative;
     background-color: $gray;
