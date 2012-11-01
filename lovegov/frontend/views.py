@@ -32,10 +32,10 @@ def match(request, section=None, vals={}):
             return shortcuts.redirect(url)
 
 
-    vals['show_welcome'] = show_welcome = viewer.show_welcome
+    vals['show_welcome'] = show_welcome = not viewer.checkTask("M")
     if show_welcome:
-        viewer.show_welcome = False
-        viewer.save()
+        viewer.completeTask("M")
+    vals['show_welcome'] = True
 
     if section == 'presidential':
         match_body_html = getMatchPresidentialHTML(request, vals)
@@ -648,11 +648,16 @@ def compareWeb(request,alias=None,vals={}):
 #-----------------------------------------------------------------------------------------------------------------------
 def welcome(request, vals):
 
-    valsFirstLogin(vals)
+    viewer = vals['viewer']
+    if viewer.location and viewer.location.state and not viewer.checkTask("S"):
+        sg = getStateGroupFromState(viewer.location.state)
+        if sg:
+            return shortcuts.redirect(sg.get_url())
 
     focus_html =  ajaxRender('site/pages/home/welcome.html', vals, request)
     url = request.path
     return homeResponse(request, focus_html, url, vals)
+
 
 def home(request, vals={}):
     focus_html = getHomeHTML(request, vals)
@@ -808,6 +813,11 @@ def groupPage(request, g_alias, vals={}):
     vals['group'] = group
     if group.group_type=="E":
         return electionPage(request, group.downcast(), vals)
+
+    if group.group_type=="S" and viewer.location and viewer.location.state == group.location.state:
+        viewer.completeTask("S")
+        vals['first_state_group'] = True
+    vals['first_state_group'] = True
 
     # fill dictionary with group stuff
     vals['info'] = valsGroup(viewer, group, {})

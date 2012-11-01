@@ -1,5 +1,34 @@
-<!-- welcome to lovegov -->
-{% include 'site/pages/match/match_intro.html' %}
+<div class="november-welcome">
 
+    <div class="november-welcome-header">
+        Welcome to LoveGov
+    </div>
+
+    <div class="choose-a-state">
+        <div class="choose-a-state-text">
+            First, choose a state so we can customize the site to politics relevant to you.
+        </div>
+        <div class="choose-a-state-below-text">
+            <div class="map-ui">
+
+            </div>
+            <div class="address-fields">
+                {% include 'site/pages/politicians/representatives_dismissible_header.html' with button_text="save" no_dismissible_x=1 %}
+            </div>
+            <div style="clear:both;"></div>
+        </div>
+    </div>
+
+    <div class="skip-to-matching">
+        or skip to our political matching.
+    </div>
+
+
+
+</div>
+
+
+{% comment %}
 <!-- lovegov login explanation -->
 {% include 'site/pages/login/screenshots.html' %}
+{% endcomment %}

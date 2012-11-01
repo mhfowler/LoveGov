@@ -8,6 +8,7 @@
 
             <a href="/lovegov/"> <div class="lovegov-robot tooltip-top" title="I'm a robot that's here to help you."></div> </a>
 
+            {% comment %}
             <div class="right-of-picture">
                 <div class="top-text">
                     <div class="welcome-header-header"> Welcome to LoveGov! </div>
@@ -18,14 +19,26 @@
                     the presidential candidates. Then click through the stages below to complete our matching and join our community.
                 </div>
             </div>
+            {% endcomment %}
+
+            <div class="right-of-picture">
+                <div class="top-text">
+                    <div class="welcome-header-header"> Match with politicians, groups and friends. </div>
+                    <a class="dismissible_x hide-intros"> (hide welcome message) </a>
+                </div>
+                <div class="welcome-paragraph">
+                    <p>
+                        Start by <a class="first_answer_questions dummy_link">answering questions</a> to define your political views.
+                    </p>
+                    <p>
+                        Then click through the stages below and see how you compare with your political world.
+                    </p>
+                </div>
+            </div>
+
         </div>
 
     </div>
 
-    {% comment %}
-    <div class="expand-info dismissible_x collapse-introduction">
-        <p class="expand-text">  &#8211 collapse introduction </p>
-    </div>
-    {% endcomment %}
 
 {% endblock %}

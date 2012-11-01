@@ -4,6 +4,49 @@
 
 @import "compass";
 
+/* november welcome */
+div.november-welcome {
+  div.november-welcome-header {
+    font-size:32px;
+    color:$dark-gray;
+  }
+  div.choose-a-state {
+    width:100%;
+    //margin-top:10px;
+    div.choose-a-state-text {
+      font-size:18px;
+    }
+    div.choose-a-state-below-text {
+      width:100%;
+      div.map-ui {
+        float:left;
+        background-color:$light-gray;
+        width:1000px;
+        height:600px;
+        margin-top:10px;
+      }
+      div.address-fields {
+        float:left;
+        width:100%;
+        div.find-your-reps {
+          padding-top:20px;
+        }
+        div.find-your-reps-title {
+          display:none;
+        }
+        div.the-content {
+          width:100%;
+        }
+      }
+    }
+  }
+  div.skip-to-matching {
+      margin-top:20px;
+  }
+}
+
+
+/*******************/
 a.home_link:hover {
   text-decoration:none;
 }
@@ -199,17 +242,17 @@ div.home-header-right {
 
 
 table.home
-{
+  {
   width:100%;
 
   td.home-sidebar
-  {
+    {
     width:150px;
     overflow:hidden;
   }
 
   td.home-main
-  {
+    {
     //padding-left:30px;
     //padding-top: 6px;
     //float: left;
@@ -225,13 +268,13 @@ table.home
     //border-left: 1px solid $light-gray;
 
     div.home-header
-    {
+      {
       float:left;
       width:100%;
       margin-top:8px;
 
       div.minimize-button
-      {
+        {
         float: right;
         cursor: pointer;
         color: $text-blue-light;
@@ -243,7 +286,7 @@ table.home
     }
 
     div.feed-wrapper
-    {
+      {
       width:100%;
       float:left;
     }
@@ -251,7 +294,7 @@ table.home
 }
 
 div.expand-info
-{
+  {
   @include titleFont();
   color:$deep-gray;
   width:100%;
@@ -335,16 +378,16 @@ div.left-navbar {
     margin-bottom:10px;
     width:200px;
 
-  /* old way of navbar link
-  a.navbar-link {
-    padding:5px 0 5px 5px;
-    display:block;
-    margin: 0px 0 0 10px;
-    color:$black;
-    width:139px;
-    @extend .gray-hover;
-  }
-  */
+    /* old way of navbar link
+    a.navbar-link {
+      padding:5px 0 5px 5px;
+      display:block;
+      margin: 0px 0 0 10px;
+      color:$black;
+      width:139px;
+      @extend .gray-hover;
+    }
+    */
     a.navbar-link {
       padding:5px 0 5px 5px;
       display:block;
@@ -382,7 +425,7 @@ div.left-navbar {
     margin-bottom:2px;
   }
 
-/* navbar - simple */
+  /* navbar - simple */
   div.navbar-divider {
     width:85%;
     border-bottom:1px solid $gray;
@@ -419,21 +462,21 @@ div.left-navbar {
     }
   }
 
-/* old way  of doing navbars
-div.navbar-title {
-  @extend .gray-hover;
-  @include inline-block;
-  @include grayText();
-  font-size: 24px;
-  padding: 5px;
-}
-a.section_title.clicked {
+  /* old way  of doing navbars
   div.navbar-title {
-    background-color:$light-gray;
-    color:white;
+    @extend .gray-hover;
+    @include inline-block;
+    @include grayText();
+    font-size: 24px;
+    padding: 5px;
   }
-}
-*/
+  a.section_title.clicked {
+    div.navbar-title {
+      background-color:$light-gray;
+      color:white;
+    }
+  }
+  */
   span.lil-goob {
     margin-top: 0px;
     height: 31px;
@@ -473,10 +516,10 @@ a.section_title.clicked {
   span.red-triangle {
     @include inline-block;
     //display:none;
-  /*
-  width:9px;
-  height:18px;
-  */
+    /*
+    width:9px;
+    height:18px;
+    */
     @include staticImage('/images/icons/arrow_right_red.png');
     @include transition(.25s);
     margin-left: 6px;
