@@ -661,7 +661,9 @@ def myState(request, vals={}):
         if sg:
             return shortcuts.redirect(sg.get_url())
 
-    return HttpResponse("Enter your state.")
+    focus_html =  ajaxRender('site/pages/home/my_state.html', vals, request)
+    url = request.path
+    return homeResponse(request, focus_html, url, vals)
 
 def myCity(request, vals={}):
     viewer = vals['viewer']
@@ -669,7 +671,10 @@ def myCity(request, vals={}):
         cg = TownGroup.lg.get_or_none(location__state=viewer.location.state, location__city=viewer.location.city)
         if cg:
             return shortcuts.redirect(cg.get_url())
-    return HttpResponse("Enter your city.")
+
+    focus_html =  ajaxRender('site/pages/home/my_city.html', vals, request)
+    url = request.path
+    return homeResponse(request, focus_html, url, vals)
 
 
 def home(request, vals={}):
@@ -678,7 +683,6 @@ def home(request, vals={}):
     vals['first_home_page'] = first_home_page = not viewer.checkTask("H")
     if first_home_page:
         viewer.completeTask("H")
-    vals['first_home_page'] = True
 
     focus_html = getHomeHTML(request, vals)
     url = request.path
@@ -834,11 +838,11 @@ def groupPage(request, g_alias, vals={}):
     if group.group_type=="E":
         return electionPage(request, group.downcast(), vals)
 
-    if group.group_type=="S" and viewer.location and viewer.location.state == group.location.state:
+    if group.group_type=="S" and (not viewer.checkTask("S")) and viewer.location and viewer.location.state == group.location.state:
         viewer.completeTask("S")
         vals['first_state_group'] = True
-    elif group.group_type =='T' and viewer.location and viewer.location.state == group.location.state and viewer.location.city == group.location.city:
-        viewer.completeTask("C")
+    elif group.group_type =='T' and (not viewer.checkTask("T")) and viewer.location and viewer.location.state == group.location.state and viewer.location.city == group.location.city:
+        viewer.completeTask("T")
         vals['first_city_group'] = True
 
     # fill dictionary with group stuff

@@ -1,7 +1,7 @@
 {% extends 'site/pages/dismissible_headers/dismissible_header.html' %}
 
 {% block dismissible_content %}
-        <div class="find-your-reps find_your_reps">
+        <div class="find-your-reps find_your_reps {% if real_address %} real_address {% endif %}">
             <div class="find-your-reps-title">
                 {% if why_address %}  {{ why_address }} {% else %}Find your representatives: {% endif %}
             </div>

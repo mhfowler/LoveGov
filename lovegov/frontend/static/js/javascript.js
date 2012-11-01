@@ -4352,11 +4352,19 @@ bind('.find_address_button' , 'click' , null , function(e)
     var state = form.find(".state_input").val();
     var zip = form.find(".zip_input").val();
     var city = form.find(".city_input").val();
-    var error_message = $(this).parents(".find_your_reps").find(".error_message");
+    var wrapper = $(this).parents(".find_your_reps");
+    var error_message = wrapper.find(".error_message");
+    var real_address = wrapper.hasClass("real_address");
     error_message.hide();
+    var data = {'address': address, 'city':city, 'state':state, 'zip':zip};
+    if (real_address) {
+        data['action'] = 'submitAddress'
+    }
+    else {
+        data['action'] = 'submitTempAddress'
+    }
     action({
-            data: {'action': 'submitTempAddress', 'address': address, 'city':city, 'state':state,
-                'zip':zip},
+            data: data,
             success: function(data) {
                 var returned = $.parseJSON(data);
                 if (returned.success == -1) {
