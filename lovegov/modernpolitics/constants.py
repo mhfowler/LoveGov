@@ -23,12 +23,12 @@ LOCAL = settings.LOCAL
 ########################################## MATCH SECTIONS ##############################################################
 
 MATCH_SECTIONS = [
-            ('P','presidential'),
             ('R','representatives'),
             ('G','groups'),
             ('F','friends'),
             ('C','congress'),
-            ('I','getInvolved')]
+            ('I','getInvolved'),
+            ('P','presidential')]
 
 ########################################## HOT FEED ####################################################################
 

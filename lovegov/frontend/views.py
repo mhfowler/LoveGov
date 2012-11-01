@@ -26,8 +26,8 @@ def match(request, section=None, vals={}):
             else:
                 url = '/match/' + section + '/'
         if not section:
-            url = '/home/'
-            section = 'getInvolved'
+            url = '/match/representatives/'
+            section = 'representatives'
         if not request.is_ajax():
             return shortcuts.redirect(url)
 

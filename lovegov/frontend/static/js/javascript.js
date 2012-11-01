@@ -336,8 +336,8 @@ function pushURL(url) {
 
 function selectHeaderLinks() {
     $(".header_link").removeClass("clicked");
-    if (PATH.indexOf("/match/") != -1 || PATH == '/home/') {
-        var header_link = $('.header_link[href="/"]');
+    if (PATH.indexOf("/match/") != -1) {
+        var header_link = $('.header_link[href="/match/"]');
         selectMatchLink(PATH);
     }
     else {

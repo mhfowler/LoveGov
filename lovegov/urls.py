@@ -86,7 +86,7 @@ urlpatterns += patterns('',
 
     # new home page
     (r'^$', viewWrapper(views.match, requires_login=True)),
-    (r'^home/$', viewWrapper(views.match, requires_login=True), {'section':"getInvolved"}),
+#    (r'^home/$', viewWrapper(views.match, requires_login=True), {'section':"getInvolved"}),
     (r'^match/(?P<section>\w+)/$', viewWrapper(views.match, requires_login=True)),
     (r'^match/$', viewWrapper(views.match, requires_login=True)),
 

@@ -59,7 +59,7 @@
             {% endcomment %}
 
     <!-- float left -->
-    <a href="http://lovegov.com">
+    <a href="/home/">
         <div class="header-logo">
         </div>
     </a>
@@ -70,11 +70,9 @@
 
     <ul class="header-links-wrapper">
 
-        <a href="/" class=" dummy_link header_link home_link"><li>home</li></a>
+        <a href="/home/" class=" dummy_link header_link home_link"><li>home</li></a>
 
-        {% comment %}
         <a href="/match/" class=" dummy_link header_link home_link {% if request.path == '/match/' %} clicked {% endif %}"><li>match</li></a>
-        {% endcomment %}
 
         <a href="/questions/" class=" dummy_link header_link home_link {% if request.path == '/questions/' %} clicked {% endif %}"><li>questions</li></a>
 
