@@ -667,7 +667,7 @@ def valsParties(vals):
 #-----------------------------------------------------------------------------------------------------------------------
 def valsRepsHeader(vals):
     viewer = vals['viewer']
-    location = viewer.temp_location or viewer.location
+    location = viewer.location or viewer.temp_location
     vals['location'] = location
 
     if location:
