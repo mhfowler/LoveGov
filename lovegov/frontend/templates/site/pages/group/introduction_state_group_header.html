@@ -1,0 +1,34 @@
+{% extends 'site/pages/dismissible_headers/dismissible_header.html' %}
+
+{% block dismissible_content %}
+
+    <div class="introduction-header">
+
+        <div class="welcome-header">
+
+            <a href="/lovegov/"> <div class="lovegov-robot tooltip-top" title="I'm a robot that's here to help you."></div> </a>
+
+            <div class="right-of-picture">
+                <div class="top-text">
+                    <div class="welcome-header-header">  Welcome to your state group. </div>
+                    <a class="dismissible_x hide-intros"> (hide welcome message) </a>
+                </div>
+                <div class="welcome-paragraph">
+                    Here you can find news, polls and petitions relevant to the politics of your state.
+                </div>
+                <div class="welcome-paragraph">
+                    <div class="welcome-list-header">
+                        What should I do next?
+                    </div>
+                    <ul class="next-steps-list">
+                        <li><a class="welcome-option take_a_tour">Take a tour of your state group.</a></li>
+                        <li><a class="welcome-option" href="/local/">Check out your city group.</a></li>
+                        <li><a class="welcome-option" href="/match/representatives/">Try our political matching.</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+{% endblock %}
