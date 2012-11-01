@@ -10,6 +10,7 @@ var stateAbbrArray = {'AK' : 'Alaska', 'AL' : 'Alabama', 'AR' : 'Arkansas', 'AZ'
     'WI' : 'Wisconsin', 'WV' : 'West Virginia', 'WY' : 'Wyoming'};
 
 var svgobj = document.getElementById('usmapsvg');
+var FIRST_STATE_SELECTED = false;
 
 svgobj.addEventListener("load", function() {
     var svgDoc = svgobj.contentDocument; //get the inner DOM
@@ -30,14 +31,18 @@ svgobj.addEventListener("load", function() {
                 target.className.baseVal = 'selected';
                 $('input.state_input').val(target.id);
             }
+            if(!FIRST_STATE_SELECTED) {
+                $('.find_address_button').tooltip('show');
+                FIRST_STATE_SELECTED = true;
+            }
         });
         path.addEventListener("mouseover", function(e) {
             var target = e.target;
-           $('div.us_state_label').text(stateAbbrArray[target.id]);
+           $('div.us_state_label').text(stateAbbrArray[target.id]).show();
         });
         path.addEventListener("mouseout", function(e) {
             var target = e.target;
-            $('div.us_state_label').text('');
+            $('div.us_state_label').text('').hide();
         });
 
 
