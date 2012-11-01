@@ -10,25 +10,36 @@
 
             <div class="right-of-picture">
                 <div class="top-text">
-                    <div class="welcome-header-header">  Welcome to your state group. </div>
+                    <div class="welcome-header-header">
+                        {% if not first_city_group %}
+                        This is your state group.
+                        {% else %}
+                        This is your city group.
+                        {% endif %}
+                    </div>
                     <a class="dismissible_x hide-intros"> (hide welcome message) </a>
                 </div>
                 <div class="welcome-paragraph">
-                    Here you can find news, polls and petitions relevant to the politics of your state.
-                </div>
-                <div class="welcome-paragraph">
-                    <div class="welcome-list-header">
-                        What should I do next?
-                    </div>
-                    <ul class="next-steps-list">
-                        <li><a class="welcome-option take_a_tour">Take a tour of your state group.</a></li>
-                        <li><a class="welcome-option" href="/local/">Check out your city group.</a></li>
-                        <li><a class="welcome-option" href="/match/representatives/">Try our political matching.</a></li>
-                    </ul>
+                    {% if first_city_group %}
+                        Here you can find news, polls and petitions relevant to local politics.
+                    {% else %}
+                        Here you can find news, polls and petitions relevant to the politics of your state.
+                    {% endif %}
                 </div>
             </div>
         </div>
+    </div>
 
+    <div class="what-next">
+        <div class="welcome-list-header">
+            What should I do next?
+        </div>
+        <ul class="next-steps-list">
+            {% if not first_city_group %}
+                <li><a class="welcome-option" href="/my_city/">Check out your city group.</a></li>
+            {% endif %}
+            <li><a class="welcome-option" href="/match/representatives/">Try our political matching.</a></li>
+        </ul>
     </div>
 
 {% endblock %}

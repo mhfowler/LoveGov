@@ -27,11 +27,9 @@
             {% endfor %}
         </div>
 
-        {% comment %}
-        <div class="google-maps-wrapper">
+        <div class="google-maps-wrapper" {% if not ABOVE_QUESTIONS_THRESHOLD %}style="display:none;"{% endif %}>
             <div id="map_canvas" class="google-map"> </div>
         </div>
-        {% endcomment %}
 
     </div>
 

@@ -1,17 +1,10 @@
 {% extends 'site/pages/home/focus.html' %}
 
 {% block home_header %}
-    {% comment %}
-    {% if see_congratulations %}
-        {% include 'site/pages/dismissible_headers/congratulations_header.html' %}
-    {% elif not hide_intros %}
-        {% include 'site/pages/home/introduction_home_header.html' with intro_title="My Home Page" %}
-    {% else %}
-        <div class="home-page-header">
-            {% include 'site/pages/dismissible_headers/dismissible_header_switch.html' %}
-        </div>
+
+    {% if first_home_page %}
+        {% include 'site/pages/home/introduction_home_header.html' with no_dismissible_x=1 %}
     {% endif %}
-    {% endcomment %}
 
 {% endblock %}
 

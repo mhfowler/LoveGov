@@ -29,7 +29,13 @@
     {% endif %}
 
     {% if not no_only_unanswered %}
-        <span class="only-unanswered-text qa_only_unanswered_parent"> only unanswered </span>
+        <span class="only-unanswered-text qa_only_unanswered_parent">
+                {% if not only_show_unanswered %}
+                    only unanswered
+                {% else %}
+                    only show unanswered questions
+                {% endif %}
+        </span>
         <input type="checkbox" class="only-unanswered-checkbox only_unanswered" {% if only_unanswered %} checked="checked" {% endif %} />
     {% endif %}
 

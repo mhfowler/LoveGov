@@ -264,6 +264,14 @@ div.match-wrapper {
 
     div.questions-wrapper {
       float:left;
+
+      div.feed-top-bar div.feed-left-buttons div.feed-buttons-container {
+        margin-right:0px;
+        span.only-unanswered-text {
+          margin-left:0px;
+        }
+      }
+
       div.feed-content-wrapper {
         /*
         border-left: 1px solid $light-gray;
@@ -296,7 +304,7 @@ div.match-wrapper {
     div.feed-main {
       width:100%;
       div.feed-content-wrapper {
-        margin-top:25px;
+        margin-top:0px;
 
         div.above-rule-line {
           div.main-part {

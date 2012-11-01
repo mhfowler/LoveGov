@@ -3,5 +3,5 @@
 {% endif %}
 
 <div class="questions-wrapper temp_questions_feed">
-    {% include 'site/pages/qa/feed_browse_questions.html' with special_feed="getQuestions" default_display="choose" only_unanswered=1 no_create_button=1 poll_id=lgpoll.id %}
+    {% include 'site/pages/qa/feed_browse_questions.html' with special_feed="getQuestions" default_display="choose" only_unanswered=0 only_show_unanswered=1 no_create_button=1 no_sort_buttons=1 no_filter_buttons=1 poll_id=lgpoll.id %}
 </div>
