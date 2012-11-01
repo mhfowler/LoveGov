@@ -773,6 +773,14 @@ def postLocationHelper(request):
     location = locationHelper(address=address, city=city, state=state, zip=zip, location=location)
     return location
 
+def setLocationState(request, vals={}):
+    state = request.POST.get('state')
+    if state:
+        viewer = vals['viewer']
+        location = postLocationHelper(request)
+        viewer.setNewTempLocation(location)
+    return HttpResponse("success")
+
 #-----------------------------------------------------------------------------------------------------------------------
 # Finalizes a petition.
 #-----------------------------------------------------------------------------------------------------------------------

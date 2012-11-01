@@ -760,6 +760,7 @@ ACTIONS = [
     'getMembersByUIDS',
     'stepDownAsAdmin',
     'hideFacebookShareMatches',
+    'setLocationState'
 ]
 
 UNAUTHENTICATED_ACTIONS = [

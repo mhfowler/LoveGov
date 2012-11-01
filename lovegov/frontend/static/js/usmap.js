@@ -30,6 +30,9 @@ svgobj.addEventListener("load", function() {
                 }
                 target.className.baseVal = 'selected';
                 $('input.state_input').val(target.id);
+                action({
+                   data: {action: 'setLocationState', 'state': target.id},
+                });
             }
             if(!FIRST_STATE_SELECTED) {
                 $('.find_address_button').tooltip('show');
@@ -50,8 +53,8 @@ svgobj.addEventListener("load", function() {
 
     svgDoc.addEventListener('mousemove', function(e) {
         $('div.us_state_label').css({
-            left:e.pageX,
-            top:e.pageY + 170
+            left:e.pageX + 40,
+            top:e.pageY + 150
         });
     });
 });

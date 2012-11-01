@@ -4,25 +4,10 @@
         Welcome to LoveGov
     </div>
 
-    <div class="choose-a-state">
-        <div class="choose-a-state-text">
-            First, choose a state so we can customize the site to politics relevant to you.
-        </div>
-        <div class="choose-a-state-below-text">
-            <div class="us_state_label"></div>
-            <object data="/static/svg/usmap.svg" type="image/svg+xml" id="usmapsvg" style="margin: 40px 0;">
-            </object>
-            <script src="{{ STATIC_URL }}/js/usmap.js">
-            </script>
-            <div class="address-fields">
-                {% include 'site/pages/politicians/representatives_dismissible_header.html' with button_text="save" no_dismissible_x=1 %}
-            </div>
-            <div style="clear:both;"></div>
-        </div>
-    </div>
+    {% include 'site/pieces/select_location.html' %}
 
-    <div class="skip-to-matching">
-        or skip to our political matching.
+    <div style="text-align: center; margin: 20px 0;">
+        <a href="/match/">or skip this step</a>
     </div>
 
 
