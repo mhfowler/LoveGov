@@ -30,7 +30,7 @@
                         {% endif %}
 
                         {% if first_city_group %}
-                            {% if group.num_posts %}
+                            {% if has_posts %}
                                 <p>
                                     Here you can find news, polls and petitions relevant to local politics.
                                 </p>
@@ -45,7 +45,7 @@
                             {% endif %}
 
                         {% else %}
-                            {% if group.num_posts %}
+                            {% if has_posts %}
                                 <p>
                                     Here you can find news, polls and petitions relevant to the politics of your state.
                                 </p>

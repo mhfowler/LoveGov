@@ -843,10 +843,11 @@ def groupPage(request, g_alias, vals={}):
     if group.group_type=="S" and (not viewer.checkTask("S")) and viewer.location and viewer.location.state == group.location.state:
         viewer.completeTask("S")
         vals['first_state_group'] = True
+        vals['has_posts'] = Content.objects.filter(posted_to=group).count()
     elif group.group_type =='T' and (not viewer.checkTask("T")) and viewer.location and viewer.location.state == group.location.state and viewer.location.city == group.location.city:
         viewer.completeTask("T")
         vals['first_city_group'] = True
-    vals['first_state_group'] = True
+        vals['has_posts'] = Content.objects.filter(posted_to=group).count()
 
     # fill dictionary with group stuff
     vals['info'] = valsGroup(viewer, group, {})
