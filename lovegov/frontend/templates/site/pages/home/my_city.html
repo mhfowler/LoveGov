@@ -4,6 +4,8 @@
         Enter your city and state to find your city group.
     </div>
 
-    {% include 'site/pieces/select_location.html' %}
+    <div class="address-fields">
+        {% include 'site/pages/politicians/representatives_dismissible_header.html' with button_text="save" no_dismissible_x=1 real_address=1 %}
+    </div>
 
 </div>

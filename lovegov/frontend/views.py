@@ -59,15 +59,15 @@ def match(request, section=None, vals={}):
     lastNotDone = viewer.getFirstNotCompletedMatchSection()
 
     progress_down = ''
-    if lastNotDone=='presidential':
+    if lastNotDone=='representatives':
         progress_down = ''
-    elif lastNotDone=='representatives':
-        progress_down = 'one-down'
     elif lastNotDone=='groups':
-        progress_down = 'two-down'
+        progress_down = 'one-down'
     elif lastNotDone=='friends':
-        progress_down = 'three-down'
+        progress_down = 'two-down'
     elif lastNotDone=='congress':
+        progress_down = 'three-down'
+    elif lastNotDone=='presidential':
         progress_down = 'four-down'
     elif lastNotDone=='getInvolved':
         progress_down = 'five-down'
@@ -668,7 +668,12 @@ def myState(request, vals={}):
 def myCity(request, vals={}):
     viewer = vals['viewer']
     if viewer.location:
+        loc = viewer.location
         cg = TownGroup.lg.get_or_none(location__state=viewer.location.state, location__city=viewer.location.city)
+        vals['filled_street'] = loc.address_string
+        vals['filled_city'] = loc.city
+        vals['filled_state'] = loc.state
+        vals['filled_zip'] = loc.zip
         if cg:
             return shortcuts.redirect(cg.get_url())
 
