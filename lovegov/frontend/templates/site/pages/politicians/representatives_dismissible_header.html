@@ -11,10 +11,12 @@
                 <input class="state-input state_input reps-input" type="text" placeholder="state"/>
                 <input class="zip-input zip_input reps-input " type="text" placeholder="zip code"/>
                 <div style="overflow: hidden">
+                    {% comment %}
                     <div class="enter_address_info">Enter information about your location to get a more personalized experience. Otherwise click save to continue.
                     <span class="triangle-border"></span>
                     <span class="triangle"></span>
                     </div>
+                    {% endcomment %}
                     <a href="#" class="find-button find_address_button dummy_link"> {% if button_text %} {{ button_text }} {% else %} find reps {% endif %}</a>
                 </div>
             </div>

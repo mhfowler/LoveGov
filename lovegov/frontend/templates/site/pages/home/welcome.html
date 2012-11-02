@@ -1,5 +1,8 @@
+{% include 'site/pages/home/introduction_welcome_header.html' with no_dismissible_x=1 %}
+
 <div class="november-welcome">
 
+    {% comment %}
     <div class="november-welcome-header">
         Welcome to LoveGov
     </div>
@@ -7,17 +10,12 @@
     <div class="choose-a-state-text">
         First, choose a state so we can customize the site to politics relevant to you.
     </div>
+    {% endcomment %}
 
     {% include 'site/pieces/select_location.html' %}
 
     <div style="text-align: center; margin: 20px 0;">
-        <a href="/match/">or skip this step</a>
+        <a href="/match/" class="skip-this-step">or skip this step and go straight to our political matching.</a>
     </div>
 
 </div>
-
-
-{% comment %}
-<!-- lovegov login explanation -->
-{% include 'site/pages/login/screenshots.html' %}
-{% endcomment %}

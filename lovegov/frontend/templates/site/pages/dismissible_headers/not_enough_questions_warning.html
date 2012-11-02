@@ -2,7 +2,10 @@
     <div class="what-would-be-wrapper what_would_be_wrapper {% if ABOVE_QUESTIONS_THRESHOLD %} strong-match {% endif %}">
         {% if not ABOVE_QUESTIONS_THRESHOLD %}
             <div class="what-would-be-text">
+                {% comment %}
                 <span class="bold-part"> You haven't answered enough questions to get meaningful matches. </span>
+                {% endcomment %}
+                <span class="bold-part"> Answer 15 questions about your political views to form a basis for your matches. </span>
                 <br> Click an answer to select it.
             </div>
         {% else %}
@@ -11,7 +14,16 @@
                 {% comment %}
                 Your match strength will continue to improve as you answer more <a href="/questions/"> questions </a>.
                 {% endcomment %}
-                To advance to the next match step <a href="/match/" class="next-step-link">click here</a>.
+
+                {% if like_minded_warning %}
+                    To refresh the page and see your like minded matches <a href="" class="next-step-link">click here</a>.
+                {% else %}
+                    To advance to the next match step <a href="/match/" class="next-step-link">click here</a>.
+                {% endif %}
+
+
+
+
                 {% comment %}
                 {% if viewer.facebook_id %}
                     <p>Or <a class="facebook-share-match-results">share your match results</a> on Facebook.</p>

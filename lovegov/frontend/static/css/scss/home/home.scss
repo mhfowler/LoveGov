@@ -6,6 +6,20 @@
 
 /* november welcome */
 div.november-welcome {
+
+  a.skip-this-step {
+    font-size: 28px;
+    margin-top: 26px;
+    margin-bottom:20px;
+    float: left;
+    width: 100%;
+    position:relative;
+    left:-20px;
+    &:hover {
+      text-decoration:none;
+    }
+  }
+
   div.november-welcome-header {
     font-size:32px;
     color:$dark-gray;

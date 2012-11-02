@@ -1,13 +1,15 @@
 <div class="choose-a-state">
     <div class="choose-a-state-below-text">
         <div class="us_state_label"></div>
-        <object data="/static/svg/usmap.svg" type="image/svg+xml" id="usmapsvg" style="margin: 40px 0;">
+        <object data="/static/svg/usmap.svg" type="image/svg+xml" id="usmapsvg">
         </object>
         <script src="{{ STATIC_URL }}/js/usmap.js">
         </script>
+        {% comment %}
         <div class="address-fields">
             {% include 'site/pages/politicians/representatives_dismissible_header.html' with button_text="save" no_dismissible_x=1 real_address=1 %}
         </div>
+        {% endcomment %}
         <div style="clear:both;"></div>
     </div>
 </div>

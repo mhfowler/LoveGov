@@ -20,7 +20,7 @@
 
     {% if not ABOVE_QUESTIONS_THRESHOLD %}
 
-        {% include 'site/pages/dismissible_headers/not_enough_questions.html' with of_what="content" %}
+        {% include 'site/pages/dismissible_headers/not_enough_questions.html' with of_what="content" like_minded_warning=1 %}
 
         <div class="normal_feed" style="display:none;">
             {% include 'site/pages/feed/feed.html' with like_minded_filter=1 %}

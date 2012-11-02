@@ -15,7 +15,11 @@
 
         <div class="dismissible_wrapper">
             {% with dismissible_hide=congressmen %}
-                {% include 'site/pages/politicians/representatives_dismissible_header.html' with real_address=1 %}
+                {% if congressmen %}
+                    {% include 'site/pages/politicians/representatives_dismissible_header.html' with real_address=1  %}
+                {% else %}
+                    {% include 'site/pages/politicians/representatives_dismissible_header.html' with real_address=1 no_dismissible_x=1 %}
+                {% endif %}
             {% endwith %}
         </div>
 

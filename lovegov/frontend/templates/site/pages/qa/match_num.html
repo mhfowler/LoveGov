@@ -1,3 +1,7 @@
 <span class="match_object" data-to_compare_alias="{{ to_compare.alias }}" data-display="match_num">
+    {% if to_compare.comparison.num_q %}
     {{ to_compare.comparison.result }}
+    {% else %}
+    ?
+    {% endif %}
 </span>
