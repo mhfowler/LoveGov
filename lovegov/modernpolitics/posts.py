@@ -778,7 +778,7 @@ def setLocationState(request, vals={}):
     if state:
         viewer = vals['viewer']
         location = postLocationHelper(request)
-        viewer.setNewTempLocation(location)
+        viewer.setNewLocation(location)
     return HttpResponse("success")
 
 #-----------------------------------------------------------------------------------------------------------------------

@@ -21,7 +21,6 @@ svgobj.addEventListener("load", function() {
             var target = e.target;
             if(target.className.baseVal=='selected') {
                 target.className.baseVal = '';
-                $('input.state_input').val('');
             } else {
                 // unselect all states
                 for(var j=0; j<paths.length; j++) {
@@ -32,6 +31,9 @@ svgobj.addEventListener("load", function() {
                 $('input.state_input').val(target.id);
                 action({
                    data: {action: 'setLocationState', 'state': target.id},
+                   success: function(e) {
+                       window.location = "/my_state";
+                   }
                 });
             }
             if(!FIRST_STATE_SELECTED) {
