@@ -22,13 +22,14 @@
                         <a class="dismissible_x hide-intros"> (hide welcome message) </a>
                     </div>
                     <div class="welcome-paragraph">
-                        {% if first_city_group %}
 
-                            {% if group.num_members == 1 %}
-                                <p>
-                                    Congratulations, you are the first LoveGov user from {{ group.getLocationVerbose }}!
-                                </p>
-                            {% endif %}
+                        {% if group.num_members == 1 %}
+                            <p>
+                                Congratulations, you are the first LoveGov user from {{ group.getLocationVerbose }}!
+                            </p>
+                        {% endif %}
+
+                        {% if first_city_group %}
                             {% if group.num_posts %}
                                 <p>
                                     Here you can find news, polls and petitions relevant to local politics.
@@ -39,13 +40,24 @@
                                     for sharing news, polls and petitions relevant to local politics.
                                 </p>
                                 <p>
-                                    We're always excited about new communities joining the site, so feel free to tell your
-                                    neighbors to sign up and start posting.
+                                    Feel free to tell your neighbors to sign up and start posting!
                                 </p>
                             {% endif %}
 
                         {% else %}
-                            Here you can find news, polls and petitions relevant to the politics of your state.
+                            {% if group.num_posts %}
+                                <p>
+                                    Here you can find news, polls and petitions relevant to the politics of your state.
+                                </p>
+                            {% else %}
+                                <p>
+                                    This group doesn't have any content posted to it yet, but this is intended to be a place
+                                    for sharing news, polls and petitions relevant to the politics of your state.
+                                </p>
+                                <p>
+                                    Feel free to tell your state to sign up and start posting.
+                                </p>
+                            {% endif %}
                         {% endif %}
                     </div>
                 </div>

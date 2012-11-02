@@ -846,7 +846,7 @@ def groupPage(request, g_alias, vals={}):
     elif group.group_type =='T' and (not viewer.checkTask("T")) and viewer.location and viewer.location.state == group.location.state and viewer.location.city == group.location.city:
         viewer.completeTask("T")
         vals['first_city_group'] = True
-    vals['first_state_group'] = vals['first_city_group'] = True
+    vals['first_state_group'] = True
 
     # fill dictionary with group stuff
     vals['info'] = valsGroup(viewer, group, {})

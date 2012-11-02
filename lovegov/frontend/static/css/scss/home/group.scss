@@ -23,11 +23,10 @@ div.first-state-group {
     width: 240px;
     padding: 10px;
     padding-right: 0px;
-    margin-bottom: 20px;
     padding-top: 20px;
-    margin-top: 10px;
+    padding-bottom:5px;
+    border-left:1px dotted $light-gray;
     padding-left: 0px;
-    height: 127px;
     div.welcome-list-header {
       font-size: 20px;
       padding-left: 18px;
