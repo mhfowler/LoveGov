@@ -647,7 +647,7 @@ def compareWeb(request,alias=None,vals={}):
 def welcome(request, vals):
     viewer = vals['viewer']
 
-    if viewer.location and viewer.location.state and not viewer.checkTask("S"):
+    if viewer.location and viewer.location.state:
       return shortcuts.redirect('/my_state/')
 
     focus_html =  ajaxRender('site/pages/home/welcome.html', vals, request)

@@ -733,19 +733,24 @@ div.us_state_label {
 div.enter_address_info {
   position: absolute;
   background-color: white;
-  padding: 10px;
+  padding: 15px;
   border: 1px solid $deep-gray;
-  margin-top: -145px;
+  margin-top: -160px;
   margin-Left: -90px;
   width: 300px;
   font-size: 18px;
   span.triangle {
     @include triangle('down', $white, 15px);
     position: absolute;
+    top: 138px;
+    left: 176px;
+
   }
   span.triangle-border {
     @include triangle('down', $deep-gray, 16px);
     position: absolute;
+    top: 138px;
+    left: 175px;
   }
 }
 
