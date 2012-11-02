@@ -35,7 +35,7 @@ svgobj.addEventListener("load", function() {
                 });
             }
             if(!FIRST_STATE_SELECTED) {
-                $('.find_address_button').tooltip('show');
+                $('.enter_address_info').show();
                 FIRST_STATE_SELECTED = true;
             }
         });

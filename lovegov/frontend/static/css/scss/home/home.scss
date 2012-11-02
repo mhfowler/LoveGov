@@ -739,6 +739,8 @@ div.enter_address_info {
   margin-Left: -90px;
   width: 300px;
   font-size: 18px;
+  z-index: 15;
+  display: none;
   span.triangle {
     @include triangle('down', $white, 15px);
     position: absolute;
