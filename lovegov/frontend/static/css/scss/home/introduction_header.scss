@@ -85,6 +85,26 @@ div.introduction-header {
 
   width:100%;
 
+  div.split-welcome-header {
+    border: 1px dotted $light-gray;
+    float: left;
+    width: 100%;
+    margin-bottom:20px;
+    div.welcome-header {
+      width:720px;
+      border:none;
+      border-right:1px dotted $light-gray;
+      float:left;
+      margin-top:0px;
+      margin-bottom:0px;
+      padding-bottom:0px;
+    }
+    div.what-next {
+      width:235px;
+      padding-left:5px;
+    }
+  }
+
   div.welcome-header {
     float:left;
     width:100%;

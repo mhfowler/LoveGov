@@ -4,42 +4,68 @@
 
     <div class="introduction-header">
 
-        <div class="welcome-header">
+        <div class="split-welcome-header">
 
-            <a href="/lovegov/"> <div class="lovegov-robot tooltip-top" title="I'm a robot that's here to help you."></div> </a>
+            <div class="welcome-header">
 
-            <div class="right-of-picture">
-                <div class="top-text">
-                    <div class="welcome-header-header">
-                        {% if not first_city_group %}
-                        This is your state group.
+                <a href="/lovegov/"> <div class="lovegov-robot tooltip-top" title="I'm a robot that's here to help you."></div> </a>
+
+                <div class="right-of-picture">
+                    <div class="top-text">
+                        <div class="welcome-header-header">
+                            {% if not first_city_group %}
+                                This is your state group.
+                            {% else %}
+                                This is your city group.
+                            {% endif %}
+                        </div>
+                        <a class="dismissible_x hide-intros"> (hide welcome message) </a>
+                    </div>
+                    <div class="welcome-paragraph">
+                        {% if first_city_group %}
+
+                            {% if group.num_members == 1 %}
+                                <p>
+                                    Congratulations, you are the first LoveGov user from {{ group.getLocationVerbose }}!
+                                </p>
+                            {% endif %}
+                            {% if group.num_posts %}
+                                <p>
+                                    Here you can find news, polls and petitions relevant to local politics.
+                                </p>
+                            {% else %}
+                                <p>
+                                    This group doesn't have any content posted to it yet, but this is intended to be a place
+                                    for sharing news, polls and petitions relevant to local politics.
+                                </p>
+                                <p>
+                                    We're always excited about new communities joining the site, so feel free to tell your
+                                    neighbors to sign up and start posting.
+                                </p>
+                            {% endif %}
+
                         {% else %}
-                        This is your city group.
+                            Here you can find news, polls and petitions relevant to the politics of your state.
                         {% endif %}
                     </div>
-                    <a class="dismissible_x hide-intros"> (hide welcome message) </a>
-                </div>
-                <div class="welcome-paragraph">
-                    {% if first_city_group %}
-                        Here you can find news, polls and petitions relevant to local politics.
-                    {% else %}
-                        Here you can find news, polls and petitions relevant to the politics of your state.
-                    {% endif %}
                 </div>
             </div>
-        </div>
-    </div>
 
-    <div class="what-next">
-        <div class="welcome-list-header">
-            What should I do next?
+            <div class="what-next">
+                <div class="welcome-list-header">
+                    What should I do next?
+                </div>
+                <ul class="next-steps-list">
+                    {% if not first_city_group %}
+                        <li><a class="welcome-option" href="/my_city/">Check out your city group.</a></li>
+                    {% endif %}
+                    <li><a class="welcome-option" href="/match/representatives/">Try our political matching.</a></li>
+                </ul>
+            </div>
+
         </div>
-        <ul class="next-steps-list">
-            {% if not first_city_group %}
-                <li><a class="welcome-option" href="/my_city/">Check out your city group.</a></li>
-            {% endif %}
-            <li><a class="welcome-option" href="/match/representatives/">Try our political matching.</a></li>
-        </ul>
+
+
     </div>
 
 {% endblock %}
