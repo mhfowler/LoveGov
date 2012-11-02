@@ -667,10 +667,10 @@ def myCity(request, vals={}):
     if viewer.location:
         loc = viewer.location
         cg = TownGroup.lg.get_or_none(location__state=viewer.location.state, location__city=viewer.location.city)
-        vals['filled_street'] = loc.address_string
-        vals['filled_city'] = loc.city
-        vals['filled_state'] = loc.state
-        vals['filled_zip'] = loc.zip
+        vals['filled_street'] = loc.address_string or ''
+        vals['filled_city'] = loc.city or ''
+        vals['filled_state'] = loc.state or ''
+        vals['filled_zip'] = loc.zip or ''
         if cg:
             return shortcuts.redirect(cg.get_url())
 
