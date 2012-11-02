@@ -6,10 +6,10 @@
                 {% if why_address %}  {{ why_address }} {% else %}Find your representatives: {% endif %}
             </div>
             <div class="find-your-reps-form address_form">
-                <input class="street-input street_input reps-input" type="text" placeholder="street address"/>
-                <input class="city-input city_input reps-input" type="text" placeholder="town/city"/>
-                <input class="state-input state_input reps-input" type="text" placeholder="state"/>
-                <input class="zip-input zip_input reps-input " type="text" placeholder="zip code"/>
+                <input class="street-input street_input reps-input" type="text" placeholder="street address" value="{{ filled_street }}"/>
+                <input class="city-input city_input reps-input" type="text" placeholder="town/city" value="{{ filled_city }}"/>
+                <input class="state-input state_input reps-input" type="text" placeholder="state" value="{{ filled_state }}"/>
+                <input class="zip-input zip_input reps-input " type="text" placeholder="zip code" value="{{ filled_zip }}"/>
                 <div style="overflow: hidden">
                     <div class="enter_address_info">Enter information about your location to get a more personalized experience. Otherwise click save to continue.
                     <span class="triangle-border"></span>
