@@ -41,7 +41,7 @@ def loginRedirectToPage(request, viewer, to_page):
 
     num_logins = viewer.num_logins
     if not num_logins:
-        to_page = '/'
+        to_page = '/match/presidential/'
     viewer.incrementNumLogins()
 
     viewer.updateHotFeedIfOld()
