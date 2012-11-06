@@ -19,7 +19,7 @@ if len(sys.argv) == 3:
 if len(sys.argv) == 4:
     days_for= int(sys.argv[3])
 
-email_html = email_html=dailySummaryEmail(days_ago, days_for)
+email_html = enc(dailySummaryEmail(days_ago, days_for))
 
 attachment_file = open('/tmp/daily_summary_html.html', 'w')
 attachment_file.write(email_html)
