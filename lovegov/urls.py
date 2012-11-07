@@ -85,7 +85,7 @@ urlpatterns += patterns('',
     (r'^update_hot_feed', viewWrapper(views.updateHotFeedPage, requires_login=True)),
 
     # new home page
-    (r'^$', viewWrapper(views.match, requires_login=True)),
+    (r'^$', views.redirect, {'page':"/home/"}),
 #    (r'^home/$', viewWrapper(views.match, requires_login=True), {'section':"getInvolved"}),
     (r'^match/(?P<section>\w+)/$', viewWrapper(views.match, requires_login=True)),
     (r'^match/$', viewWrapper(views.match, requires_login=True)),
