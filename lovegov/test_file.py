@@ -1,5 +1,4 @@
 
-from lovegov.frontend.analytics import *
 from lovegov.frontend.views import *
 
 #time_tuples = []
@@ -26,3 +25,6 @@ from lovegov.frontend.views import *
 #
 #m = getUser("Maximus Fowler")
 #sendNewLoveGovEmail(m)
+
+m = getUser("Maximus Fowler")
+sendWeeklyDigestEmail(m)
