@@ -47,6 +47,7 @@ def emailHelper(subject, email_html, email_sender, email_recipients, email_attac
         errors_logger.error("email error for [" + subject + "] to " + str(email_recipients))
 
 #-----------------------------------------------------------------------------------------------------------------------
+
 # particular emails
 #-----------------------------------------------------------------------------------------------------------------------
 
