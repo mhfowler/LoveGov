@@ -5321,7 +5321,6 @@ class StateGroup(Group):
         return state_text
 
     def getResidentsName(self):
-        from constants import RESIDENT_NAMES
         return RESIDENT_NAMES[self.title]
 
 class TownGroup(Group):

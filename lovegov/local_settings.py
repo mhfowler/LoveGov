@@ -1,7 +1,7 @@
 import os
 from lovegov.base_settings import *
 
-LOCAL_EMAIL = False
+LOCAL_EMAIL = True
 LOCAL = True
 DEBUG = True
 TEMPLATE_DEBUG = True

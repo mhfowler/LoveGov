@@ -990,7 +990,7 @@ RESIDENT_NAMES = {
     'Louisiana': 'Louisianan',
     'Maine': 'Mainer',
     'Maryland': 'Marylander',
-    'Massachusetts': 'Massachusites',
+    'Massachusetts': 'Massachusite',
     'Michigan': 'Michiganians',
     'Minnesota': 'Minnesotans',
     'Mississippi': 'Mississipian',
@@ -1018,7 +1018,7 @@ RESIDENT_NAMES = {
     'Washington': 'Washingtonian',
     'West Virginia': 'West Virginian',
     'Wisconsin': 'Wisconsinite',
-    'Wyoming': 'Wyomes'
+    'Wyoming': 'Wyome'
 }
 
 ########################################## STUFF TO STORE ##############################################################
