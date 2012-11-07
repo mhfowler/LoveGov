@@ -921,7 +921,7 @@ def dailySummaryEmail(days_ago=1, days_for=0):
     if not days_for:
         time_end = now
     else:
-        time_end = now + datetime.timedelta(days=days_for)
+        time_end = time_start + datetime.timedelta(days=days_for)
     return summaryEmail(time_start, time_end)
 
 def summaryEmail(time_start, time_end):
