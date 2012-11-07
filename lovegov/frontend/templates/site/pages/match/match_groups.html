@@ -17,9 +17,9 @@
         <div class="dismissible_wrapper">
             {% with dismissible_hide=location %}
                 {% if not location %}
-                    {% include 'site/pages/politicians/representatives_dismissible_header.html' with why_address="Find groups in your area: " button_text="find groups" no_dismissible_x=1 %}
+                    {% include 'site/pages/politicians/representatives_dismissible_header.html' with real_address=1 why_address="Find groups in your area: " button_text="find groups" no_dismissible_x=1 %}
                 {% else %}
-                    {% include 'site/pages/politicians/representatives_dismissible_header.html' with why_address="Find groups in your area: " button_text="find groups" %}
+                    {% include 'site/pages/politicians/representatives_dismissible_header.html' with real_address=1 why_address="Find groups in your area: " button_text="find groups" %}
                 {% endif %}
             {% endwith %}
         </div>
