@@ -126,7 +126,7 @@
                     <div class="group-full-text inline_editable" data-model="Content" data-id="{{ group.id }}">
                         <div class="inline-div being_edited not_editing_display">
                             <div class="text_unexpanded">
-                                {{ group.full_text|urlize|truncate_chars:200|linebreaksbr }}
+                                {{ group.full_text|urlize|truncate_chars:250|linebreaksbr }}
                             </div>
                         </div>
                         {% if info.is_user_admin %}
