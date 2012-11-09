@@ -493,6 +493,10 @@ def setStateGroupText(state_group):
            "Use this group to find out what is going on and generate awareness for your cause: " \
            "share the important news/legislation, have discussions, and poll your state on the key issues. "
 
+    text =  "This is the central place for everything relevant to " + state_name + ". " \
+            "Start by posting questions on the key issues and answering them to express your views. " \
+            "Also use this group to share news, have discussions and generate awareness for a cause. "
+
     state_group.full_text = text
     state_group.summary = text
     state_group.save()

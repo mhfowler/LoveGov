@@ -2,7 +2,12 @@
 
     <div class="displayed_wrapper">
 
-        <div class="match-section-header"> How do you compare with your state representatives? </div>
+        <div class="match-section-header"> How do you compare with your state representatives?
+            <div class="under-update" style="font-size:16px;">
+                *** We're still updating our congressional database with the results from the election.
+                    We'll let you know when we're up to date! ***
+            </div>
+        </div>
 
         <div class="below-match-section-header" {% if not congressmen %} style="display:none" {% endif %}>
             <div class="reps-where"> {{ location.state }} [District {{ location.district }}] </div>

@@ -1428,7 +1428,8 @@ class UserProfile(FacebookProfileModel, LGModel, BasicInfo, AnalyticsData):
         all_news = content.filter(type="N").filter(created_when__gt=oldest_news).order_by("-created_when")
         news = all_news.exclude(id__in=stale_ids)
 
-        all_discussions = content.filter(type="D").order_by("-status").order_by("-num_comments")
+        oldest_discussion = now - datetime.timedelta(days=14)
+        all_discussions = content.filter(type="D").filter(created_when__gt=oldest_discussion).order_by("-status").order_by("-num_comments")
         discussions = all_discussions.exclude(id__in=stale_ids)
 
         all_questions = Question.objects.all().order_by("-status").order_by("-questions_hot_score")
@@ -5321,6 +5322,7 @@ class StateGroup(Group):
         return state_text
 
     def getResidentsName(self):
+        from lovegov.modernpolitics.constants import RESIDENT_NAMES
         return RESIDENT_NAMES[self.title]
 
 class TownGroup(Group):
