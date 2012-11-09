@@ -53,6 +53,10 @@
 
         {% include 'site/pages/group/group_follow_button.html' with is_user_following=info.is_user_following %}
 
+        {% if info.is_user_confirmed and not info.is_user_admin %}
+            <div class="group-action invite_toggle leftside_tab_toggle"> invite friends </div>
+        {% endif %}
+
         {% if group.scorecard %}
             <a href="{{ group.scorecard.get_url }}" class="group-action"> view scorecard </a>
         {% endif %}
