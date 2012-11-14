@@ -358,7 +358,6 @@ SECRET_KEY = 'uodf#%)e0gss8zbqnnfqj=ppbi!*4n_ss0joum-_udavihl6m%'
 
 ADMINS = (
     ('Max Fowler', 'max_fowler@brown.edu'),
-    ('Jeremy Greenfield', 'jsgreenf@gmail.com'),
     )
 
 MANAGERS = ADMINS
