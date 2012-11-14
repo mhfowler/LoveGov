@@ -2,6 +2,33 @@
 @import 'master-variables';
 @import 'master-mixins';
 
+div.former-team {
+
+  div.past-contributor {
+
+    float:left;
+    width:40%;
+    margin-bottom:10px;
+
+    div.past-contributor-img {
+      float:left;
+      margin-right:20px;
+    }
+
+    a.past-contributor-name {
+      float:left;
+      font-size:18px;
+      margin-top:30px;
+      color:$black;
+      &:hover {
+        color:black;
+      }
+    }
+
+  }
+
+}
+
 @mixin circleDiv($side)
 {
   width:$side;
@@ -10,13 +37,13 @@
   border-radius:$side/2;
 
   img
-  {
+    {
     border-radius:$side/2;
   }
 }
 
 div.who-are-we-circle
-{
+  {
   position:relative;
   min-width:475px;
   margin-right:25px;
@@ -25,7 +52,7 @@ div.who-are-we-circle
 }
 
 div.who-are-we-circle-div
-{
+  {
   @include circleDiv(200px)
 }
 
@@ -35,12 +62,12 @@ div.who-are-we-circle-div
   $color:colorMap($color-name);
 
   div.who-are-we-circle-div-#{$color-name}
-  {
+    {
     border: 2px $color solid;
   }
 
   div.who-are-we-circle-div-#{$color-name}-hover
-  {
+    {
     -moz-box-shadow: 0 0 40px 5px $color;
     -webkit-box-shadow: 0 0 40px 5px $color;
     box-shadow: 0 0 40px 5px $color;
@@ -48,14 +75,14 @@ div.who-are-we-circle-div
 }
 
 div.who-are-we-circle-div-center
-{
+  {
   @include circleDiv(250px);
   background-color:$red;
   border: 2px $red solid;
 }
 
 div.about-content-right
-{
+  {
   @extend .about-content-block;
   width:475px;
   margin-left:25px;
@@ -67,20 +94,20 @@ div.about-section {
 }
 
 div.about-div-button
-{
+  {
   @include div-button($radius:0px,$width:230px,$height:53px,$font-size:20px,$color:$black);
   margin-bottom:15px;
   float: left;
   margin: 10px 10px;
   text-align: center;
   span
-  {
+    {
     display:inline-block;
     margin-top:16px;
   }
 
   &:hover
-  {
+    {
     color:white;
     background-color:$red;
     cursor:pointer;
@@ -99,30 +126,30 @@ div.about-div-button
 
 $nav-margin:30px;
 div.top-nav
-{
+  {
   float:left;
 }
 
 div.nav-top-div
-{
+  {
   padding-bottom:15px;
   display:inline-block;
 }
 
 div.nav-top-div-border
-{
+  {
   @include horizontalSeparator($width:800px,$color:$gray,$margin-left:100px,$margin-top:10px,$margin-bottom:10px);
 }
 
 div.top-nav-left
-{
+  {
   @extend .top-nav;
   margin-right: $nav-margin;
   width:1000px;
 }
 
 div#about-content
-{
+  {
   margin-top:25px;
   display:inline-block;
   min-height:400px;
@@ -143,12 +170,12 @@ div#about-content
   }
 
   li
-  {
+    {
     border:0;
   }
 
   p.privacy_p
-  {
+    {
     margin-top:5px;
     margin-bottom:25px;
     margin-left:25px;
@@ -159,47 +186,47 @@ div#about-content
   }
 
   div.privacy-column
-  {
+    {
     width:475px;
     float:left;
 
     h3
-    {
+      {
       font-size:21px;
     }
 
   }
 
   h4
-  {
+    {
     font-size:18px;
   }
 
   h6
-  {
+    {
     color:$deep-gray;
   }
 
   div.about-content-block
-  {
+    {
     display:inline-block
   }
 
   div.about-content-left
-  {
+    {
     @extend .about-content-block;
     width:475px;
     margin-right:25px;
   }
 
   div.mission
-  {
+    {
     margin-top:25px;
     position:relative;
     margin-left:25px;
 
     h3
-    {
+      {
       margin-bottom:5px;
     }
   }
