@@ -63,6 +63,32 @@ def getPercentageAnalyticsFunction(args_dict):
         def getNumAnswers(user):
             return user.getView().responses.count()
         return getNumAnswers
+    elif which in 'num_days':
+        def getNumVisits(user):
+            days = []
+            pa = PageAccess.objects.filter(user=user)
+            for x in pa:
+                dt = x.when.strftime('%m/%d/%y')
+                if not dt in days:
+                    days.append(dt)
+            return len(days)
+        return getNumVisits
+    elif which in 'visit_rate':
+        def getVisitRate(user):
+            days = []
+            pa = PageAccess.objects.filter(user=user)
+            for x in pa:
+                dt = x.when.strftime('%m/%d/%y')
+                if not dt in days:
+                    days.append(dt)
+            election_day = datetime.datetime(month=11, day=6, year=2012, hour=6)
+            lifetime = election_day - user.created_when
+            total_days = lifetime.days
+            if total_days:
+                return len(days) / float(total_days)
+            else:
+                return 0
+        return getVisitRate
 
 
 def singlePercentageAnalytics(w_sheet, starting_row, time_start=None, time_end=None, resolution=100):
@@ -85,6 +111,8 @@ def singlePercentageAnalytics(w_sheet, starting_row, time_start=None, time_end=N
     w_sheet.write(starting_row,2, num_users)
 
     PERCENTAGE_ANALYTICS = [
+        {"which": "num_days", "description": "Number of distinct days user visited the site."},
+        {"which": "visit_rate", "description": "Number of distinct days user visited the site over time since registration."},
         {"which": "time_on_site", "description": "Minutes spent on site on first day after registering."},
         {"which": "num_answers", "description": "Number of questions answered."}
     ]
