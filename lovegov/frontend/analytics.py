@@ -143,6 +143,8 @@ def percentageAnalytics(time_tuples, resolution, output_file):
 
     from xlutils import copy
 
+    print "PERCENTAGE ANALYTICS"
+
     percentage_analytics_template_filepath = os.path.join(PROJECT_PATH, 'logging/metrics/percentage_analytics_template.xls')
 
     rb = open_workbook(percentage_analytics_template_filepath,formatting_info=True)
