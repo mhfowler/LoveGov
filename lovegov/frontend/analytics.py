@@ -24,6 +24,7 @@ def getPercentageAnalyticsResults(users, fun, resolution=100):
 
     for x in users:
         x.analytics_result = fun(x)
+        print enc(x.get_name())
     users.sort(key=lambda x: x.analytics_result)
 
     to_return = []
@@ -68,9 +69,10 @@ def getPercentageAnalyticsFunction(args_dict):
             days = []
             pa = PageAccess.objects.filter(user=user)
             for x in pa:
-                dt = x.when.strftime('%m/%d/%y')
-                if not dt in days:
-                    days.append(dt)
+                if x.when:
+                    dt = x.when.strftime('%m/%d/%y')
+                    if not dt in days:
+                        days.append(dt)
             return len(days)
         return getNumVisits
     elif which in 'visit_rate':
@@ -78,9 +80,10 @@ def getPercentageAnalyticsFunction(args_dict):
             days = []
             pa = PageAccess.objects.filter(user=user)
             for x in pa:
-                dt = x.when.strftime('%m/%d/%y')
-                if not dt in days:
-                    days.append(dt)
+                if x.when:
+                    dt = x.when.strftime('%m/%d/%y')
+                    if not dt in days:
+                        days.append(dt)
             election_day = datetime.datetime(month=11, day=6, year=2012, hour=6)
             lifetime = election_day - user.created_when
             total_days = lifetime.days
