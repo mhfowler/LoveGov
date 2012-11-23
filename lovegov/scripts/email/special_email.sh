@@ -1,0 +1,1 @@
+nohup ./special_email.py >> /log/special_email.log &
