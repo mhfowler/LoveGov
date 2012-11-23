@@ -1,0 +1,23 @@
+{% extends 'emails/lovegov/white_section.html' %}
+
+
+{% block white_section %}
+
+    <p>Hi {{ user_profile.first_name }},</p>
+
+    <p>
+        We're trying to find out how our users experienced the election. If you have time
+        to answer the questions below it would be very helpful.
+
+        {% include 'emails/lovegov/weekly_digest/digest_link.html' with the_link="http://lovegov.com/question/375984/" the_title="How many candidates did you recognize on the ballot?" %}
+
+        {% include 'emails/lovegov/weekly_digest/digest_link.html' with the_link="http://lovegov.com/question/375986/" the_title="Did you vote for any candidates whose name you didn't recognize?" %}
+
+        <br><br>
+    </p>
+
+    <p>
+        <br><br><br>
+    </p>
+
+{% endblock %}
