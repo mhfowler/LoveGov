@@ -181,7 +181,6 @@ def sendSpecialEmails():
     for x in u:
         sendSpecialEmail(x)
 
-
 def sendWeeklyDigestEmails():
     u = UserProfile.objects.filter(ghost=False)
     for x in u:
