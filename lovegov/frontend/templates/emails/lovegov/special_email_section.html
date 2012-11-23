@@ -8,16 +8,17 @@
     <p>
         We're trying to find out how our users experienced the election. If you have time
         to answer the questions below it would be very helpful.
-
-        {% include 'emails/lovegov/weekly_digest/digest_link.html' with the_link="http://lovegov.com/question/375984/" the_title="How many candidates did you recognize on the ballot?" %}
-
-        {% include 'emails/lovegov/weekly_digest/digest_link.html' with the_link="http://lovegov.com/question/375986/" the_title="Did you vote for any candidates you didn't recognize?" %}
-
-        <br><br>
     </p>
 
-    <p>
-        <br><br><br>
-    </p>
+    {% include 'emails/lovegov/weekly_digest/digest_link.html' with the_link="http://lovegov.com/question/375984/" the_title="How many candidates did you recognize on the ballot?" %}
+
+    {% include 'emails/lovegov/weekly_digest/digest_link.html' with the_link="http://lovegov.com/question/375986/" the_title="Did you vote for any candidates you didn't recognize?" %}
+
+    <p style="min-height: 0px;
+margin: 5px;
+width: 100%;
+float: left;"></p>
+
+    <div style="clear:both;"></div>
 
 {% endblock %}
