@@ -79,13 +79,28 @@
 
     <h2 class="capitalize-text bold small-margin" style="margin-bottom:20px;">Advisors</h2>
 
+    <div class="contributor-wrapper">
 
-    <div class="past-contributor">
+        <div class="past-contributor">
 
-        <div class="past-contributor-img">
-            {% include 'site/pieces/thumbnail.html' with thumbnail_url="/static/images/past_team/tom_pincince.png" width="80" height="100"%}
+            <div class="past-contributor-img">
+                {% include 'site/pieces/thumbnail.html' with thumbnail_url="/static/images/past_team/tom_pincince.png" width="80" height="100"%}
+            </div>
+            <a class="past-contributor-name" href="/tom_pincince/"> Tom Pincince </a>
+
         </div>
-        <a class="past-contributor-name" href="/tom_pincince/"> Tom Pincince </a>
+
+        <div class="contributor-description" style="float:right;width:600px;">
+            <p>
+                With a track record of entrepreneurial and corporate success, Tom is responsible for overall strategy and management of Digital Lumens.
+                Prior to joining the company, Tom was President, Chief Executive Officer and Founder of Brix Networks, a global provider of converged service
+                assurance solutions that was acquired by EXFO to serve as the foundation for its service assurance market entry.
+                Previously, Tom was the Founder of New Oak Communications, a pioneering leader in Virtual Private Network (VPN) switches,
+                which was subsequently acquired by Bay Networks (now Nortel Networks) to create the Contivity Extranet Switch product family.
+            </p>
+        </div>
+
+        <div style="clear:both;"></div>
 
     </div>
 
@@ -100,66 +115,14 @@
 
 </div>
 
-
-
 <div class="former-team">
 
-    <h2 class="capitalize-text bold small-margin" style="margin-bottom:20px;">Past Contributors</h2>
+    {% comment %}
+    <a href="/2012_election_team/" style="text-decoration: none;">
+        <h2 class="capitalize-text bold small-margin" style="margin-bottom:20px;">See The 2012 Election Team</h2>
+    </a>
+    {% endcomment %}
 
-
-    <div class="past-contributor">
-
-        <div class="past-contributor-img">
-            {% include 'site/pieces/thumbnail.html' with thumbnail_url="/static/images/past_team/koh.png" width="80" height="100"%}
-        </div>
-        <a class="past-contributor-name" href="/jonathon_koh/"> Jonathon Koh </a>
-
-    </div>
-
-    <div class="past-contributor">
-
-        <div class="past-contributor-img">
-            {% include 'site/pieces/thumbnail.html' with thumbnail_url="/static/images/past_team/callil.png" width="80" height="100"%}
-        </div>
-        <a class="past-contributor-name" href="/callil_capuozzo/"> Callil Cappuozo </a>
-
-    </div>
-
-    <div class="past-contributor">
-
-        <div class="past-contributor-img">
-            {% include 'site/pieces/thumbnail.html' with thumbnail_url="/static/images/past_team/marcus.png" width="80" height="100"%}
-        </div>
-        <a class="past-contributor-name" href="/alex_marcus/"> Alex Marcus </a>
-
-    </div>
-
-    <div class="past-contributor">
-
-        <div class="past-contributor-img">
-            {% include 'site/pieces/thumbnail.html' with thumbnail_url="/static/images/past_team/ric.png" width="80" height="100"%}
-        </div>
-        <a class="past-contributor-name" href="/ric_lescouflair/"> Ric Lescouflair </a>
-
-    </div>
-
-    <div class="past-contributor">
-
-        <div class="past-contributor-img dunwell">
-            {% include 'site/pieces/thumbnail.html' with thumbnail_url="/static/images/past_team/dunwell.png" width="80" height="100"%}
-        </div>
-        <a class="past-contributor-name" href="/clayton_dunwell/"> Clayton Dunwell </a>
-
-    </div>
-
-    <div class="past-contributor">
-
-        <div class="past-contributor-img">
-            {% include 'site/pieces/thumbnail.html' with thumbnail_url="/static/images/past_team/jeremy.png" width="80" height="100"%}
-        </div>
-        <a class="past-contributor-name" href="/jeremy_greenfield/"> Jeremy Greenfield </a>
-
-    </div>
-
+    {% include 'site/pages/october_login/election_team.html' %}
 
 </div>

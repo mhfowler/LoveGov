@@ -10,6 +10,10 @@ div.former-team {
   float:left;
   width:100%;
 
+  div.contributor-wrapper {
+    margin-bottom:25px;
+  }
+
   div.past-contributor {
 
     float:left;
@@ -30,7 +34,9 @@ div.former-team {
         color:black;
       }
     }
-
+  }
+  div.contributor-description {
+    padding-bottom:20px;
   }
 
 }

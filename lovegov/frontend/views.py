@@ -453,6 +453,11 @@ def loginMission(request, vals):
     url = request.path
     return loginResponse(request, central_html, url, vals)
 
+def electionTeam(request, vals):
+    central_html = ajaxRender(template='site/pages/october_login/election_team.html', vals=vals, request=request)
+    url = request.path
+    return loginResponse(request, central_html, url, vals)
+
 def loginHowItWorks(request, vals):
     central_html = ajaxRender(template='site/pages/how-it-works.html', vals=vals, request=request)
     url = request.path
