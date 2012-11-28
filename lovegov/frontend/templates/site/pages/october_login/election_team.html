@@ -1,33 +1,16 @@
-<div class="former-team" style="border-top:none;">
+<div class="former-team" style="border-top:none;padding-left: 25px;">
 
     <h2 class="capitalize-text bold small-margin" style="margin-bottom:20px;">The 2012 Election Team</h2>
 
     <div class="past-contributor">
 
-        <div class="past-contributor-img dunwell" style="padding-bottom: 13px;">
+        <div class="past-contributor-img dunwell">
             {% include 'site/pieces/thumbnail.html' with thumbnail_url="/static/images/past_team/dunwell.png" width="80" height="100"%}
         </div>
         <a class="past-contributor-name" href="/clayton_dunwell/"> Clayton Dunwell </a>
+        <a class="see_contrib_bio" style="float:left;width:70px;">see bio</a>
 
     </div>
-
-    <div class="contributor-description">
-        <p style="font-size:15px;">
-            As a founder, Clayton played a pivotal role in the early formation and construction of LoveGov. His diverse background
-            was instrumental in developing and connecting ideas, code, design and politics. Together with Max and Catherine, he helped
-            build the first few major iterations of the website including, among many other things, authoring the entire user interface,
-            visual comparisons and integration of political and legislative data. Indeed, he poured his heart and soul into LoveGov,
-            and without him, he would never have gained initial traction. After working with us for nearly a year, Clayton departed
-            LoveGov to attend to personal matters.
-        </p>
-        <p style="font-size:15px;">
-            In addition to the founding principles of LoveGov, Clayton believes in the power and importance of bringing people of
-            various perspectives together to address, discuss and solve conflict and that through communication and compromise,
-            mutual understanding and respect of divergent viewpoints is achievable. We owe Clayton many thanks for all his contributions
-            and wish him the very best in his future endeavors.
-        </p>
-    </div>
-
 
     <div class="past-contributor">
 
@@ -74,5 +57,28 @@
 
     </div>
 
+    <div class="contrib_bio" style='width:100%; float:left;padding-top:20px;display:none;'>
+        <p style="font-size:15px;">
+            As a founder, Clayton played a pivotal role in the early formation and construction of LoveGov. His diverse background
+            was instrumental in developing and connecting ideas, code, design and politics. Together with Max and Catherine, he helped
+            build the first few major iterations of the website including, among many other things, authoring the entire user interface,
+            visual comparisons and integration of political and legislative data. Indeed, he poured his heart and soul into LoveGov,
+            and without him, he would never have gained initial traction. After working with us for nearly a year, Clayton departed
+            LoveGov to attend to personal matters.
+        </p>
+        <p style="font-size:15px;">
+            In addition to the founding principles of LoveGov, Clayton believes in the power and importance of bringing people of
+            various perspectives together to address, discuss and solve conflict and that through communication and compromise,
+            mutual understanding and respect of divergent viewpoints is achievable. We owe Clayton many thanks for all his contributions
+            and wish him the very best in his future endeavors.
+        </p>
+    </div>
+
 
 </div>
+
+<script>
+    bind(".see_contrib_bio", 'click', null, function(event) {
+        $(".contrib_bio").show();
+    });
+</script>
