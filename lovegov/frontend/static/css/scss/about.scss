@@ -35,10 +35,6 @@ div.former-team {
       }
     }
   }
-  div.contributor-description {
-    padding-bottom:20px;
-  }
-
 }
 
 @mixin circleDiv($side)
@@ -165,6 +161,7 @@ div#about-content
   margin-top:25px;
   display:inline-block;
   min-height:400px;
+  padding:0px 60px;
 
   div#video-div {
     width:1000px;
@@ -235,7 +232,7 @@ div#about-content
     {
     margin-top:25px;
     position:relative;
-    margin-left:25px;
+    //margin-left:25px;
 
     h3
       {
