@@ -442,7 +442,7 @@ function initHomePage() {
 /* sets feed parameters pased on js variables */
 function initFeedParameters() {
 
-    var hot_pages = ['/home/', '/questions/'];
+    var hot_pages = [];
     if (hot_pages.indexOf(PATH) != -1) {
         feed_rank = 'H';
     }
