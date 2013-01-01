@@ -453,9 +453,7 @@ div.october-login {
       }
       div.sign-up-wrapper {
         float: left;
-        margin-top: 25px;
         overflow:hidden;
-        height:0px;
         div.october-sign-up {
           padding-top:25px;
           padding-left:0px;
@@ -466,6 +464,7 @@ div.october-login {
       }
 
       div.how-it-works-wrapper {
+        float:left;
         margin-top:50px;
       }
 
@@ -742,7 +741,6 @@ div.presidential-matching {
     float:left;
   }
   div.sign-up-wrapper {
-    display:none;
     padding-top:25px;
     padding-left:0px;
     float:left;
