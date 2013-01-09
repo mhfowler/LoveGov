@@ -204,7 +204,7 @@ def getUser(name):
     return users
 
 def getAllUsers(not_team=False):
-    users = UserProfile.objects.filter(ghost=False)
+    users = UserProfile.objects.filter(ghost=False).exclude(alias="anonymous")
     if not_team:
         users = users.filter(developer=False)
     return users

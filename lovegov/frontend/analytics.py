@@ -13,6 +13,45 @@ import xlwt
 import xlutils
 
 #-----------------------------------------------------------------------------------------------------------------------
+# correlation analytics
+#-----------------------------------------------------------------------------------------------------------------------
+def correlationAnalytics():
+    for a in Answer.objects.all():
+        cor = answerCorrelation(a)
+        if cor:
+            printCorrelations(cor)
+
+def answerCorrelation(answer):
+    users = getAllUsers()
+    these_users = users.filter(view__responses__most_chosen_answer=answer)
+    if not these_users:
+        return False
+    correlations = []
+    for q in Question.objects.all():
+        total_responders = these_users.filter(view__responses__question=q)
+        num_total_responders = total_responders.count()
+        if num_total_responders:
+            for a in q.answers.all():
+                agreed = total_responders.filter(view__responses__most_chosen_answer=a).count()
+                if num_total_responders:
+                    percent = int(agreed / float(num_total_responders) * 100)
+                else:
+                    percent = 0
+                if num_total_responders >= 75:
+                    cor = {'total':num_total_responders, 'agreed':agreed, 'percent':percent,'text':a.answer_text}
+                    correlations.append(cor)
+    correlations.sort(key=lambda x: x['percent'], reverse=True)
+    return correlations
+
+def printCorrelations(correlations):
+    for x in correlations:
+        print str(x['percent']) + "% [ " + str(x['total']) + " ] " + enc(x['text'])
+    print "----"
+
+def getUsersWithAnswer(users, answer_id):
+    return users.filter(view__responses__most_chosen_answer_id=answer_id)
+
+#-----------------------------------------------------------------------------------------------------------------------
 # percentage analytics
 #-----------------------------------------------------------------------------------------------------------------------
 
@@ -60,10 +99,6 @@ def getPercentageAnalyticsFunction(args_dict):
             total_minutes = total_time.total_seconds() / 60.0
             return total_minutes
         return getMinutesOnSite
-    elif which == 'num_answers':
-        def getNumAnswers(user):
-            return user.getView().responses.count()
-        return getNumAnswers
     elif which in 'num_days':
         def getNumVisits(user):
             days = []
@@ -75,6 +110,16 @@ def getPercentageAnalyticsFunction(args_dict):
                         days.append(dt)
             return len(days)
         return getNumVisits
+    elif which == 'page_views':
+        def getPageViews(user):
+            num_pa = PageAccess.objects.filter(user=user, type="GET").count()
+            num_visits = getNumVisits(user)
+            return num_pa / float(num_visits)
+        return getPageViews
+    elif which == 'num_answers':
+        def getNumAnswers(user):
+            return user.getView().responses.count()
+        return getNumAnswers
     elif which in 'visit_rate':
         def getVisitRate(user):
             days = []
@@ -105,7 +150,7 @@ def singlePercentageAnalytics(w_sheet, starting_row, time_start=None, time_end=N
         w_sheet.write(starting_row,1, dt)
 
     # users before time start and time end
-    users = UserProfile.objects.filter(ghost=False)
+    users = getAllUsers()
     users = filterByCreatedWhen(users, time_start, time_end)
     users = list(users)
 
@@ -114,10 +159,11 @@ def singlePercentageAnalytics(w_sheet, starting_row, time_start=None, time_end=N
     w_sheet.write(starting_row,2, num_users)
 
     PERCENTAGE_ANALYTICS = [
-        {"which": "num_days", "description": "Number of distinct days user visited the site."},
-        {"which": "visit_rate", "description": "Number of distinct days user visited the site over time since registration."},
-        {"which": "time_on_site", "description": "Minutes spent on site on first day after registering."},
-        {"which": "num_answers", "description": "Number of questions answered."}
+        #{"which": "num_days", "description": "Number of distinct days user visited the site."},
+        #{"which": "visit_rate", "description": "Number of distinct days user visited the site over time since registration."},
+        #{"which": "time_on_site", "description": "Minutes spent on site on first day after registering."},
+        #{"which": "num_answers", "description": "Number of questions answered."},
+        {"which": "page_views", "description": "Number of pages visited per visit."}
     ]
 
     # for each analytic, write description, then get results, and then write results to sheet

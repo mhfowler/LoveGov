@@ -4290,7 +4290,122 @@ var reps_longitude;
 var reps_latitude;
 var reps_state;
 var reps_district;
-function loadGoogleMap()
+
+function loadGoogleMap() {
+    var state = "ne";
+    var district = "3";
+
+    var map;
+
+    function initialize(latitude, longitude, state, district) {
+        var myOptions = {
+            zoom: 10,
+            center: new google.maps.LatLng(latitude, longitude),
+            mapTypeId: google.maps.MapTypeId.ROADMAP,
+            panControl: false,
+            zoomControl: true,
+            mapTypeControl: false,
+            scaleControl: true,
+            streetViewControl: false,
+            styles:
+                [
+                    {
+                        "featureType": "water",
+                        "stylers": [
+                            { "visibility": "simplified" }
+                        ]
+                    },{
+                    "featureType": "transit.station.bus",
+                    "stylers": [
+                        { "visibility": "off" }
+                    ]
+                },{
+                    "featureType": "poi.business",
+                    "stylers": [
+                        { "visibility": "off" }
+                    ]
+                },{
+                    "featureType": "landscape.man_made",
+                    "stylers": [
+                        { "visibility": "off" }
+                    ]
+                },{
+                    "featureType": "landscape.natural",
+                    "stylers": [
+                        { "lightness": 100 }
+                    ]
+                },{
+                    "featureType": "administrative.province",
+                    "elementType": "geometry.stroke",
+                    "stylers": [
+                        { "invert_lightness": true }
+                    ]
+                },{
+                    "featureType": "poi.park",
+                    "elementType": "geometry.fill",
+                    "stylers": [
+                        { "visibility": "off" }
+                    ]
+                }
+                ]
+        };
+
+        map = new google.maps.Map(document.getElementById("map_canvas"), myOptions);
+
+        createDistrictsOverlay("cd-2012");
+
+    };
+
+    var tilesizeshift = 0; // 0=256, 1=use 512px tiles instead of 256
+
+    // Use PNG or GIF tiles? IE8 and earlier don't support transparent PNGs properly,
+    // so use opaque GIF tiles but set the transparency on the map layer appropriately.
+    var tileimgformat = 'png';
+    if (navigator.appName == 'Microsoft Internet Explorer' && new RegExp("MSIE [678]").exec(navigator.userAgent)) tileimgformat = 'gif';
+
+    function createDistrictsOverlay(layer) {
+        var tileimgsize = 256 << tilesizeshift;
+
+        // Apply the map layer.
+        var overlay = new google.maps.ImageMapType({
+            getTileUrl: function(coord, zoom) {
+                return "http://gis.govtrack.us/map/tiles/" + layer + "/" + (zoom-tilesizeshift) + "/" + coord.x + "/" + coord.y + "." + tileimgformat + "?size=" + tileimgsize + (tileimgformat == "png" ? "" : "&features=outline,label");
+            },
+            tileSize: new google.maps.Size(tileimgsize, tileimgsize),
+            isPng: tileimgformat == "png",
+            minZoom: 3,
+            maxZoom: 28,
+            opacity: tileimgformat == "png" ? .85 : .65
+        });
+
+        map.overlayMapTypes.clear();
+        map.overlayMapTypes.insertAt(0, overlay);
+
+        // For IE8 and earlier, the layer above only applies outlines and labels --- at high opacity.
+        // Apply a second layer for the boundary fill color --- at low opacity.
+        if (tileimgformat != "png") {
+            var overlay2 = new google.maps.ImageMapType({
+                getTileUrl: function(coord, zoom) {
+                    return "http://gis.govtrack.us/map/tiles/" + layer + "/" + (zoom-tilesizeshift) + "/" + coord.x + "/" + coord.y + "." + tileimgformat + "?size=" + tileimgsize + (tileimgformat == "png" ? "" : "&features=fill");
+                },
+                tileSize: new google.maps.Size(tileimgsize, tileimgsize),
+                isPng: false,
+                minZoom: 3,
+                maxZoom: 28,
+                opacity: .15
+            });
+
+            map.overlayMapTypes.insertAt(0, overlay2);
+        }
+    }
+
+    if (rebind=="representatives" && reps_latitude && reps_longitude && reps_state && reps_district) {
+        initialize(reps_latitude, reps_longitude, reps_state, reps_district);
+    }
+}
+
+
+function loadGoogleMapOld()
 {
 
     function createDistrictsOverlay(outlines_only, opacity, state, district)
@@ -4298,7 +4413,17 @@ function loadGoogleMap()
         return {
             getTileUrl: function(coord, zoom)
             {
+                /*
                 return "http://www.govtrack.us/perl/wms/wms.cgi?google_tile_template_values=" + coord.x + "," + coord.y + "," + zoom
+                    + "&LAYERS=cd-110" + (outlines_only ? "-outlines" : "")
+                    + (state ? ":http://www.rdfabout.com/rdf/usgov/geo/us/" + state
+                    + (!district ? "%25"
+                    : "/cd/110/" + district)
+                    : "")
+                    + "&FORMAT=image/png";
+                    */
+
+                return "http://www.govtrack.us/congress/members/embed/mapframe?google_tile_template_values=" + coord.x + "," + coord.y + "," + zoom
                     + "&LAYERS=cd-110" + (outlines_only ? "-outlines" : "")
                     + (state ? ":http://www.rdfabout.com/rdf/usgov/geo/us/" + state
                     + (!district ? "%25"

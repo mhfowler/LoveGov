@@ -5623,7 +5623,6 @@ class PageAccess(LGModel):
     duration = models.TimeField(null=True)
     exit = models.BooleanField(default=False)
     login = models.BooleanField(default=True)
-
     def autoSave(self, request, user_prof=None):
         from lovegov.modernpolitics.helpers import getSourcePath, getUserProfile
         if not user_prof:
