@@ -1942,6 +1942,7 @@ def makeRep(full_name, state, district):
     user.primary_role = oh
     user.save()
     user.currently_in_office=True
+    user.politician = True
     user.location = office.location
     user.political_title = "Representative"
     user.save()
@@ -1961,6 +1962,7 @@ def makeSenator(full_name, state):
     user.primary_role = oh
     user.save()
     user.currently_in_office=True
+    user.politician = True
     user.location = office.location
     user.political_title = "Senator"
     user.save()
