@@ -785,7 +785,7 @@ def initializeCongress():
     print "+EE+ = Error"
     print "+WW+ = Warning"
     print "======================"
-    for num in range(109,113):
+    for num in range(109,114):
         print num
         # Get/open current XML file
         filePath = '/data/govtrack/' + str(num) + "/people.xml"
@@ -977,7 +977,7 @@ def initializeCommittees():
     print "+WW+ = Warning"
     print "======================"
 
-    for num in range(109,113):
+    for num in range(109,114):
         filePath = '/data/govtrack/' + str(num) + '/committees.xml'
 
         try:
@@ -1094,7 +1094,7 @@ def initializeLegislation():
     print "[IMPORTANT]: The return of this function is a list of errors represented as tuples of the format (filepath,error_message).\n" \
           "[IMPORTANT]: If you would like to see this result, make sure you have assigned a variable to hold the return of this function"
 
-    for num in range(109,113):
+    for num in range(109,114):
         filePath = '/data/govtrack/' + str(num) + "/bills/"
         try:
             fileListing = os.listdir(filePath)
@@ -1294,7 +1294,7 @@ def parseLegislation(XML):
 #-----------------------------------------------------------------------------------------------------------------------
 def countLegislation():
     count = 0
-    for num in range(109,113):
+    for num in range(109,114):
         filePath = '/data/govtrack/' + str(num) + "/bills/"
         count += filecount(filePath)
     return count
@@ -1316,7 +1316,7 @@ def initializeLegislationAmendments():
     print "[IMPORTANT]: The return of this function is a list of errors represented as tuples of the format (filepath,error_message).\n"\
           "[IMPORTANT]: If you would like to see this result, make sure you have assigned a variable to hold the return of this function"
 
-    for num in range(109,113):
+    for num in range(109,114):
         filePath = '/data/govtrack/' + str(num) + "/bills.amdt/"
 
         try:
@@ -1466,7 +1466,7 @@ def parseLegislationAmendment(XML):
 #-----------------------------------------------------------------------------------------------------------------------
 def countXMLAmendments():
     count = 0
-    for num in range(109,113):
+    for num in range(109,114):
         filePath = '/data/govtrack/' + str(num) + "/bills.amdt/"
         fileListing = os.listdir(filePath)
         for infile in fileListing:
@@ -1492,7 +1492,7 @@ def initializeVotingRecord():
     print "[IMPORTANT]: The return of this function is a list of errors represented as tuples of the format (filepath,error_message).\n"\
           "[IMPORTANT]: If you would like to see this result, make sure you have assigned a variable to hold the return of this function"
 
-    for num in range(109,113):
+    for num in range(109,114):
         filePath = '/data/govtrack/' + str(num) + "/rolls/"
 
         try:
@@ -1681,7 +1681,7 @@ def parseCongressRoll(XML):
 #-------------------------------------------------------------------------------------------------------------------
 def countVotingRecords():
     count = 0
-    for num in range(109,113):
+    for num in range(109,114):
         filePath = '/data/govtrack/' + str(num) + "/rolls/"
         count += filecount(filePath)
     return count
@@ -1907,6 +1907,70 @@ def getPoliticiansFromLocation(state, district=None):
     if district:
         politicians = politicians.filter(location__district=district)
     return politicians
+
+# manually make senators and reps
+def manuallyUpdate(state, rel_path):
+    clearPoliticians(state)
+    path = os.path.join(PROJECT_PATH, rel_path)
+    wb = open_workbook(path)
+    sheet = wb.sheet_by_index(0)
+    row = 0
+    politician_name = sheet.cell(row,0).value
+    while politician_name:
+        print politician_name
+        district = sheet.cell(row,1).value
+        makeRep(politician_name, state, district)
+        row += 1
+        politician_name = sheet.cell(row,0).value
+    for x in range(row+1, sheet.nrows):
+        politician_name = sheet.cell(x,0).value
+        print politician_name
+        makeSenator(politician_name, state)
+
+
+# manually make a rep
+def makeRep(full_name, state, district):
+    from lovegov.modernpolitics.register import createUser
+    user = getUser(full_name)
+    if not user:
+        user = createUser(full_name, full_name.replace(" ", "_") + "@lovegov.com", "password",active=True, verified=True, request=None)
+    rep_offices = getOfficesFromTagName("Representative")
+    office = rep_offices.get(location__state=state, location__district=district)
+    now = datetime.datetime.now()
+    oh = OfficeHeld(office=office, start_date=now, end_date=now, confirmed=True, current=True)
+    oh.autoSave()
+    user.primary_role = oh
+    user.save()
+    user.currently_in_office=True
+    user.location = office.location
+    user.political_title = "Representative"
+    user.save()
+    return user
+
+# manually make senator
+def makeSenator(full_name, state):
+    from lovegov.modernpolitics.register import createUser
+    user = getUser(full_name)
+    if not user:
+        user = createUser(full_name, full_name.replace(" ", "_") + "@lovegov.com", "password",active=True, verified=True, request=None)
+    sen_offices = getOfficesFromTagName("Senator")
+    office = sen_offices.get(location__state=state)
+    now = datetime.datetime.now()
+    oh = OfficeHeld(office=office, start_date=now, end_date=now, confirmed=True, current=True)
+    oh.autoSave()
+    user.primary_role = oh
+    user.save()
+    user.currently_in_office=True
+    user.location = office.location
+    user.political_title = "Senator"
+    user.save()
+    return user
+
+def clearPoliticians(state):
+    elected = UserProfile.objects.filter(currently_in_office=True, location__state=state)
+    for e in elected:
+        e.currently_in_office = False
+        e.save()
 
 #-----------------------------------------------------------------------------------------------------------------------
 # Initialize politiciangroup for congress

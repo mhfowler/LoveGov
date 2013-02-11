@@ -1,5 +1,7 @@
+#!/usr/bin/env python
 
-from lovegov.frontend.analytics import *
-from lovegov.frontend.views import *
-
-correlationAnalytics()
+if __name__ == "__main__":
+    from lovegov.modernpolitics.initialize import manuallyUpdate
+    print "manually updating..."
+    xls_path = 'scripts/migration/ma.xls'
+    manuallyUpdate("MA", xls_path)

@@ -320,7 +320,6 @@ def scriptCheckPoliticians(args=None):
 
 
 
-
 def scriptCreateResponses(path):
     print "path: " + path
     wb = open_workbook(path)
