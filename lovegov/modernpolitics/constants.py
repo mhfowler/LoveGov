@@ -161,8 +161,7 @@ URL_SPECIAL_NAMES = [
 
 ########################################## EMAIL LISTS #################################################################
 
-TEAM_EMAILS =  ['max_fowler@brown.edu','loweth.g@gmail.com',
-                'yoshi141@gmail.com']
+TEAM_EMAILS =  []
 YAY_EMAILS = TEAM_EMAILS
 DAILY_SUMMARY_EMAILS = TEAM_EMAILS
 

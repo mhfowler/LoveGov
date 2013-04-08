@@ -356,9 +356,7 @@ USE_L10N = True
 # Make this unique, and don't share it with anybody.
 SECRET_KEY = 'uodf#%)e0gss8zbqnnfqj=ppbi!*4n_ss0joum-_udavihl6m%'
 
-ADMINS = (
-    ('Max Fowler', 'max_fowler@brown.edu'),
-    )
+ADMINS = ()
 
 MANAGERS = ADMINS
 
